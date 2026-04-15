@@ -448,90 +448,230 @@ type WorkflowStep = {
   skill: string;
 };
 
-type WorkflowStatus = {
+type WorkflowPhase = {
+  id: string;
+  number: number;
+  name: string;
+  description: string;
+  isOptional: boolean;
   steps: WorkflowStep[];
+};
+
+type WorkflowStatus = {
+  phases: WorkflowPhase[];
   nextActionStep: WorkflowStep | null;
 };
 
-function detectWorkflowStatus(artifactFiles: string[]): WorkflowStatus {
-  const steps: WorkflowStep[] = [
+function makeStep(
+  id: string,
+  name: string,
+  icon: string,
+  skill: string,
+  isOptional: boolean,
+  artifactFiles: string[],
+  matcher: (files: string[]) => boolean
+): WorkflowStep {
+  return {
+    id,
+    name,
+    icon,
+    isOptional,
+    filePatterns: [],
+    isCompleted: matcher(artifactFiles),
+    skill,
+  };
+}
+
+function detectWorkflowStatus(
+  planningFiles: string[],
+  implementationFiles: string[]
+): WorkflowStatus {
+  const allFiles = [...planningFiles, ...implementationFiles];
+
+  const phases: WorkflowPhase[] = [
     {
-      id: "prd",
-      name: "Product Requirements",
-      icon: "📋",
-      isOptional: false,
-      filePatterns: ["prd.md"],
-      isCompleted: artifactFiles.some((f) => f === "prd.md"),
-      skill: "bmad-create-prd",
-    },
-    {
-      id: "architecture",
-      name: "Architecture Design",
-      icon: "🏗️",
-      isOptional: false,
-      filePatterns: ["architecture.md"],
-      isCompleted: artifactFiles.some((f) => f === "architecture.md"),
-      skill: "bmad-create-architecture",
-    },
-    {
-      id: "ux",
-      name: "UX Design",
-      icon: "🎨",
+      id: "analysis",
+      number: 1,
+      name: "Analysis",
+      description: "Optional research and ideation before planning",
       isOptional: true,
-      filePatterns: ["ux.md", "ux-design.md"],
-      isCompleted: artifactFiles.some((f) =>
-        f.includes("ux") && f.endsWith(".md")
-      ),
-      skill: "bmad-create-ux-design",
+      steps: [
+        makeStep(
+          "brainstorming",
+          "Brainstorming",
+          "💡",
+          "bmad-brainstorming",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("brainstorm"))
+        ),
+        makeStep(
+          "market-research",
+          "Market Research",
+          "📊",
+          "bmad-market-research",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("market"))
+        ),
+        makeStep(
+          "domain-research",
+          "Domain Research",
+          "🔍",
+          "bmad-domain-research",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("domain"))
+        ),
+        makeStep(
+          "technical-research",
+          "Technical Research",
+          "⚙️",
+          "bmad-technical-research",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("technical-research"))
+        ),
+        makeStep(
+          "product-brief",
+          "Product Brief",
+          "📄",
+          "bmad-product-brief",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("brief"))
+        ),
+        makeStep(
+          "prfaq",
+          "PRFAQ",
+          "📰",
+          "bmad-prfaq",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("prfaq"))
+        ),
+      ],
     },
     {
-      id: "epics",
-      name: "Epics & Stories",
-      icon: "📖",
+      id: "planning",
+      number: 2,
+      name: "Planning",
+      description: "Create product requirements",
       isOptional: false,
-      filePatterns: ["epics.md"],
-      isCompleted: artifactFiles.some((f) => f === "epics.md"),
-      skill: "bmad-create-epics-and-stories",
+      steps: [
+        makeStep(
+          "prd",
+          "Product Requirements (PRD)",
+          "📋",
+          "bmad-create-prd",
+          false,
+          planningFiles,
+          (f) => f.some((x) => x === "prd.md" || x.toLowerCase().includes("prd"))
+        ),
+      ],
     },
     {
-      id: "readiness",
-      name: "Implementation Readiness",
-      icon: "✓",
+      id: "solutioning",
+      number: 3,
+      name: "Solutioning",
+      description: "Design architecture, UX and epics",
       isOptional: false,
-      filePatterns: ["readiness"],
-      isCompleted: artifactFiles.some((f) =>
-        f.toLowerCase().includes("readiness")
-      ),
-      skill: "bmad-check-implementation-readiness",
+      steps: [
+        makeStep(
+          "architecture",
+          "Architecture Design",
+          "🏗️",
+          "bmad-create-architecture",
+          false,
+          planningFiles,
+          (f) => f.some((x) => x.includes("architecture"))
+        ),
+        makeStep(
+          "ux",
+          "UX Design",
+          "🎨",
+          "bmad-create-ux-design",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("ux"))
+        ),
+        makeStep(
+          "epics",
+          "Epics & Stories",
+          "📖",
+          "bmad-create-epics-and-stories",
+          false,
+          planningFiles,
+          (f) => f.some((x) => x.includes("epics"))
+        ),
+        makeStep(
+          "readiness",
+          "Implementation Readiness",
+          "✅",
+          "bmad-check-implementation-readiness",
+          false,
+          planningFiles,
+          (f) => f.some((x) => x.includes("readiness"))
+        ),
+      ],
     },
     {
-      id: "sprint",
-      name: "Sprint Planning",
-      icon: "⚡",
+      id: "implementation",
+      number: 4,
+      name: "Implementation",
+      description: "Build epic by epic, story by story",
       isOptional: false,
-      filePatterns: ["sprint"],
-      isCompleted: artifactFiles.some((f) =>
-        f.toLowerCase().includes("sprint")
-      ),
-      skill: "bmad-sprint-planning",
+      steps: [
+        makeStep(
+          "sprint",
+          "Sprint Planning",
+          "⚡",
+          "bmad-sprint-planning",
+          false,
+          allFiles,
+          (f) =>
+            f.some(
+              (x) => x.includes("sprint") && !x.includes("sprint-planning")
+            )
+        ),
+      ],
     },
   ];
 
+  // Find the single next action: first incomplete non-optional step,
+  // or first incomplete optional step if no required steps are pending.
   let nextActionStep: WorkflowStep | null = null;
-
-  for (const step of steps) {
-    if (!step.isCompleted) {
-      nextActionStep = step;
-      break;
+  outer: for (const phase of phases) {
+    for (const step of phase.steps) {
+      if (!step.isCompleted && !step.isOptional) {
+        nextActionStep = step;
+        break outer;
+      }
+    }
+  }
+  if (!nextActionStep) {
+    outer2: for (const phase of phases) {
+      for (const step of phase.steps) {
+        if (!step.isCompleted) {
+          nextActionStep = step;
+          break outer2;
+        }
+      }
     }
   }
 
-  return { steps, nextActionStep };
+  return { phases, nextActionStep };
 }
 
-function BMADWorkflowSection(props: { artifactFiles: string[] }) {
-  const { artifactFiles } = props;
-  const { steps, nextActionStep } = detectWorkflowStatus(artifactFiles);
+function BMADWorkflowSection(props: {
+  planningFiles: string[];
+  implementationFiles: string[];
+}) {
+  const { planningFiles, implementationFiles } = props;
+  const { phases, nextActionStep } = detectWorkflowStatus(
+    planningFiles,
+    implementationFiles
+  );
 
   const handlePlayClick = (step: WorkflowStep) => {
     const command = `gh copilot suggest -t shell "${step.skill}"`;
@@ -551,38 +691,51 @@ function BMADWorkflowSection(props: { artifactFiles: string[] }) {
         button — click to copy the command to your clipboard.
       </p>
 
-      <div className="workflow-steps">
-        {steps.map((step) => (
-          <div
-            key={step.id}
-            className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}`}
-          >
-            <span className="workflow-step-icon" aria-hidden="true">
-              {step.icon}
-            </span>
-            <div className="workflow-step-body">
-              <span className="workflow-step-name">{step.name}</span>
-              {step.isOptional && (
+      <div className="workflow-phases">
+        {phases.map((phase) => (
+          <div key={phase.id} className="workflow-phase">
+            <div className="workflow-phase-header">
+              <span className="workflow-phase-number">{phase.number}</span>
+              <span className="workflow-phase-name">{phase.name}</span>
+              {phase.isOptional && (
                 <span className="workflow-step-optional">optional</span>
               )}
             </div>
-            <span
-              className={`step-badge ${step.isCompleted ? "step-done" : "step-not-started"}`}
-            >
-              {step.isCompleted ? "done" : "pending"}
-            </span>
-            {nextActionStep?.id === step.id && (
-              <button
-                className="icon-button icon-button-play"
-                onClick={() => handlePlayClick(step)}
-                title={`Copy command to run ${step.skill}`}
-                type="button"
-              >
-                <span aria-hidden="true" className="icon-glyph">
-                  ▶
-                </span>
-              </button>
-            )}
+            <div className="workflow-steps">
+              {phase.steps.map((step) => (
+                <div
+                  key={step.id}
+                  className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}`}
+                >
+                  <span className="workflow-step-icon" aria-hidden="true">
+                    {step.icon}
+                  </span>
+                  <div className="workflow-step-body">
+                    <span className="workflow-step-name">{step.name}</span>
+                    {step.isOptional && (
+                      <span className="workflow-step-optional">optional</span>
+                    )}
+                  </div>
+                  {nextActionStep?.id === step.id && (
+                    <button
+                      className="icon-button icon-button-play"
+                      onClick={() => handlePlayClick(step)}
+                      title={`Copy command: ${step.skill}`}
+                      type="button"
+                    >
+                      <span aria-hidden="true" className="icon-glyph">
+                        ▶
+                      </span>
+                    </button>
+                  )}
+                  <span
+                    className={`step-badge ${step.isCompleted ? "step-done" : "step-not-started"}`}
+                  >
+                    {step.isCompleted ? "done" : "pending"}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -682,7 +835,8 @@ export function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [sessionActionPending, setSessionActionPending] =
     useState<SessionActionState>(null);
-  const [artifactFiles, setArtifactFiles] = useState<string[]>([]);
+  const [planningFiles, setPlanningFiles] = useState<string[]>([]);
+  const [implementationFiles, setImplementationFiles] = useState<string[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -737,21 +891,28 @@ export function DashboardPage() {
   useEffect(() => {
     let mounted = true;
 
+    const fetchFiles = async (dir: string): Promise<string[]> => {
+      const response = await fetch(
+        `/api/artifacts/files?dir=${encodeURIComponent(dir)}`
+      );
+      if (!response.ok) {
+        return [];
+      }
+      return (await response.json()) as string[];
+    };
+
     const fetchArtifactFiles = async () => {
       try {
-        const response = await fetch("/api/artifacts/files");
-        if (!response.ok) {
-          throw new Error(`artifacts request failed: ${response.status}`);
-        }
-        const files = (await response.json()) as string[];
+        const [planning, implementation] = await Promise.all([
+          fetchFiles("planning"),
+          fetchFiles("implementation"),
+        ]);
         if (mounted) {
-          setArtifactFiles(files);
+          setPlanningFiles(planning);
+          setImplementationFiles(implementation);
         }
       } catch (fetchError) {
         console.error("Failed to fetch artifact files:", fetchError);
-        if (mounted) {
-          setArtifactFiles([]);
-        }
       }
     };
 
@@ -858,7 +1019,10 @@ export function DashboardPage() {
         </p>
       </section>
 
-      <BMADWorkflowSection artifactFiles={artifactFiles} />
+      <BMADWorkflowSection
+          implementationFiles={implementationFiles}
+          planningFiles={planningFiles}
+        />
 
       <AgentSessionsSection
         onAbortSession={abortSession}

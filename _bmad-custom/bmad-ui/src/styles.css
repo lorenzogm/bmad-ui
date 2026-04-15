@@ -1198,3 +1198,66 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+/* ── BMAD Workflow Phases ──────────────────────────────────────────── */
+
+.workflow-phases {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.workflow-phase {
+  border: 1px solid rgba(151, 177, 205, 0.14);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.workflow-phase-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  background: rgba(151, 177, 205, 0.06);
+  border-bottom: 1px solid rgba(151, 177, 205, 0.1);
+}
+
+.workflow-phase-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: rgba(46, 196, 182, 0.18);
+  color: var(--highlight);
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.workflow-phase-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.workflow-phase .workflow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0;
+}
+
+.workflow-phase .workflow-step {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid rgba(151, 177, 205, 0.08);
+}
+
+.workflow-phase .workflow-step:last-child {
+  border-bottom: none;
+}
