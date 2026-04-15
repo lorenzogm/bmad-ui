@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-BMAD UI — a dashboard for monitoring BMAD multi-agent workflows, sprint progress, and AI agent sessions. Built as a single-page React app inside a monorepo.
+BMAD UI — a UI for monitoring BMAD multi-agent workflows, sprint progress, and AI agent sessions. Built as a single-page React app inside a monorepo.
 
 ## Key Files
 
@@ -108,9 +108,9 @@ agent-browser close
 
 ### What to check
 - No JavaScript errors in `agent-browser errors`
-- Dashboard shows "Dashboard Overview" heading (not stuck on "Loading BMAD dashboard...")
+- Home page shows "Overview" heading (not stuck on "Loading BMAD UI...")
 - Sessions table renders with all sessions visible
-- Navigation links (Dashboard, Epics, Analytics) are present and functional
+- Navigation links (Home, Epics, Analytics) are present and functional
 
 ### Installation (one-time)
 ```bash

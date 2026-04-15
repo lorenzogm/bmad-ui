@@ -114,7 +114,7 @@ function EpicDetailPage() {
     return (
       <main className="screen loading">
         <p>{error || "Epic not found"}</p>
-        <Link to="/">Back to dashboard</Link>
+        <Link to="/">Back to home</Link>
       </main>
     );
   }
@@ -127,7 +127,7 @@ function EpicDetailPage() {
         <h1>{data.epic.id}</h1>
         <p className="subtitle">Current status: {data.epic.status}</p>
         <p>
-          <Link to="/">Back to dashboard</Link>
+          <Link to="/">Back to home</Link>
         </p>
       </section>
 

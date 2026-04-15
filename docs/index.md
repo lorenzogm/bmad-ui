@@ -34,7 +34,7 @@
 - [Project Parts Metadata](./project-parts.json)
 
 ## Existing Documentation
-- [BMAD Dashboard App README](../_bmad-custom/bmad-ui/README.md)
+- [BMAD UI README](../_bmad-custom/bmad-ui/README.md)
 - [BMAD Orchestrator README](../_bmad-custom/bmad-orchestrator/README.md)
 
 ## Getting Started

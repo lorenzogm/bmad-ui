@@ -9,7 +9,7 @@
 
 ## Executive Summary
 This repository hosts BMAD orchestration tooling and a dashboard UI used to monitor and operate story workflows. The codebase is split into two primary parts:
-- A web dashboard at _bmad-custom/bmad-ui (React + Vite + TanStack Router)
+- A web UI at _bmad-custom/bmad-ui (React + Vite + TanStack Router)
 - A Node.js orchestration utility at _bmad-custom/bmad-orchestrator (script-driven workflow runner)
 
 ## Parts

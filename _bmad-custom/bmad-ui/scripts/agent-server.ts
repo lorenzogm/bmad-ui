@@ -343,14 +343,14 @@ function createEmptyRuntimeState(): RuntimeState {
     status: "running",
     startedAt: now,
     updatedAt: now,
-    currentStage: "dashboard",
+    currentStage: "home",
     dryRun: false,
     execute: true,
     nonInteractive: true,
     targetStory: null,
     parallelCandidate: null,
     sessions: [],
-    notes: ["Dashboard-launched agent sessions run in isolated git worktrees."],
+    notes: ["Agent sessions run in isolated git worktrees."],
   };
 }
 
@@ -593,7 +593,7 @@ async function buildOverviewPayload() {
     epicSteps: summarizeEpicSteps(runtimeState),
     sprintOverview,
     runtimeState,
-    orchestrator: {
+    agentRunner: {
       isRunning: runningProcess !== null,
       canSendInput: runningProcessCanAcceptInput,
       isNonInteractive: runtimeState?.nonInteractive ?? true,

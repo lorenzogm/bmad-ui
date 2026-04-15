@@ -4,7 +4,7 @@
     {
       "part_id": "bmad-ui",
       "project_type_id": "web",
-      "display_name": "BMAD Dashboard App",
+      "display_name": "BMAD UI",
       "root_path": "_bmad-custom/bmad-ui",
       "primary_language": "TypeScript",
       "entry_points": [

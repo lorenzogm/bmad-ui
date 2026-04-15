@@ -12,13 +12,13 @@
   "project_classification": {
     "repository_type": "multi-part",
     "parts_count": 2,
-    "summary": "multi-part repository with web dashboard and orchestrator utility"
+    "summary": "multi-part repository with web UI and orchestrator utility"
   },
   "project_types": [
     {
       "part_id": "bmad-ui",
       "project_type_id": "web",
-      "display_name": "BMAD Dashboard App"
+      "display_name": "BMAD UI"
     },
     {
       "part_id": "bmad-orchestrator",

@@ -8,12 +8,12 @@ import {
 const TRAILING_SLASH_REGEX = /\/+$/;
 
 const NAV_LINKS = [
-  { label: "Dashboard", to: "/" },
+  { label: "Home", to: "/" },
   { label: "Epics", to: "/epics" },
 ] as const;
 
 const ANALYTICS_SUBMENU = [
-  { label: "Dashboard", to: "/analytics" },
+  { label: "Overview", to: "/analytics" },
   { label: "Epics", to: "/analytics/epics" },
   { label: "Stories", to: "/analytics/stories" },
   { label: "Sessions", to: "/analytics/sessions" },
@@ -30,8 +30,7 @@ function RootLayout() {
     <div className="app-layout">
       <aside className="app-sidebar">
         <div className="sidebar-brand">
-          <p className="app-kicker">BMAD</p>
-          <h1 className="sidebar-title">Orchestration Dashboard</h1>
+          <h1 className="sidebar-title">BMAD UI</h1>
         </div>
         <nav aria-label="Main navigation" className="sidebar-nav">
           {NAV_LINKS.map((link) => (

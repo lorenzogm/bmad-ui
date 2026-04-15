@@ -1,6 +1,6 @@
 # API Contracts - bmad-ui
 
-This document describes backend contracts as consumed by the dashboard frontend.
+This document describes backend contracts as consumed by the UI frontend.
 
 ## Overview
 - Contract style: REST + Server-Sent Events (SSE)
@@ -11,7 +11,7 @@ This document describes backend contracts as consumed by the dashboard frontend.
 
 | Method | Path | Usage |
 |---|---|---|
-| GET | /api/overview | Dashboard/epics summary payload |
+| GET | /api/overview | Overview/epics summary payload |
 | GET | /api/epic/{epicId} | Epic detail payload |
 | GET | /api/story/{storyId} | Story detail payload |
 | GET | /api/session/{sessionId} | Session detail payload |

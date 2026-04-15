@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import type {
   AgentSession,
-  OrchestratorRunGroup,
+  AgentRunGroup,
   OverviewResponse,
   RuntimeSession,
 } from "./types";
@@ -241,7 +241,7 @@ function SessionsTable(props: {
 }
 
 function AgentSessionsSection(props: {
-  runGroups: OrchestratorRunGroup[];
+  runGroups: AgentRunGroup[];
   agentSessions: AgentSession[];
   sessionActionPending: SessionActionState;
   onStartSession: (sessionId: string) => void;
@@ -946,7 +946,7 @@ export function isEpicFullyFinished(epic: OverviewEpic) {
   );
 }
 
-export function DashboardPage() {
+export function HomePage() {
   const [data, setData] = useState<OverviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -1003,15 +1003,15 @@ export function DashboardPage() {
     };
   }, []);
 
-  const runGroups = useMemo<OrchestratorRunGroup[]>(() => {
-    const history = data?.orchestratorHistory ?? [];
+  const runGroups = useMemo<AgentRunGroup[]>(() => {
+    const history = data?.agentRunHistory ?? [];
     const currentSessions = data?.runtimeState?.sessions ?? [];
 
     if (currentSessions.length === 0 && history.length === 0) {
       return [];
     }
 
-    const currentGroup: OrchestratorRunGroup | null =
+    const currentGroup: AgentRunGroup | null =
       currentSessions.length > 0
         ? {
             id: "run-current",
@@ -1082,7 +1082,7 @@ export function DashboardPage() {
   if (loading || (error && !data)) {
     return (
       <main className="screen loading">
-        {loading ? "Loading BMAD dashboard..." : error}
+        {loading ? "Loading BMAD UI..." : error}
       </main>
     );
   }
@@ -1090,9 +1090,7 @@ export function DashboardPage() {
   return (
     <main className="screen">
       <section className="hero panel reveal">
-        <h2>Dashboard Overview</h2>
-        <p className="eyebrow">BMAD Dashboard</p>
-        <h1>Copilot Multi-Agent Dashboard</h1>
+        <h1>BMAD UI</h1>
         <p className="subtitle">
           Live overview of sprint progression, active sessions, and key BMAD
           artifacts.

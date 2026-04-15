@@ -80,7 +80,7 @@ export type RuntimeState = {
   notes: string[];
 };
 
-export type OrchestratorRunGroup = {
+export type AgentRunGroup = {
   id: string;
   startedAt: string;
   endedAt: string | null;
@@ -117,7 +117,7 @@ export type OverviewResponse = {
     }>;
   };
   runtimeState: RuntimeState | null;
-  orchestrator: {
+  agentRunner: {
     isRunning: boolean;
     canSendInput: boolean;
     isNonInteractive: boolean;
@@ -137,7 +137,7 @@ export type OverviewResponse = {
     }>;
   };
   storyDependencies: Record<string, string[]>;
-  orchestratorHistory: OrchestratorRunGroup[];
+  agentRunHistory: AgentRunGroup[];
   planningArtifactFiles: string[];
   implementationArtifactFiles: string[];
   activeWorkflowSkill: string | null;
