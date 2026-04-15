@@ -90,8 +90,7 @@ jobs:
       project-id: ${{ steps.export-outputs.outputs.project-id }}
     env:
       TF_VAR_ENVIRONMENT: ${{ needs.check-changes.outputs.environment }}
-      TF_VAR_VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      TF_VAR_VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
       TERRAFORM_STATE_ENCRYPT_KEY: ${{ secrets.TERRAFORM_STATE_ENCRYPT_KEY }}
 
     steps:
@@ -109,6 +108,13 @@ jobs:
           node-version: "24"
           cache: "pnpm"
           cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+
+      - name: Load secrets from encrypted .env
+        run: |
+          pnpm dlx @dotenvx/dotenvx run -- sh -c '
+            echo "TF_VAR_VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
+            echo "TF_VAR_VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+          '
 
       - name: Fetch Terraform State from state branch
         working-directory: infra/vercel/src
@@ -238,8 +244,7 @@ jobs:
     outputs:
       preview-url: ${{ steps.preview-deploy.outputs.preview-url }}
     env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
 
     steps:
       - name: Checkout
@@ -256,6 +261,13 @@ jobs:
           node-version: "24"
           cache: "pnpm"
           cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+
+      - name: Load secrets from encrypted .env
+        run: |
+          pnpm dlx @dotenvx/dotenvx run -- sh -c '
+            echo "VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
+            echo "VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+          '
 
       - name: Resolve Vercel Project ID
         run: |
@@ -307,8 +319,7 @@ jobs:
       name: production
       url: ${{ steps.production-deploy.outputs.url }}
     env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
 
     steps:
       - name: Checkout
@@ -325,6 +336,13 @@ jobs:
           node-version: "24"
           cache: "pnpm"
           cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+
+      - name: Load secrets from encrypted .env
+        run: |
+          pnpm dlx @dotenvx/dotenvx run -- sh -c '
+            echo "VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
+            echo "VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+          '
 
       - name: Resolve Vercel Project ID
         run: |
