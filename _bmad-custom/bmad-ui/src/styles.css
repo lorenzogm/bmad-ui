@@ -1130,3 +1130,71 @@ a:hover {
 .analytics-cost-banner strong {
   color: var(--highlight);
 }
+
+/* ── BMAD Workflow Steps ───────────────────────────────────────────── */
+
+.workflow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.workflow-step {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(151, 177, 205, 0.14);
+  background: rgba(2, 10, 16, 0.48);
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.workflow-step-done {
+  border-color: rgba(46, 196, 182, 0.2);
+  background: rgba(46, 196, 182, 0.04);
+}
+
+.workflow-step-next {
+  border-color: rgba(255, 159, 28, 0.4);
+  background: rgba(255, 159, 28, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 159, 28, 0.12);
+}
+
+.workflow-step-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 1.6rem;
+  text-align: center;
+}
+
+.workflow-step-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.workflow-step-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.workflow-step-done .workflow-step-name {
+  color: var(--muted);
+}
+
+.workflow-step-optional {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+  border: 1px solid rgba(151, 177, 205, 0.28);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

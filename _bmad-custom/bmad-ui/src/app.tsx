@@ -534,79 +534,55 @@ function BMADWorkflowSection(props: { artifactFiles: string[] }) {
   const { steps, nextActionStep } = detectWorkflowStatus(artifactFiles);
 
   const handlePlayClick = (step: WorkflowStep) => {
-    const command = `gh copilot run "${step.skill}"`;
+    const command = `gh copilot suggest -t shell "${step.skill}"`;
     try {
       navigator.clipboard.writeText(command);
-      alert(`Copied to clipboard: ${command}\n\nPaste in your terminal to run.`);
     } catch (_err) {
-      alert(`Run this command: ${command}`);
+      // clipboard not available
     }
+    alert(`Command copied!\n\nRun in your terminal:\n\n${command}`);
   };
 
   return (
     <section className="panel reveal delay-1">
       <h2>BMAD Workflow</h2>
       <p className="subtitle">
-        Progress through each step to build your project. Complete the next
-        action to continue.
+        Steps to complete your project. The next required action has a play
+        button — click to copy the command to your clipboard.
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div className="workflow-steps">
         {steps.map((step) => (
           <div
             key={step.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              padding: "0.75rem",
-              backgroundColor: step.isCompleted ? "#f0f0f0" : "#ffffff",
-              borderRadius: "0.5rem",
-              border: "1px solid #e0e0e0",
-              transition: "background-color 0.2s",
-            }}
+            className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}`}
           >
-            <span style={{ fontSize: "1.5rem" }}>{step.icon}</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 500 }}>
-                {step.name}
-                {step.isOptional && (
-                  <span
-                    style={{
-                      marginLeft: "0.5rem",
-                      fontSize: "0.85rem",
-                      color: "#666",
-                      fontWeight: "normal",
-                    }}
-                  >
-                    (optional)
-                  </span>
-                )}
-              </div>
+            <span className="workflow-step-icon" aria-hidden="true">
+              {step.icon}
+            </span>
+            <div className="workflow-step-body">
+              <span className="workflow-step-name">{step.name}</span>
+              {step.isOptional && (
+                <span className="workflow-step-optional">optional</span>
+              )}
             </div>
-            {step.isCompleted ? (
-              <span
-                style={{
-                  color: "#22c55e",
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                }}
-              >
-                ✓
-              </span>
-            ) : null}
-            {nextActionStep?.id === step.id ? (
+            <span
+              className={`step-badge ${step.isCompleted ? "step-done" : "step-not-started"}`}
+            >
+              {step.isCompleted ? "done" : "pending"}
+            </span>
+            {nextActionStep?.id === step.id && (
               <button
                 className="icon-button icon-button-play"
                 onClick={() => handlePlayClick(step)}
+                title={`Copy command to run ${step.skill}`}
                 type="button"
-                title={`Run ${step.skill}`}
               >
                 <span aria-hidden="true" className="icon-glyph">
                   ▶
                 </span>
               </button>
-            ) : null}
+            )}
           </div>
         ))}
       </div>
