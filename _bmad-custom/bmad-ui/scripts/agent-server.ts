@@ -413,14 +413,24 @@ async function startRuntimeSession(
   session.error = null;
   await persistRuntimeState(runtimeState);
 
+  // Auto-update sprint-status.yaml when a dev-story session starts
+  if (session.skill === "bmad-dev-story" && session.storyId) {
+    await updateSprintStoryStatus(session.storyId, "in-progress");
+  }
+
   const stageProcess = spawn(session.command, {
     cwd: projectRoot,
     shell: true,
     env: process.env,
   });
-  runningProcess = stageProcess;
+  // Only set runningProcess if nothing is currently tracked (legacy single-
+  // process APIs: stdin forwarding and /kill). With parallel sessions the
+  // first started process is the one that "owns" those APIs.
+  if (!runningProcess) {
+    runningProcess = stageProcess;
+    runningProcessKind = "stage";
+  }
   runningProcessCanAcceptInput = false;
-  runningProcessKind = "stage";
   runningSessionProcesses.set(session.id, stageProcess);
 
   stageProcess.stdout?.on("data", async (chunk: Buffer | string) => {
@@ -451,8 +461,20 @@ async function startRuntimeSession(
     }
     await persistRuntimeState(runtimeState);
     await persistSessionAnalytics(session);
-    resetRunningProcessState();
+    // Only reset the single-process handle if this session owns it
+    if (runningProcess === stageProcess) {
+      resetRunningProcessState();
+    }
     runningSessionProcesses.delete(session.id);
+
+    // Auto-update sprint-status.yaml when a dev-story or code-review session ends
+    if (!isCancelled && session.storyId) {
+      if (session.skill === "bmad-dev-story" && code === 0) {
+        await updateSprintStoryStatus(session.storyId, "review");
+      } else if (session.skill === "bmad-code-review" && code === 0) {
+        await updateSprintStoryStatus(session.storyId, "done");
+      }
+    }
 
     // Merge worktree branch into main and clean up
     if (code === 0 && !isCancelled && session.worktreePath) {
@@ -606,7 +628,9 @@ async function startRuntimeSession(
     }
     await persistRuntimeState(runtimeState);
     await persistSessionAnalytics(session);
-    resetRunningProcessState();
+    if (runningProcess === stageProcess) {
+      resetRunningProcessState();
+    }
     runningSessionProcesses.delete(session.id);
   });
 }
@@ -759,7 +783,15 @@ function summarizeSprintFromEpics(
           .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1));
 
         if (history[0]) {
-          story.steps[step.skill] = toStepState(history[0].status);
+          const sessionState = toStepState(history[0].status);
+          if (sessionState === "completed") {
+            story.steps[step.skill] = "completed";
+          } else if (
+            sessionState === "running" &&
+            story.steps[step.skill] !== "completed"
+          ) {
+            story.steps[step.skill] = sessionState;
+          }
         }
       }
 
@@ -1091,11 +1123,15 @@ function summarizeSprint(
 
         if (history[0]) {
           const sessionState = toStepState(history[0].status);
-          // Only override for transient states (running/failed); the YAML
-          // story status is the source of truth for completed steps.
-          // Never downgrade a step that YAML already marks as completed.
-          if (
-            (sessionState === "running" || sessionState === "failed") &&
+          // A completed session always upgrades the step to completed.
+          // A running session overrides to show live status.
+          // A failed/cancelled session does NOT downgrade — the YAML is the
+          // source of truth for story progress; cancelled runs are just
+          // interrupted sessions, not rollbacks of the story's state.
+          if (sessionState === "completed") {
+            story.steps[step.skill] = "completed";
+          } else if (
+            sessionState === "running" &&
             story.steps[step.skill] !== "completed"
           ) {
             story.steps[step.skill] = sessionState;
@@ -1410,6 +1446,24 @@ function loadStoryDependencies(): Record<string, string[]> {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function updateSprintStoryStatus(
+  storyId: string,
+  newStatus: string
+): Promise<void> {
+  if (!existsSync(sprintStatusFile)) return;
+  const content = await readFile(sprintStatusFile, "utf8");
+  const linePattern = new RegExp(
+    `^(${escapeRegExp(storyId)}:\\s*)(backlog|ready-for-dev|in-progress|review|done)$`,
+    "m"
+  );
+  if (!linePattern.test(content)) return;
+  let next = content.replace(linePattern, `$1${newStatus}`);
+  next = next.replace(LAST_UPDATED_COMMENT_REGEX, `# last_updated: ${new Date().toISOString().slice(0, 10)}`);
+  const lastUpdatedFieldPattern = /^last_updated:\s*.*$/m;
+  next = next.replace(lastUpdatedFieldPattern, `last_updated: ${new Date().toISOString()}`);
+  await writeFile(sprintStatusFile, next, "utf8");
 }
 
 function stripAnsi(value: string): string {
@@ -2486,19 +2540,51 @@ function attachApi(server: ViteDevServer): void {
         try {
           ensureRunningProcessStateIsFresh();
 
-          if (runningProcess) {
-            res.writeHead(409, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({ error: "another orchestrator task is running" })
-            );
-            return;
-          }
-
           const sessionId = decodeURIComponent(sessionStartMatch[1]);
           const runtimeState = await loadOrCreateRuntimeState();
           const session = runtimeState.sessions.find(
             (candidate) => candidate.id === sessionId
           );
+
+          if (!session) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({ error: `session not found: ${sessionId}` })
+            );
+            return;
+          }
+
+          // Block if there is already a running session whose story conflicts
+          // with the requested session's story. Two stories conflict when one
+          // depends on the other. Independent stories can run in parallel.
+          if (runningSessionProcesses.size > 0) {
+            const deps = loadStoryDependencies();
+            const newStoryId = session.storyId ?? null;
+
+            // Collect story IDs that are currently running
+            const runningStoryIds = new Set<string>();
+            for (const runSess of runtimeState.sessions) {
+              if (runningSessionProcesses.has(runSess.id) && runSess.storyId) {
+                runningStoryIds.add(runSess.storyId);
+              }
+            }
+
+            // Check for dependency conflict: new story depends on a running
+            // story, or a running story depends on the new story.
+            const hasConflict = newStoryId !== null && [...runningStoryIds].some((runningId) => {
+              const newDeps = deps[newStoryId] ?? [];
+              const runningDeps = deps[runningId] ?? [];
+              return newDeps.includes(runningId) || runningDeps.includes(newStoryId);
+            });
+
+            if (hasConflict) {
+              res.writeHead(409, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({ error: "another orchestrator task is running" })
+              );
+              return;
+            }
+          }
 
           if (!session) {
             res.writeHead(404, { "Content-Type": "application/json" });
