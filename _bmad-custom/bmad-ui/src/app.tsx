@@ -741,10 +741,22 @@ function BMADWorkflowSection(props: {
                 <span className="workflow-phase-progress">
                   {doneCount}/{phase.steps.length}
                 </span>
-                <span
-                  className="workflow-phase-chevron"
-                  aria-hidden="true"
-                >
+                {(() => {
+                  const requiredSteps = phase.steps.filter((s) => !s.isOptional);
+                  const allRequiredDone =
+                    requiredSteps.length === 0 ||
+                    requiredSteps.every((s) => s.isCompleted);
+                  const anyDone = phase.steps.some((s) => s.isCompleted);
+                  const status = allRequiredDone
+                    ? "done"
+                    : anyDone || hasNextAction
+                      ? "in-progress"
+                      : "pending";
+                  return (
+                    <span className={`step-badge step-${status}`}>{status}</span>
+                  );
+                })()}
+                <span className="workflow-phase-chevron" aria-hidden="true">
                   {isOpen ? "▲" : "▼"}
                 </span>
               </button>
