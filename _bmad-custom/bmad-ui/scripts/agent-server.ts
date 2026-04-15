@@ -179,10 +179,13 @@ const EPIC_WORKFLOW_STEPS: Array<{
 ];
 
 const DEFAULT_STAGE_MODELS = {
-  planning: "claude-haiku-4.5",
-  retrospective: "claude-haiku-4.5",
+  planning: "claude-sonnet-4.6",
+  retrospective: "claude-sonnet-4.6",
 } as const;
-const DEFAULT_WORKFLOW_MODEL = "claude-haiku-4.5";
+const DEFAULT_WORKFLOW_MODEL = "claude-sonnet-4.6";
+const SKILL_MODEL_OVERRIDES: Record<string, string> = {
+  "bmad-code-review": "gpt-5.3-codex",
+};
 
 let runningProcess: ReturnType<typeof spawn> | null = null;
 const runningSessionProcesses = new Map<string, ChildProcess>();
@@ -3096,21 +3099,23 @@ function attachApi(server: ViteDevServer): void {
           const promptPath = path.join(runtimeLogsDir, `${sessionId}.prompt.txt`);
           const logPath = path.join(runtimeLogsDir, `${sessionId}.log`);
 
+          const skillModel = SKILL_MODEL_OVERRIDES[skill] ?? DEFAULT_WORKFLOW_MODEL;
+
           const prompt = [
             storyId ? `/${skill} ${storyId}` : `/${skill}`,
-            `Model: ${DEFAULT_WORKFLOW_MODEL}`,
+            `Model: ${skillModel}`,
             ...(storyId ? [`Story: ${storyId}`] : []),
           ].join("\n");
 
           await writeFile(promptPath, `${prompt}\n`, "utf8");
           await writeFile(logPath, "", "utf8");
 
-          const command = buildAgentCommand(DEFAULT_WORKFLOW_MODEL, promptPath);
+          const command = buildAgentCommand(skillModel, promptPath);
           const runtimeState = await loadOrCreateRuntimeState();
           const session = createRuntimeSession({
             id: sessionId,
             skill,
-            model: DEFAULT_WORKFLOW_MODEL,
+            model: skillModel,
             storyId,
             command,
             promptPath,

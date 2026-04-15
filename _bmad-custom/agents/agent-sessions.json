@@ -441,6 +441,23 @@
         "tokensCached": 3100000,
         "totalTokens": 3526100
       }
+    },
+    "workflow-bmad-code-review-1776289086332": {
+      "sessionId": "workflow-bmad-code-review-1776289086332",
+      "storyId": "1-2-setup-github-infrastructure-with-terraform",
+      "epicId": "epic-1",
+      "skill": "bmad-code-review",
+      "model": "claude-haiku-4.5",
+      "status": "completed",
+      "startedAt": "2026-04-15T21:38:06.333Z",
+      "endedAt": "2026-04-15T21:45:17.045Z",
+      "usage": {
+        "requests": 0.33,
+        "tokensIn": 3400000,
+        "tokensOut": 18100,
+        "tokensCached": 3100000,
+        "totalTokens": 3418100
+      }
     }
   }
 }
