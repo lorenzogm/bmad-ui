@@ -673,6 +673,30 @@ function BMADWorkflowSection(props: {
     implementationFiles
   );
 
+  // Default: open the phase that contains the next action, or all if none
+  const defaultOpen = new Set(
+    phases
+      .filter((phase) =>
+        nextActionStep
+          ? phase.steps.some((s) => s.id === nextActionStep.id)
+          : true
+      )
+      .map((phase) => phase.id)
+  );
+  const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen);
+
+  const togglePhase = (id: string) => {
+    setOpenPhases((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
   const handlePlayClick = (step: WorkflowStep) => {
     const command = `gh copilot suggest -t shell "${step.skill}"`;
     try {
@@ -692,52 +716,81 @@ function BMADWorkflowSection(props: {
       </p>
 
       <div className="workflow-phases">
-        {phases.map((phase) => (
-          <div key={phase.id} className="workflow-phase">
-            <div className="workflow-phase-header">
-              <span className="workflow-phase-number">{phase.number}</span>
-              <span className="workflow-phase-name">{phase.name}</span>
-              {phase.isOptional && (
-                <span className="workflow-step-optional">optional</span>
+        {phases.map((phase) => {
+          const isOpen = openPhases.has(phase.id);
+          const doneCount = phase.steps.filter((s) => s.isCompleted).length;
+          const hasNextAction = phase.steps.some(
+            (s) => s.id === nextActionStep?.id
+          );
+          return (
+            <div
+              key={phase.id}
+              className={`workflow-phase${isOpen ? " workflow-phase-open" : ""}${hasNextAction ? " workflow-phase-active" : ""}`}
+            >
+              <button
+                className="workflow-phase-header"
+                onClick={() => togglePhase(phase.id)}
+                type="button"
+                aria-expanded={isOpen}
+              >
+                <span className="workflow-phase-number">{phase.number}</span>
+                <span className="workflow-phase-name">{phase.name}</span>
+                {phase.isOptional && (
+                  <span className="workflow-step-optional">optional</span>
+                )}
+                <span className="workflow-phase-progress">
+                  {doneCount}/{phase.steps.length}
+                </span>
+                <span
+                  className="workflow-phase-chevron"
+                  aria-hidden="true"
+                >
+                  {isOpen ? "▲" : "▼"}
+                </span>
+              </button>
+              {isOpen && (
+                <div className="workflow-steps">
+                  {phase.steps.map((step) => (
+                    <div
+                      key={step.id}
+                      className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}`}
+                    >
+                      <span className="workflow-step-icon" aria-hidden="true">
+                        {step.icon}
+                      </span>
+                      <div className="workflow-step-body">
+                        <span className="workflow-step-name">{step.name}</span>
+                        {step.isOptional && (
+                          <span className="workflow-step-optional">optional</span>
+                        )}
+                      </div>
+                      {nextActionStep?.id === step.id && (
+                        <button
+                          className="icon-button icon-button-play"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePlayClick(step);
+                          }}
+                          title={`Copy command: ${step.skill}`}
+                          type="button"
+                        >
+                          <span aria-hidden="true" className="icon-glyph">
+                            ▶
+                          </span>
+                        </button>
+                      )}
+                      <span
+                        className={`step-badge ${step.isCompleted ? "step-done" : "step-not-started"}`}
+                      >
+                        {step.isCompleted ? "done" : "pending"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-            <div className="workflow-steps">
-              {phase.steps.map((step) => (
-                <div
-                  key={step.id}
-                  className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}`}
-                >
-                  <span className="workflow-step-icon" aria-hidden="true">
-                    {step.icon}
-                  </span>
-                  <div className="workflow-step-body">
-                    <span className="workflow-step-name">{step.name}</span>
-                    {step.isOptional && (
-                      <span className="workflow-step-optional">optional</span>
-                    )}
-                  </div>
-                  {nextActionStep?.id === step.id && (
-                    <button
-                      className="icon-button icon-button-play"
-                      onClick={() => handlePlayClick(step)}
-                      title={`Copy command: ${step.skill}`}
-                      type="button"
-                    >
-                      <span aria-hidden="true" className="icon-glyph">
-                        ▶
-                      </span>
-                    </button>
-                  )}
-                  <span
-                    className={`step-badge ${step.isCompleted ? "step-done" : "step-not-started"}`}
-                  >
-                    {step.isCompleted ? "done" : "pending"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
