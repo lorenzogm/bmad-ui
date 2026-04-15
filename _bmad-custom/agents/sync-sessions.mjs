@@ -3,7 +3,7 @@
  * sync-sessions.mjs
  *
  * Watches GitHub Copilot debug logs and auto-syncs session data into
- * _bmad-custom/agent-sessions.json. Runs as a background daemon.
+ * _bmad-custom/agents/agent-sessions.json. Runs as a background daemon.
  *
  * Auto-derived fields (from main.jsonl):
  *   session_id, turns, start_date, status
@@ -14,8 +14,8 @@
  *   premium_cost_units, tokens, agent, notes
  *
  * Usage:
- *   node _bmad-custom/sync-sessions.mjs         # watch + sync
- *   node _bmad-custom/sync-sessions.mjs --once  # sync once and exit
+ *   node _bmad-custom/agents/sync-sessions.mjs         # watch + sync
+ *   node _bmad-custom/agents/sync-sessions.mjs --once  # sync once and exit
  */
 
 import { readFileSync, writeFileSync, watchFile, existsSync, readdirSync } from 'fs';
@@ -32,7 +32,7 @@ const DEBUG_LOGS_BASE = join(
   'Library/Application Support/Code - Insiders/User/workspaceStorage/e33633a4b59213a9cbfe28a0c746f7af/GitHub.copilot-chat/debug-logs'
 );
 
-const OUTPUT_FILE = resolve(__dirname, 'agents', 'agent-sessions.json');
+const OUTPUT_FILE = resolve(__dirname, 'agent-sessions.json');
 
 /** Sessions not updated for this long are marked completed */
 const INACTIVE_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
