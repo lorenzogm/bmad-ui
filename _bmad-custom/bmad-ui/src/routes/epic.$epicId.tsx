@@ -386,7 +386,9 @@ function EpicDetailPage() {
                   (s) => s.storyId === story.id && s.skill === "bmad-code-review"
                 )
                 const reviewState =
-                  rawReviewState === "running" && !isReviewAgentRunning ? "not-started" : rawReviewState
+                  rawReviewState === "running" && !isReviewAgentRunning
+                    ? "not-started"
+                    : rawReviewState
 
                 const SKILL_ORDER: { skill: SkillName; state: string }[] = [
                   { skill: "bmad-create-story", state: createState },
@@ -419,7 +421,9 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${createState}`}>{storyStepLabel(createState)}</span>
+                        <span className={`step-badge step-${createState}`}>
+                          {storyStepLabel(createState)}
+                        </span>
                         {nextSkill === "bmad-create-story" && (
                           <button
                             className="icon-button icon-button-play"
@@ -437,7 +441,9 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${devState}`}>{storyStepLabel(devState)}</span>
+                        <span className={`step-badge step-${devState}`}>
+                          {storyStepLabel(devState)}
+                        </span>
                         {nextSkill === "bmad-dev-story" && (
                           <button
                             className="icon-button icon-button-play"
@@ -457,7 +463,9 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${reviewState}`}>{storyStepLabel(reviewState)}</span>
+                        <span className={`step-badge step-${reviewState}`}>
+                          {storyStepLabel(reviewState)}
+                        </span>
                         {nextSkill === "bmad-code-review" && (
                           <button
                             className="icon-button icon-button-play"
@@ -492,7 +500,9 @@ function EpicDetailPage() {
         <section className="panel reveal delay-2">
           <h2>Run Retrospective</h2>
           <div className="step-cell">
-            <span className={`step-badge step-${retrospectiveState}`}>{storyStepLabel(retrospectiveState)}</span>
+            <span className={`step-badge step-${retrospectiveState}`}>
+              {storyStepLabel(retrospectiveState)}
+            </span>
             {retrospectiveState === "not-started" && allStoriesDone ? (
               <button
                 className="icon-button icon-button-play"

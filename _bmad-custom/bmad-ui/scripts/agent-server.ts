@@ -40,6 +40,7 @@ type RuntimeSession = {
   command: string;
   promptPath: string;
   logPath: string;
+  worktreePath: string | null;
   exitCode: number | null;
   error: string | null;
   userMessages: Array<{
@@ -394,6 +395,7 @@ function createRuntimeSession(params: {
     command: params.command,
     promptPath: params.promptPath,
     logPath: params.logPath,
+    worktreePath: null,
     exitCode: null,
     error: null,
     userMessages: [],

@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "biome check src/",
+    "check": "npm run check:lint && npm run check:types && npm run check:tests && npm run build",
+    "build": "tsc --noEmit && vite build",
+    "check:lint": "biome check src/",
     "check:types": "tsc --noEmit",
-    "check:tests": "vitest run --passWithNoTests",
-    "sync-sessions": "node ../agents/sync-sessions.mjs",
-    "sync-sessions:once": "node ../agents/sync-sessions.mjs --once"
+    "check:tests": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.99.0",

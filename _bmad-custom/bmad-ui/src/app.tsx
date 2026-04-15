@@ -2,8 +2,6 @@ import { Link } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
 import type { AgentRunGroup, AgentSession, OverviewResponse, RuntimeSession } from "./types"
 
-const HTTP_CONFLICT = 409
-
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
 const SECONDS_PER_MINUTE = 60
 const SECONDS_PER_HOUR = 3600
@@ -932,8 +930,6 @@ export function HomePage() {
   const [data, setData] = useState<OverviewResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [sessionActionPending, setSessionActionPending] = useState<SessionActionState>(null)
-
   useEffect(() => {
     let mounted = true
     let eventSource: EventSource | null = null
@@ -984,75 +980,10 @@ export function HomePage() {
     }
   }, [])
 
-  const runGroups = useMemo<AgentRunGroup[]>(() => {
-    const history = data?.agentRunHistory ?? []
-    const currentSessions = data?.runtimeState?.sessions ?? []
-
-    if (currentSessions.length === 0 && history.length === 0) {
-      return []
-    }
-
-    const currentGroup: AgentRunGroup | null =
-      currentSessions.length > 0
-        ? {
-            id: "run-current",
-            startedAt: data?.runtimeState?.startedAt ?? new Date().toISOString(),
-            endedAt:
-              data?.runtimeState?.status === "running"
-                ? null
-                : (currentSessions
-                    .map((s) => s.endedAt)
-                    .filter((t): t is string => t !== null)
-                    .sort()
-                    .at(-1) ?? null),
-            sessions: [...currentSessions].sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
-          }
-        : null
-
-    const historyGroups = history.map((g) => ({
-      ...g,
-      sessions: [...g.sessions].sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
-    }))
-
-    return currentGroup ? [currentGroup, ...historyGroups] : historyGroups
-  }, [data])
-
   const epicLabels = useMemo(
     () => new Map((data?.dependencyTree.nodes ?? []).map((n) => [n.id, n.label])),
     [data?.dependencyTree.nodes]
   )
-
-  const startSession = async (sessionId: string) => {
-    setSessionActionPending({ sessionId, action: "start" })
-    try {
-      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/start`, {
-        method: "POST",
-      })
-      if (!response.ok && response.status !== HTTP_CONFLICT) {
-        throw new Error(`start failed: ${response.status}`)
-      }
-    } catch (sessionStartError) {
-      setError(String(sessionStartError))
-    } finally {
-      setSessionActionPending(null)
-    }
-  }
-
-  const abortSession = async (sessionId: string) => {
-    setSessionActionPending({ sessionId, action: "abort" })
-    try {
-      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/abort`, {
-        method: "POST",
-      })
-      if (!response.ok) {
-        throw new Error(`abort failed: ${response.status}`)
-      }
-    } catch (sessionAbortError) {
-      setError(String(sessionAbortError))
-    } finally {
-      setSessionActionPending(null)
-    }
-  }
 
   if (loading || (error && !data)) {
     return <main className="screen loading">{loading ? "Loading BMAD UI..." : error}</main>

@@ -41,6 +41,7 @@ export type RuntimeSession = {
   command: string
   promptPath: string
   logPath: string
+  worktreePath: string | null
   exitCode: number | null
   error: string | null
   userMessages: Array<{
