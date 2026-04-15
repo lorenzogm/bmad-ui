@@ -1083,14 +1083,6 @@ export function HomePage() {
         planningFiles={data?.planningArtifactFiles ?? []}
       />
 
-      <AgentSessionsSection
-        agentSessions={data?.agentSessions ?? []}
-        onAbortSession={abortSession}
-        onStartSession={startSession}
-        runGroups={runGroups}
-        sessionActionPending={sessionActionPending}
-      />
-
       {error ? <p className="error-banner">{error}</p> : null}
     </main>
   )

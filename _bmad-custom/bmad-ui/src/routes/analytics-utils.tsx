@@ -13,7 +13,7 @@ export function formatNumber(value: number, maxDecimals = 1): string {
 
 export function formatUsd(value: number | null): string {
   if (value === null || !Number.isFinite(value)) {
-    return "N/A"
+    return "$0.00"
   }
 
   return new Intl.NumberFormat("en-US", {
