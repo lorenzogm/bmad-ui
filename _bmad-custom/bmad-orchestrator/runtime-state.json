@@ -1,0 +1,67 @@
+{
+  "status": "running",
+  "startedAt": "2026-04-15T14:21:34.748Z",
+  "updatedAt": "2026-04-15T14:41:47.813Z",
+  "currentStage": "bmad-sprint-planning",
+  "dryRun": false,
+  "execute": true,
+  "nonInteractive": true,
+  "targetStory": null,
+  "parallelCandidate": null,
+  "sessions": [
+    {
+      "id": "workflow-bmad-sprint-planning-1776262894747",
+      "skill": "bmad-sprint-planning",
+      "model": "claude-haiku-4.5",
+      "storyId": null,
+      "worktreeMode": "git-worktree",
+      "worktreePath": "/Users/lorenzogm/lorenzogm/bmad-ui/.git-worktrees/workflow-bmad-sprint-planning-1776262894747",
+      "status": "completed",
+      "startedAt": "2026-04-15T14:21:34.993Z",
+      "endedAt": "2026-04-15T14:25:36.505Z",
+      "command": "copilot --model \"claude-haiku-4.5\" --allow-all-tools --no-ask-user -p \"$(cat \"/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776262894747.prompt.txt\")\"",
+      "promptPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776262894747.prompt.txt",
+      "logPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776262894747.log",
+      "exitCode": 0,
+      "error": null,
+      "userMessages": []
+    },
+    {
+      "id": "workflow-bmad-sprint-planning-1776263551183",
+      "skill": "bmad-sprint-planning",
+      "model": "claude-haiku-4.5",
+      "storyId": null,
+      "worktreeMode": "git-worktree",
+      "worktreePath": "/Users/lorenzogm/lorenzogm/bmad-ui/.git-worktrees/workflow-bmad-sprint-planning-1776263551183",
+      "status": "completed",
+      "startedAt": "2026-04-15T14:32:31.450Z",
+      "endedAt": "2026-04-15T14:36:39.317Z",
+      "command": "copilot --model \"claude-haiku-4.5\" --allow-all-tools --no-ask-user -p \"$(cat \"/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776263551183.prompt.txt\")\"",
+      "promptPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776263551183.prompt.txt",
+      "logPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776263551183.log",
+      "exitCode": 0,
+      "error": null,
+      "userMessages": []
+    },
+    {
+      "id": "workflow-bmad-sprint-planning-1776264107430",
+      "skill": "bmad-sprint-planning",
+      "model": "claude-haiku-4.5",
+      "storyId": null,
+      "worktreeMode": "git-worktree",
+      "worktreePath": "/Users/lorenzogm/lorenzogm/bmad-ui/.git-worktrees/workflow-bmad-sprint-planning-1776264107430",
+      "status": "running",
+      "startedAt": "2026-04-15T14:41:47.813Z",
+      "endedAt": null,
+      "command": "copilot --model \"claude-haiku-4.5\" --allow-all-tools --no-ask-user -p \"$(cat \"/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776264107430.prompt.txt\")\"",
+      "promptPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776264107430.prompt.txt",
+      "logPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-custom/bmad-orchestrator/logs/workflow-bmad-sprint-planning-1776264107430.log",
+      "exitCode": null,
+      "error": null,
+      "userMessages": []
+    }
+  ],
+  "notes": [
+    "Dashboard-launched agent sessions run in isolated git worktrees."
+  ]
+}

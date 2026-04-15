@@ -4,6 +4,26 @@
       "tool": "copilot-cli",
       "model": "claude-sonnet-4.6",
       "premium": true,
+      "premium_requests": 0,
+      "premium_multiplier": 1,
+      "premium_cost_units": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "notes": "",
+      "session_id": "aa312964-0f81-47fc-b4ac-941e9641054b",
+      "turns": 2,
+      "start_date": "2026-04-15T14:24:46.112Z",
+      "end_date": null,
+      "status": "running"
+    },
+    {
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
       "premium_requests": 8,
       "premium_multiplier": 1,
       "premium_cost_units": 8,

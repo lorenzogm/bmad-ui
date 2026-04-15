@@ -171,7 +171,6 @@ function SessionsTable(props: {
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
                   <td>-</td>
                   <td>-</td>
-                  <td>-</td>
                   <td>
                     <div className="session-actions" role="group">
                       <button
@@ -719,6 +718,16 @@ function BMADWorkflowSection(props: {
       .map((phase) => phase.id)
   );
   const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen);
+  const [pendingActiveSkill, setPendingActiveSkill] = useState<string | null>(null);
+
+  // Once the server confirms the active skill via SSE, clear the optimistic state
+  useEffect(() => {
+    if (activeSkill !== null) {
+      setPendingActiveSkill(null);
+    }
+  }, [activeSkill]);
+
+  const effectiveActiveSkill = activeSkill ?? pendingActiveSkill;
 
   const togglePhase = (id: string) => {
     setOpenPhases((prev) => {
@@ -733,6 +742,7 @@ function BMADWorkflowSection(props: {
   };
 
   const handlePlayClick = async (step: WorkflowStep) => {
+    setPendingActiveSkill(step.skill);
     try {
       await fetch("/api/workflow/run-skill", {
         method: "POST",
@@ -796,7 +806,7 @@ function BMADWorkflowSection(props: {
               {isOpen && (
                 <div className="workflow-steps">
                   {phase.steps.map((step) => {
-                    const isRunning = step.skill === activeSkill;
+                    const isRunning = step.skill === effectiveActiveSkill;
                     return (
                       <div
                         key={step.id}

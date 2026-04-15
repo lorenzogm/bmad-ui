@@ -347,7 +347,7 @@ async function createSessionWorktree(sessionId: string): Promise<string> {
   const worktreePath = path.join(runtimeWorktreesDir, sessionId);
   await execFileAsync(
     "git",
-    ["worktree", "add", "--detach", worktreePath, "HEAD"],
+    ["worktree", "add", "-b", sessionId, worktreePath, "HEAD"],
     {
       cwd: projectRoot,
     }
@@ -438,6 +438,65 @@ async function startRuntimeSession(
     await persistSessionAnalytics(session);
     resetRunningProcessState();
     runningSessionProcesses.delete(session.id);
+
+    // Merge worktree branch into main and clean up
+    if (code === 0 && !isCancelled && session.worktreePath) {
+      let mergeSucceeded = false;
+      try {
+        await execFileAsync(
+          "git",
+          ["merge", "--no-ff", "--no-edit", session.id],
+          { cwd: projectRoot }
+        );
+        mergeSucceeded = true;
+        await writeFile(session.logPath, `\n[orchestrator] merged branch ${session.id} into main\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      } catch (mergeError) {
+        // Log but don't fail — artifacts may already be in main or conflict
+        await writeFile(session.logPath, `\n[orchestrator] merge failed: ${String(mergeError)}\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      }
+
+      // Push changes to remote if merge succeeded
+      if (mergeSucceeded) {
+        try {
+          await execFileAsync(
+            "git",
+            ["push", "origin", "main"],
+            { cwd: projectRoot }
+          );
+          await writeFile(session.logPath, `\n[orchestrator] pushed changes to origin/main\n`, {
+            encoding: "utf8",
+            flag: "a",
+          });
+        } catch (pushError) {
+          await writeFile(session.logPath, `\n[orchestrator] push failed: ${String(pushError)}\n`, {
+            encoding: "utf8",
+            flag: "a",
+          });
+        }
+      }
+
+      try {
+        await execFileAsync(
+          "git",
+          ["worktree", "remove", "--force", session.worktreePath],
+          { cwd: projectRoot }
+        );
+        await execFileAsync("git", ["branch", "-D", session.id], {
+          cwd: projectRoot,
+        });
+      } catch (cleanupError) {
+        await writeFile(session.logPath, `\n[orchestrator] worktree cleanup failed: ${String(cleanupError)}\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      }
+    }
   });
 
   stageProcess.on("error", async (err: Error) => {
@@ -490,12 +549,18 @@ async function buildOverviewPayload() {
       readAgentSessionsFile(),
     ]);
 
-  // Auto-clear activeWorkflowSkill once copilot process is no longer running
-  if (
+  // Derive activeWorkflowSkill from persisted runtime sessions — the in-memory
+  // variable is the canonical source while a session is starting; once the
+  // session is persisted as "running" we use that, and clear the in-memory
+  // value so there is no stale data after the process exits.
+  const runningSession = runtimeState?.sessions.find(
+    (s) => s.status === "running"
+  );
+  if (runningSession) {
+    activeWorkflowSkill = runningSession.skill;
+  } else if (
     activeWorkflowSkill &&
-    !externalProcesses.some((p) =>
-      p.command.toLowerCase().includes("copilot")
-    )
+    !runningSessionProcesses.size
   ) {
     activeWorkflowSkill = null;
   }
@@ -2715,13 +2780,6 @@ function attachApi(server: ViteDevServer): void {
 
           const prompt = [
             `/${skill}`,
-            "Follow repository and skill instructions strictly.",
-            "Start this in a brand new agent session.",
-            "This run is non-interactive: never wait for user input.",
-            "If a workflow asks for approval/checkpoint, assume approval and continue automatically.",
-            "Do not ask the user to run terminal commands manually.",
-            "Run only the requested skill in this session.",
-            `Skill: ${skill}`,
             `Model: ${DEFAULT_WORKFLOW_MODEL}`,
           ].join("\n");
 
