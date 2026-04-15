@@ -1,0 +1,66 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "performance": {
+        "noBarrelExports": "error"
+      },
+      "correctness": {
+        "noUnnecessaryDependencies": "off",
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error",
+        "noGlobalIsNan": "error",
+        "noGlobalEval": "error"
+      },
+      "style": {
+        "useNumberNamespace": "error",
+        "useImportType": "error",
+        "noImplicitAny": "off"
+      },
+      "suspicious": {
+        "noImplicitAnyLet": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtmlWithChildren": "error"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentSize": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "trailingCommas": "es5",
+      "semicolons": "asNeeded",
+      "quoteStyle": "double"
+    },
+    "linter": {
+      "rules": {
+        "noUnnecessaryDependencies": "off"
+      }
+    }
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "ignore": [
+      "node_modules",
+      "dist",
+      ".git",
+      ".vscode",
+      ".idea",
+      "pnpm-lock.yaml",
+      "package-lock.json"
+    ]
+  }
+}

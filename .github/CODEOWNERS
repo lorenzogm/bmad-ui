@@ -1,0 +1,8 @@
+# Code ownership rules for BMAD UI repository
+# See https://help.github.com/articles/about-codeowners
+
+* @lorenzogm
+
+# Frontend-specific paths
+/_bmad-custom/bmad-ui/ @lorenzogm
+/src/ @lorenzogm
