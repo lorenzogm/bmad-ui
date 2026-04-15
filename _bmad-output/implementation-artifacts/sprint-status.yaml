@@ -50,7 +50,7 @@ development_status:
   epic-1-retrospective: optional
 
   epic-2: in-progress
-  2-1-terraform-github-repository-infrastructure: in-progress
+  2-1-terraform-github-repository-infrastructure: review
   2-2-github-actions-deployment-pipeline: backlog
   2-3-environment-separation-across-infra-and-deploy-workflows: backlog
   epic-2-retrospective: optional
