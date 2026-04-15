@@ -596,24 +596,55 @@
       }
     },
     "fc0068c0-56a1-42bc-8cd2-f42670135cb6": {
-      "session_id": "fc0068c0-56a1-42bc-8cd2-f42670135cb6",
-      "tool": "copilot-cli",
+      "sessionId": "fc0068c0-56a1-42bc-8cd2-f42670135cb6",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
       "model": "claude-sonnet-4.6",
-      "premium": true,
-      "premium_requests": 20,
-      "premium_multiplier": 1,
-      "premium_cost_units": 20,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 0,
       "status": "completed",
-      "start_date": "2026-04-15T22:14:01Z",
-      "end_date": "2026-04-15T22:45:00Z",
-      "notes": "Story 2-2: GitHub Actions deployment pipeline. Fixed pnpm action-setup package_json_file. Added TERRAFORM_STATE_ENCRYPT_KEY to GitHub secrets and encrypted .env."
+      "startedAt": "2026-04-15T22:14:01Z",
+      "endedAt": "2026-04-15T22:45:00Z",
+      "usage": {
+        "requests": 20,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-dev-story-1776291234494": {
+      "sessionId": "workflow-bmad-dev-story-1776291234494",
+      "storyId": "2-2-github-actions-deployment-pipeline",
+      "epicId": "epic-2",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:13:54.495Z",
+      "endedAt": "2026-04-15T22:23:40.790Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 3300000,
+        "tokensOut": 24000,
+        "tokensCached": 3100000,
+        "totalTokens": 3324000
+      }
+    },
+    "workflow-bmad-dev-story-1776291700188": {
+      "sessionId": "workflow-bmad-dev-story-1776291700188",
+      "storyId": "1-4-add-basic-contribution-guidance",
+      "epicId": "epic-1",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:21:40.189Z",
+      "endedAt": "2026-04-15T22:23:53.985Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 983900,
+        "tokensOut": 4800,
+        "tokensCached": 939300,
+        "totalTokens": 988700
+      }
     }
   }
 }

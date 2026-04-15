@@ -7,6 +7,7 @@ import type {
   AgentSession,
   EpicDetailResponse,
   OverviewResponse,
+  StoryStatus,
   WorkflowStepState,
 } from "../types"
 import { rootRoute } from "./__root"
@@ -54,6 +55,18 @@ function getBlockingStories(
     const status = storyStatusMap.get(depId)
     return status !== "done"
   })
+}
+
+const STORY_STATUS_LABELS: Record<StoryStatus, string> = {
+  backlog: "To Do",
+  "ready-for-dev": "In Progress",
+  "in-progress": "In Progress",
+  review: "In Progress",
+  done: "Done",
+}
+
+function storyStatusLabel(status: StoryStatus): string {
+  return STORY_STATUS_LABELS[status] ?? status
 }
 
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
@@ -369,6 +382,7 @@ function EpicDetailPage() {
                 <th>Create Story</th>
                 <th>Dev Story</th>
                 <th>Code Review</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -483,12 +497,17 @@ function EpicDetailPage() {
                         )}
                       </div>
                     </td>
+                    <td>
+                      <span className={`step-badge step-${story.status}`}>
+                        {storyStatusLabel(story.status as StoryStatus)}
+                      </span>
+                    </td>
                   </tr>
                 )
               })}
               {filteredStories.length === 0 ? (
                 <tr>
-                  <td colSpan={4}>No stories found for this epic</td>
+                  <td colSpan={5}>No stories found for this epic</td>
                 </tr>
               ) : null}
             </tbody>

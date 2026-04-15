@@ -3065,14 +3065,6 @@ function attachApi(server: ViteDevServer): void {
         try {
           ensureRunningProcessStateIsFresh();
 
-          if (runningProcess) {
-            res.writeHead(409, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({ error: "another orchestrator task is running" })
-            );
-            return;
-          }
-
           const body = await parseJsonBody<{
             skill?: string;
             storyId?: string;
@@ -3090,6 +3082,42 @@ function attachApi(server: ViteDevServer): void {
             res.writeHead(400, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: "invalid skill" }));
             return;
+          }
+
+          // Skills that run preparation work (not code execution) can run in
+          // parallel with a running dev-story. Only exclusive skills are blocked
+          // when there is a story dependency conflict with a running session.
+          const exclusiveSkills = new Set(["bmad-dev-story", "bmad-code-review"]);
+          if (exclusiveSkills.has(skill) && runningSessionProcesses.size > 0) {
+            const runtimeStateForCheck = await loadOrCreateRuntimeState();
+            const deps = loadStoryDependencies();
+
+            // Collect story IDs that are currently running
+            const runningStoryIds = new Set<string>();
+            for (const runSess of runtimeStateForCheck.sessions) {
+              if (runningSessionProcesses.has(runSess.id) && runSess.storyId) {
+                runningStoryIds.add(runSess.storyId);
+              }
+            }
+
+            // Check for dependency conflict: new story depends on a running
+            // story, or a running story depends on the new story.
+            const hasConflict = storyId !== null && [...runningStoryIds].some((runningId) => {
+              const newDeps = deps[storyId] ?? [];
+              const runningDeps = deps[runningId] ?? [];
+              return newDeps.includes(runningId) || runningDeps.includes(storyId);
+            });
+
+            // Also block if an exclusive skill is running for the same story
+            const sameStoryRunning = storyId !== null && runningStoryIds.has(storyId);
+
+            if (hasConflict || sameStoryRunning) {
+              res.writeHead(409, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({ error: "another orchestrator task is running" })
+              );
+              return;
+            }
           }
 
           await mkdir(runtimeLogsDir, { recursive: true });

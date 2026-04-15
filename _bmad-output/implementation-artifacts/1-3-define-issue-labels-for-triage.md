@@ -3,7 +3,7 @@ storyId: '1-3'
 storyTitle: 'Define Issue Labels for Triage'
 epicId: '1'
 epicTitle: 'Open-Source Repository Governance & Publication'
-status: 'review'
+status: 'done'
 created: '2026-04-15'
 priority: 'high'
 ---
@@ -46,7 +46,7 @@ priority: 'high'
   - [x] Document required label categories (type, status, priority)
   - [x] Determine label names, colors, and descriptions (see schema below)
 - [x] Add label resources to Terraform infrastructure
-  - [x] Update `infra/github/main.tf` with GitHub label resources
+  - [x] Update `infra/github/src/main.tf` with GitHub label resources
   - [x] Define all seven labels: bug, enhancement, documentation, good first issue, help wanted, question, wontfix
   - [x] Configure each label with correct name, color, and description
 - [x] Apply Terraform changes
@@ -58,6 +58,11 @@ priority: 'high'
   - [x] Verify each label has correct color and description
   - [x] Test: Create a test issue and verify labels can be applied
   - [x] Test: Verify labels display correctly on issues and PRs
+
+### Review Findings
+
+- [x] [Review][Patch] Update stale Terraform path references to `infra/github/src/main.tf` — fixed
+- [x] [Review][Patch] Clarify the File List section so it does not read like `infra/github/src/*.tf` files were modified in the review-status commit — fixed
 
 ---
 
@@ -85,7 +90,7 @@ This story **MUST** use Terraform to create labels. This aligns with Phase 1 goa
 
 **Terraform Implementation Pattern:**
 
-Add label resources to `infra/github/main.tf` following the pattern from Story 1-2 (GitHub repository infrastructure):
+Add label resources to `infra/github/src/main.tf` following the pattern from Story 1-2 (GitHub repository infrastructure):
 
 ```hcl
 resource "github_issue_label" "bug" {
@@ -140,29 +145,29 @@ resource "github_issue_label" "wontfix" {
 
 **Workflow:**
 
-1. Add above resources to `infra/github/main.tf` (or split into separate label file if preferred)
+1. Add above resources to `infra/github/src/main.tf` (or split into separate label file if preferred)
 2. Run `terraform init` (if not already done)
 3. Run `terraform plan` to preview label creation
 4. Run `terraform apply` to create labels in GitHub repository
 5. Verify in GitHub UI that all labels appear with correct colors and descriptions
 
 **Dependency Note:** This story should coordinate with Story 1-2 (Terraform GitHub infrastructure setup). If Story 1-2 infrastructure is not yet in place:
-- Ensure `github_repository.main` resource exists in `infra/github/main.tf` before applying these label resources
+- Ensure `github_repository.main` resource exists in `infra/github/src/main.tf` before applying these label resources
 - Both stories contribute to the same Terraform module; they may be implemented in sequence or together
 
 ### Project Structure
 
 - **Storage Location:** Labels are created via Terraform infrastructure-as-code, stored in GitHub repository settings
-- **Configuration Location:** Label definitions are in `infra/github/main.tf` as Terraform `github_issue_label` resources
+- **Configuration Location:** Label definitions are in `infra/github/src/main.tf` as Terraform `github_issue_label` resources
 - **No Code Changes:** This story modifies infrastructure configuration only, not the application codebase
 
 ### File Locations to Modify
 
 - **Required:**
-  - `infra/github/main.tf` — Add all seven `github_issue_label` resources
+  - `infra/github/src/main.tf` — Add all seven `github_issue_label` resources
   
 - **Optional (if organizing by concern):**
-  - `infra/github/labels.tf` — Create separate file for label resources (cleaner organization)
+  - `infra/github/src/labels.tf` — Create separate file for label resources (cleaner organization)
 
 ### References
 
@@ -188,11 +193,12 @@ claude-sonnet-4.6
 
 ### File List
 
-- **Modified:** `infra/github/src/main.tf` — `github_issue_label.labels` resource (already present)
-- **Modified:** `infra/github/src/config.json` — all 7 labels defined (already present)
-- **Modified:** `infra/github/src/variables.tf` — `labels` variable definition (already present)
-- **Story:** `_bmad-output/implementation-artifacts/1-3-define-issue-labels-for-triage.md` — status updated to review
+- **Referenced (already present):** `infra/github/src/main.tf` — `github_issue_label.labels` resource exists
+- **Referenced (already present):** `infra/github/src/config.json` — all 7 labels defined
+- **Referenced (already present):** `infra/github/src/variables.tf` — `labels` variable definition exists
+- **Modified:** `_bmad-output/implementation-artifacts/1-3-define-issue-labels-for-triage.md` — status and review findings updated
 
 ### Change Log
 
 - 2026-04-15: Verified all 7 labels live in GitHub repository; Terraform state confirms IaC management; story marked review
+- 2026-04-15: Resolved code review findings (path consistency and file list clarity); story marked done
