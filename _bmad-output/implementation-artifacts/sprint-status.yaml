@@ -44,7 +44,7 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   epic-1: in-progress
   1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter: review
-  1-2-setup-github-infrastructure-with-terraform: in-progress
+  1-2-setup-github-infrastructure-with-terraform: review
   1-3-define-issue-labels-for-triage: ready-for-dev
   1-4-add-basic-contribution-guidance: ready-for-dev
   epic-1-retrospective: optional
