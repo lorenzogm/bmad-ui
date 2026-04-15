@@ -3,7 +3,7 @@ storyId: '1-4'
 storyTitle: 'Add Basic Contribution Guidance'
 epicId: '1'
 epicTitle: 'Open-Source Repository Governance & Publication'
-status: 'ready-for-dev'
+status: 'review'
 created: '2026-04-15'
 priority: 'high'
 ---
@@ -311,13 +311,13 @@ Update links in both files to point to real locations:
 
 ## Story Completion Checklist
 
-- [ ] README.md updated with "Contributing" section
-- [ ] `.github/CONTRIBUTING.md` created with all required sections
-- [ ] Branch naming convention documented with examples
-- [ ] Links validated and point to correct documentation
-- [ ] Content reviewed for tone, clarity, and completeness
-- [ ] Files committed to repository
-- [ ] Sprint status updated to "done" in sprint-status.yaml
+- [x] README.md updated with "Contributing" section
+- [x] `.github/CONTRIBUTING.md` created with all required sections
+- [x] Branch naming convention documented with examples
+- [x] Links validated and point to correct documentation
+- [x] Content reviewed for tone, clarity, and completeness
+- [x] Files committed to repository
+- [x] Sprint status updated to "done" in sprint-status.yaml
 
 ---
 
