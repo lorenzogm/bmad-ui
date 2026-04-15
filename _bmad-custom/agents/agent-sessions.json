@@ -295,9 +295,9 @@
       "epicId": "epic-1",
       "skill": "bmad-dev-story",
       "model": "claude-haiku-4.5",
-      "status": "completed",
+      "status": "cancelled",
       "startedAt": "2026-04-15T18:14:55.279Z",
-      "endedAt": "2026-04-15T18:46:26.307Z",
+      "endedAt": "2026-04-15T21:27:59.016Z",
       "usage": {
         "requests": 0.33,
         "tokensIn": 4400000,
@@ -397,9 +397,9 @@
       "epicId": "epic-1",
       "skill": "bmad-dev-story",
       "model": "claude-sonnet-4.6",
-      "status": "completed",
+      "status": "cancelled",
       "startedAt": "2026-04-15T19:29:37.920Z",
-      "endedAt": "2026-04-15T19:39:28.000Z",
+      "endedAt": "2026-04-15T21:28:01.550Z",
       "usage": {
         "requests": 1,
         "tokensIn": 4100000,
@@ -423,6 +423,23 @@
         "tokensOut": 21200,
         "tokensCached": 2400000,
         "totalTokens": 2421200
+      }
+    },
+    "workflow-bmad-code-review-1776288815702": {
+      "sessionId": "workflow-bmad-code-review-1776288815702",
+      "storyId": "1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter",
+      "epicId": "epic-1",
+      "skill": "bmad-code-review",
+      "model": "claude-haiku-4.5",
+      "status": "completed",
+      "startedAt": "2026-04-15T21:33:35.704Z",
+      "endedAt": "2026-04-15T21:38:03.118Z",
+      "usage": {
+        "requests": 0.33,
+        "tokensIn": 3500000,
+        "tokensOut": 26100,
+        "tokensCached": 3100000,
+        "totalTokens": 3526100
       }
     }
   }
