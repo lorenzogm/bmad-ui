@@ -9,11 +9,18 @@ terraform {
   }
 }
 
+variable "GH_PAT_TOKEN" {
+  description = "GitHub Personal Access Token with repository admin permissions"
+  type        = string
+  sensitive   = true
+}
+
+variable "GITHUB_OWNER" {
+  description = "GitHub owner login (user or organization)"
+  type        = string
+}
+
 provider "github" {
-  # Credentials are read from environment variables:
-  #   GITHUB_TOKEN  — Personal Access Token with repo/admin permissions
-  #   GITHUB_OWNER  — Repository owner login (e.g. lorenzogm)
-  #
-  # Load via dotenvx:
-  #   dotenvx run -- terraform <command> -var-file="../config.json"
+  token = var.GH_PAT_TOKEN
+  owner = var.GITHUB_OWNER
 }
