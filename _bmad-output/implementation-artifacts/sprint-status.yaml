@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-15T21:24:54Z
+last_updated: 2026-04-15T21:46:50Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -49,8 +49,8 @@ development_status:
   1-4-add-basic-contribution-guidance: ready-for-dev
   epic-1-retrospective: optional
 
-  epic-2: backlog
-  2-1-terraform-github-repository-infrastructure: backlog
+  epic-2: in-progress
+  2-1-terraform-github-repository-infrastructure: ready-for-dev
   2-2-github-actions-deployment-pipeline: backlog
   2-3-environment-separation-across-infra-and-deploy-workflows: backlog
   epic-2-retrospective: optional
