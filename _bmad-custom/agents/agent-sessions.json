@@ -390,6 +390,40 @@
         "tokensCached": 0,
         "totalTokens": 0
       }
+    },
+    "workflow-bmad-dev-story-1776281377907": {
+      "sessionId": "workflow-bmad-dev-story-1776281377907",
+      "storyId": "1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter",
+      "epicId": "epic-1",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T19:29:37.920Z",
+      "endedAt": "2026-04-15T19:39:28.000Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 4100000,
+        "tokensOut": 24800,
+        "tokensCached": 4000000,
+        "totalTokens": 4124800
+      }
+    },
+    "workflow-bmad-dev-story-1776281597439": {
+      "sessionId": "workflow-bmad-dev-story-1776281597439",
+      "storyId": "1-2-setup-github-infrastructure-with-terraform",
+      "epicId": "epic-1",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T19:33:17.440Z",
+      "endedAt": "2026-04-15T19:40:39.832Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 2400000,
+        "tokensOut": 21200,
+        "tokensCached": 2400000,
+        "totalTokens": 2421200
+      }
     }
   }
 }

@@ -36,6 +36,12 @@ type SessionUsageSummary = {
   totalTokens: number
 }
 
+export function storyStepLabel(state: string): string {
+  if (state === "running") return "in-progress"
+  if (state === "not-started") return "to do"
+  return state
+}
+
 function formatDate(value: string | null): string {
   if (!value) {
     return "-"
@@ -662,11 +668,8 @@ function BMADWorkflowSection(props: {
   const { phases, nextActionStep } = detectWorkflowStatus(planningFiles, implementationFiles)
   const sortedEpics = useMemo(() => [...epics].sort((a, b) => a.number - b.number), [epics])
 
-  // Default: open the phase containing the next required action,
-  // or the Implementation phase if all required steps are done.
-  const defaultOpenPhase = nextActionStep
-    ? phases.find((p) => p.steps.some((s) => s.id === nextActionStep.id))
-    : (phases.find((p) => p.id === "implementation") ?? phases[phases.length - 1])
+  const defaultOpenPhase =
+    phases.find((p) => p.id === "implementation") ?? phases[phases.length - 1]
   const defaultOpen = new Set([defaultOpenPhase?.id].filter(Boolean) as string[])
   const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen)
   const [pendingActiveSkill, setPendingActiveSkill] = useState<string | null>(null)
@@ -755,15 +758,10 @@ function BMADWorkflowSection(props: {
                     const status = allDone ? "done" : anyProgress ? "in-progress" : "backlog"
                     return <span className={`step-badge step-${status}`}>{status}</span>
                   }
-                  const requiredSteps = phase.steps.filter((s) => !s.isOptional)
-                  const allRequiredDone =
-                    requiredSteps.length === 0 || requiredSteps.every((s) => s.isCompleted)
+                  const allStepsDone =
+                    phase.steps.length > 0 && phase.steps.every((s) => s.isCompleted)
                   const anyDone = phase.steps.some((s) => s.isCompleted)
-                  const status = allRequiredDone
-                    ? "done"
-                    : anyDone || hasNextAction
-                      ? "in-progress"
-                      : "pending"
+                  const status = allStepsDone ? "done" : anyDone ? "in-progress" : "pending"
                   return <span className={`step-badge step-${status}`}>{status}</span>
                 })()}
                 <span className="workflow-phase-chevron" aria-hidden="true">
@@ -900,7 +898,7 @@ export function EpicTableSection(props: {
                   <span
                     className={`step-badge step-${epic.lifecycleSteps["bmad-sprint-planning"]}`}
                   >
-                    {epic.lifecycleSteps["bmad-sprint-planning"]}
+                    {storyStepLabel(epic.lifecycleSteps["bmad-sprint-planning"])}
                   </span>
                 </td>
                 <td>
@@ -908,7 +906,7 @@ export function EpicTableSection(props: {
                 </td>
                 <td>
                   <span className={`step-badge step-${epic.lifecycleSteps["bmad-retrospective"]}`}>
-                    {epic.lifecycleSteps["bmad-retrospective"]}
+                    {storyStepLabel(epic.lifecycleSteps["bmad-retrospective"])}
                   </span>
                 </td>
                 <td>{epic.storyCount}</td>

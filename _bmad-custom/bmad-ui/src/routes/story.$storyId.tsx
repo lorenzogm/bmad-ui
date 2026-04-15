@@ -1,5 +1,6 @@
 import { Link, createRoute, useParams } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
+import { storyStepLabel } from "../app"
 import type { StoryDetailResponse } from "../types"
 import { rootRoute } from "./__root"
 
@@ -130,7 +131,7 @@ function StoryDetailPage() {
                 <tr key={step.skill}>
                   <td>{step.label}</td>
                   <td>
-                    <span className={`step-badge step-${step.state}`}>{step.state}</span>
+                    <span className={`step-badge step-${step.state}`}>{storyStepLabel(step.state)}</span>
                   </td>
                   <td>{step.summary}</td>
                 </tr>

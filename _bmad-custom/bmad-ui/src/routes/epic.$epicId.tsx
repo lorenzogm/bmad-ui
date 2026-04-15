@@ -1,6 +1,6 @@
 import { Link, createRoute, useParams } from "@tanstack/react-router"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { AgentSessionsSection } from "../app"
+import { AgentSessionsSection, storyStepLabel } from "../app"
 import type { SessionActionState } from "../app"
 import type {
   AgentRunGroup,
@@ -373,9 +373,20 @@ function EpicDetailPage() {
             </thead>
             <tbody>
               {filteredStories.map((story) => {
+                const runtimeSessions = overviewData?.runtimeState?.sessions ?? []
                 const createState = story.steps["bmad-create-story"] ?? "not-started"
-                const devState = story.steps["bmad-dev-story"] ?? "not-started"
-                const reviewState = story.steps["bmad-code-review"] ?? "not-started"
+                const rawDevState = story.steps["bmad-dev-story"] ?? "not-started"
+                const isDevAgentRunning = runtimeSessions.some(
+                  (s) => s.storyId === story.id && s.skill === "bmad-dev-story"
+                )
+                const devState =
+                  rawDevState === "running" && !isDevAgentRunning ? "not-started" : rawDevState
+                const rawReviewState = story.steps["bmad-code-review"] ?? "not-started"
+                const isReviewAgentRunning = runtimeSessions.some(
+                  (s) => s.storyId === story.id && s.skill === "bmad-code-review"
+                )
+                const reviewState =
+                  rawReviewState === "running" && !isReviewAgentRunning ? "not-started" : rawReviewState
 
                 const SKILL_ORDER: { skill: SkillName; state: string }[] = [
                   { skill: "bmad-create-story", state: createState },
@@ -408,7 +419,7 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${createState}`}>{createState}</span>
+                        <span className={`step-badge step-${createState}`}>{storyStepLabel(createState)}</span>
                         {nextSkill === "bmad-create-story" && (
                           <button
                             className="icon-button icon-button-play"
@@ -426,7 +437,7 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${devState}`}>{devState}</span>
+                        <span className={`step-badge step-${devState}`}>{storyStepLabel(devState)}</span>
                         {nextSkill === "bmad-dev-story" && (
                           <button
                             className="icon-button icon-button-play"
@@ -446,7 +457,7 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${reviewState}`}>{reviewState}</span>
+                        <span className={`step-badge step-${reviewState}`}>{storyStepLabel(reviewState)}</span>
                         {nextSkill === "bmad-code-review" && (
                           <button
                             className="icon-button icon-button-play"
@@ -481,7 +492,7 @@ function EpicDetailPage() {
         <section className="panel reveal delay-2">
           <h2>Run Retrospective</h2>
           <div className="step-cell">
-            <span className={`step-badge step-${retrospectiveState}`}>{retrospectiveState}</span>
+            <span className={`step-badge step-${retrospectiveState}`}>{storyStepLabel(retrospectiveState)}</span>
             {retrospectiveState === "not-started" && allStoriesDone ? (
               <button
                 className="icon-button icon-button-play"

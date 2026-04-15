@@ -2,10 +2,7 @@ import { Link, Outlet, createRootRoute, useLocation } from "@tanstack/react-rout
 
 const TRAILING_SLASH_REGEX = /\/+$/
 
-const NAV_LINKS = [
-  { label: "Home", to: "/" },
-  { label: "Epics", to: "/epics" },
-] as const
+const NAV_LINKS = [{ label: "Home", to: "/" }] as const
 
 const ANALYTICS_SUBMENU = [
   { label: "Overview", to: "/analytics" },

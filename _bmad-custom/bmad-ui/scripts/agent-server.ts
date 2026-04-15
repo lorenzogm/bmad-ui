@@ -451,6 +451,142 @@ async function startRuntimeSession(
     await persistSessionAnalytics(session);
     resetRunningProcessState();
     runningSessionProcesses.delete(session.id);
+
+    // Merge worktree branch into main and clean up
+    if (code === 0 && !isCancelled && session.worktreePath) {
+      let mergeSucceeded = false;
+      
+      // Step 1: Ensure we're on main branch
+      try {
+        await execFileAsync("git", ["checkout", "main"], { cwd: projectRoot });
+        await writeFile(session.logPath, `\n[orchestrator] switched to main branch\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      } catch (checkoutError) {
+        await writeFile(session.logPath, `\n[orchestrator] failed to checkout main: ${String(checkoutError)}\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      }
+      
+      // Step 2: Fetch latest changes
+      try {
+        await execFileAsync("git", ["fetch", "origin", "main"], { cwd: projectRoot });
+        await writeFile(session.logPath, `\n[orchestrator] fetched latest changes from origin\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      } catch (fetchError) {
+        await writeFile(session.logPath, `\n[orchestrator] fetch warning: ${String(fetchError)}\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      }
+      
+      // Step 3: Try merge with conflict resolution strategy (prefer worktree changes)
+      try {
+        await execFileAsync(
+          "git",
+          ["merge", "--no-edit", "-X", "theirs", session.id],
+          { cwd: projectRoot }
+        );
+        mergeSucceeded = true;
+        await writeFile(session.logPath, `\n[orchestrator] ✓ successfully merged branch ${session.id} into main\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      } catch (mergeError) {
+        // Try to resolve conflicts automatically by taking their version (worktree)
+        try {
+          await execFileAsync("git", ["diff", "--name-only", "--diff-filter=U"], { cwd: projectRoot });
+          // If there are conflicts, try to resolve them
+          await execFileAsync("git", ["checkout", "--theirs", "."], { cwd: projectRoot });
+          await execFileAsync("git", ["add", "-A"], { cwd: projectRoot });
+          await execFileAsync(
+            "git",
+            ["commit", "--no-edit", "-m", `Merge branch '${session.id}' with conflict resolution`],
+            { cwd: projectRoot }
+          );
+          mergeSucceeded = true;
+          await writeFile(session.logPath, `\n[orchestrator] ✓ merged with automatic conflict resolution (accepted worktree changes)\n`, {
+            encoding: "utf8",
+            flag: "a",
+          });
+        } catch (conflictError) {
+          // Last resort: abort merge and continue cleanup
+          await writeFile(session.logPath, `\n[orchestrator] merge conflict resolution failed: ${String(conflictError)}\n`, {
+            encoding: "utf8",
+            flag: "a",
+          });
+          try {
+            await execFileAsync("git", ["merge", "--abort"], { cwd: projectRoot });
+            await writeFile(session.logPath, `\n[orchestrator] aborted merge attempt\n`, {
+              encoding: "utf8",
+              flag: "a",
+            });
+          } catch (abortError) {
+            await writeFile(session.logPath, `\n[orchestrator] merge abort failed: ${String(abortError)}\n`, {
+              encoding: "utf8",
+              flag: "a",
+            });
+          }
+        }
+      }
+
+      // Step 4: Push changes to remote if merge succeeded
+      if (mergeSucceeded) {
+        try {
+          await execFileAsync(
+            "git",
+            ["push", "origin", "main"],
+            { cwd: projectRoot }
+          );
+          await writeFile(session.logPath, `\n[orchestrator] ✓ pushed changes to origin/main\n`, {
+            encoding: "utf8",
+            flag: "a",
+          });
+        } catch (pushError) {
+          await writeFile(session.logPath, `\n[orchestrator] push to remote failed: ${String(pushError)}\n`, {
+            encoding: "utf8",
+            flag: "a",
+          });
+        }
+      }
+
+      // Step 5: Clean up worktree and branch (always attempt, even if merge failed)
+      try {
+        await execFileAsync(
+          "git",
+          ["worktree", "remove", "--force", session.worktreePath],
+          { cwd: projectRoot }
+        );
+        await writeFile(session.logPath, `\n[orchestrator] removed worktree directory\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      } catch (cleanupError) {
+        await writeFile(session.logPath, `\n[orchestrator] worktree removal failed: ${String(cleanupError)}\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      }
+      
+      try {
+        await execFileAsync("git", ["branch", "-D", session.id], {
+          cwd: projectRoot,
+        });
+        await writeFile(session.logPath, `\n[orchestrator] deleted branch ${session.id}\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      } catch (branchError) {
+        await writeFile(session.logPath, `\n[orchestrator] branch deletion failed: ${String(branchError)}\n`, {
+          encoding: "utf8",
+          flag: "a",
+        });
+      }
+    }
   });
 
   stageProcess.on("error", async (err: Error) => {
@@ -955,7 +1091,11 @@ function summarizeSprint(
           const sessionState = toStepState(history[0].status);
           // Only override for transient states (running/failed); the YAML
           // story status is the source of truth for completed steps.
-          if (sessionState === "running" || sessionState === "failed") {
+          // Never downgrade a step that YAML already marks as completed.
+          if (
+            (sessionState === "running" || sessionState === "failed") &&
+            story.steps[step.skill] !== "completed"
+          ) {
             story.steps[step.skill] = sessionState;
           }
         }
@@ -2378,9 +2518,9 @@ function attachApi(server: ViteDevServer): void {
 
           try {
             await startRuntimeSession(runtimeState, session);
-          } catch (startError) {
+          } catch (worktreeError) {
             session.status = "failed";
-            session.error = `Failed to start session: ${String(startError)}`;
+            session.error = `Failed to start session: ${String(worktreeError)}`;
             session.endedAt = new Date().toISOString();
             await persistRuntimeState(runtimeState);
             await persistSessionAnalytics(session);
