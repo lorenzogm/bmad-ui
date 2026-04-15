@@ -6,10 +6,14 @@ Thank you for your interest in contributing to bmad-ui! We welcome contributions
 
 - [Development Guide](../docs/development-guide-bmad-ui.md) — local setup and dev workflow
 - [Project Overview](../docs/project-overview.md) — codebase structure and architecture
+- [Secrets Workflow](../docs/secrets-workflow.md) — encrypted secrets and dotenvx setup
 
 ### Local Setup
 
 ```bash
+# Move to the app workspace
+cd _bmad-custom/bmad-ui
+
 # Install dependencies
 pnpm install
 
@@ -42,6 +46,7 @@ Always branch from `main`: `git checkout -b feature/your-feature`
 2. Make focused, well-scoped changes
 3. Run all checks before committing:
    ```bash
+   cd _bmad-custom/bmad-ui
    pnpm run check:types   # TypeScript type check
    pnpm run check:tests   # Vitest test suite
    ```
@@ -65,7 +70,15 @@ Always branch from `main`: `git checkout -b feature/your-feature`
 | **Vitest** | `pnpm run check:tests` | Unit tests |
 | **Vite** | `pnpm run build` | Production build check |
 
-See [Project Context](_bmad-output/project-context.md) for detailed coding rules and patterns.
+See [Project Context](../_bmad-output/project-context.md) for detailed coding rules and patterns.
+
+## Secrets & Environment
+
+bmad-ui uses [dotenvx](https://dotenvx.com) to manage secrets with encryption at rest. The encrypted `.env` file is committed to the repository; the private decryption key is not.
+
+**Regular contributors do not need production secret access** for local development — the app runs without secrets for UI work. Maintainers who need to run infrastructure commands (Terraform, Vercel deployments) require dotenvx set up with the private key.
+
+See [Secrets Workflow](../docs/secrets-workflow.md) for the complete guide including installation, adding secrets, and CI usage.
 
 ## Reporting Issues
 

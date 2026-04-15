@@ -29,6 +29,7 @@ BMAD UI is a React-based web application that provides real-time visibility into
 
 - Node.js 18+
 - pnpm 10.16+
+- **Maintainers only**: [dotenvx](https://dotenvx.com) installed locally for secret management — see [Secrets Workflow](docs/secrets-workflow.md)
 
 ### Installation
 
@@ -90,23 +91,18 @@ For detailed architecture documentation, see [_bmad-output/planning-artifacts/ar
 ## Contributing
 
 We welcome contributions! Here's how you can help:
-
 ### Reporting Issues
-
 - [Check existing issues](https://github.com/lorenzogm/bmad-ui/issues) first to avoid duplicates
 - Describe the problem and steps to reproduce
 - Include your environment (OS, Node version, browser, etc.)
 - Use the appropriate label (e.g., `bug`, `enhancement`, `question`)
-
 ### Submitting Pull Requests
-
 1. Fork the repository
 2. Create a branch from `main`: `git checkout -b feature/your-feature`
 3. Make your changes and commit with clear messages
-4. Run quality checks: `pnpm run check:types && pnpm run check:tests`
+4. Run quality checks: `cd _bmad-custom/bmad-ui && pnpm run check:types && pnpm run check:tests`
 5. Push to your fork and open a PR against `main`
 6. Ensure all CI checks pass before requesting review
-
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for detailed guidelines.
 
 ## License

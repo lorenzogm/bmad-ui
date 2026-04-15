@@ -6,6 +6,11 @@ runtime-state.json
 
 # dotenvx — commit encrypted .env, never commit decryption keys
 .env.keys
+# Prevent accidental plaintext env file commits
+.env.local
+.env.*.local
+.env.production
+.env.development
 
 # Terraform
 **/.terraform/
