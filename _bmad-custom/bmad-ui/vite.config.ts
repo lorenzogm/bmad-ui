@@ -198,6 +198,7 @@ const DEFAULT_STAGE_MODELS = {
   planning: "claude-haiku-4.5",
   retrospective: "claude-haiku-4.5",
 } as const;
+const DEFAULT_WORKFLOW_MODEL = "claude-haiku-4.5";
 
 let runningProcess: ReturnType<typeof spawn> | null = null;
 const runningSessionProcesses = new Map<string, ChildProcess>();
@@ -2680,6 +2681,16 @@ function attachApi(server: ViteDevServer): void {
         req.method === "POST"
       ) {
         try {
+          ensureRunningProcessStateIsFresh();
+
+          if (runningProcess) {
+            res.writeHead(409, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({ error: "another orchestrator task is running" })
+            );
+            return;
+          }
+
           const body = await parseJsonBody<{ skill?: string }>(req);
           const skill = body.skill?.trim();
           if (!skill) {
@@ -2687,25 +2698,57 @@ function attachApi(server: ViteDevServer): void {
             res.end(JSON.stringify({ error: "skill is required" }));
             return;
           }
-          const safeRoot = projectRoot.replace(/'/g, "'\\''");
-          const safeSkill = skill.replace(/'/g, "'\\''");
-          const shellCmd = `cd '${safeRoot}' && copilot -p '/${safeSkill}'`;
-          const escapedForAppleScript = shellCmd
-            .replace(/\\/g, "\\\\")
-            .replace(/"/g, '\\"');
-          spawn(
-            "osascript",
-            [
-              "-e",
-              `tell application "Terminal" to do script "${escapedForAppleScript}"`,
-              "-e",
-              'tell application "Terminal" to activate',
-            ],
-            { stdio: "ignore", detached: true }
-          ).unref();
+
+          const isValidSkill = /^[a-z0-9-]+$/.test(skill);
+          if (!isValidSkill) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "invalid skill" }));
+            return;
+          }
+
+          await mkdir(runtimeLogsDir, { recursive: true });
+
+          const timestamp = Date.now();
+          const sessionId = `workflow-${skill}-${timestamp}`;
+          const promptPath = path.join(runtimeLogsDir, `${sessionId}.prompt.txt`);
+          const logPath = path.join(runtimeLogsDir, `${sessionId}.log`);
+
+          const prompt = [
+            `/${skill}`,
+            "Follow repository and skill instructions strictly.",
+            "Start this in a brand new agent session.",
+            "This run is non-interactive: never wait for user input.",
+            "If a workflow asks for approval/checkpoint, assume approval and continue automatically.",
+            "Do not ask the user to run terminal commands manually.",
+            "Run only the requested skill in this session.",
+            `Skill: ${skill}`,
+            `Model: ${DEFAULT_WORKFLOW_MODEL}`,
+          ].join("\n");
+
+          await writeFile(promptPath, `${prompt}\n`, "utf8");
+          await writeFile(logPath, "", "utf8");
+
+          const command = buildAgentCommand(DEFAULT_WORKFLOW_MODEL, promptPath);
+          const runtimeState = await loadOrCreateRuntimeState();
+          const session = createRuntimeSession({
+            id: sessionId,
+            skill,
+            model: DEFAULT_WORKFLOW_MODEL,
+            storyId: null,
+            command,
+            promptPath,
+            logPath,
+          });
+
+          runtimeState.status = "running";
+          runtimeState.currentStage = skill;
+          runtimeState.sessions.push(session);
+
+          await startRuntimeSession(runtimeState, session);
           activeWorkflowSkill = skill;
+
           res.writeHead(202, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ status: "running" }));
+          res.end(JSON.stringify({ status: "started", sessionId }));
         } catch (runSkillError) {
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: String(runSkillError) }));
