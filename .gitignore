@@ -2,3 +2,4 @@ dist
 node_modules
 .git-worktrees
 logs
+runtime-state.json
