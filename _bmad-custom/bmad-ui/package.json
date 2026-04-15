@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",
-    "check": "npm run check:lint && npm run check:types && npm run check:tests && npm run build",
+    "check": "pnpm run check:lint && pnpm run check:types && pnpm run check:tests && pnpm run build",
     "build": "tsc --noEmit && vite build",
     "check:lint": "biome check src/",
     "check:types": "tsc --noEmit",
@@ -30,5 +30,6 @@
     "typescript": "5.9.2",
     "vite": "7.1.7",
     "vitest": "4.0.1"
-  }
+  },
+  "packageManager": "pnpm@10.19.0"
 }
