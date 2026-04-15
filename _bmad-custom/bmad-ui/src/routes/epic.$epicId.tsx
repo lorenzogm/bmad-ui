@@ -99,7 +99,7 @@ function EpicDetailPage() {
       const response = await fetch("/api/workflow/run-skill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ skill, storyId }),
+        body: JSON.stringify({ skill, storyId, epicId: skill === "bmad-retrospective" ? epicId : undefined }),
       })
 
       if (response.status === HTTP_CONFLICT) {
@@ -136,7 +136,7 @@ function EpicDetailPage() {
       setPendingSkill(null)
       setError(String(runSkillError))
     }
-  }, [])
+  }, [epicId])
 
   useEffect(() => {
     let mounted = true

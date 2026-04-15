@@ -3,14 +3,14 @@ storyId: '2-2'
 storyTitle: 'GitHub Actions Deployment Pipeline'
 epicId: '2'
 epicTitle: 'Infrastructure Provisioning via Terraform'
-status: 'review'
+status: 'done'
 created: '2026-04-15'
 priority: 'high'
 ---
 
 # Story 2.2: GitHub Actions Deployment Pipeline
 
-Status: review
+Status: done
 
 ## Story
 
@@ -48,6 +48,14 @@ so that releases are automated, auditable, and consistent across environments.
   - [x] Generate with: `openssl rand -base64 32`
   - [x] Add as repository-level secret `TERRAFORM_STATE_ENCRYPT_KEY`
 - [x] Verify end-to-end: push to `main` triggers workflow → `pnpm check` passes → Vercel deploys (AC: #1, #3, #4)
+
+### Review Findings
+
+- [x] [Review][Patch] Gate production deploy by resolved environment [`.github/workflows/deploy.yml`:310-316]
+- [x] [Review][Patch] Detect file changes across full push range (not only `HEAD~1`) [`.github/workflows/deploy.yml`:73-82]
+- [x] [Review][Patch] Fail fast when Vercel project ID resolution returns empty [`.github/workflows/deploy.yml`:272-287,347-362]
+- [x] [Review][Patch] Include resolved environment target in workflow summary output (AC #4) [`.github/workflows/deploy.yml`:385-388]
+- [x] [Review][Patch] Align Terraform version with architecture baseline (1.14.x) [`.github/workflows/deploy.yml`:144-148]
 
 ## Dev Notes
 

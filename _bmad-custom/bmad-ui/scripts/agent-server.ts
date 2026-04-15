@@ -3068,9 +3068,11 @@ function attachApi(server: ViteDevServer): void {
           const body = await parseJsonBody<{
             skill?: string;
             storyId?: string;
+            epicId?: string;
           }>(req);
           const skill = body.skill?.trim();
           const storyId = body.storyId?.trim() || null;
+          const epicId = body.epicId?.trim() || null;
           if (!skill) {
             res.writeHead(400, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: "skill is required" }));
@@ -3130,7 +3132,7 @@ function attachApi(server: ViteDevServer): void {
           const skillModel = SKILL_MODEL_OVERRIDES[skill] ?? DEFAULT_WORKFLOW_MODEL;
 
           const prompt = [
-            storyId ? `/${skill} ${storyId}` : `/${skill}`,
+            storyId ? `/${skill} ${storyId}` : epicId ? `/${skill} ${epicId}` : `/${skill}`,
             `Model: ${skillModel}`,
             ...(storyId ? [`Story: ${storyId}`] : []),
           ].join("\n");

@@ -15,114 +15,200 @@ Status: ready-for-dev
 ## Story
 
 As a maintainer,
-I want GitHub infrastructure changes deployed automatically via GitHub Actions,
-so that Terraform apply runs on push to main without requiring local credentials.
+I want development, preview, and production configuration separated across Terraform and GitHub Actions,
+so that changes to one environment do not unintentionally affect the others.
 
 ## Acceptance Criteria
 
-1. **Given** a push to `main` that modifies files under `infra/github/`, **when** the workflow runs, **then** it runs `terraform plan` and `terraform apply` automatically
-2. **Given** the workflow runs, **when** it completes, **then** deployment secrets are read from GitHub Secrets (never logged) and a summary is posted to the workflow run
-3. **Given** the workflow runs, **when** reviewed, **then** it bootstraps Terraform state via `terraform import` before plan/apply so it is idempotent from any state
+1. **Given** the deployment workflow configuration, **when** reviewed, **then** preview and production deploy jobs are clearly separated with explicit branch or environment targeting
+2. **Given** a deployment workflow run, **when** executed for preview, **then** it cannot deploy to production unless production-specific conditions are satisfied
+3. **Given** the infra and deployment runbook, **when** read, **then** plan, apply, import, and deploy flow per environment is documented end-to-end
 
-> **Scope:** This story is exclusively about automating the GitHub infra Terraform apply via GitHub Actions. It is based directly on the working pattern from `lorenzogm/lorenzogm` — copy and adapt, do not design from scratch.
+> **Note on original AC1 (Terraform env separation):** There is a single GitHub repository, so splitting Terraform config into dev/production variable files adds no value — there is nothing environment-specific to configure. The `ENVIRONMENT` variable already exists in `variables.tf` as informational metadata. No Terraform changes are required for this story.
 
 ## Tasks / Subtasks
 
-- [ ] Create `.github/workflows/github-infra-deploy.yml` (AC: #1, #2, #3)
-  - [ ] Copy structure from `lorenzogm/lorenzogm` repo's `github-infra-deploy.yml` (see Dev Notes for exact reference)
-  - [ ] Adapt trigger paths: `infra/github/**`
-  - [ ] Set `node-version: "24"` (not 22)
-  - [ ] Set `terraform_version: "1.14.x"` (check latest 1.14 patch)
-  - [ ] Fix import resource names for bmad-ui's Terraform resources (see Dev Notes — different from lorenzogm)
-  - [ ] Remove `terraform-state` branch protection import (bmad-ui does not have that branch)
-  - [ ] Add `GITHUB_REPOSITORY_ID` and `GITHUB_REPOSITORY_URL` outputs to `infra/github/src/main.tf` so the Export Results step works
-- [ ] Add `DOTENV_PRIVATE_KEY` to GitHub repository secrets (AC: #2)
-  - [ ] Copy the key from `infra/github/.env.keys` (or project root `.env.keys`) → GitHub Settings → Secrets → `DOTENV_PRIVATE_KEY`
+- [ ] Create GitHub Actions deployment workflow with separated jobs (AC: #1, #2)
+  - [ ] Create `.github/workflows/deploy.yml` with `preview` and `production` jobs
+  - [ ] `preview` job: triggers on `pull_request` events → deploys to Vercel preview
+  - [ ] `production` job: triggers on `push` to `main` only → deploys to Vercel production with `environment: production` gate
+  - [ ] Add `environment: production` to production job to enforce GitHub Environment approval gate
+  - [ ] Ensure production job reads secrets from `environment: production` secret scope (not repo-level)
+- [ ] Create GitHub Environment `production` if not already present (AC: #2)
+  - [ ] Create via GitHub UI: Settings → Environments → New environment → `production`
+  - [ ] Document manual creation step in runbook (Terraform provider 6.11.1 does not expose `required_deployment_environments` — must be done manually)
+- [ ] Update deployment runbook `docs/deployment-guide.md` (AC: #3)
+  - [ ] Document preview environment: GitHub Actions preview deploy job triggered on PRs
+  - [ ] Document production environment: GitHub Actions production deploy job (push to `main` + environment gate)
+  - [ ] Document Terraform infra workflow: plan/apply/import using existing `config.json`
+  - [ ] Add environment secrets reference (which secrets live at repo level vs `production` environment scope)
 
 ## Dev Notes
 
-### Reference Workflow
+### Dependency on Story 2.2
 
-**Source:** `/Users/lorenzogm/lorenzogm/lorenzogm/.github/workflows/github-infra-deploy.yml`
+Story 2.2 (GitHub Actions Deployment Pipeline) is the predecessor that creates the base deployment workflow for Vercel. This story BUILDS ON or REPLACES that work with proper environment separation.
 
-Copy this file as the baseline. It is production-proven for the same Terraform provider and dotenvx pattern.
+**If Story 2.2 was already implemented:** Extend the existing `.github/workflows/deploy.yml` by splitting jobs and adding the `environment:` gate. Do NOT recreate from scratch — diff and extend.
 
-### Required Adaptations vs lorenzogm
+**If Story 2.2 was NOT implemented:** This story can create the full deployment workflow from scratch with environment separation included from the start. Check `ls .github/workflows/` before proceeding.
 
-| Item | lorenzogm value | bmad-ui value |
+### Current Terraform State
+
+There is a single GitHub repository (`bmad-ui`). The `ENVIRONMENT` variable in `infra/github/src/variables.tf` is informational metadata only — it has no bearing on environment separation since there is nothing environment-specific to configure in GitHub itself. **No Terraform changes are required for this story.**
+
+Terraform runs continue using the existing `config.json`:
+
+```bash
+cd infra/github/src
+dotenvx run -- terraform plan -var-file=config.json
+dotenvx run -- terraform apply -var-file=config.json
+```
+
+### GitHub Actions Deployment Workflow
+
+No `.github/workflows/` directory exists yet. Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter bmad-ui build
+      # Vercel CLI deploy to preview
+      - name: Deploy to Vercel (Preview)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npx vercel --token "$VERCEL_TOKEN" \
+            --yes \
+            --cwd _bmad-custom/bmad-ui/dist
+
+  production:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production          # <-- requires GitHub Environment gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter bmad-ui build
+      - name: Deploy to Vercel (Production)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npx vercel --prod --token "$VERCEL_TOKEN" \
+            --yes \
+            --cwd _bmad-custom/bmad-ui/dist
+```
+
+**Critical environment gate:** The `environment: production` on the production job creates a GitHub Environment approval requirement. Without this, a push to `main` would immediately deploy to production — this is the AC3 guard.
+
+### Required GitHub Secrets
+
+For the GitHub Actions workflow to function, the following secrets must exist:
+
+| Secret | Scope | Description |
 |---|---|---|
-| `node-version` | `"22"` | `"24"` |
-| `pnpm/action-setup` | `@v5` | `@v4` (check what's in pnpm-workspace.yaml) |
-| `actions/setup-node` | `@v6` | `@v4` |
-| `terraform_version` | `"1.10.5"` | `"1.14.x"` (pick latest 1.14 patch from releases) |
-| Import: branch protection resource | `github_branch_protection.main["main"]` | `github_branch_protection.protections["main"]` |
-| Import: terraform-state branch | present | **remove** — bmad-ui has no `terraform-state` branch |
+| `VERCEL_TOKEN` | Repository or environment `production` | Vercel API token |
+| `VERCEL_ORG_ID` | Repository | Vercel organization/team ID |
+| `VERCEL_PROJECT_ID` | Repository | Vercel project ID for bmad-ui |
 
-### Terraform Import Bootstrap Step
-
-The lorenzogm version imports these resources. bmad-ui adaptation:
-
-```bash
-# Keep:
-terraform import -var-file='config.json' github_repository.main "$REPO_NAME" || true
-terraform import -var-file='config.json' 'github_branch_protection.protections["main"]' "$REPO_NAME:main" || true
-
-# Also import all labels dynamically (keep as-is from lorenzogm):
-jq -r '.labels[].name' config.json | while read -r label; do
-  [ -z "$label" ] && continue
-  terraform import -var-file='config.json' "github_issue_label.labels[\"$label\"]" "$REPO_NAME:$label" || true
-done
-```
-
-**Note:** `|| true` on each import is intentional — if the resource is already in state, import fails gracefully.
-
-### Required Terraform Outputs
-
-The `Export Results` step in the workflow calls `terraform output -raw GITHUB_REPOSITORY_ID` and `GITHUB_REPOSITORY_URL`. These do not exist in bmad-ui's `main.tf` yet. Add to `infra/github/src/main.tf`:
-
-```hcl
-output "GITHUB_REPOSITORY_ID" {
-  value = github_repository.main.node_id
-}
-
-output "GITHUB_REPOSITORY_URL" {
-  value = github_repository.main.html_url
-}
-```
-
-### Dotenvx Secret Pattern
-
-The workflow decrypts `.env` using `DOTENV_PRIVATE_KEY` (a GitHub secret) and extracts `GH_PAT_TOKEN` → `TF_VAR_GITHUB_TOKEN`:
-
-```bash
-pnpm dlx @dotenvx/dotenvx run -- sh -c '
-  echo "TF_VAR_GITHUB_TOKEN=$GH_PAT_TOKEN" >> "$GITHUB_ENV"
-'
-```
-
-The `.env` file at project root (encrypted) is committed. `DOTENV_PRIVATE_KEY` is the only secret needed in GitHub.
+**For environment-isolated secrets (AC3):** Move `VERCEL_TOKEN` to the `production` GitHub Environment secrets (Settings → Environments → production → Add secret) rather than repository-level. This prevents preview jobs from accessing production credentials.
 
 ### File Structure After This Story
 
 ```
 .github/
 └── workflows/
-    └── github-infra-deploy.yml     # NEW — adapted from lorenzogm
+    └── deploy.yml          # NEW — preview + production jobs
 
-infra/github/src/
-└── main.tf                         # UPDATED — add 2 outputs
+infra/github/
+└── src/
+    ├── config.json         # UNCHANGED
+    ├── main.tf             # UNCHANGED
+    ├── providers.tf        # UNCHANGED
+    └── variables.tf        # UNCHANGED
+
+docs/
+└── deployment-guide.md     # UPDATED — end-to-end runbook per environment
 ```
 
 ### What NOT to Change
 
-- `infra/github/src/variables.tf`, `providers.tf`, `config.json` — unchanged
-- Do NOT create a separate Vercel deploy workflow in this story (out of scope)
+- All files in `infra/github/src/` — no Terraform changes needed (single GitHub repo, no environment split required)
+- `_bmad-custom/bmad-ui/` — no changes (deployment is at repo level, not package level)
+- Do NOT introduce Terraform workspaces or split config files for GitHub infra
+
+### Terraform Runbook (No Change)
+
+Terraform continues using the single `config.json` as before:
+
+```bash
+cd infra/github/src
+dotenvx run -- terraform plan -var-file=config.json
+dotenvx run -- terraform apply -var-file=config.json
+```
+
+### Learnings from Story 2.1
+
+- `required_deployment_environments` on `github_branch_protection` was NOT available in provider `integrations/github@6.11.1` despite docs suggesting it. Verified by `terraform providers schema`. Do NOT attempt to manage GitHub Environments via Terraform branch protection — create the `production` environment manually via GitHub UI instead.
+- Terraform runs require `.env` with `GH_PAT_TOKEN` and `GITHUB_OWNER` via dotenvx at `infra/github/.env`. The dotenvx encrypted file exists at project root.
+- `terraform validate` can be run without credentials; `plan`/`apply` require credentials.
+- `config.json` is the `-var-file` argument (not using `*.tfvars` extension).
+
+### pnpm + Monorepo Context
+
+- The project uses pnpm workspaces (see `pnpm-workspace.yaml`)
+- Filter syntax: `pnpm --filter bmad-ui build` (the frontend package name)
+- `pnpm/action-setup@v4` is the official GitHub Action for pnpm
+- Node 24 is the baseline (set in project baseline)
+- Build output: `_bmad-custom/bmad-ui/dist/` (Vite build target)
+
+### Project Structure Notes
+
+- All GitHub Actions workflows go in `.github/workflows/` (no subdirectories needed for Phase 1)
+- Terraform files stay in `infra/github/src/` — do not move or add a `infra/vercel/` directory in this story
+- Runbook updates go to `docs/deployment-guide.md` — the architecture designates this as the deployment docs location
+- Config files are committed (not gitignored) — they contain configuration values, not secrets
 
 ### References
 
-- [Source: /Users/lorenzogm/lorenzogm/lorenzogm/.github/workflows/github-infra-deploy.yml] — reference implementation to copy
-- [Source: infra/github/src/main.tf] — add outputs here
-- [Source: _bmad-output/implementation-artifacts/2-1-terraform-github-repository-infrastructure.md] — confirmed resource name is `github_branch_protection.protections`, not `.main`
+- [Source: _bmad-output/planning-artifacts/epics.md#Story 2.3] — acceptance criteria
+- [Source: _bmad-output/planning-artifacts/architecture.md#Infrastructure & Deployment] — "Keep environment separation across local, preview, and production"
+- [Source: infra/github/README.md] — existing Terraform runbook to extend
+- [Source: docs/deployment-guide.md] — stub deployment guide to flesh out
+- [Source: _bmad-output/implementation-artifacts/2-1-terraform-github-repository-infrastructure.md] — Story 2.1 learnings (required_deployment_environments unavailable in provider 6.11.1; GitHub Environment must be created manually)
 
 ## Dev Agent Record
 

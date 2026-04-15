@@ -31,7 +31,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
@@ -70,12 +70,27 @@ jobs:
             echo "app-changed=true" >> $GITHUB_OUTPUT
             exit 0
           fi
-          if git diff --name-only HEAD~1 -- infra/vercel/ | grep -q .; then
+
+          BASE_SHA="${{ github.event.before }}"
+          TARGET_SHA="${{ github.sha }}"
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="$(git rev-parse "$TARGET_SHA^" 2>/dev/null || true)"
+          fi
+
+          if [ -z "$BASE_SHA" ]; then
+            echo "::warning::Could not resolve base SHA. Forcing infra/app deploy checks to true."
+            echo "infra-changed=true" >> $GITHUB_OUTPUT
+            echo "app-changed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if git diff --name-only "$BASE_SHA" "$TARGET_SHA" -- infra/vercel/ | grep -q .; then
             echo "infra-changed=true" >> $GITHUB_OUTPUT
           else
             echo "infra-changed=false" >> $GITHUB_OUTPUT
           fi
-          if git diff --name-only HEAD~1 -- _bmad-custom/bmad-ui/ package.json pnpm-lock.yaml | grep -q .; then
+          if git diff --name-only "$BASE_SHA" "$TARGET_SHA" -- _bmad-custom/bmad-ui/ package.json pnpm-lock.yaml | grep -q .; then
             echo "app-changed=true" >> $GITHUB_OUTPUT
           else
             echo "app-changed=false" >> $GITHUB_OUTPUT
@@ -144,7 +159,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: "1.10.5"
+          terraform_version: "1.14.0"
           terraform_wrapper: false
 
       - name: Terraform Init
@@ -283,6 +298,10 @@ jobs:
             if [ -n "${VERCEL_ORG_ID}" ]; then TEAM_PARAM="?teamId=${VERCEL_ORG_ID}"; fi
             PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}${TEAM_PARAM}" | jq -r '.id // empty')
           fi
+          if [ -z "$PROJECT_ID" ]; then
+            echo "::error::Unable to resolve Vercel project ID for preview deployment"
+            exit 1
+          fi
           echo "VERCEL_PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
 
       - name: Install dependencies
@@ -311,6 +330,7 @@ jobs:
     needs: [check-changes, infra-deploy, deploy-preview]
     if: |
       always() &&
+      needs.check-changes.outputs.environment == 'production' &&
       needs.deploy-preview.result == 'success' &&
       needs.infra-deploy.result != 'failure'
     runs-on: ubuntu-latest
@@ -358,6 +378,10 @@ jobs:
             if [ -n "${VERCEL_ORG_ID}" ]; then TEAM_PARAM="?teamId=${VERCEL_ORG_ID}"; fi
             PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}${TEAM_PARAM}" | jq -r '.id // empty')
           fi
+          if [ -z "$PROJECT_ID" ]; then
+            echo "::error::Unable to resolve Vercel project ID for production deployment"
+            exit 1
+          fi
           echo "VERCEL_PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
 
       - name: Install dependencies
@@ -385,4 +409,5 @@ jobs:
       - name: Summary
         run: |
           echo "### ✅ Deployed to production" >> $GITHUB_STEP_SUMMARY
+          echo "Environment: ${{ needs.check-changes.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "URL: ${{ steps.production-deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
