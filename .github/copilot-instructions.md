@@ -89,11 +89,10 @@ npm run build    # TypeScript check + Vite build
 
 ### When to update
 
-- **Start of session**: create an entry with `end_date: null` and initial estimates
-- **After each turn** (before waiting for the next user message): update the entry — increment `turns`, `premium_requests`, `premium_cost_units`, and token counts
-- **End of session**: set `end_date` to the current UTC timestamp and finalize all counts
-
-The file is read in realtime by the dashboard SSE stream, so keeping it updated after every turn lets the user see live session data.
+- **Start of session**: create an entry with `status: "running"`, `end_date: null`
+- **After each agent response**: set `status: "completed"`, increment `turns`, `premium_requests`, `premium_cost_units`, and token counts
+- **When the user sends a new message**: immediately set `status: "running"` before processing
+- **End of session**: set `end_date` to the current UTC timestamp
 
 ### Schema
 
@@ -113,6 +112,7 @@ The file is read in realtime by the dashboard SSE stream, so keeping it updated 
   },
   "agent": "general",
   "turns": 4,
+  "status": "running",
   "start_date": "2026-04-15T13:20:52Z",
   "end_date": null,
   "notes": ""
@@ -135,6 +135,7 @@ The file is read in realtime by the dashboard SSE stream, so keeping it updated 
 | `tokens.total` | `input + output` |
 | `agent` | Skill name if invoked (e.g. `bmad-create-prd`), otherwise `"general"` |
 | `turns` | Number of user↔agent exchanges so far |
+| `status` | `"running"` while agent is processing · `"completed"` once done (set back to `"running"` when user sends next message) |
 | `start_date` | ISO 8601 UTC timestamp when the session started |
 | `end_date` | ISO 8601 UTC timestamp when the session ended, or `null` if still active |
 | `notes` | Optional: errors, retries, scope changes |

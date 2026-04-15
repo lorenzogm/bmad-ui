@@ -120,6 +120,7 @@ type AgentSession = {
   tokens: { input: number; output: number; total: number };
   agent: string;
   turns: number;
+  status: "running" | "completed";
   start_date: string;
   end_date: string | null;
   notes?: string;

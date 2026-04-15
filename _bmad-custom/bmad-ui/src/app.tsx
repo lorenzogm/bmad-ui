@@ -133,7 +133,7 @@ function SessionsTable(props: {
             <th>Model</th>
             <th>Status</th>
             <th>Started</th>
-            <th>Duration / Turns</th>
+            <th>Duration</th>
             <th>Requests</th>
             <th>Tokens</th>
             <th>Actions</th>
@@ -169,6 +169,7 @@ function SessionsTable(props: {
                   </td>
                   <td>{formatDate(session.startedAt)}</td>
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
+                  <td>-</td>
                   <td>-</td>
                   <td>-</td>
                   <td>
@@ -207,21 +208,18 @@ function SessionsTable(props: {
             }
 
             const session = row.data;
-            const status = session.end_date ? "completed" : "running";
             return (
               <tr key={session.session_id ?? session.start_date}>
                 <td>-</td>
                 <td>{session.agent}</td>
                 <td>{session.model}</td>
                 <td>
-                  <span className={`step-badge step-${status}`}>{status}</span>
+                  <span className={`step-badge step-${session.status}`}>
+                    {session.status}
+                  </span>
                 </td>
                 <td>{formatDate(session.start_date)}</td>
-                <td>
-                  {session.end_date
-                    ? formatDuration(session.start_date, session.end_date)
-                    : `${session.turns} turns`}
-                </td>
+                <td>{formatDuration(session.start_date, session.end_date)}</td>
                 <td>{session.premium_cost_units}</td>
                 <td>
                   {session.tokens.total > 0
@@ -319,9 +317,7 @@ function AgentSessionsSection(props: {
       .map((row) =>
         row.source === "runtime"
           ? row.data.status
-          : row.data.end_date
-            ? "completed"
-            : "running"
+          : row.data.status
       )
       .filter((status) => !known.includes(status as (typeof known)[number]))
       .sort((a, b) => a.localeCompare(b));
@@ -360,11 +356,7 @@ function AgentSessionsSection(props: {
 
     return allSessions.filter((row) => {
       const status =
-        row.source === "runtime"
-          ? row.data.status
-          : row.data.end_date
-            ? "completed"
-            : "running";
+        row.source === "runtime" ? row.data.status : row.data.status;
       return selectedStatuses.includes(status);
     });
   }, [allSessions, isAllSelected, selectedStatuses]);
