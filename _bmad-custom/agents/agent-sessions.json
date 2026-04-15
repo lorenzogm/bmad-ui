@@ -458,6 +458,162 @@
         "tokensCached": 3100000,
         "totalTokens": 3418100
       }
+    },
+    "workflow-bmad-dev-story-1776290023807": {
+      "sessionId": "workflow-bmad-dev-story-1776290023807",
+      "storyId": "2-1-terraform-github-repository-infrastructure",
+      "epicId": "epic-2",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T21:53:43.808Z",
+      "endedAt": "2026-04-15T21:59:09.223Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1800000,
+        "tokensOut": 11400,
+        "tokensCached": 1700000,
+        "totalTokens": 1811400
+      }
+    },
+    "workflow-bmad-dev-story-1776307211225": {
+      "sessionId": "workflow-bmad-dev-story-1776307211225",
+      "storyId": "1-3-define-issue-labels-for-triage",
+      "epicId": "epic-1",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:00:11.225Z",
+      "endedAt": "2026-04-15T22:07:00.000Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-dev-story-1776290405033": {
+      "sessionId": "workflow-bmad-dev-story-1776290405033",
+      "storyId": "1-3-define-issue-labels-for-triage",
+      "epicId": "epic-1",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:00:05.034Z",
+      "endedAt": "2026-04-15T22:02:45.452Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1100000,
+        "tokensOut": 6000,
+        "tokensCached": 1100000,
+        "totalTokens": 1106000
+      }
+    },
+    "workflow-bmad-create-story-1776290513207": {
+      "sessionId": "workflow-bmad-create-story-1776290513207",
+      "storyId": "2-2-github-actions-deployment-pipeline",
+      "epicId": "epic-2",
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:01:53.208Z",
+      "endedAt": "2026-04-15T22:05:38.539Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1200000,
+        "tokensOut": 10400,
+        "tokensCached": 1100000,
+        "totalTokens": 1210400
+      }
+    },
+    "workflow-bmad-code-review-1776290498313": {
+      "sessionId": "workflow-bmad-code-review-1776290498313",
+      "storyId": "2-1-terraform-github-repository-infrastructure",
+      "epicId": "epic-2",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:01:38.314Z",
+      "endedAt": "2026-04-15T22:06:01.493Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1000000,
+        "tokensOut": 17000,
+        "tokensCached": 956900,
+        "totalTokens": 1017000
+      }
+    },
+    "workflow-bmad-create-story-1776290553153": {
+      "sessionId": "workflow-bmad-create-story-1776290553153",
+      "storyId": "2-3-environment-separation-across-infra-and-deploy-workflows",
+      "epicId": "epic-2",
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:02:33.155Z",
+      "endedAt": "2026-04-15T22:06:16.590Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1200000,
+        "tokensOut": 10300,
+        "tokensCached": 1100000,
+        "totalTokens": 1210300
+      }
+    },
+    "0e9fafac-ef62-49e8-98f9-3ce6c4d517ab": {
+      "sessionId": "0e9fafac-ef62-49e8-98f9-3ce6c4d517ab",
+      "storyId": "1-3-define-issue-labels-for-triage",
+      "epicId": "epic-1",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:07:46.210Z",
+      "endedAt": "2026-04-15T22:11:11Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-code-review-1776290859793": {
+      "sessionId": "workflow-bmad-code-review-1776290859793",
+      "storyId": "1-3-define-issue-labels-for-triage",
+      "epicId": "epic-1",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-15T22:07:39.795Z",
+      "endedAt": "2026-04-15T22:11:34.200Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1300000,
+        "tokensOut": 15900,
+        "tokensCached": 1200000,
+        "totalTokens": 1315900
+      }
+    },
+    "fc0068c0-56a1-42bc-8cd2-f42670135cb6": {
+      "session_id": "fc0068c0-56a1-42bc-8cd2-f42670135cb6",
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 20,
+      "premium_multiplier": 1,
+      "premium_cost_units": 20,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 0,
+      "status": "completed",
+      "start_date": "2026-04-15T22:14:01Z",
+      "end_date": "2026-04-15T22:45:00Z",
+      "notes": "Story 2-2: GitHub Actions deployment pipeline. Fixed pnpm action-setup package_json_file. Added TERRAFORM_STATE_ENCRYPT_KEY to GitHub secrets and encrypted .env."
     }
   }
 }
