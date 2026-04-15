@@ -109,6 +109,22 @@ type DependencyTreeNode = {
   dependsOn: string[];
 };
 
+type AgentSession = {
+  session_id?: string;
+  tool: string;
+  model: string;
+  premium: boolean;
+  premium_requests: number;
+  premium_multiplier: number;
+  premium_cost_units: number;
+  tokens: { input: number; output: number; total: number };
+  agent: string;
+  turns: number;
+  start_date: string;
+  end_date: string | null;
+  notes?: string;
+};
+
 const projectRoot = path.resolve(__dirname, "..", "..");
 const artifactsRoot = path.join(projectRoot, "_bmad-output");
 const runtimeStatePath = path.join(
@@ -128,6 +144,11 @@ const analyticsStorePath = path.join(
   "_bmad-custom",
   "bmad-orchestrator",
   "analytics.json"
+);
+const agentSessionsPath = path.join(
+  projectRoot,
+  "_bmad-custom",
+  "agent-sessions.json"
 );
 const defaultGitWorktreesDir = path.join(projectRoot, ".git-worktrees");
 const legacyGitWorktreesDir = path.join(projectRoot, "git-worktrees");
@@ -181,6 +202,7 @@ let runningProcess: ReturnType<typeof spawn> | null = null;
 const runningSessionProcesses = new Map<string, ChildProcess>();
 let runningProcessCanAcceptInput = false;
 let runningProcessKind: "orchestrator" | "stage" | null = null;
+let activeWorkflowSkill: string | null = null;
 
 function isChildProcessAlive(processRef: ChildProcess): boolean {
   if (processRef.exitCode !== null || processRef.killed) {
@@ -273,6 +295,21 @@ async function readRuntimeStateFile(): Promise<RuntimeState | null> {
   }
 
   return JSON.parse(await readFile(runtimeStatePath, "utf8")) as RuntimeState;
+}
+
+async function readAgentSessionsFile(): Promise<AgentSession[]> {
+  if (!existsSync(agentSessionsPath)) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(await readFile(agentSessionsPath, "utf8")) as {
+      sessions: AgentSession[];
+    };
+    return Array.isArray(parsed.sessions) ? parsed.sessions : [];
+  } catch {
+    return [];
+  }
 }
 
 function createEmptyRuntimeState(): RuntimeState {
@@ -444,11 +481,22 @@ async function buildOverviewPayload() {
     }
   };
 
-  const [planningArtifactFiles, implementationArtifactFiles] =
+  const [planningArtifactFiles, implementationArtifactFiles, agentSessions] =
     await Promise.all([
       listArtifactDir("planning-artifacts"),
       listArtifactDir("implementation-artifacts"),
+      readAgentSessionsFile(),
     ]);
+
+  // Auto-clear activeWorkflowSkill once copilot process is no longer running
+  if (
+    activeWorkflowSkill &&
+    !externalProcesses.some((p) =>
+      p.command.toLowerCase().includes("copilot")
+    )
+  ) {
+    activeWorkflowSkill = null;
+  }
 
   return {
     steps: STORY_WORKFLOW_STEPS,
@@ -465,6 +513,8 @@ async function buildOverviewPayload() {
     storyDependencies,
     planningArtifactFiles,
     implementationArtifactFiles,
+    activeWorkflowSkill,
+    agentSessions,
   };
 }
 
@@ -2620,6 +2670,44 @@ function attachApi(server: ViteDevServer): void {
         } catch (filesError) {
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: String(filesError) }));
+        }
+        return;
+      }
+
+      if (
+        requestUrl.pathname === "/api/workflow/run-skill" &&
+        req.method === "POST"
+      ) {
+        try {
+          const body = await parseJsonBody<{ skill?: string }>(req);
+          const skill = body.skill?.trim();
+          if (!skill) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "skill is required" }));
+            return;
+          }
+          const safeRoot = projectRoot.replace(/'/g, "'\\''");
+          const safeSkill = skill.replace(/'/g, "'\\''");
+          const shellCmd = `cd '${safeRoot}' && copilot -p '/${safeSkill}'`;
+          const escapedForAppleScript = shellCmd
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"');
+          spawn(
+            "osascript",
+            [
+              "-e",
+              `tell application "Terminal" to do script "${escapedForAppleScript}"`,
+              "-e",
+              'tell application "Terminal" to activate',
+            ],
+            { stdio: "ignore", detached: true }
+          ).unref();
+          activeWorkflowSkill = skill;
+          res.writeHead(202, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ status: "running" }));
+        } catch (runSkillError) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: String(runSkillError) }));
         }
         return;
       }

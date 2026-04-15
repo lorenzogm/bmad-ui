@@ -1162,6 +1162,17 @@ a:hover {
   box-shadow: 0 0 0 1px rgba(255, 159, 28, 0.12);
 }
 
+.workflow-step-running {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.08);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.18);
+}
+
+.agent-icon {
+  font-size: 0.8em;
+  opacity: 0.9;
+}
+
 .workflow-step-body {
   flex: 1;
   display: flex;

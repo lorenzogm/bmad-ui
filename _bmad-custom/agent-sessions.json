@@ -1,0 +1,42 @@
+{
+  "sessions": [
+    {
+      "session_id": "96891488-0eb0-406c-9ce1-daf967b7b75a",
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 3,
+      "start_date": "2026-04-15T13:12:39Z",
+      "end_date": "2026-04-15T13:20:00Z",
+      "notes": ""
+    },
+    {
+      "session_id": "dffbc7d9-d986-467d-b72f-fb74aa9001d0",
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 1,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 4,
+      "start_date": "2026-04-15T13:20:52Z",
+      "end_date": null,
+      "notes": "Ongoing session"
+    }
+  ]
+}

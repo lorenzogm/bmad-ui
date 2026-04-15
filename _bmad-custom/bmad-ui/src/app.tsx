@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import type {
+  AgentSession,
   OrchestratorRunGroup,
   OverviewResponse,
   RuntimeSession,
@@ -110,8 +111,12 @@ function toShortStoryId(storyId: string | null): string {
   return `${ticket.epic}-${ticket.story}`;
 }
 
+type NormalizedSession =
+  | { source: "runtime"; data: RuntimeSession }
+  | { source: "copilot"; data: AgentSession };
+
 function SessionsTable(props: {
-  sessions: RuntimeSession[];
+  sessions: NormalizedSession[];
   sessionActionPending: SessionActionState;
   onStartSession: (sessionId: string) => void;
   onAbortSession: (sessionId: string) => void;
@@ -124,79 +129,112 @@ function SessionsTable(props: {
         <thead>
           <tr>
             <th>Story</th>
-            <th>Skill</th>
+            <th>Agent</th>
             <th>Model</th>
             <th>Status</th>
             <th>Started</th>
-            <th>Duration</th>
+            <th>Duration / Turns</th>
+            <th>Requests</th>
+            <th>Tokens</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {sessions.map((session) => {
-            const hasPendingAction = sessionActionPending !== null;
-            const isRowActionPending =
-              sessionActionPending?.sessionId === session.id;
-            const canStart = session.status === "planned";
-            const canAbort =
-              session.status === "planned" || session.status === "running";
+          {sessions.map((row) => {
+            if (row.source === "runtime") {
+              const session = row.data;
+              const hasPendingAction = sessionActionPending !== null;
+              const isRowActionPending =
+                sessionActionPending?.sessionId === session.id;
+              const canStart = session.status === "planned";
+              const canAbort =
+                session.status === "planned" || session.status === "running";
 
+              return (
+                <tr key={session.id}>
+                  <td>{toShortStoryId(session.storyId)}</td>
+                  <td>
+                    <Link
+                      params={{ sessionId: session.id }}
+                      to="/session/$sessionId"
+                    >
+                      {session.skill}
+                    </Link>
+                  </td>
+                  <td>{session.model}</td>
+                  <td>
+                    <span className={`step-badge step-${session.status}`}>
+                      {session.status}
+                    </span>
+                  </td>
+                  <td>{formatDate(session.startedAt)}</td>
+                  <td>{formatDuration(session.startedAt, session.endedAt)}</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>
+                    <div className="session-actions" role="group">
+                      <button
+                        aria-label="Start session"
+                        className="icon-button icon-button-play"
+                        disabled={hasPendingAction || !canStart}
+                        onClick={() => onStartSession(session.id)}
+                        title="Start session"
+                        type="button"
+                      >
+                        <span aria-hidden="true" className="icon-glyph">
+                          ▶
+                        </span>
+                      </button>
+                      <button
+                        aria-label="Abort session"
+                        className="icon-button icon-button-delete"
+                        disabled={hasPendingAction || !canAbort}
+                        onClick={() => onAbortSession(session.id)}
+                        title="Abort session"
+                        type="button"
+                      >
+                        <span aria-hidden="true" className="icon-glyph">
+                          ✕
+                        </span>
+                      </button>
+                      {isRowActionPending ? (
+                        <span className="stage-state-pill">working...</span>
+                      ) : null}
+                    </div>
+                  </td>
+                </tr>
+              );
+            }
+
+            const session = row.data;
+            const status = session.end_date ? "completed" : "running";
             return (
-              <tr key={session.id}>
-                <td>{toShortStoryId(session.storyId)}</td>
-                <td>
-                  <Link
-                    params={{ sessionId: session.id }}
-                    to="/session/$sessionId"
-                  >
-                    {session.skill}
-                  </Link>
-                </td>
+              <tr key={session.session_id ?? session.start_date}>
+                <td>-</td>
+                <td>{session.agent}</td>
                 <td>{session.model}</td>
                 <td>
-                  <span className={`step-badge step-${session.status}`}>
-                    {session.status}
-                  </span>
+                  <span className={`step-badge step-${status}`}>{status}</span>
                 </td>
-                <td>{formatDate(session.startedAt)}</td>
-                <td>{formatDuration(session.startedAt, session.endedAt)}</td>
+                <td>{formatDate(session.start_date)}</td>
                 <td>
-                  <div className="session-actions" role="group">
-                    <button
-                      aria-label="Start session"
-                      className="icon-button icon-button-play"
-                      disabled={hasPendingAction || !canStart}
-                      onClick={() => onStartSession(session.id)}
-                      title="Start session"
-                      type="button"
-                    >
-                      <span aria-hidden="true" className="icon-glyph">
-                        ▶
-                      </span>
-                    </button>
-                    <button
-                      aria-label="Abort session"
-                      className="icon-button icon-button-delete"
-                      disabled={hasPendingAction || !canAbort}
-                      onClick={() => onAbortSession(session.id)}
-                      title="Abort session"
-                      type="button"
-                    >
-                      <span aria-hidden="true" className="icon-glyph">
-                        ✕
-                      </span>
-                    </button>
-                    {isRowActionPending ? (
-                      <span className="stage-state-pill">working...</span>
-                    ) : null}
-                  </div>
+                  {session.end_date
+                    ? formatDuration(session.start_date, session.end_date)
+                    : `${session.turns} turns`}
                 </td>
+                <td>{session.premium_cost_units}</td>
+                <td>
+                  {session.tokens.total > 0
+                    ? session.tokens.total.toLocaleString()
+                    : "-"}
+                </td>
+                <td>-</td>
               </tr>
             );
           })}
           {sessions.length === 0 ? (
             <tr>
-              <td colSpan={7}>No sessions for selected filters</td>
+              <td colSpan={9}>No sessions for selected filters</td>
             </tr>
           ) : null}
         </tbody>
@@ -207,21 +245,33 @@ function SessionsTable(props: {
 
 function AgentSessionsSection(props: {
   runGroups: OrchestratorRunGroup[];
+  agentSessions: AgentSession[];
   sessionActionPending: SessionActionState;
   onStartSession: (sessionId: string) => void;
   onAbortSession: (sessionId: string) => void;
 }) {
-  const { runGroups, sessionActionPending, onAbortSession, onStartSession } =
-    props;
+  const {
+    runGroups,
+    agentSessions,
+    sessionActionPending,
+    onAbortSession,
+    onStartSession,
+  } = props;
   const [page, setPage] = useState(0);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([
     ALL_SESSION_STATUS_FILTER,
   ]);
 
-  const allSessions = useMemo(
-    () => runGroups.flatMap((group) => group.sessions),
-    [runGroups]
-  );
+  const allSessions = useMemo<NormalizedSession[]>(() => {
+    const runtime: NormalizedSession[] = runGroups
+      .flatMap((group) => group.sessions)
+      .map((s) => ({ source: "runtime", data: s }));
+    const copilot: NormalizedSession[] = agentSessions.map((s) => ({
+      source: "copilot",
+      data: s,
+    }));
+    return [...runtime, ...copilot];
+  }, [runGroups, agentSessions]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -266,7 +316,13 @@ function AgentSessionsSection(props: {
   const availableStatuses = useMemo(() => {
     const known = [...DEFAULT_SESSION_STATUS_FILTERS];
     const discovered = allSessions
-      .map((session) => session.status)
+      .map((row) =>
+        row.source === "runtime"
+          ? row.data.status
+          : row.data.end_date
+            ? "completed"
+            : "running"
+      )
       .filter((status) => !known.includes(status as (typeof known)[number]))
       .sort((a, b) => a.localeCompare(b));
 
@@ -302,9 +358,15 @@ function AgentSessionsSection(props: {
       return allSessions;
     }
 
-    return allSessions.filter((session) =>
-      selectedStatuses.includes(session.status)
-    );
+    return allSessions.filter((row) => {
+      const status =
+        row.source === "runtime"
+          ? row.data.status
+          : row.data.end_date
+            ? "completed"
+            : "running";
+      return selectedStatuses.includes(status);
+    });
   }, [allSessions, isAllSelected, selectedStatuses]);
 
   const totalPages = Math.max(
@@ -432,7 +494,7 @@ function AgentSessionsSection(props: {
           />
         </>
       ) : (
-        <p className="subtitle">No orchestrator runs recorded yet.</p>
+        <p className="subtitle">No sessions recorded yet.</p>
       )}
     </section>
   );
@@ -646,8 +708,9 @@ function detectWorkflowStatus(
 function BMADWorkflowSection(props: {
   planningFiles: string[];
   implementationFiles: string[];
+  activeSkill: string | null;
 }) {
-  const { planningFiles, implementationFiles } = props;
+  const { planningFiles, implementationFiles, activeSkill } = props;
   const { phases, nextActionStep } = detectWorkflowStatus(
     planningFiles,
     implementationFiles
@@ -677,23 +740,21 @@ function BMADWorkflowSection(props: {
     });
   };
 
-  const handlePlayClick = (step: WorkflowStep) => {
-    const command = `gh copilot suggest -t shell "${step.skill}"`;
+  const handlePlayClick = async (step: WorkflowStep) => {
     try {
-      navigator.clipboard.writeText(command);
+      await fetch("/api/workflow/run-skill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skill: step.skill }),
+      });
     } catch (_err) {
-      // clipboard not available
+      // ignore fetch errors — server will log
     }
-    alert(`Command copied!\n\nRun in your terminal:\n\n${command}`);
   };
 
   return (
     <section className="panel reveal delay-1">
       <h2>BMAD Workflow</h2>
-      <p className="subtitle">
-        Steps to complete your project. The next required action has a play
-        button — click to copy the command to your clipboard.
-      </p>
 
       <div className="workflow-phases">
         {phases.map((phase) => {
@@ -742,39 +803,51 @@ function BMADWorkflowSection(props: {
               </button>
               {isOpen && (
                 <div className="workflow-steps">
-                  {phase.steps.map((step) => (
-                    <div
-                      key={step.id}
-                      className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}`}
-                    >
-                      <div className="workflow-step-body">
-                        <span className="workflow-step-name">{step.name}</span>
-                        {step.isOptional && (
-                          <span className="workflow-step-optional">optional</span>
-                        )}
-                      </div>
-                      {nextActionStep?.id === step.id && (
-                        <button
-                          className="icon-button icon-button-play"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handlePlayClick(step);
-                          }}
-                          title={`Copy command: ${step.skill}`}
-                          type="button"
-                        >
-                          <span aria-hidden="true" className="icon-glyph">
-                            ▶
-                          </span>
-                        </button>
-                      )}
-                      <span
-                        className={`step-badge ${step.isCompleted ? "step-done" : "step-not-started"}`}
+                  {phase.steps.map((step) => {
+                    const isRunning = step.skill === activeSkill;
+                    return (
+                      <div
+                        key={step.id}
+                        className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}${isRunning ? " workflow-step-running" : ""}`}
                       >
-                        {step.isCompleted ? "done" : "pending"}
-                      </span>
-                    </div>
-                  ))}
+                        <div className="workflow-step-body">
+                          <span className="workflow-step-name">{step.name}</span>
+                          {step.isOptional && (
+                            <span className="workflow-step-optional">optional</span>
+                          )}
+                        </div>
+                        {nextActionStep?.id === step.id && !isRunning && (
+                          <button
+                            className="icon-button icon-button-play"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void handlePlayClick(step);
+                            }}
+                            title={`Run ${step.skill}`}
+                            type="button"
+                          >
+                            <span aria-hidden="true" className="icon-glyph">
+                              ▶
+                            </span>
+                          </button>
+                        )}
+                        <span
+                          className={`step-badge ${isRunning ? "step-running" : step.isCompleted ? "step-done" : "step-not-started"}`}
+                        >
+                          {isRunning ? (
+                            <>
+                              <span aria-hidden="true" className="agent-icon">⬡</span>
+                              {" running"}
+                            </>
+                          ) : step.isCompleted ? (
+                            "done"
+                          ) : (
+                            "pending"
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1027,9 +1100,11 @@ export function DashboardPage() {
       <BMADWorkflowSection
           implementationFiles={data?.implementationArtifactFiles ?? []}
           planningFiles={data?.planningArtifactFiles ?? []}
+          activeSkill={data?.activeWorkflowSkill ?? null}
         />
 
       <AgentSessionsSection
+        agentSessions={data?.agentSessions ?? []}
         onAbortSession={abortSession}
         onStartSession={startSession}
         runGroups={runGroups}

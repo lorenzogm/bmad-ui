@@ -1,3 +1,19 @@
+export type AgentSession = {
+  session_id?: string;
+  tool: string;
+  model: string;
+  premium: boolean;
+  premium_requests: number;
+  premium_multiplier: number;
+  premium_cost_units: number;
+  tokens: { input: number; output: number; total: number };
+  agent: string;
+  turns: number;
+  start_date: string;
+  end_date: string | null;
+  notes?: string;
+};
+
 export type StoryStatus =
   | "backlog"
   | "ready-for-dev"
@@ -123,6 +139,8 @@ export type OverviewResponse = {
   orchestratorHistory: OrchestratorRunGroup[];
   planningArtifactFiles: string[];
   implementationArtifactFiles: string[];
+  activeWorkflowSkill: string | null;
+  agentSessions: AgentSession[];
 };
 
 export type StoryDetailResponse = {
