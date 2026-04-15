@@ -231,7 +231,7 @@ function SessionsTable(props: {
             const session = row.data;
             return (
               <tr key={session.session_id ?? session.start_date}>
-                <td>-</td>
+                <td>{toShortStoryId(session.storyId ?? null)}</td>
                 <td>{session.agent}</td>
                 <td>{session.model}</td>
                 <td>

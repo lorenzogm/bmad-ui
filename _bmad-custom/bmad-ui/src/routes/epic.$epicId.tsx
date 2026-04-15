@@ -395,7 +395,9 @@ function EpicDetailPage() {
                   { skill: "bmad-dev-story", state: devState },
                   { skill: "bmad-code-review", state: reviewState },
                 ];
-                const nextSkill = SKILL_ORDER.find((s) => s.state === "not-started")?.skill ?? null;
+                const nextSkillIndex = SKILL_ORDER.findIndex((s) => s.state === "not-started");
+                const allPriorCompleted = nextSkillIndex >= 0 && SKILL_ORDER.slice(0, nextSkillIndex).every((s) => s.state === "completed");
+                const nextSkill = nextSkillIndex >= 0 && allPriorCompleted ? SKILL_ORDER[nextSkillIndex].skill : null;
 
                 const blockers = getBlockingStories(
                   story.id,
