@@ -9,6 +9,10 @@ resource "github_repository" "main" {
   has_issues             = var.repository.has_issues
   has_discussions        = var.repository.has_discussions
   allow_squash_merge     = var.repository.allow_squash_merge
+  allow_merge_commit     = var.repository.allow_merge_commit
+  allow_rebase_merge     = var.repository.allow_rebase_merge
+  allow_auto_merge       = var.repository.allow_auto_merge
+  allow_update_branch    = var.repository.allow_update_branch
   delete_branch_on_merge = var.repository.delete_branch_on_merge
   topics                 = var.topics
 
@@ -62,7 +66,8 @@ resource "github_branch_protection" "protections" {
     }
   }
 
-  required_linear_history = each.value.require_linear_history
+  required_linear_history              = each.value.require_linear_history
+  require_conversation_resolution      = each.value.require_conversation_resolution
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

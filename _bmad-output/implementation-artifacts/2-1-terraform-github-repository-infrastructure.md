@@ -28,17 +28,16 @@ so that repository settings, branch protections, and labels are reproducible and
 
 ## Tasks / Subtasks
 
-- [ ] Update `variables.tf` to add missing repository and branch protection fields (AC: #4, #5)
-  - [ ] Add `allow_merge_commit`, `allow_rebase_merge`, `allow_auto_merge`, `allow_update_branch` to `repository` object type
-  - [ ] Add `require_conversation_resolution`, `required_deployment_environments` to `branch_protections` list object type
-- [ ] Update `main.tf` to wire new variables into `github_repository` and `github_branch_protection` resources (AC: #4, #5)
-  - [ ] Add `allow_merge_commit`, `allow_rebase_merge`, `allow_auto_merge`, `allow_update_branch` attributes to `github_repository.main`
-  - [ ] Add `require_conversation_resolution` to `github_branch_protection.protections`
-  - [ ] Add `required_deployment_environments` to `github_branch_protection.protections`
-- [ ] Update `config.json` with correct values for all new and existing settings (AC: #4, #5)
-  - [ ] Set `has_discussions: false`, `allow_auto_merge: true`, `allow_update_branch: true`
-  - [ ] Set `allow_merge_commit: false`, `allow_rebase_merge: false`
-  - [ ] Set `require_conversation_resolution: true`, `require_linear_history: true`, `required_deployment_environments: ["production"]` for `main`
+- [x] Update `variables.tf` to add missing repository and branch protection fields (AC: #4, #5)
+  - [x] Add `allow_merge_commit`, `allow_rebase_merge`, `allow_auto_merge`, `allow_update_branch` to `repository` object type
+  - [x] Add `require_conversation_resolution` to `branch_protections` list object type
+- [x] Update `main.tf` to wire new variables into `github_repository` and `github_branch_protection` resources (AC: #4, #5)
+  - [x] Add `allow_merge_commit`, `allow_rebase_merge`, `allow_auto_merge`, `allow_update_branch` attributes to `github_repository.main`
+  - [x] Add `require_conversation_resolution` to `github_branch_protection.protections`
+- [x] Update `config.json` with correct values for all new and existing settings (AC: #4, #5)
+  - [x] Set `has_discussions: false`, `allow_auto_merge: true`, `allow_update_branch: true`
+  - [x] Set `allow_merge_commit: false`, `allow_rebase_merge: false`
+  - [x] Set `require_conversation_resolution: true`, `require_linear_history: true`
 - [ ] Run `terraform plan` and verify no unintended drift (AC: #1, #3)
 - [ ] Run `terraform apply` and confirm GitHub UI reflects settings (AC: #1)
 - [ ] Verify `terraform state list` includes all resources (AC: #3)
@@ -203,6 +202,25 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+- `required_deployment_environments` removed: provider `integrations/github@6.11.1` does not expose this as a top-level argument on `github_branch_protection` (confirmed via `terraform providers schema`). Story dev notes flagged it as "new in ~> 6.2" but it is absent from the actual schema. Removed from variables.tf, main.tf, and config.json. Needs re-investigation before Story 2.2/2.3.
+- State lock transient error on `terraform plan`: lock file absent, `-lock=false` attempted but blocked by missing `.env` / credentials.
+
 ### Completion Notes List
 
+- All Terraform HCL changes completed and validated (`terraform validate` passes).
+- `variables.tf`: Added 4 repository fields (`allow_merge_commit`, `allow_rebase_merge`, `allow_auto_merge`, `allow_update_branch`) and 1 branch protection field (`require_conversation_resolution`).
+- `main.tf`: Wired all 4 new repository vars into `github_repository.main`; added `require_conversation_resolution` to `github_branch_protection.protections`.
+- `config.json`: Updated repository and branch_protection settings to match story spec; `require_linear_history` changed from `false` → `true`; `has_discussions` changed from `true` → `false`.
+- **BLOCKED on terraform plan/apply/state**: No `.env` file found at `infra/github/src/.env`; `GH_PAT_TOKEN` and `GITHUB_OWNER` not set. User must run `dotenvx run -- terraform plan -var-file=config.json` and `terraform apply` manually with valid credentials.
+
 ### File List
+
+- `infra/github/src/variables.tf` — added `allow_merge_commit`, `allow_rebase_merge`, `allow_auto_merge`, `allow_update_branch` to repository type; added `require_conversation_resolution` to branch_protections type
+- `infra/github/src/main.tf` — wired 4 new repository vars into `github_repository.main`; added `require_conversation_resolution` to `github_branch_protection.protections`
+- `infra/github/src/config.json` — updated repository settings (`has_discussions: false`, `allow_merge_commit: false`, `allow_rebase_merge: false`, `allow_auto_merge: true`, `allow_update_branch: true`); updated branch protection (`require_linear_history: true`, `require_conversation_resolution: true`)
+- `_bmad-output/implementation-artifacts/2-1-terraform-github-repository-infrastructure.md` — story file updated (tasks, dev agent record, file list)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — story status updated
+
+## Change Log
+
+- 2026-04-15: Extended `variables.tf`, `main.tf`, `config.json` with squash-merge enforcement, auto-merge, update-branch, conversation resolution, and linear history settings. `required_deployment_environments` omitted — not available in provider 6.11.1. Terraform plan/apply requires user credentials. (claude-sonnet-4.6)

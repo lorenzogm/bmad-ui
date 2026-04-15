@@ -14,6 +14,10 @@ variable "repository" {
     has_discussions        = bool
     default_branch         = string
     allow_squash_merge     = bool
+    allow_merge_commit     = bool
+    allow_rebase_merge     = bool
+    allow_auto_merge       = bool
+    allow_update_branch    = bool
     delete_branch_on_merge = bool
   })
 }
@@ -26,8 +30,9 @@ variable "branch_protections" {
     require_code_owner_reviews   = bool
     require_pull_request_reviews = bool
     required_review_count        = number
-    dismiss_stale_reviews        = bool
-    require_linear_history       = bool
+    dismiss_stale_reviews                = bool
+    require_linear_history               = bool
+    require_conversation_resolution      = bool
   }))
   default = []
 }
