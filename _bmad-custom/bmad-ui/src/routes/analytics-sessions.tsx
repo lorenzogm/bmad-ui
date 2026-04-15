@@ -2,9 +2,9 @@ import { createRoute } from "@tanstack/react-router"
 import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
+  formatNumber,
   UsageBar,
   UsageCell,
-  formatNumber,
   useAnalyticsData,
 } from "./analytics-utils"
 

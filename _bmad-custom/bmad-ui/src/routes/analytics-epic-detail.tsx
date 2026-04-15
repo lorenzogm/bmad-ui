@@ -1,11 +1,11 @@
-import { Link, createRoute } from "@tanstack/react-router"
+import { createRoute, Link } from "@tanstack/react-router"
 import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
+  formatNumber,
   StatCard,
   UsageBar,
   UsageCell,
-  formatNumber,
   useAnalyticsData,
 } from "./analytics-utils"
 

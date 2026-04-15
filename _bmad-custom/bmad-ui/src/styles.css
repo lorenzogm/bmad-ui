@@ -28,7 +28,8 @@ body {
   min-height: 100vh;
   font-family: "Space Grotesk", sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 18% 12%, rgba(46, 196, 182, 0.16), transparent 40%),
+  background:
+    radial-gradient(circle at 18% 12%, rgba(46, 196, 182, 0.16), transparent 40%),
     radial-gradient(circle at 84% 22%, rgba(255, 159, 28, 0.15), transparent 44%),
     linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
 }
@@ -86,7 +87,9 @@ body {
   font-weight: 500;
   color: var(--muted);
   text-decoration: none;
-  transition: background 140ms ease, color 140ms ease;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
 }
 
 .sidebar-link:hover {
@@ -116,7 +119,9 @@ body {
   font-weight: 500;
   color: var(--muted);
   text-decoration: none;
-  transition: background 140ms ease, color 140ms ease;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
 }
 
 .sidebar-sublink:hover {
@@ -216,7 +221,8 @@ body {
   margin-top: 0.9rem;
   border: 1px solid rgba(130, 161, 188, 0.22);
   border-radius: 18px;
-  background: radial-gradient(circle at 12% 18%, rgba(46, 196, 182, 0.08), transparent 30%),
+  background:
+    radial-gradient(circle at 12% 18%, rgba(46, 196, 182, 0.08), transparent 30%),
     radial-gradient(circle at 88% 22%, rgba(255, 159, 28, 0.07), transparent 28%),
     rgba(2, 10, 16, 0.78);
   padding: 1rem 1rem 1.15rem;
@@ -481,7 +487,9 @@ button {
   border: 1px solid transparent;
   padding: 0.52rem 0.95rem;
   cursor: pointer;
-  transition: transform 160ms ease, opacity 160ms ease;
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease;
 }
 
 button:disabled {
@@ -834,7 +842,10 @@ a:hover {
   background: rgba(6, 24, 35, 0.86);
   color: var(--text);
   cursor: pointer;
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    background 120ms ease;
 }
 
 .icon-button:hover:not(:disabled) {
@@ -1136,7 +1147,9 @@ a:hover {
   border-radius: 10px;
   border: 1px solid rgba(151, 177, 205, 0.14);
   background: rgba(2, 10, 16, 0.48);
-  transition: border-color 150ms ease, background 150ms ease;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
 }
 
 .workflow-step-done {

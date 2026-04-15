@@ -1,4 +1,4 @@
-import { Link, Outlet, createRootRoute, useLocation } from "@tanstack/react-router"
+import { createRootRoute, Link, Outlet, useLocation } from "@tanstack/react-router"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 

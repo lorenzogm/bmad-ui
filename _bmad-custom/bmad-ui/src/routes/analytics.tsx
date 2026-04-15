@@ -1,4 +1,4 @@
-import { Outlet, createRoute } from "@tanstack/react-router"
+import { createRoute, Outlet } from "@tanstack/react-router"
 import { rootRoute } from "./__root"
 
 function AnalyticsLayout() {

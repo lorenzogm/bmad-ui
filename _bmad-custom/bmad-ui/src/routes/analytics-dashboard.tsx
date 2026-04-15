@@ -1,6 +1,6 @@
 import { createRoute } from "@tanstack/react-router"
 import { analyticsLayoutRoute } from "./analytics"
-import { AnalyticsCostBanner, StatCard, formatNumber, useAnalyticsData } from "./analytics-utils"
+import { AnalyticsCostBanner, formatNumber, StatCard, useAnalyticsData } from "./analytics-utils"
 
 function AnalyticsDashboardPage() {
   const { data, loading, error } = useAnalyticsData()

@@ -24,11 +24,7 @@ export function formatUsd(value: number | null): string {
   }).format(value)
 }
 
-export function AnalyticsCostBanner({
-  costing,
-}: {
-  costing: AnalyticsCosting
-}) {
+export function AnalyticsCostBanner({ costing }: { costing: AnalyticsCosting }) {
   const seat = costing.estimatedCostUsd.seatCostPerUserPerMonth
   const overage = costing.estimatedCostUsd.fromPremiumRequests
   const plan = costing.subscription?.plan || "copilot"
@@ -51,13 +47,7 @@ export function AnalyticsCostBanner({
   )
 }
 
-export function UsageBar({
-  usage,
-  maxTotal,
-}: {
-  usage: TokenUsage
-  maxTotal: number
-}) {
+export function UsageBar({ usage, maxTotal }: { usage: TokenUsage; maxTotal: number }) {
   const pct = maxTotal > 0 ? Math.max(2, (usage.totalTokens / maxTotal) * 100) : 0
   return (
     <div className="usage-bar-wrap">
@@ -84,15 +74,7 @@ export function UsageCell({ usage }: { usage: TokenUsage }) {
   )
 }
 
-export function StatCard({
-  label,
-  value,
-  sub,
-}: {
-  label: string
-  value: string
-  sub?: string
-}) {
+export function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="stat-card">
       <p className="stat-card-label">{label}</p>

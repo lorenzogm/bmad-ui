@@ -1,4 +1,4 @@
-import { Link, createRoute, useParams } from "@tanstack/react-router"
+import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { type FormEvent, useEffect, useRef, useState } from "react"
 import type { SessionDetailResponse } from "../types"
 import { rootRoute } from "./__root"

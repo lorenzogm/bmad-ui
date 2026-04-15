@@ -13,23 +13,27 @@
     "check:tests": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.99.0",
-    "@tanstack/react-query-devtools": "^5.99.0",
-    "@tanstack/react-router": "1.168.15",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "@tanstack/react-query": "5.99.0",
+    "@tanstack/react-query-devtools": "5.99.0",
+    "@tanstack/react-router": "1.168.22",
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.3",
-    "@tailwindcss/vite": "4.1.18",
+    "@biomejs/biome": "2.4.12",
+    "@tailwindcss/vite": "4.2.2",
     "@types/node": "24.5.2",
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2",
-    "@vitejs/plugin-react": "5.0.3",
-    "tailwindcss": "4.1.18",
-    "typescript": "5.9.2",
-    "vite": "7.1.7",
-    "vitest": "4.0.1"
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.1",
+    "tailwindcss": "4.2.2",
+    "typescript": "6.0.2",
+    "vite": "8.0.8",
+    "vitest": "4.1.4"
   },
-  "packageManager": "pnpm@10.19.0"
+  "packageManager": "pnpm@10.19.0",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=10"
+  }
 }
