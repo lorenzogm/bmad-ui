@@ -1,230 +1,207 @@
-import { createRoute, Link, useParams } from "@tanstack/react-router";
-import { type FormEvent, useEffect, useRef, useState } from "react";
-import type { SessionDetailResponse } from "../types";
-import { rootRoute } from "./__root";
+import { Link, createRoute, useParams } from "@tanstack/react-router"
+import { type FormEvent, useEffect, useRef, useState } from "react"
+import type { SessionDetailResponse } from "../types"
+import { rootRoute } from "./__root"
 
-const SECONDS_PER_MINUTE = 60;
-const SECONDS_PER_HOUR = 3600;
-const SECONDS_PER_DAY = 86_400;
-const MILLISECONDS_PER_SECOND = 1000;
+const SECONDS_PER_MINUTE = 60
+const SECONDS_PER_HOUR = 3600
+const SECONDS_PER_DAY = 86_400
+const MILLISECONDS_PER_SECOND = 1000
 
 function formatDate(value: string | null): string {
   if (!value) {
-    return "-";
+    return "-"
   }
 
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString()
 }
 
-function formatDuration(
-  startedAt: string | null,
-  endedAt: string | null
-): string {
+function formatDuration(startedAt: string | null, endedAt: string | null): string {
   if (!startedAt) {
-    return "-";
+    return "-"
   }
 
-  const startedMs = Date.parse(startedAt);
+  const startedMs = Date.parse(startedAt)
   if (Number.isNaN(startedMs)) {
-    return "-";
+    return "-"
   }
 
-  const endMs = endedAt ? Date.parse(endedAt) : Date.now();
+  const endMs = endedAt ? Date.parse(endedAt) : Date.now()
   if (Number.isNaN(endMs)) {
-    return "-";
+    return "-"
   }
 
-  const totalSeconds = Math.max(
-    0,
-    Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND)
-  );
-  const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
-  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
-  const minutes = Math.floor(
-    (totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
-  );
-  const seconds = totalSeconds % SECONDS_PER_MINUTE;
+  const totalSeconds = Math.max(0, Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND))
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
+  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
+  const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE)
+  const seconds = totalSeconds % SECONDS_PER_MINUTE
 
-  const parts: string[] = [];
+  const parts: string[] = []
   if (days > 0) {
-    parts.push(`${days}d`);
+    parts.push(`${days}d`)
   }
   if (hours > 0 || days > 0) {
-    parts.push(`${hours}h`);
+    parts.push(`${hours}h`)
   }
   if (minutes > 0 || hours > 0 || days > 0) {
-    parts.push(`${minutes}m`);
+    parts.push(`${minutes}m`)
   }
-  parts.push(`${seconds}s`);
+  parts.push(`${seconds}s`)
 
-  return parts.join(" ");
+  return parts.join(" ")
 }
 
 function SessionDetailPage() {
-  const { sessionId } = useParams({ from: "/session/$sessionId" });
-  const [data, setData] = useState<SessionDetailResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [chatInput, setChatInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState<string | null>(null);
-  const [sessionActionPending, setSessionActionPending] = useState<
-    "start" | "abort" | null
-  >(null);
-  const chatStreamRef = useRef<HTMLDivElement | null>(null);
-  const streamContent = data?.logContent || "";
-  const userMessageCount = data?.session.userMessages?.length || 0;
+  const { sessionId } = useParams({ from: "/session/$sessionId" })
+  const [data, setData] = useState<SessionDetailResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [chatInput, setChatInput] = useState("")
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
+  const [sessionActionPending, setSessionActionPending] = useState<"start" | "abort" | null>(null)
+  const chatStreamRef = useRef<HTMLDivElement | null>(null)
+  const streamContent = data?.logContent || ""
+  const userMessageCount = data?.session.userMessages?.length || 0
 
   useEffect(() => {
-    let mounted = true;
-    let eventSource: EventSource | null = null;
+    let mounted = true
+    let eventSource: EventSource | null = null
 
     const applyPayload = (payload: SessionDetailResponse) => {
       if (!mounted) {
-        return;
+        return
       }
 
-      setData(payload);
-      setError(null);
-      setLoading(false);
-    };
+      setData(payload)
+      setError(null)
+      setLoading(false)
+    }
 
     const load = async () => {
       try {
-        const response = await fetch(
-          `/api/session/${encodeURIComponent(sessionId)}`
-        );
+        const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}`)
         if (!response.ok) {
-          throw new Error(`session detail request failed: ${response.status}`);
+          throw new Error(`session detail request failed: ${response.status}`)
         }
 
-        applyPayload((await response.json()) as SessionDetailResponse);
+        applyPayload((await response.json()) as SessionDetailResponse)
       } catch (sessionError) {
         if (mounted) {
-          setError(String(sessionError));
-          setLoading(false);
+          setError(String(sessionError))
+          setLoading(false)
         }
       }
-    };
+    }
 
-    load();
+    load()
 
     if (typeof EventSource !== "undefined") {
-      eventSource = new EventSource(
-        `/api/events/session/${encodeURIComponent(sessionId)}`
-      );
+      eventSource = new EventSource(`/api/events/session/${encodeURIComponent(sessionId)}`)
       eventSource.onmessage = (event) => {
         try {
-          applyPayload(JSON.parse(event.data) as SessionDetailResponse);
+          applyPayload(JSON.parse(event.data) as SessionDetailResponse)
         } catch (parseError) {
           if (mounted) {
-            setError(String(parseError));
+            setError(String(parseError))
           }
         }
-      };
+      }
     }
 
     return () => {
-      mounted = false;
-      eventSource?.close();
-    };
-  }, [sessionId]);
+      mounted = false
+      eventSource?.close()
+    }
+  }, [sessionId])
 
   useEffect(() => {
     if (!chatStreamRef.current) {
-      return;
+      return
     }
 
-    const shouldSmoothScroll = streamContent.length > 0 || userMessageCount > 0;
+    const shouldSmoothScroll = streamContent.length > 0 || userMessageCount > 0
 
     chatStreamRef.current.scrollTo({
       top: chatStreamRef.current.scrollHeight,
       behavior: shouldSmoothScroll ? "smooth" : "auto",
-    });
-  }, [streamContent, userMessageCount]);
+    })
+  }, [streamContent, userMessageCount])
 
   const handleSend = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
     if (!data?.canSendInput || sending) {
-      return;
+      return
     }
 
-    const message = chatInput.trim();
+    const message = chatInput.trim()
     if (!message) {
-      return;
+      return
     }
 
-    setSending(true);
-    setSendError(null);
+    setSending(true)
+    setSendError(null)
 
     try {
-      const response = await fetch(
-        `/api/session/${encodeURIComponent(sessionId)}/input`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message }),
-        }
-      );
+      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/input`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      })
 
       if (!response.ok) {
-        throw new Error(`session input request failed: ${response.status}`);
+        throw new Error(`session input request failed: ${response.status}`)
       }
 
-      setChatInput("");
+      setChatInput("")
     } catch (sessionInputError) {
-      setSendError(String(sessionInputError));
+      setSendError(String(sessionInputError))
     } finally {
-      setSending(false);
+      setSending(false)
     }
-  };
+  }
 
   const handleStartSession = async () => {
-    setSessionActionPending("start");
-    setSendError(null);
+    setSessionActionPending("start")
+    setSendError(null)
     try {
-      const response = await fetch(
-        `/api/session/${encodeURIComponent(sessionId)}/start`,
-        {
-          method: "POST",
-        }
-      );
+      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/start`, {
+        method: "POST",
+      })
 
       if (!response.ok && response.status !== 409) {
-        throw new Error(`session start failed: ${response.status}`);
+        throw new Error(`session start failed: ${response.status}`)
       }
     } catch (sessionStartError) {
-      setSendError(String(sessionStartError));
+      setSendError(String(sessionStartError))
     } finally {
-      setSessionActionPending(null);
+      setSessionActionPending(null)
     }
-  };
+  }
 
   const handleAbortSession = async () => {
-    setSessionActionPending("abort");
-    setSendError(null);
+    setSessionActionPending("abort")
+    setSendError(null)
     try {
-      const response = await fetch(
-        `/api/session/${encodeURIComponent(sessionId)}/abort`,
-        {
-          method: "POST",
-        }
-      );
+      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/abort`, {
+        method: "POST",
+      })
 
       if (!response.ok) {
-        throw new Error(`session abort failed: ${response.status}`);
+        throw new Error(`session abort failed: ${response.status}`)
       }
     } catch (sessionAbortError) {
-      setSendError(String(sessionAbortError));
+      setSendError(String(sessionAbortError))
     } finally {
-      setSessionActionPending(null);
+      setSessionActionPending(null)
     }
-  };
+  }
 
   if (loading) {
-    return <main className="screen loading">Loading session detail...</main>;
+    return <main className="screen loading">Loading session detail...</main>
   }
 
   if (error || !data) {
@@ -233,10 +210,10 @@ function SessionDetailPage() {
         <p>{error || "Session not found"}</p>
         <Link to="/">Back to dashboard</Link>
       </main>
-    );
+    )
   }
 
-  const { session } = data;
+  const { session } = data
 
   return (
     <main className="screen">
@@ -246,20 +223,17 @@ function SessionDetailPage() {
         <h1>{session.skill}</h1>
         <p className="subtitle">{session.id}</p>
         <div className="status-row">
-          <span className={`step-badge step-${session.status}`}>
-            {session.status}
-          </span>
+          <span className={`step-badge step-${session.status}`}>{session.status}</span>
           <span className="runtime-pill">
             {data.isRunning ? "Streaming logs" : "Terminal finished"}
           </span>
+          {/* biome-ignore lint/a11y/useSemanticElements: action group in session header */}
           <div className="session-actions" role="group">
             <button
               aria-label="Start session"
               className="icon-button icon-button-play"
               disabled={
-                sessionActionPending !== null ||
-                session.status !== "planned" ||
-                data.isRunning
+                sessionActionPending !== null || session.status !== "planned" || data.isRunning
               }
               onClick={handleStartSession}
               title="Start session"
@@ -347,10 +321,7 @@ function SessionDetailPage() {
         </p>
         <div className="chat-stream" ref={chatStreamRef}>
           {(session.userMessages || []).map((message) => (
-            <article
-              className="chat-message chat-message-user"
-              key={message.id}
-            >
+            <article className="chat-message chat-message-user" key={message.id}>
               <header>
                 <strong>You</strong>
                 <span>{formatDate(message.sentAt)}</span>
@@ -382,9 +353,7 @@ function SessionDetailPage() {
           />
           <button
             className="cta"
-            disabled={
-              !data.canSendInput || sending || chatInput.trim().length === 0
-            }
+            disabled={!data.canSendInput || sending || chatInput.trim().length === 0}
             type="submit"
           >
             {sending ? "Sending..." : "Send"}
@@ -400,16 +369,14 @@ function SessionDetailPage() {
             ? "Prompt used to start this agent session."
             : "No prompt file found for this session."}
         </p>
-        <pre className="story-markdown">
-          {data.promptContent || "No prompt content available."}
-        </pre>
+        <pre className="story-markdown">{data.promptContent || "No prompt content available."}</pre>
       </section>
     </main>
-  );
+  )
 }
 
 export const sessionDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/session/$sessionId",
   component: SessionDetailPage,
-});
+})

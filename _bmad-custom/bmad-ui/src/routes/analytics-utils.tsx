@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import type { AnalyticsCosting, AnalyticsResponse, TokenUsage } from "../types";
+import { useEffect, useState } from "react"
+import type { AnalyticsCosting, AnalyticsResponse, TokenUsage } from "../types"
 
 export function formatNumber(value: number, maxDecimals = 1): string {
   if (value >= 1_000_000) {
-    return `${parseFloat((value / 1_000_000).toFixed(maxDecimals))}M`;
+    return `${Number.parseFloat((value / 1_000_000).toFixed(maxDecimals))}M`
   }
   if (value >= 1000) {
-    return `${parseFloat((value / 1000).toFixed(maxDecimals))}K`;
+    return `${Number.parseFloat((value / 1000).toFixed(maxDecimals))}K`
   }
-  return String(parseFloat(value.toFixed(maxDecimals)));
+  return String(Number.parseFloat(value.toFixed(maxDecimals)))
 }
 
 export function formatUsd(value: number | null): string {
   if (value === null || !Number.isFinite(value)) {
-    return "N/A";
+    return "N/A"
   }
 
   return new Intl.NumberFormat("en-US", {
@@ -21,17 +21,17 @@ export function formatUsd(value: number | null): string {
     currency: "USD",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(value)
 }
 
 export function AnalyticsCostBanner({
   costing,
 }: {
-  costing: AnalyticsCosting;
+  costing: AnalyticsCosting
 }) {
-  const seat = costing.estimatedCostUsd.seatCostPerUserPerMonth;
-  const overage = costing.estimatedCostUsd.fromPremiumRequests;
-  const plan = costing.subscription?.plan || "copilot";
+  const seat = costing.estimatedCostUsd.seatCostPerUserPerMonth
+  const overage = costing.estimatedCostUsd.fromPremiumRequests
+  const plan = costing.subscription?.plan || "copilot"
 
   return (
     <div className="analytics-cost-banner">
@@ -48,23 +48,22 @@ export function AnalyticsCostBanner({
         Overage Estimate: <strong>{formatUsd(overage)}</strong>
       </span>
     </div>
-  );
+  )
 }
 
 export function UsageBar({
   usage,
   maxTotal,
 }: {
-  usage: TokenUsage;
-  maxTotal: number;
+  usage: TokenUsage
+  maxTotal: number
 }) {
-  const pct =
-    maxTotal > 0 ? Math.max(2, (usage.totalTokens / maxTotal) * 100) : 0;
+  const pct = maxTotal > 0 ? Math.max(2, (usage.totalTokens / maxTotal) * 100) : 0
   return (
     <div className="usage-bar-wrap">
       <div className="usage-bar" style={{ width: `${pct}%` }} />
     </div>
-  );
+  )
 }
 
 export function UsageCell({ usage }: { usage: TokenUsage }) {
@@ -82,7 +81,7 @@ export function UsageCell({ usage }: { usage: TokenUsage }) {
         ⚡{formatNumber(usage.tokensCached)}
       </span>
     </span>
-  );
+  )
 }
 
 export function StatCard({
@@ -90,9 +89,9 @@ export function StatCard({
   value,
   sub,
 }: {
-  label: string;
-  value: string;
-  sub?: string;
+  label: string
+  value: string
+  sub?: string
 }) {
   return (
     <div className="stat-card">
@@ -100,43 +99,43 @@ export function StatCard({
       <p className="stat-card-value">{value}</p>
       {sub && <p className="stat-card-sub">{sub}</p>}
     </div>
-  );
+  )
 }
 
 export function useAnalyticsData() {
-  const [data, setData] = useState<AnalyticsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<AnalyticsResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
 
     const load = async () => {
       try {
-        const response = await fetch("/api/analytics");
+        const response = await fetch("/api/analytics")
         if (!response.ok) {
-          throw new Error(`analytics request failed: ${response.status}`);
+          throw new Error(`analytics request failed: ${response.status}`)
         }
-        const payload = (await response.json()) as AnalyticsResponse;
+        const payload = (await response.json()) as AnalyticsResponse
         if (mounted) {
-          setData(payload);
-          setError(null);
-          setLoading(false);
+          setData(payload)
+          setError(null)
+          setLoading(false)
         }
       } catch (fetchError) {
         if (mounted) {
-          setError(String(fetchError));
-          setLoading(false);
+          setError(String(fetchError))
+          setLoading(false)
         }
       }
-    };
+    }
 
-    load();
+    load()
 
     return () => {
-      mounted = false;
-    };
-  }, []);
+      mounted = false
+    }
+  }, [])
 
-  return { data, loading, error };
+  return { data, loading, error }
 }

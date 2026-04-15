@@ -1,5 +1,5 @@
-import { createRoute } from "@tanstack/react-router";
-import { analyticsLayoutRoute } from "./analytics";
+import { createRoute } from "@tanstack/react-router"
+import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
   StatCard,
@@ -7,14 +7,14 @@ import {
   UsageCell,
   formatNumber,
   useAnalyticsData,
-} from "./analytics-utils";
+} from "./analytics-utils"
 
 function AnalyticsStoryDetailPage() {
-  const { storyId } = analyticsStoryDetailRoute.useParams();
-  const { data, loading, error } = useAnalyticsData();
+  const { storyId } = analyticsStoryDetailRoute.useParams()
+  const { data, loading, error } = useAnalyticsData()
 
   if (loading) {
-    return <main className="screen loading">Loading analytics...</main>;
+    return <main className="screen loading">Loading analytics...</main>
   }
 
   if (error || !data) {
@@ -22,15 +22,12 @@ function AnalyticsStoryDetailPage() {
       <main className="screen loading">
         <p>{error || "Failed to load analytics"}</p>
       </main>
-    );
+    )
   }
 
-  const story = data.stories.find((s) => s.storyId === storyId);
-  const storySessions = data.sessions.filter((s) => s.storyId === storyId);
-  const maxSessionTotal = Math.max(
-    ...storySessions.map((s) => s.usage.totalTokens),
-    1,
-  );
+  const story = data.stories.find((s) => s.storyId === storyId)
+  const storySessions = data.sessions.filter((s) => s.storyId === storyId)
+  const maxSessionTotal = Math.max(...storySessions.map((s) => s.usage.totalTokens), 1)
 
   return (
     <main className="screen">
@@ -40,19 +37,13 @@ function AnalyticsStoryDetailPage() {
         <AnalyticsCostBanner costing={data.costing} />
         {story && (
           <div className="stat-grid">
-            <StatCard
-              label="Requests"
-              value={formatNumber(story.usage.requests, 2)}
-            />
+            <StatCard label="Requests" value={formatNumber(story.usage.requests, 2)} />
             <StatCard
               label="Total Tokens"
               sub={`↑${formatNumber(story.usage.tokensIn)} ↓${formatNumber(story.usage.tokensOut)}`}
               value={formatNumber(story.usage.totalTokens)}
             />
-            <StatCard
-              label="Cached Tokens"
-              value={formatNumber(story.usage.tokensCached)}
-            />
+            <StatCard label="Cached Tokens" value={formatNumber(story.usage.tokensCached)} />
             <StatCard label="Epic" value={story.epicId ?? "—"} />
             <StatCard label="Sessions" value={String(story.sessionCount)} />
           </div>
@@ -81,10 +72,7 @@ function AnalyticsStoryDetailPage() {
                 {storySessions.map((session) => (
                   <tr key={session.sessionId}>
                     <td>
-                      <span
-                        className="mono session-id"
-                        title={session.sessionId}
-                      >
+                      <span className="mono session-id" title={session.sessionId}>
                         {session.sessionId.length > 28
                           ? `${session.sessionId.slice(0, 28)}…`
                           : session.sessionId}
@@ -97,26 +85,15 @@ function AnalyticsStoryDetailPage() {
                       <span className="mono muted">{session.model}</span>
                     </td>
                     <td>
-                      <span
-                        className={`step-badge step-${session.status}`}
-                      >
-                        {session.status}
-                      </span>
+                      <span className={`step-badge step-${session.status}`}>{session.status}</span>
                     </td>
-                    <td className="num-col">
-                      {formatNumber(session.usage.requests, 2)}
-                    </td>
-                    <td className="num-col bold">
-                      {formatNumber(session.usage.totalTokens)}
-                    </td>
+                    <td className="num-col">{formatNumber(session.usage.requests, 2)}</td>
+                    <td className="num-col bold">{formatNumber(session.usage.totalTokens)}</td>
                     <td className="num-col">
                       <UsageCell usage={session.usage} />
                     </td>
                     <td>
-                      <UsageBar
-                        maxTotal={maxSessionTotal}
-                        usage={session.usage}
-                      />
+                      <UsageBar maxTotal={maxSessionTotal} usage={session.usage} />
                     </td>
                   </tr>
                 ))}
@@ -126,11 +103,11 @@ function AnalyticsStoryDetailPage() {
         </section>
       )}
     </main>
-  );
+  )
 }
 
 export const analyticsStoryDetailRoute = createRoute({
   getParentRoute: () => analyticsLayoutRoute,
   path: "story/$storyId",
   component: AnalyticsStoryDetailPage,
-});
+})

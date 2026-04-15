@@ -1,20 +1,20 @@
-import { createRoute, Link } from "@tanstack/react-router";
-import { analyticsLayoutRoute } from "./analytics";
+import { Link, createRoute } from "@tanstack/react-router"
+import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
-  formatNumber,
   StatCard,
   UsageBar,
   UsageCell,
+  formatNumber,
   useAnalyticsData,
-} from "./analytics-utils";
+} from "./analytics-utils"
 
 function AnalyticsEpicDetailPage() {
-  const { epicId } = analyticsEpicDetailRoute.useParams();
-  const { data, loading, error } = useAnalyticsData();
+  const { epicId } = analyticsEpicDetailRoute.useParams()
+  const { data, loading, error } = useAnalyticsData()
 
   if (loading) {
-    return <main className="screen loading">Loading analytics...</main>;
+    return <main className="screen loading">Loading analytics...</main>
   }
 
   if (error || !data) {
@@ -22,21 +22,15 @@ function AnalyticsEpicDetailPage() {
       <main className="screen loading">
         <p>{error || "Failed to load analytics"}</p>
       </main>
-    );
+    )
   }
 
-  const epic = data.epics.find((e) => e.epicId === epicId);
-  const epicStories = data.stories.filter((s) => s.epicId === epicId);
-  const epicSessions = data.sessions.filter((s) => s.epicId === epicId);
+  const epic = data.epics.find((e) => e.epicId === epicId)
+  const epicStories = data.stories.filter((s) => s.epicId === epicId)
+  const epicSessions = data.sessions.filter((s) => s.epicId === epicId)
 
-  const maxStoryTotal = Math.max(
-    ...epicStories.map((s) => s.usage.totalTokens),
-    1
-  );
-  const maxSessionTotal = Math.max(
-    ...epicSessions.map((s) => s.usage.totalTokens),
-    1
-  );
+  const maxStoryTotal = Math.max(...epicStories.map((s) => s.usage.totalTokens), 1)
+  const maxSessionTotal = Math.max(...epicSessions.map((s) => s.usage.totalTokens), 1)
 
   return (
     <main className="screen">
@@ -46,19 +40,13 @@ function AnalyticsEpicDetailPage() {
         <AnalyticsCostBanner costing={data.costing} />
         {epic && (
           <div className="stat-grid">
-            <StatCard
-              label="Requests"
-              value={formatNumber(epic.usage.requests, 2)}
-            />
+            <StatCard label="Requests" value={formatNumber(epic.usage.requests, 2)} />
             <StatCard
               label="Total Tokens"
               sub={`↑${formatNumber(epic.usage.tokensIn)} ↓${formatNumber(epic.usage.tokensOut)}`}
               value={formatNumber(epic.usage.totalTokens)}
             />
-            <StatCard
-              label="Cached Tokens"
-              value={formatNumber(epic.usage.tokensCached)}
-            />
+            <StatCard label="Cached Tokens" value={formatNumber(epic.usage.tokensCached)} />
             <StatCard label="Stories" value={String(epic.storyCount)} />
             <StatCard label="Sessions" value={String(epic.sessionCount)} />
           </div>
@@ -93,12 +81,8 @@ function AnalyticsEpicDetailPage() {
                         {story.storyId}
                       </Link>
                     </td>
-                    <td className="num-col">
-                      {formatNumber(story.usage.requests, 2)}
-                    </td>
-                    <td className="num-col bold">
-                      {formatNumber(story.usage.totalTokens)}
-                    </td>
+                    <td className="num-col">{formatNumber(story.usage.requests, 2)}</td>
+                    <td className="num-col bold">{formatNumber(story.usage.totalTokens)}</td>
                     <td className="num-col">
                       <UsageCell usage={story.usage} />
                     </td>
@@ -134,10 +118,7 @@ function AnalyticsEpicDetailPage() {
                 {epicSessions.map((session) => (
                   <tr key={session.sessionId}>
                     <td>
-                      <span
-                        className="mono session-id"
-                        title={session.sessionId}
-                      >
+                      <span className="mono session-id" title={session.sessionId}>
                         {session.sessionId.length > 28
                           ? `${session.sessionId.slice(0, 28)}…`
                           : session.sessionId}
@@ -149,20 +130,13 @@ function AnalyticsEpicDetailPage() {
                     <td>
                       <span className="mono muted">{session.model}</span>
                     </td>
-                    <td className="num-col">
-                      {formatNumber(session.usage.requests, 2)}
-                    </td>
-                    <td className="num-col bold">
-                      {formatNumber(session.usage.totalTokens)}
-                    </td>
+                    <td className="num-col">{formatNumber(session.usage.requests, 2)}</td>
+                    <td className="num-col bold">{formatNumber(session.usage.totalTokens)}</td>
                     <td className="num-col">
                       <UsageCell usage={session.usage} />
                     </td>
                     <td>
-                      <UsageBar
-                        maxTotal={maxSessionTotal}
-                        usage={session.usage}
-                      />
+                      <UsageBar maxTotal={maxSessionTotal} usage={session.usage} />
                     </td>
                   </tr>
                 ))}
@@ -172,11 +146,11 @@ function AnalyticsEpicDetailPage() {
         </section>
       )}
     </main>
-  );
+  )
 }
 
 export const analyticsEpicDetailRoute = createRoute({
   getParentRoute: () => analyticsLayoutRoute,
   path: "epic/$epicId",
   component: AnalyticsEpicDetailPage,
-});
+})

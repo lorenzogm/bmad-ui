@@ -1,17 +1,12 @@
-import { createRoute } from "@tanstack/react-router";
-import { analyticsLayoutRoute } from "./analytics";
-import {
-  AnalyticsCostBanner,
-  formatNumber,
-  StatCard,
-  useAnalyticsData,
-} from "./analytics-utils";
+import { createRoute } from "@tanstack/react-router"
+import { analyticsLayoutRoute } from "./analytics"
+import { AnalyticsCostBanner, StatCard, formatNumber, useAnalyticsData } from "./analytics-utils"
 
 function AnalyticsDashboardPage() {
-  const { data, loading, error } = useAnalyticsData();
+  const { data, loading, error } = useAnalyticsData()
 
   if (loading) {
-    return <main className="screen loading">Loading analytics...</main>;
+    return <main className="screen loading">Loading analytics...</main>
   }
 
   if (error || !data) {
@@ -19,12 +14,12 @@ function AnalyticsDashboardPage() {
       <main className="screen loading">
         <p>{error || "Failed to load analytics"}</p>
       </main>
-    );
+    )
   }
 
   const sessionsWithUsage = data.sessions.filter(
     (s) => s.usage.totalTokens > 0 || s.usage.requests > 0
-  );
+  )
 
   return (
     <main className="screen">
@@ -33,10 +28,7 @@ function AnalyticsDashboardPage() {
         <h2>Project Usage</h2>
         <AnalyticsCostBanner costing={data.costing} />
         <div className="stat-grid">
-          <StatCard
-            label="Total Requests"
-            value={formatNumber(data.project.requests, 2)}
-          />
+          <StatCard label="Total Requests" value={formatNumber(data.project.requests, 2)} />
           <StatCard
             label="Total Tokens"
             sub={`↑${formatNumber(data.project.tokensIn)} ↓${formatNumber(data.project.tokensOut)}`}
@@ -56,19 +48,16 @@ function AnalyticsDashboardPage() {
             sub={`${sessionsWithUsage.length} with usage data`}
             value={String(data.sessions.length)}
           />
-          <StatCard
-            label="Stories Tracked"
-            value={String(data.stories.length)}
-          />
+          <StatCard label="Stories Tracked" value={String(data.stories.length)} />
           <StatCard label="Epics Tracked" value={String(data.epics.length)} />
         </div>
       </section>
     </main>
-  );
+  )
 }
 
 export const analyticsDashboardRoute = createRoute({
   getParentRoute: () => analyticsLayoutRoute,
   path: "/",
   component: AnalyticsDashboardPage,
-});
+})

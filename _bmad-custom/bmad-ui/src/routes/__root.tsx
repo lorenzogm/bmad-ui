@@ -1,16 +1,11 @@
-import {
-  createRootRoute,
-  Link,
-  Outlet,
-  useLocation,
-} from "@tanstack/react-router";
+import { Link, Outlet, createRootRoute, useLocation } from "@tanstack/react-router"
 
-const TRAILING_SLASH_REGEX = /\/+$/;
+const TRAILING_SLASH_REGEX = /\/+$/
 
 const NAV_LINKS = [
   { label: "Home", to: "/" },
   { label: "Epics", to: "/epics" },
-] as const;
+] as const
 
 const ANALYTICS_SUBMENU = [
   { label: "Overview", to: "/analytics" },
@@ -18,13 +13,12 @@ const ANALYTICS_SUBMENU = [
   { label: "Stories", to: "/analytics/stories" },
   { label: "Sessions", to: "/analytics/sessions" },
   { label: "Models", to: "/analytics/models" },
-] as const;
+] as const
 
 function RootLayout() {
-  const location = useLocation();
-  const currentPath =
-    location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/";
-  const isAnalyticsSection = currentPath.startsWith("/analytics");
+  const location = useLocation()
+  const currentPath = location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/"
+  const isAnalyticsSection = currentPath.startsWith("/analytics")
 
   return (
     <div className="app-layout">
@@ -74,9 +68,9 @@ function RootLayout() {
         <Outlet />
       </div>
     </div>
-  );
+  )
 }
 
 export const rootRoute = createRootRoute({
   component: RootLayout,
-});
+})

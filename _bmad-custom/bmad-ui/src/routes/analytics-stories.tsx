@@ -1,18 +1,18 @@
-import { Link, createRoute } from "@tanstack/react-router";
-import { analyticsLayoutRoute } from "./analytics";
+import { Link, createRoute } from "@tanstack/react-router"
+import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
   UsageBar,
   UsageCell,
   formatNumber,
   useAnalyticsData,
-} from "./analytics-utils";
+} from "./analytics-utils"
 
 function AnalyticsStoriesPage() {
-  const { data, loading, error } = useAnalyticsData();
+  const { data, loading, error } = useAnalyticsData()
 
   if (loading) {
-    return <main className="screen loading">Loading analytics...</main>;
+    return <main className="screen loading">Loading analytics...</main>
   }
 
   if (error || !data) {
@@ -20,13 +20,10 @@ function AnalyticsStoriesPage() {
       <main className="screen loading">
         <p>{error || "Failed to load analytics"}</p>
       </main>
-    );
+    )
   }
 
-  const maxStoryTotal = Math.max(
-    ...data.stories.map((s) => s.usage.totalTokens),
-    1,
-  );
+  const maxStoryTotal = Math.max(...data.stories.map((s) => s.usage.totalTokens), 1)
 
   return (
     <main className="screen">
@@ -62,12 +59,8 @@ function AnalyticsStoriesPage() {
                   <td>
                     <span className="mono muted">{story.epicId ?? "—"}</span>
                   </td>
-                  <td className="num-col">
-                    {formatNumber(story.usage.requests, 2)}
-                  </td>
-                  <td className="num-col bold">
-                    {formatNumber(story.usage.totalTokens)}
-                  </td>
+                  <td className="num-col">{formatNumber(story.usage.requests, 2)}</td>
+                  <td className="num-col bold">{formatNumber(story.usage.totalTokens)}</td>
                   <td className="num-col">
                     <UsageCell usage={story.usage} />
                   </td>
@@ -89,11 +82,11 @@ function AnalyticsStoriesPage() {
         </div>
       </section>
     </main>
-  );
+  )
 }
 
 export const analyticsStoriesRoute = createRoute({
   getParentRoute: () => analyticsLayoutRoute,
   path: "stories",
   component: AnalyticsStoriesPage,
-});
+})

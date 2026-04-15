@@ -1,25 +1,25 @@
-import { Link, createRoute } from "@tanstack/react-router";
-import type { TokenUsage } from "../types";
-import { analyticsLayoutRoute } from "./analytics";
+import { Link, createRoute } from "@tanstack/react-router"
+import type { TokenUsage } from "../types"
+import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
   UsageBar,
   UsageCell,
   formatNumber,
   useAnalyticsData,
-} from "./analytics-utils";
+} from "./analytics-utils"
 
 type ModelAggregate = {
-  model: string;
-  sessionCount: number;
-  usage: TokenUsage;
-};
+  model: string
+  sessionCount: number
+  usage: TokenUsage
+}
 
 function AnalyticsModelsPage() {
-  const { data, loading, error } = useAnalyticsData();
+  const { data, loading, error } = useAnalyticsData()
 
   if (loading) {
-    return <main className="screen loading">Loading analytics...</main>;
+    return <main className="screen loading">Loading analytics...</main>
   }
 
   if (error || !data) {
@@ -27,33 +27,31 @@ function AnalyticsModelsPage() {
       <main className="screen loading">
         <p>{error || "Failed to load analytics"}</p>
       </main>
-    );
+    )
   }
 
-  const modelMap = new Map<string, ModelAggregate>();
+  const modelMap = new Map<string, ModelAggregate>()
   for (const session of data.sessions) {
-    const key = session.model || "unknown";
-    const existing = modelMap.get(key);
+    const key = session.model || "unknown"
+    const existing = modelMap.get(key)
     if (existing) {
-      existing.sessionCount += 1;
-      existing.usage.requests += session.usage.requests;
-      existing.usage.tokensIn += session.usage.tokensIn;
-      existing.usage.tokensOut += session.usage.tokensOut;
-      existing.usage.tokensCached += session.usage.tokensCached;
-      existing.usage.totalTokens += session.usage.totalTokens;
+      existing.sessionCount += 1
+      existing.usage.requests += session.usage.requests
+      existing.usage.tokensIn += session.usage.tokensIn
+      existing.usage.tokensOut += session.usage.tokensOut
+      existing.usage.tokensCached += session.usage.tokensCached
+      existing.usage.totalTokens += session.usage.totalTokens
     } else {
       modelMap.set(key, {
         model: key,
         sessionCount: 1,
         usage: { ...session.usage },
-      });
+      })
     }
   }
 
-  const models = [...modelMap.values()].sort(
-    (a, b) => b.usage.totalTokens - a.usage.totalTokens,
-  );
-  const maxTotal = Math.max(...models.map((m) => m.usage.totalTokens), 1);
+  const models = [...modelMap.values()].sort((a, b) => b.usage.totalTokens - a.usage.totalTokens)
+  const maxTotal = Math.max(...models.map((m) => m.usage.totalTokens), 1)
 
   return (
     <main className="screen">
@@ -86,12 +84,8 @@ function AnalyticsModelsPage() {
                     </Link>
                   </td>
                   <td className="num-col">{model.sessionCount}</td>
-                  <td className="num-col">
-                    {formatNumber(model.usage.requests, 2)}
-                  </td>
-                  <td className="num-col bold">
-                    {formatNumber(model.usage.totalTokens)}
-                  </td>
+                  <td className="num-col">{formatNumber(model.usage.requests, 2)}</td>
+                  <td className="num-col bold">{formatNumber(model.usage.totalTokens)}</td>
                   <td className="num-col">
                     <UsageCell usage={model.usage} />
                   </td>
@@ -112,11 +106,11 @@ function AnalyticsModelsPage() {
         </div>
       </section>
     </main>
-  );
+  )
 }
 
 export const analyticsModelsRoute = createRoute({
   getParentRoute: () => analyticsLayoutRoute,
   path: "models",
   component: AnalyticsModelsPage,
-});
+})

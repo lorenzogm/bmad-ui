@@ -1,12 +1,12 @@
-import { createRoute, Outlet } from "@tanstack/react-router";
-import { rootRoute } from "./__root";
+import { Outlet, createRoute } from "@tanstack/react-router"
+import { rootRoute } from "./__root"
 
 function AnalyticsLayout() {
-  return <Outlet />;
+  return <Outlet />
 }
 
 export const analyticsLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "analytics",
   component: AnalyticsLayout,
-});
+})

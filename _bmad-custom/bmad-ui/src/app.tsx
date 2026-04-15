@@ -1,149 +1,128 @@
-import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import type {
-  AgentSession,
-  AgentRunGroup,
-  OverviewResponse,
-  RuntimeSession,
-} from "./types";
+import { Link } from "@tanstack/react-router"
+import { useEffect, useMemo, useState } from "react"
+import type { AgentRunGroup, AgentSession, OverviewResponse, RuntimeSession } from "./types"
 
-const HTTP_CONFLICT = 409;
+const HTTP_CONFLICT = 409
 
-const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/;
-const SECONDS_PER_MINUTE = 60;
-const SECONDS_PER_HOUR = 3600;
-const SECONDS_PER_DAY = 86_400;
-const MILLISECONDS_PER_SECOND = 1000;
-const SESSION_STATUS_FILTER_STORAGE_KEY =
-  "bmad-ui-agent-sessions-status-filters-v1";
-const ALL_SESSION_STATUS_FILTER = "__all__";
-const SESSION_TABLE_PAGE_SIZE = 25;
+const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
+const SECONDS_PER_MINUTE = 60
+const SECONDS_PER_HOUR = 3600
+const SECONDS_PER_DAY = 86_400
+const MILLISECONDS_PER_SECOND = 1000
+const SESSION_STATUS_FILTER_STORAGE_KEY = "bmad-ui-agent-sessions-status-filters-v1"
+const ALL_SESSION_STATUS_FILTER = "__all__"
+const SESSION_TABLE_PAGE_SIZE = 25
 const DEFAULT_SESSION_STATUS_FILTERS = [
   "planned",
   "running",
   "completed",
   "failed",
   "cancelled",
-] as const;
+] as const
 const SPRINT_WARNING_FALLBACK_MESSAGE =
-  "epics.md and sprint-status.yaml are inconsistent. Re-run Sprint Planning.";
+  "epics.md and sprint-status.yaml are inconsistent. Re-run Sprint Planning."
 
-type OverviewEpic = OverviewResponse["sprintOverview"]["epics"][number];
-type OverviewEpicConsistency = OverviewResponse["epicConsistency"];
-type SessionActionKind = "start" | "abort";
+type OverviewEpic = OverviewResponse["sprintOverview"]["epics"][number]
+type OverviewEpicConsistency = OverviewResponse["epicConsistency"]
+type SessionActionKind = "start" | "abort"
 
 export type SessionActionState = {
-  sessionId: string;
-  action: SessionActionKind;
-} | null;
+  sessionId: string
+  action: SessionActionKind
+} | null
 
 type SessionUsageSummary = {
-  requests: number;
-  totalTokens: number;
-};
+  requests: number
+  totalTokens: number
+}
 
 function formatDate(value: string | null): string {
   if (!value) {
-    return "-";
+    return "-"
   }
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString()
 }
 
-function formatDuration(
-  startedAt: string | null,
-  endedAt: string | null
-): string {
+function formatDuration(startedAt: string | null, endedAt: string | null): string {
   if (!startedAt) {
-    return "-";
+    return "-"
   }
 
-  const startedMs = Date.parse(startedAt);
+  const startedMs = Date.parse(startedAt)
   if (Number.isNaN(startedMs)) {
-    return "-";
+    return "-"
   }
 
-  const endMs = endedAt ? Date.parse(endedAt) : Date.now();
+  const endMs = endedAt ? Date.parse(endedAt) : Date.now()
   if (Number.isNaN(endMs)) {
-    return "-";
+    return "-"
   }
 
-  const totalSeconds = Math.max(
-    0,
-    Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND)
-  );
-  const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
-  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
-  const minutes = Math.floor(
-    (totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
-  );
-  const seconds = totalSeconds % SECONDS_PER_MINUTE;
+  const totalSeconds = Math.max(0, Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND))
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
+  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
+  const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE)
+  const seconds = totalSeconds % SECONDS_PER_MINUTE
 
-  const parts: string[] = [];
+  const parts: string[] = []
   if (days > 0) {
-    parts.push(`${days}d`);
+    parts.push(`${days}d`)
   }
   if (hours > 0 || days > 0) {
-    parts.push(`${hours}h`);
+    parts.push(`${hours}h`)
   }
   if (minutes > 0 || hours > 0 || days > 0) {
-    parts.push(`${minutes}m`);
+    parts.push(`${minutes}m`)
   }
-  parts.push(`${seconds}s`);
+  parts.push(`${seconds}s`)
 
-  return parts.join(" ");
+  return parts.join(" ")
 }
 
 function parseStoryTicket(storyId: string): { epic: number; story: number } {
-  const match = storyId.match(STORY_TICKET_REGEX);
+  const match = storyId.match(STORY_TICKET_REGEX)
   if (!match) {
-    return { epic: Number.POSITIVE_INFINITY, story: Number.POSITIVE_INFINITY };
+    return { epic: Number.POSITIVE_INFINITY, story: Number.POSITIVE_INFINITY }
   }
   return {
     epic: Number(match[1]),
     story: Number(match[2]),
-  };
+  }
 }
 
 function toShortStoryId(storyId: string | null): string {
   if (!storyId) {
-    return "-";
+    return "-"
   }
 
-  const ticket = parseStoryTicket(storyId);
-  const hasValidTicket =
-    Number.isFinite(ticket.epic) && Number.isFinite(ticket.story);
+  const ticket = parseStoryTicket(storyId)
+  const hasValidTicket = Number.isFinite(ticket.epic) && Number.isFinite(ticket.story)
   if (!hasValidTicket) {
-    return storyId;
+    return storyId
   }
 
-  return `${ticket.epic}-${ticket.story}`;
+  return `${ticket.epic}-${ticket.story}`
 }
 
 function formatUsageCount(value: number | undefined): string {
   if (typeof value !== "number" || Number.isNaN(value)) {
-    return "-";
+    return "-"
   }
-  return value.toLocaleString();
+  return value.toLocaleString()
 }
 
 type NormalizedSession =
   | { source: "runtime"; data: RuntimeSession }
-  | { source: "copilot"; data: AgentSession };
+  | { source: "copilot"; data: AgentSession }
 
 function SessionsTable(props: {
-  sessions: NormalizedSession[];
-  usageBySessionId: Map<string, SessionUsageSummary>;
-  sessionActionPending: SessionActionState;
-  onStartSession: (sessionId: string) => void;
-  onAbortSession: (sessionId: string) => void;
+  sessions: NormalizedSession[]
+  usageBySessionId: Map<string, SessionUsageSummary>
+  sessionActionPending: SessionActionState
+  onStartSession: (sessionId: string) => void
+  onAbortSession: (sessionId: string) => void
 }) {
-  const {
-    sessions,
-    usageBySessionId,
-    sessionActionPending,
-    onAbortSession,
-    onStartSession,
-  } = props;
+  const { sessions, usageBySessionId, sessionActionPending, onAbortSession, onStartSession } = props
   return (
     <div className="table-wrap">
       <table>
@@ -163,37 +142,31 @@ function SessionsTable(props: {
         <tbody>
           {sessions.map((row) => {
             if (row.source === "runtime") {
-              const session = row.data;
-              const usage = usageBySessionId.get(session.id);
-              const hasPendingAction = sessionActionPending !== null;
-              const isRowActionPending =
-                sessionActionPending?.sessionId === session.id;
-              const canStart = session.status === "planned";
-              const canAbort =
-                session.status === "planned" || session.status === "running";
+              const session = row.data
+              const usage = usageBySessionId.get(session.id)
+              const hasPendingAction = sessionActionPending !== null
+              const isRowActionPending = sessionActionPending?.sessionId === session.id
+              const canStart = session.status === "planned"
+              const canAbort = session.status === "planned" || session.status === "running"
 
               return (
                 <tr key={session.id}>
                   <td>{toShortStoryId(session.storyId)}</td>
                   <td>
-                    <Link
-                      params={{ sessionId: session.id }}
-                      to="/session/$sessionId"
-                    >
+                    <Link params={{ sessionId: session.id }} to="/session/$sessionId">
                       {session.skill}
                     </Link>
                   </td>
                   <td>{session.model}</td>
                   <td>
-                    <span className={`step-badge step-${session.status}`}>
-                      {session.status}
-                    </span>
+                    <span className={`step-badge step-${session.status}`}>{session.status}</span>
                   </td>
                   <td>{formatDate(session.startedAt)}</td>
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
                   <td>{formatUsageCount(usage?.requests)}</td>
                   <td>{formatUsageCount(usage?.totalTokens)}</td>
                   <td>
+                    {/* biome-ignore lint/a11y/useSemanticElements: action group inside table cell */}
                     <div className="session-actions" role="group">
                       <button
                         aria-label="Start session"
@@ -225,29 +198,25 @@ function SessionsTable(props: {
                     </div>
                   </td>
                 </tr>
-              );
+              )
             }
 
-            const session = row.data;
+            const session = row.data
             return (
               <tr key={session.session_id ?? session.start_date}>
                 <td>{toShortStoryId(session.storyId ?? null)}</td>
                 <td>{session.agent}</td>
                 <td>{session.model}</td>
                 <td>
-                  <span className={`step-badge step-${session.status}`}>
-                    {session.status}
-                  </span>
+                  <span className={`step-badge step-${session.status}`}>{session.status}</span>
                 </td>
                 <td>{formatDate(session.start_date)}</td>
                 <td>{formatDuration(session.start_date, session.end_date)}</td>
                 <td>{formatUsageCount(session.premium_requests)}</td>
-                <td>
-                  {formatUsageCount(session.tokens?.total)}
-                </td>
+                <td>{formatUsageCount(session.tokens?.total)}</td>
                 <td>-</td>
               </tr>
-            );
+            )
           })}
           {sessions.length === 0 ? (
             <tr>
@@ -257,189 +226,162 @@ function SessionsTable(props: {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
 export function AgentSessionsSection(props: {
-  runGroups: AgentRunGroup[];
-  agentSessions: AgentSession[];
-  sessionActionPending: SessionActionState;
-  onStartSession: (sessionId: string) => void;
-  onAbortSession: (sessionId: string) => void;
+  runGroups: AgentRunGroup[]
+  agentSessions: AgentSession[]
+  sessionActionPending: SessionActionState
+  onStartSession: (sessionId: string) => void
+  onAbortSession: (sessionId: string) => void
 }) {
-  const {
-    runGroups,
-    agentSessions,
-    sessionActionPending,
-    onAbortSession,
-    onStartSession,
-  } = props;
-  const [page, setPage] = useState(0);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([
-    ALL_SESSION_STATUS_FILTER,
-  ]);
+  const { runGroups, agentSessions, sessionActionPending, onAbortSession, onStartSession } = props
+  const [page, setPage] = useState(0)
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([ALL_SESSION_STATUS_FILTER])
 
   const allSessions = useMemo<NormalizedSession[]>(() => {
     const runtime: NormalizedSession[] = runGroups
       .flatMap((group) => group.sessions)
-      .map((s) => ({ source: "runtime", data: s }));
+      .map((s) => ({ source: "runtime", data: s }))
     const copilot: NormalizedSession[] = agentSessions.map((s) => ({
       source: "copilot",
       data: s,
-    }));
-    const merged = [...runtime, ...copilot];
+    }))
+    const merged = [...runtime, ...copilot]
     merged.sort((a, b) => {
-      const aDate =
-        a.source === "runtime" ? a.data.startedAt : a.data.start_date;
-      const bDate =
-        b.source === "runtime" ? b.data.startedAt : b.data.start_date;
-      return (bDate ?? "").localeCompare(aDate ?? "");
-    });
-    return merged;
-  }, [runGroups, agentSessions]);
+      const aDate = a.source === "runtime" ? a.data.startedAt : a.data.start_date
+      const bDate = b.source === "runtime" ? b.data.startedAt : b.data.start_date
+      return (bDate ?? "").localeCompare(aDate ?? "")
+    })
+    return merged
+  }, [runGroups, agentSessions])
 
   const usageBySessionId = useMemo(() => {
-    const map = new Map<string, SessionUsageSummary>();
+    const map = new Map<string, SessionUsageSummary>()
     for (const session of agentSessions) {
-      const sessionId = session.session_id;
+      const sessionId = session.session_id
       if (!sessionId) {
-        continue;
+        continue
       }
       map.set(sessionId, {
         requests: session.premium_requests,
         totalTokens: session.tokens?.total ?? 0,
-      });
+      })
     }
-    return map;
-  }, [agentSessions]);
+    return map
+  }, [agentSessions])
 
   useEffect(() => {
     if (typeof window === "undefined") {
-      return;
+      return
     }
 
     try {
-      const raw = window.localStorage.getItem(
-        SESSION_STATUS_FILTER_STORAGE_KEY
-      );
+      const raw = window.localStorage.getItem(SESSION_STATUS_FILTER_STORAGE_KEY)
       if (!raw) {
-        return;
+        return
       }
 
-      const parsed = JSON.parse(raw);
+      const parsed = JSON.parse(raw)
       if (!Array.isArray(parsed)) {
-        return;
+        return
       }
 
-      const next = parsed.filter(
-        (item): item is string => typeof item === "string"
-      );
+      const next = parsed.filter((item): item is string => typeof item === "string")
       if (next.length > 0) {
-        setSelectedStatuses(next);
+        setSelectedStatuses(next)
       }
     } catch {
       // Ignore malformed persisted filters.
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (typeof window === "undefined") {
-      return;
+      return
     }
 
-    window.localStorage.setItem(
-      SESSION_STATUS_FILTER_STORAGE_KEY,
-      JSON.stringify(selectedStatuses)
-    );
-  }, [selectedStatuses]);
+    window.localStorage.setItem(SESSION_STATUS_FILTER_STORAGE_KEY, JSON.stringify(selectedStatuses))
+  }, [selectedStatuses])
 
   const availableStatuses = useMemo(() => {
-    const known = [...DEFAULT_SESSION_STATUS_FILTERS];
+    const known = [...DEFAULT_SESSION_STATUS_FILTERS]
     const discovered = allSessions
-      .map((row) =>
-        row.source === "runtime"
-          ? row.data.status
-          : row.data.status
-      )
+      .map((row) => (row.source === "runtime" ? row.data.status : row.data.status))
       .filter((status) => !known.includes(status as (typeof known)[number]))
-      .sort((a, b) => a.localeCompare(b));
+      .sort((a, b) => a.localeCompare(b))
 
-    return [...known, ...discovered];
-  }, [allSessions]);
+    return [...known, ...discovered]
+  }, [allSessions])
 
   useEffect(() => {
     setSelectedStatuses((current) => {
       if (current.includes(ALL_SESSION_STATUS_FILTER)) {
-        return [ALL_SESSION_STATUS_FILTER];
+        return [ALL_SESSION_STATUS_FILTER]
       }
 
-      const normalized = current.filter((status) =>
-        availableStatuses.includes(status)
-      );
+      const normalized = current.filter((status) => availableStatuses.includes(status))
 
       if (normalized.length === 0) {
-        return [ALL_SESSION_STATUS_FILTER];
+        return [ALL_SESSION_STATUS_FILTER]
       }
 
       if (normalized.length !== current.length) {
-        return normalized;
+        return normalized
       }
 
-      return current;
-    });
-  }, [availableStatuses]);
+      return current
+    })
+  }, [availableStatuses])
 
-  const isAllSelected = selectedStatuses.includes(ALL_SESSION_STATUS_FILTER);
+  const isAllSelected = selectedStatuses.includes(ALL_SESSION_STATUS_FILTER)
 
   const filteredSessions = useMemo(() => {
     if (isAllSelected) {
-      return allSessions;
+      return allSessions
     }
 
     return allSessions.filter((row) => {
-      const status =
-        row.source === "runtime" ? row.data.status : row.data.status;
-      return selectedStatuses.includes(status);
-    });
-  }, [allSessions, isAllSelected, selectedStatuses]);
+      const status = row.source === "runtime" ? row.data.status : row.data.status
+      return selectedStatuses.includes(status)
+    })
+  }, [allSessions, isAllSelected, selectedStatuses])
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredSessions.length / SESSION_TABLE_PAGE_SIZE)
-  );
+  const totalPages = Math.max(1, Math.ceil(filteredSessions.length / SESSION_TABLE_PAGE_SIZE))
 
   useEffect(() => {
     setPage((current) => {
-      const maxPage = Math.max(0, totalPages - 1);
-      return current > maxPage ? maxPage : current;
-    });
-  }, [totalPages]);
+      const maxPage = Math.max(0, totalPages - 1)
+      return current > maxPage ? maxPage : current
+    })
+  }, [totalPages])
 
   const paginatedSessions = useMemo(() => {
-    const start = page * SESSION_TABLE_PAGE_SIZE;
-    return filteredSessions.slice(start, start + SESSION_TABLE_PAGE_SIZE);
-  }, [filteredSessions, page]);
+    const start = page * SESSION_TABLE_PAGE_SIZE
+    return filteredSessions.slice(start, start + SESSION_TABLE_PAGE_SIZE)
+  }, [filteredSessions, page])
 
   const toggleStatusFilter = (status: string) => {
     setSelectedStatuses((current) => {
       if (status === ALL_SESSION_STATUS_FILTER) {
-        return [ALL_SESSION_STATUS_FILTER];
+        return [ALL_SESSION_STATUS_FILTER]
       }
 
       if (current.includes(ALL_SESSION_STATUS_FILTER)) {
-        return [status];
+        return [status]
       }
 
       if (current.includes(status)) {
         if (current.length === 1) {
-          return [ALL_SESSION_STATUS_FILTER];
+          return [ALL_SESSION_STATUS_FILTER]
         }
-        return current.filter((item) => item !== status);
+        return current.filter((item) => item !== status)
       }
 
-      return [...current, status];
-    });
-  };
+      return [...current, status]
+    })
+  }
 
   return (
     <section className="panel reveal delay-2">
@@ -482,11 +424,9 @@ export function AgentSessionsSection(props: {
       <div className="session-status-filters">
         <span className="session-status-filters-label">Status filters</span>
         {[ALL_SESSION_STATUS_FILTER, ...availableStatuses].map((status) => {
-          const isAll = status === ALL_SESSION_STATUS_FILTER;
-          const isSelected = isAll
-            ? isAllSelected
-            : selectedStatuses.includes(status);
-          const label = isAll ? "All" : status;
+          const isAll = status === ALL_SESSION_STATUS_FILTER
+          const isSelected = isAll ? isAllSelected : selectedStatuses.includes(status)
+          const label = isAll ? "All" : status
           return (
             <button
               aria-pressed={isSelected}
@@ -495,13 +435,9 @@ export function AgentSessionsSection(props: {
               onClick={() => toggleStatusFilter(status)}
               type="button"
             >
-              <span
-                className={`step-badge ${isAll ? "step-all" : `step-${status}`}`}
-              >
-                {label}
-              </span>
+              <span className={`step-badge ${isAll ? "step-all" : `step-${status}`}`}>{label}</span>
             </button>
-          );
+          )
         })}
       </div>
 
@@ -515,9 +451,7 @@ export function AgentSessionsSection(props: {
               flexWrap: "wrap",
             }}
           >
-            <span className="eyebrow">
-              Total: {filteredSessions.length} sessions
-            </span>
+            <span className="eyebrow">Total: {filteredSessions.length} sessions</span>
             <span className="eyebrow">Per page: {SESSION_TABLE_PAGE_SIZE}</span>
           </div>
           <SessionsTable
@@ -532,30 +466,30 @@ export function AgentSessionsSection(props: {
         <p className="subtitle">No sessions recorded yet.</p>
       )}
     </section>
-  );
+  )
 }
 
 type WorkflowStep = {
-  id: string;
-  name: string;
-  isOptional: boolean;
-  isCompleted: boolean;
-  skill: string;
-};
+  id: string
+  name: string
+  isOptional: boolean
+  isCompleted: boolean
+  skill: string
+}
 
 type WorkflowPhase = {
-  id: string;
-  number: number;
-  name: string;
-  description: string;
-  isOptional: boolean;
-  steps: WorkflowStep[];
-};
+  id: string
+  number: number
+  name: string
+  description: string
+  isOptional: boolean
+  steps: WorkflowStep[]
+}
 
 type WorkflowStatus = {
-  phases: WorkflowPhase[];
-  nextActionStep: WorkflowStep | null;
-};
+  phases: WorkflowPhase[]
+  nextActionStep: WorkflowStep | null
+}
 
 function makeStep(
   id: string,
@@ -571,14 +505,14 @@ function makeStep(
     isOptional,
     isCompleted: matcher(artifactFiles),
     skill,
-  };
+  }
 }
 
 function detectWorkflowStatus(
   planningFiles: string[],
   implementationFiles: string[]
 ): WorkflowStatus {
-  const allFiles = [...planningFiles, ...implementationFiles];
+  const allFiles = [...planningFiles, ...implementationFiles]
 
   const phases: WorkflowPhase[] = [
     {
@@ -588,13 +522,8 @@ function detectWorkflowStatus(
       description: "Optional research and ideation before planning",
       isOptional: true,
       steps: [
-        makeStep(
-          "brainstorming",
-          "Brainstorming",
-          "bmad-brainstorming",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("brainstorm"))
+        makeStep("brainstorming", "Brainstorming", "bmad-brainstorming", true, planningFiles, (f) =>
+          f.some((x) => x.includes("brainstorm"))
         ),
         makeStep(
           "market-research",
@@ -620,21 +549,11 @@ function detectWorkflowStatus(
           planningFiles,
           (f) => f.some((x) => x.includes("technical-research"))
         ),
-        makeStep(
-          "product-brief",
-          "Product Brief",
-          "bmad-product-brief",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("brief"))
+        makeStep("product-brief", "Product Brief", "bmad-product-brief", true, planningFiles, (f) =>
+          f.some((x) => x.includes("brief"))
         ),
-        makeStep(
-          "prfaq",
-          "PRFAQ",
-          "bmad-prfaq",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("prfaq"))
+        makeStep("prfaq", "PRFAQ", "bmad-prfaq", true, planningFiles, (f) =>
+          f.some((x) => x.includes("prfaq"))
         ),
       ],
     },
@@ -653,13 +572,8 @@ function detectWorkflowStatus(
           planningFiles,
           (f) => f.some((x) => x.toLowerCase() === "prd.md")
         ),
-        makeStep(
-          "ux",
-          "UX Design",
-          "bmad-create-ux-design",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("ux"))
+        makeStep("ux", "UX Design", "bmad-create-ux-design", true, planningFiles, (f) =>
+          f.some((x) => x.toLowerCase().includes("ux"))
         ),
       ],
     },
@@ -703,26 +617,21 @@ function detectWorkflowStatus(
       description: "Build epic by epic, story by story",
       isOptional: false,
       steps: [
-        makeStep(
-          "sprint",
-          "Sprint Planning",
-          "bmad-sprint-planning",
-          false,
-          allFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("sprint-status"))
+        makeStep("sprint", "Sprint Planning", "bmad-sprint-planning", false, allFiles, (f) =>
+          f.some((x) => x.toLowerCase().includes("sprint-status"))
         ),
       ],
     },
-  ];
+  ]
 
   // Find the single next action: first incomplete non-optional step,
   // or first incomplete optional step if no required steps are pending.
-  let nextActionStep: WorkflowStep | null = null;
+  let nextActionStep: WorkflowStep | null = null
   outer: for (const phase of phases) {
     for (const step of phase.steps) {
       if (!step.isCompleted && !step.isOptional) {
-        nextActionStep = step;
-        break outer;
+        nextActionStep = step
+        break outer
       }
     }
   }
@@ -730,83 +639,71 @@ function detectWorkflowStatus(
     outer2: for (const phase of phases) {
       for (const step of phase.steps) {
         if (!step.isCompleted) {
-          nextActionStep = step;
-          break outer2;
+          nextActionStep = step
+          break outer2
         }
       }
     }
   }
 
-  return { phases, nextActionStep };
+  return { phases, nextActionStep }
 }
 
 function BMADWorkflowSection(props: {
-  planningFiles: string[];
-  implementationFiles: string[];
-  activeSkill: string | null;
-  epics: OverviewEpic[];
-  epicLabels: Map<string, string>;
-  epicConsistency: OverviewEpicConsistency;
+  planningFiles: string[]
+  implementationFiles: string[]
+  activeSkill: string | null
+  epics: OverviewEpic[]
+  epicLabels: Map<string, string>
+  epicConsistency: OverviewEpicConsistency
 }) {
-  const {
-    planningFiles,
-    implementationFiles,
-    activeSkill,
-    epics,
-    epicLabels,
-    epicConsistency,
-  } = props;
-  const { phases, nextActionStep } = detectWorkflowStatus(
-    planningFiles,
-    implementationFiles
-  );
-  const sortedEpics = useMemo(
-    () => [...epics].sort((a, b) => a.number - b.number),
-    [epics]
-  );
+  const { planningFiles, implementationFiles, activeSkill, epics, epicLabels, epicConsistency } =
+    props
+  const { phases, nextActionStep } = detectWorkflowStatus(planningFiles, implementationFiles)
+  const sortedEpics = useMemo(() => [...epics].sort((a, b) => a.number - b.number), [epics])
 
   // Default: open the phase containing the next required action,
   // or the Implementation phase if all required steps are done.
   const defaultOpenPhase = nextActionStep
     ? phases.find((p) => p.steps.some((s) => s.id === nextActionStep.id))
-    : phases.find((p) => p.id === "implementation") ?? phases[phases.length - 1];
-  const defaultOpen = new Set([defaultOpenPhase?.id].filter(Boolean) as string[]);
-  const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen);
-  const [pendingActiveSkill, setPendingActiveSkill] = useState<string | null>(null);
+    : (phases.find((p) => p.id === "implementation") ?? phases[phases.length - 1])
+  const defaultOpen = new Set([defaultOpenPhase?.id].filter(Boolean) as string[])
+  const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen)
+  const [pendingActiveSkill, setPendingActiveSkill] = useState<string | null>(null)
 
   // Once the server confirms the active skill via SSE, clear the optimistic state
   useEffect(() => {
     if (activeSkill !== null) {
-      setPendingActiveSkill(null);
+      setPendingActiveSkill(null)
     }
-  }, [activeSkill]);
+  }, [activeSkill])
 
-  const effectiveActiveSkill = activeSkill ?? pendingActiveSkill;
+  const effectiveActiveSkill = activeSkill ?? pendingActiveSkill
 
   const togglePhase = (id: string) => {
     setOpenPhases((prev) => {
-      const next = new Set(prev);
+      const next = new Set(prev)
       if (next.has(id)) {
-        next.delete(id);
+        next.delete(id)
       } else {
-        next.add(id);
+        next.add(id)
       }
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
   const handlePlayClick = async (step: WorkflowStep) => {
-    setPendingActiveSkill(step.skill);
+    setPendingActiveSkill(step.skill)
     try {
       await fetch("/api/workflow/run-skill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ skill: step.skill }),
-      });
+      })
     } catch (_err) {
       // ignore fetch errors — server will log
     }
-  };
+  }
 
   return (
     <section className="panel reveal delay-1">
@@ -814,26 +711,22 @@ function BMADWorkflowSection(props: {
 
       <div className="workflow-phases">
         {phases.map((phase) => {
-          const isOpen = openPhases.has(phase.id);
-          const hasNextAction = phase.steps.some(
-            (s) => s.id === nextActionStep?.id
-          );
+          const isOpen = openPhases.has(phase.id)
+          const hasNextAction = phase.steps.some((s) => s.id === nextActionStep?.id)
 
           // For the implementation phase, progress includes steps (Sprint Planning)
           // plus all epics.
-          const isImplementationPhase = phase.id === "implementation";
-          const epicsDoneCount = sortedEpics.filter(
-            (e) => e.status === "done"
-          ).length;
-          const epicsTotal = sortedEpics.length;
-          const stepsDone = phase.steps.filter((s) => s.isCompleted).length;
+          const isImplementationPhase = phase.id === "implementation"
+          const epicsDoneCount = sortedEpics.filter((e) => e.status === "done").length
+          const epicsTotal = sortedEpics.length
+          const stepsDone = phase.steps.filter((s) => s.isCompleted).length
 
-          const progressDone = isImplementationPhase && epicsTotal > 0
-            ? stepsDone + epicsDoneCount
-            : stepsDone;
-          const progressTotal = isImplementationPhase && epicsTotal > 0
-            ? phase.steps.length + epicsTotal
-            : phase.steps.length;
+          const progressDone =
+            isImplementationPhase && epicsTotal > 0 ? stepsDone + epicsDoneCount : stepsDone
+          const progressTotal =
+            isImplementationPhase && epicsTotal > 0
+              ? phase.steps.length + epicsTotal
+              : phase.steps.length
 
           return (
             <div
@@ -848,40 +741,30 @@ function BMADWorkflowSection(props: {
               >
                 <span className="workflow-phase-number">{phase.number}</span>
                 <span className="workflow-phase-name">{phase.name}</span>
-                {phase.isOptional && (
-                  <span className="workflow-step-optional">optional</span>
-                )}
+                {phase.isOptional && <span className="workflow-step-optional">optional</span>}
                 <span className="workflow-phase-progress">
                   {progressDone}/{progressTotal}
                 </span>
                 {(() => {
                   if (isImplementationPhase && epicsTotal > 0) {
-                    const allDone = progressDone === progressTotal;
-                    const anyProgress = stepsDone > 0 || epicsDoneCount > 0 || sortedEpics.some((e) => e.status === "in-progress");
-                    const status = allDone
-                      ? "done"
-                      : anyProgress
-                        ? "in-progress"
-                        : "backlog";
-                    return (
-                      <span className={`step-badge step-${status}`}>
-                        {status}
-                      </span>
-                    );
+                    const allDone = progressDone === progressTotal
+                    const anyProgress =
+                      stepsDone > 0 ||
+                      epicsDoneCount > 0 ||
+                      sortedEpics.some((e) => e.status === "in-progress")
+                    const status = allDone ? "done" : anyProgress ? "in-progress" : "backlog"
+                    return <span className={`step-badge step-${status}`}>{status}</span>
                   }
-                  const requiredSteps = phase.steps.filter((s) => !s.isOptional);
+                  const requiredSteps = phase.steps.filter((s) => !s.isOptional)
                   const allRequiredDone =
-                    requiredSteps.length === 0 ||
-                    requiredSteps.every((s) => s.isCompleted);
-                  const anyDone = phase.steps.some((s) => s.isCompleted);
+                    requiredSteps.length === 0 || requiredSteps.every((s) => s.isCompleted)
+                  const anyDone = phase.steps.some((s) => s.isCompleted)
                   const status = allRequiredDone
                     ? "done"
                     : anyDone || hasNextAction
                       ? "in-progress"
-                      : "pending";
-                  return (
-                    <span className={`step-badge step-${status}`}>{status}</span>
-                  );
+                      : "pending"
+                  return <span className={`step-badge step-${status}`}>{status}</span>
                 })()}
                 <span className="workflow-phase-chevron" aria-hidden="true">
                   {isOpen ? "▲" : "▼"}
@@ -890,27 +773,25 @@ function BMADWorkflowSection(props: {
               {isOpen && (
                 <div className="workflow-steps">
                   {phase.steps.map((step) => {
-                    const isRunning = step.skill === effectiveActiveSkill;
-                    const shouldShowEpics =
-                      phase.id === "implementation" && step.id === "sprint";
-                    const hasSprintWarning =
-                      shouldShowEpics && epicConsistency.hasMismatch;
+                    const isRunning = step.skill === effectiveActiveSkill
+                    const shouldShowEpics = phase.id === "implementation" && step.id === "sprint"
+                    const hasSprintWarning = shouldShowEpics && epicConsistency.hasMismatch
                     const stepStatusClassName = isRunning
                       ? "step-running"
                       : hasSprintWarning
                         ? "step-warning"
                         : step.isCompleted
                           ? "step-done"
-                          : "step-not-started";
+                          : "step-not-started"
                     const stepStatusLabel = isRunning
                       ? "running"
                       : hasSprintWarning
                         ? "warning"
                         : step.isCompleted
                           ? "done"
-                          : "pending";
+                          : "pending"
                     const sprintWarningMessage =
-                      epicConsistency.warning ?? SPRINT_WARNING_FALLBACK_MESSAGE;
+                      epicConsistency.warning ?? SPRINT_WARNING_FALLBACK_MESSAGE
 
                     return (
                       <div
@@ -931,29 +812,30 @@ function BMADWorkflowSection(props: {
                             </span>
                           ) : null}
                         </div>
-                        {(nextActionStep?.id === step.id || hasSprintWarning) &&
-                          !isRunning && (
-                            <button
-                              className="icon-button icon-button-play"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                void handlePlayClick(step);
-                              }}
-                              title={`Run ${step.skill}`}
-                              type="button"
-                            >
-                              <span aria-hidden="true" className="icon-glyph">
-                                ▶
-                              </span>
-                            </button>
-                          )}
+                        {(nextActionStep?.id === step.id || hasSprintWarning) && !isRunning && (
+                          <button
+                            className="icon-button icon-button-play"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              void handlePlayClick(step)
+                            }}
+                            title={`Run ${step.skill}`}
+                            type="button"
+                          >
+                            <span aria-hidden="true" className="icon-glyph">
+                              ▶
+                            </span>
+                          </button>
+                        )}
                         <span
                           className={`step-badge ${stepStatusClassName}`}
                           title={hasSprintWarning ? sprintWarningMessage : undefined}
                         >
                           {isRunning ? (
                             <>
-                              <span aria-hidden="true" className="agent-icon">⬡</span>
+                              <span aria-hidden="true" className="agent-icon">
+                                ⬡
+                              </span>
                               {" running"}
                             </>
                           ) : (
@@ -961,42 +843,34 @@ function BMADWorkflowSection(props: {
                           )}
                         </span>
                       </div>
-                    );
+                    )
                   })}
                   {phase.id === "implementation" &&
                     sortedEpics.map((epic) => (
                       <div className="workflow-step" key={epic.id}>
                         <div className="workflow-step-body">
-                          <Link
-                            params={{ epicId: epic.id }}
-                            to="/epic/$epicId"
-                          >
+                          <Link params={{ epicId: epic.id }} to="/epic/$epicId">
                             {`Epic ${epic.number}: ${epicLabels.get(epic.id) ?? epic.id}`}
                           </Link>
                         </div>
-                        <span className={`step-badge step-${epic.status}`}>
-                          {epic.status}
-                        </span>
+                        <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
                       </div>
                     ))}
                 </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
     </section>
-  );
+  )
 }
 
 export function EpicTableSection(props: {
-  filteredEpics: OverviewEpic[];
-  epicLabels: Map<string, string>;
+  filteredEpics: OverviewEpic[]
+  epicLabels: Map<string, string>
 }) {
-  const {
-    filteredEpics,
-    epicLabels,
-  } = props;
+  const { filteredEpics, epicLabels } = props
 
   return (
     <section className="panel reveal delay-3">
@@ -1030,14 +904,10 @@ export function EpicTableSection(props: {
                   </span>
                 </td>
                 <td>
-                  <span className={`step-badge step-${epic.status}`}>
-                    {epic.status}
-                  </span>
+                  <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
                 </td>
                 <td>
-                  <span
-                    className={`step-badge step-${epic.lifecycleSteps["bmad-retrospective"]}`}
-                  >
+                  <span className={`step-badge step-${epic.lifecycleSteps["bmad-retrospective"]}`}>
                     {epic.lifecycleSteps["bmad-retrospective"]}
                   </span>
                 </td>
@@ -1053,87 +923,82 @@ export function EpicTableSection(props: {
         </table>
       </div>
     </section>
-  );
+  )
 }
 
 export function isEpicFullyFinished(epic: OverviewEpic) {
-  return (
-    epic.status === "done" &&
-    epic.lifecycleSteps["bmad-retrospective"] === "completed"
-  );
+  return epic.status === "done" && epic.lifecycleSteps["bmad-retrospective"] === "completed"
 }
 
 export function HomePage() {
-  const [data, setData] = useState<OverviewResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [sessionActionPending, setSessionActionPending] =
-    useState<SessionActionState>(null);
+  const [data, setData] = useState<OverviewResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [sessionActionPending, setSessionActionPending] = useState<SessionActionState>(null)
 
   useEffect(() => {
-    let mounted = true;
-    let eventSource: EventSource | null = null;
+    let mounted = true
+    let eventSource: EventSource | null = null
 
     const applyPayload = (payload: OverviewResponse) => {
       if (!mounted) {
-        return;
+        return
       }
 
-      setData(payload);
-      setError(null);
-      setLoading(false);
-    };
+      setData(payload)
+      setError(null)
+      setLoading(false)
+    }
 
     const load = async () => {
       try {
-        const response = await fetch("/api/overview");
+        const response = await fetch("/api/overview")
         if (!response.ok) {
-          throw new Error(`overview request failed: ${response.status}`);
+          throw new Error(`overview request failed: ${response.status}`)
         }
-        applyPayload((await response.json()) as OverviewResponse);
+        applyPayload((await response.json()) as OverviewResponse)
       } catch (fetchError) {
         if (mounted) {
-          setError(String(fetchError));
-          setLoading(false);
+          setError(String(fetchError))
+          setLoading(false)
         }
       }
-    };
+    }
 
-    load();
+    load()
 
     if (typeof EventSource !== "undefined") {
-      eventSource = new EventSource("/api/events/overview");
+      eventSource = new EventSource("/api/events/overview")
       eventSource.onmessage = (event) => {
         try {
-          applyPayload(JSON.parse(event.data) as OverviewResponse);
+          applyPayload(JSON.parse(event.data) as OverviewResponse)
         } catch (parseError) {
           if (mounted) {
-            setError(String(parseError));
+            setError(String(parseError))
           }
         }
-      };
+      }
     }
 
     return () => {
-      mounted = false;
-      eventSource?.close();
-    };
-  }, []);
+      mounted = false
+      eventSource?.close()
+    }
+  }, [])
 
   const runGroups = useMemo<AgentRunGroup[]>(() => {
-    const history = data?.agentRunHistory ?? [];
-    const currentSessions = data?.runtimeState?.sessions ?? [];
+    const history = data?.agentRunHistory ?? []
+    const currentSessions = data?.runtimeState?.sessions ?? []
 
     if (currentSessions.length === 0 && history.length === 0) {
-      return [];
+      return []
     }
 
     const currentGroup: AgentRunGroup | null =
       currentSessions.length > 0
         ? {
             id: "run-current",
-            startedAt:
-              data?.runtimeState?.startedAt ?? new Date().toISOString(),
+            startedAt: data?.runtimeState?.startedAt ?? new Date().toISOString(),
             endedAt:
               data?.runtimeState?.status === "running"
                 ? null
@@ -1142,71 +1007,57 @@ export function HomePage() {
                     .filter((t): t is string => t !== null)
                     .sort()
                     .at(-1) ?? null),
-            sessions: [...currentSessions].sort((a, b) =>
-              a.startedAt < b.startedAt ? 1 : -1
-            ),
+            sessions: [...currentSessions].sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
           }
-        : null;
+        : null
 
     const historyGroups = history.map((g) => ({
       ...g,
-      sessions: [...g.sessions].sort((a, b) =>
-        a.startedAt < b.startedAt ? 1 : -1
-      ),
-    }));
+      sessions: [...g.sessions].sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
+    }))
 
-    return currentGroup ? [currentGroup, ...historyGroups] : historyGroups;
-  }, [data]);
+    return currentGroup ? [currentGroup, ...historyGroups] : historyGroups
+  }, [data])
 
   const epicLabels = useMemo(
     () => new Map((data?.dependencyTree.nodes ?? []).map((n) => [n.id, n.label])),
     [data?.dependencyTree.nodes]
-  );
+  )
 
   const startSession = async (sessionId: string) => {
-    setSessionActionPending({ sessionId, action: "start" });
+    setSessionActionPending({ sessionId, action: "start" })
     try {
-      const response = await fetch(
-        `/api/session/${encodeURIComponent(sessionId)}/start`,
-        {
-          method: "POST",
-        }
-      );
+      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/start`, {
+        method: "POST",
+      })
       if (!response.ok && response.status !== HTTP_CONFLICT) {
-        throw new Error(`start failed: ${response.status}`);
+        throw new Error(`start failed: ${response.status}`)
       }
     } catch (sessionStartError) {
-      setError(String(sessionStartError));
+      setError(String(sessionStartError))
     } finally {
-      setSessionActionPending(null);
+      setSessionActionPending(null)
     }
-  };
+  }
 
   const abortSession = async (sessionId: string) => {
-    setSessionActionPending({ sessionId, action: "abort" });
+    setSessionActionPending({ sessionId, action: "abort" })
     try {
-      const response = await fetch(
-        `/api/session/${encodeURIComponent(sessionId)}/abort`,
-        {
-          method: "POST",
-        }
-      );
+      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/abort`, {
+        method: "POST",
+      })
       if (!response.ok) {
-        throw new Error(`abort failed: ${response.status}`);
+        throw new Error(`abort failed: ${response.status}`)
       }
     } catch (sessionAbortError) {
-      setError(String(sessionAbortError));
+      setError(String(sessionAbortError))
     } finally {
-      setSessionActionPending(null);
+      setSessionActionPending(null)
     }
-  };
+  }
 
   if (loading || (error && !data)) {
-    return (
-      <main className="screen loading">
-        {loading ? "Loading BMAD UI..." : error}
-      </main>
-    );
+    return <main className="screen loading">{loading ? "Loading BMAD UI..." : error}</main>
   }
 
   return (
@@ -1214,8 +1065,7 @@ export function HomePage() {
       <section className="hero panel reveal">
         <h1>BMAD UI</h1>
         <p className="subtitle">
-          Live overview of sprint progression, active sessions, and key BMAD
-          artifacts.
+          Live overview of sprint progression, active sessions, and key BMAD artifacts.
         </p>
       </section>
 
@@ -1245,5 +1095,5 @@ export function HomePage() {
 
       {error ? <p className="error-banner">{error}</p> : null}
     </main>
-  );
+  )
 }

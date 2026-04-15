@@ -1,106 +1,96 @@
-import { createRoute, Link, useParams } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import type { StoryDetailResponse } from "../types";
-import { rootRoute } from "./__root";
+import { Link, createRoute, useParams } from "@tanstack/react-router"
+import { useEffect, useMemo, useState } from "react"
+import type { StoryDetailResponse } from "../types"
+import { rootRoute } from "./__root"
 
-const SECONDS_PER_MINUTE = 60;
-const SECONDS_PER_HOUR = 3600;
-const SECONDS_PER_DAY = 86_400;
-const MILLISECONDS_PER_SECOND = 1000;
+const SECONDS_PER_MINUTE = 60
+const SECONDS_PER_HOUR = 3600
+const SECONDS_PER_DAY = 86_400
+const MILLISECONDS_PER_SECOND = 1000
 
 function formatDate(value: string | null): string {
   if (!value) {
-    return "-";
+    return "-"
   }
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString()
 }
 
-function formatDuration(
-  startedAt: string | null,
-  endedAt: string | null
-): string {
+function formatDuration(startedAt: string | null, endedAt: string | null): string {
   if (!startedAt) {
-    return "-";
+    return "-"
   }
 
-  const startedMs = Date.parse(startedAt);
+  const startedMs = Date.parse(startedAt)
   if (Number.isNaN(startedMs)) {
-    return "-";
+    return "-"
   }
 
-  const endMs = endedAt ? Date.parse(endedAt) : Date.now();
+  const endMs = endedAt ? Date.parse(endedAt) : Date.now()
   if (Number.isNaN(endMs)) {
-    return "-";
+    return "-"
   }
 
-  const totalSeconds = Math.max(
-    0,
-    Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND)
-  );
-  const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
-  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
-  const minutes = Math.floor(
-    (totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
-  );
-  const seconds = totalSeconds % SECONDS_PER_MINUTE;
+  const totalSeconds = Math.max(0, Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND))
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
+  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
+  const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE)
+  const seconds = totalSeconds % SECONDS_PER_MINUTE
 
-  const parts: string[] = [];
+  const parts: string[] = []
   if (days > 0) {
-    parts.push(`${days}d`);
+    parts.push(`${days}d`)
   }
   if (hours > 0 || days > 0) {
-    parts.push(`${hours}h`);
+    parts.push(`${hours}h`)
   }
   if (minutes > 0 || hours > 0 || days > 0) {
-    parts.push(`${minutes}m`);
+    parts.push(`${minutes}m`)
   }
-  parts.push(`${seconds}s`);
+  parts.push(`${seconds}s`)
 
-  return parts.join(" ");
+  return parts.join(" ")
 }
 
 function StoryDetailPage() {
-  const { storyId } = useParams({ from: "/story/$storyId" });
-  const [data, setData] = useState<StoryDetailResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { storyId } = useParams({ from: "/story/$storyId" })
+  const [data, setData] = useState<StoryDetailResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
 
     const load = async () => {
       try {
-        const response = await fetch(
-          `/api/story/${encodeURIComponent(storyId)}`
-        );
+        const response = await fetch(`/api/story/${encodeURIComponent(storyId)}`)
         if (!response.ok) {
-          throw new Error(`detail request failed: ${response.status}`);
+          throw new Error(`detail request failed: ${response.status}`)
         }
-        const payload = (await response.json()) as StoryDetailResponse;
+        const payload = (await response.json()) as StoryDetailResponse
         if (mounted) {
-          setData(payload);
-          setError(null);
-          setLoading(false);
+          setData(payload)
+          setError(null)
+          setLoading(false)
         }
       } catch (detailError) {
         if (mounted) {
-          setError(String(detailError));
-          setLoading(false);
+          setError(String(detailError))
+          setLoading(false)
         }
       }
-    };
+    }
 
-    load();
+    load()
 
     return () => {
-      mounted = false;
-    };
-  }, [storyId]);
+      mounted = false
+    }
+  }, [storyId])
 
-  const sessions = useMemo(() => data?.sessions || [], [data]);
+  const sessions = useMemo(() => data?.sessions || [], [data])
 
   if (loading) {
-    return <main className="screen loading">Loading story detail...</main>;
+    return <main className="screen loading">Loading story detail...</main>
   }
 
   if (error || !data) {
@@ -109,7 +99,7 @@ function StoryDetailPage() {
         <p>{error || "Story not found"}</p>
         <Link to="/">Back to dashboard</Link>
       </main>
-    );
+    )
   }
 
   return (
@@ -140,9 +130,7 @@ function StoryDetailPage() {
                 <tr key={step.skill}>
                   <td>{step.label}</td>
                   <td>
-                    <span className={`step-badge step-${step.state}`}>
-                      {step.state}
-                    </span>
+                    <span className={`step-badge step-${step.state}`}>{step.state}</span>
                   </td>
                   <td>{step.summary}</td>
                 </tr>
@@ -169,10 +157,7 @@ function StoryDetailPage() {
               {sessions.map((session) => (
                 <tr key={session.id}>
                   <td>
-                    <Link
-                      params={{ sessionId: session.id }}
-                      to="/session/$sessionId"
-                    >
+                    <Link params={{ sessionId: session.id }} to="/session/$sessionId">
                       {session.skill}
                     </Link>
                   </td>
@@ -200,11 +185,11 @@ function StoryDetailPage() {
         </pre>
       </section>
     </main>
-  );
+  )
 }
 
 export const storyDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/story/$storyId",
   component: StoryDetailPage,
-});
+})

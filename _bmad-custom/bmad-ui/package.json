@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
+    "lint": "biome check src/",
     "check:types": "tsc --noEmit",
     "check:tests": "vitest run --passWithNoTests",
     "sync-sessions": "node ../agents/sync-sessions.mjs",
@@ -20,12 +21,12 @@
     "react-dom": "19.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.3",
     "@tailwindcss/vite": "4.1.18",
     "@types/node": "24.5.2",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "@vitejs/plugin-react": "5.0.3",
-    "biome": "^0.3.3",
     "tailwindcss": "4.1.18",
     "typescript": "5.9.2",
     "vite": "7.1.7",
