@@ -285,18 +285,56 @@ async function readAgentSessionsFile(): Promise<AgentSession[]> {
 
   try {
     const parsed = JSON.parse(await readFile(agentSessionsPath, "utf8")) as {
-      sessions: AgentSession[] | Record<string, AgentSession>;
+      sessions:
+        | Record<string, unknown>[]
+        | Record<string, Record<string, unknown>>;
     };
-    if (Array.isArray(parsed.sessions)) {
-      return parsed.sessions;
-    }
-    if (parsed.sessions && typeof parsed.sessions === "object") {
-      return Object.values(parsed.sessions);
-    }
-    return [];
+    const entries: Record<string, unknown>[] = Array.isArray(parsed.sessions)
+      ? parsed.sessions
+      : parsed.sessions && typeof parsed.sessions === "object"
+        ? Object.values(parsed.sessions)
+        : [];
+    return entries.map((entry) => normalizeToAgentSession(entry));
   } catch {
     return [];
   }
+}
+
+function normalizeToAgentSession(
+  entry: Record<string, unknown>,
+): AgentSession {
+  // Already in AgentSession format (copilot-cli sessions with tokens field)
+  if ("tokens" in entry && entry.tokens) {
+    return entry as unknown as AgentSession;
+  }
+  // SessionAnalyticsData format (workflow sessions with usage field) — convert
+  const usage = entry.usage as
+    | {
+        tokensIn?: number;
+        tokensOut?: number;
+        totalTokens?: number;
+        requests?: number;
+      }
+    | undefined;
+  return {
+    session_id: (entry.sessionId as string) || (entry.session_id as string) || undefined,
+    tool: "vscode",
+    model: (entry.model as string) || "unknown",
+    premium: true,
+    premium_requests: usage?.requests || 0,
+    premium_multiplier: 1,
+    premium_cost_units: usage?.requests || 0,
+    tokens: {
+      input: usage?.tokensIn || 0,
+      output: usage?.tokensOut || 0,
+      total: usage?.totalTokens || 0,
+    },
+    agent: (entry.skill as string) || (entry.agent as string) || "general",
+    turns: 0,
+    status: (entry.status as "running" | "completed") || "completed",
+    start_date: (entry.startedAt as string) || (entry.start_date as string) || "",
+    end_date: (entry.endedAt as string) || (entry.end_date as string) || null,
+  };
 }
 
 function createEmptyRuntimeState(): RuntimeState {

@@ -83,6 +83,41 @@ cd _bmad-custom/bmad-ui
 npm run build    # TypeScript check + Vite build
 ```
 
+## App Verification with agent-browser
+
+After making UI changes, verify the app works using [agent-browser](https://github.com/vercel-labs/agent-browser):
+
+```bash
+# 1. Start the dev server (if not already running)
+cd _bmad-custom/bmad-ui && npm run dev &
+
+# 2. Open the app and take a snapshot to check for errors
+agent-browser open http://localhost:5173
+agent-browser snapshot -i
+
+# 3. Check for JavaScript errors
+agent-browser errors
+
+# 4. Navigate to key pages and verify rendering
+agent-browser open http://localhost:5173/epics && agent-browser snapshot -i
+agent-browser open http://localhost:5173/analytics && agent-browser snapshot -i
+
+# 5. Close when done
+agent-browser close
+```
+
+### What to check
+- No JavaScript errors in `agent-browser errors`
+- Dashboard shows "Dashboard Overview" heading (not stuck on "Loading BMAD dashboard...")
+- Sessions table renders with all sessions visible
+- Navigation links (Dashboard, Epics, Analytics) are present and functional
+
+### Installation (one-time)
+```bash
+npm install -g agent-browser
+agent-browser install   # Downloads Chrome for Testing
+```
+
 ## Session Analytics Logging
 
 Session tracking is **automated** via `_bmad-custom/agents/sync-sessions.mjs`, a background daemon that watches the Copilot debug logs (`~/Library/Application Support/Code - Insiders/User/workspaceStorage/…/GitHub.copilot-chat/debug-logs/*/main.jsonl`) and auto-upserts sessions into `_bmad-custom/agents/agent-sessions.json` every 5 seconds when active.

@@ -221,7 +221,7 @@ function SessionsTable(props: {
                 <td>{formatDuration(session.start_date, session.end_date)}</td>
                 <td>{session.premium_cost_units}</td>
                 <td>
-                  {session.tokens.total > 0
+                  {session.tokens?.total && session.tokens.total > 0
                     ? session.tokens.total.toLocaleString()
                     : "-"}
                 </td>
