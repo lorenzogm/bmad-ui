@@ -57,9 +57,9 @@
       "epicId": null,
       "skill": "general",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-15T14:24:46.112Z",
-      "endedAt": null,
+      "endedAt": "2026-04-15T14:28:37.437Z",
       "usage": {
         "requests": 0,
         "tokensIn": 0,
@@ -76,9 +76,9 @@
       "model": "claude-sonnet-4.6",
       "status": "completed",
       "startedAt": "2026-04-15T13:20:52.609Z",
-      "endedAt": "2026-04-15T14:05:53Z",
+      "endedAt": "2026-04-15T14:04:43.910Z",
       "usage": {
-        "requests": 8,
+        "requests": 0,
         "tokensIn": 0,
         "tokensOut": 0,
         "tokensCached": 0,
@@ -95,7 +95,7 @@
       "startedAt": "2026-04-15T13:12:39.265Z",
       "endedAt": "2026-04-15T13:19:27.151Z",
       "usage": {
-        "requests": 3,
+        "requests": 0,
         "tokensIn": 0,
         "tokensOut": 0,
         "tokensCached": 0,
@@ -185,6 +185,108 @@
         "tokensOut": 28800,
         "tokensCached": 2100000,
         "totalTokens": 2328800
+      }
+    },
+    "4d435e7e-3fca-4748-a625-828f5cb4d2a9": {
+      "sessionId": "4d435e7e-3fca-4748-a625-828f5cb4d2a9",
+      "storyId": null,
+      "epicId": null,
+      "skill": "general",
+      "model": "gpt-5.4",
+      "status": "completed",
+      "startedAt": "2026-04-15T17:53:12Z",
+      "endedAt": "2026-04-15T17:57:25Z",
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "8acb16dd-c4d5-4987-9922-f58cce896200": {
+      "sessionId": "8acb16dd-c4d5-4987-9922-f58cce896200",
+      "storyId": null,
+      "epicId": null,
+      "skill": "general",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-15T17:44:17.971Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "ff91a6b4-4bc8-40fd-91cc-b9589c8ab801": {
+      "sessionId": "ff91a6b4-4bc8-40fd-91cc-b9589c8ab801",
+      "storyId": null,
+      "epicId": null,
+      "skill": "general",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-15T17:35:57.120Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "6e443c0a-c49a-4884-bced-89c3ddb1c94d": {
+      "sessionId": "6e443c0a-c49a-4884-bced-89c3ddb1c94d",
+      "storyId": null,
+      "epicId": null,
+      "skill": "general",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T16:12:39.680Z",
+      "endedAt": "2026-04-15T16:23:59.480Z",
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-create-story-1776275521666": {
+      "sessionId": "workflow-bmad-create-story-1776275521666",
+      "storyId": "1-2-configure-branch-protection-rules",
+      "epicId": "epic-1",
+      "skill": "bmad-create-story",
+      "model": "claude-haiku-4.5",
+      "status": "completed",
+      "startedAt": "2026-04-15T17:52:02.006Z",
+      "endedAt": "2026-04-15T17:57:00.010Z",
+      "usage": {
+        "requests": 0.33,
+        "tokensIn": 1000000,
+        "tokensOut": 9200,
+        "tokensCached": 914500,
+        "totalTokens": 1009200
+      }
+    },
+    "workflow-bmad-create-story-1776276159098": {
+      "sessionId": "workflow-bmad-create-story-1776276159098",
+      "storyId": "1-2-configure-branch-protection-rules",
+      "epicId": "epic-1",
+      "skill": "bmad-create-story",
+      "model": "claude-haiku-4.5",
+      "status": "completed",
+      "startedAt": "2026-04-15T18:02:39.397Z",
+      "endedAt": "2026-04-15T18:05:12.414Z",
+      "usage": {
+        "requests": 0.33,
+        "tokensIn": 791700,
+        "tokensOut": 4300,
+        "tokensCached": 704600,
+        "totalTokens": 796000
       }
     }
   }

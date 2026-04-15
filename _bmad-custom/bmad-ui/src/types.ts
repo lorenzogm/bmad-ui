@@ -1,5 +1,6 @@
 export type AgentSession = {
   session_id?: string;
+  storyId?: string | null;
   tool: string;
   model: string;
   premium: boolean;

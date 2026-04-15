@@ -32,7 +32,7 @@ type OverviewEpic = OverviewResponse["sprintOverview"]["epics"][number];
 type OverviewEpicConsistency = OverviewResponse["epicConsistency"];
 type SessionActionKind = "start" | "abort";
 
-type SessionActionState = {
+export type SessionActionState = {
   sessionId: string;
   action: SessionActionKind;
 } | null;
@@ -260,7 +260,7 @@ function SessionsTable(props: {
   );
 }
 
-function AgentSessionsSection(props: {
+export function AgentSessionsSection(props: {
   runGroups: AgentRunGroup[];
   agentSessions: AgentSession[];
   sessionActionPending: SessionActionState;
@@ -287,7 +287,15 @@ function AgentSessionsSection(props: {
       source: "copilot",
       data: s,
     }));
-    return [...runtime, ...copilot];
+    const merged = [...runtime, ...copilot];
+    merged.sort((a, b) => {
+      const aDate =
+        a.source === "runtime" ? a.data.startedAt : a.data.start_date;
+      const bDate =
+        b.source === "runtime" ? b.data.startedAt : b.data.start_date;
+      return (bDate ?? "").localeCompare(aDate ?? "");
+    });
+    return merged;
   }, [runGroups, agentSessions]);
 
   const usageBySessionId = useMemo(() => {

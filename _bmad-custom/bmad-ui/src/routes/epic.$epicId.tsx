@@ -1,9 +1,43 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { EpicDetailResponse } from "../types";
+import type {
+  AgentRunGroup,
+  AgentSession,
+  EpicDetailResponse,
+  OverviewResponse,
+} from "../types";
+import { AgentSessionsSection } from "../app";
+import type { SessionActionState } from "../app";
 import { rootRoute } from "./__root";
 
+const HTTP_CONFLICT = 409;
+const EPIC_NUMBER_REGEX = /^epic-(\d+)$/;
+
 type SkillName = "bmad-create-story" | "bmad-dev-story" | "bmad-code-review";
+
+function shouldClearPendingSkill(
+  pendingSkill: string | null,
+  stories: EpicDetailResponse["stories"]
+): boolean {
+  if (!pendingSkill) {
+    return false;
+  }
+
+  const separatorIndex = pendingSkill.indexOf(":");
+  if (separatorIndex === -1) {
+    return true;
+  }
+
+  const skill = pendingSkill.slice(0, separatorIndex) as SkillName;
+  const storyId = pendingSkill.slice(separatorIndex + 1);
+  const story = stories.find((candidate) => candidate.id === storyId);
+
+  if (!story) {
+    return false;
+  }
+
+  return story.steps[skill] !== "not-started";
+}
 
 function getBlockingStories(
   storyId: string,
@@ -33,32 +67,6 @@ function parseStoryTicket(storyId: string): { epic: number; story: number } {
   };
 }
 
-function deriveStoryStepState(
-  storyStatus: string,
-  step: "bmad-create-story" | "bmad-dev-story" | "bmad-code-review"
-): "not-started" | "running" | "completed" {
-  if (storyStatus === "done") {
-    return "completed";
-  }
-
-  if (step === "bmad-create-story") {
-    return storyStatus === "backlog" ? "not-started" : "completed";
-  }
-
-  if (step === "bmad-dev-story") {
-    if (storyStatus === "backlog" || storyStatus === "ready-for-dev") {
-      return "not-started";
-    }
-    return storyStatus === "in-progress" ? "running" : "completed";
-  }
-
-  if (storyStatus === "review") {
-    return "running";
-  }
-
-  return "not-started";
-}
-
 function EpicDetailPage() {
   const { epicId } = useParams({ from: "/epic/$epicId" });
   const [data, setData] = useState<EpicDetailResponse | null>(null);
@@ -66,18 +74,57 @@ function EpicDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [hideFinishedStories, setHideFinishedStories] = useState(false);
   const [pendingSkill, setPendingSkill] = useState<string | null>(null);
+  const [overviewData, setOverviewData] = useState<OverviewResponse | null>(
+    null
+  );
+  const [sessionActionPending, setSessionActionPending] =
+    useState<SessionActionState>(null);
 
   const handleRunSkill = useCallback(
     async (skill: SkillName, storyId: string) => {
       setPendingSkill(`${skill}:${storyId}`);
+      setError(null);
+
       try {
-        await fetch("/api/workflow/run-skill", {
+        const response = await fetch("/api/workflow/run-skill", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ skill, storyId }),
         });
-      } catch {
-        // ignore fetch errors — server will log
+
+        if (response.status === HTTP_CONFLICT) {
+          throw new Error(
+            "Another workflow is already running. Wait for it to finish before starting a new one."
+          );
+        }
+
+        if (!response.ok) {
+          throw new Error(`workflow request failed: ${response.status}`);
+        }
+
+        setData((prev) => {
+          if (!prev) {
+            return prev;
+          }
+
+          return {
+            ...prev,
+            stories: prev.stories.map((story) =>
+              story.id === storyId
+                ? {
+                    ...story,
+                    steps: {
+                      ...story.steps,
+                      [skill]: "running",
+                    },
+                  }
+                : story
+            ),
+          };
+        });
+      } catch (runSkillError) {
+        setPendingSkill(null);
+        setError(String(runSkillError));
       }
     },
     []
@@ -85,18 +132,27 @@ function EpicDetailPage() {
 
   useEffect(() => {
     let mounted = true;
+    let eventSource: EventSource | null = null;
 
     const load = async () => {
       try {
-        const response = await fetch(`/api/epic/${encodeURIComponent(epicId)}`);
-        if (!response.ok) {
-          throw new Error(`epic detail request failed: ${response.status}`);
+        const [epicResponse, overviewResponse] = await Promise.all([
+          fetch(`/api/epic/${encodeURIComponent(epicId)}`),
+          fetch("/api/overview"),
+        ]);
+        if (!epicResponse.ok) {
+          throw new Error(`epic detail request failed: ${epicResponse.status}`);
         }
-        const payload = (await response.json()) as EpicDetailResponse;
+        const payload = (await epicResponse.json()) as EpicDetailResponse;
         if (mounted) {
           setData(payload);
           setError(null);
           setLoading(false);
+        }
+        if (overviewResponse.ok && mounted) {
+          setOverviewData(
+            (await overviewResponse.json()) as OverviewResponse
+          );
         }
       } catch (epicError) {
         if (mounted) {
@@ -108,8 +164,50 @@ function EpicDetailPage() {
 
     load();
 
+    if (typeof EventSource !== "undefined") {
+      eventSource = new EventSource("/api/events/overview");
+      eventSource.onmessage = (event) => {
+        if (!mounted) return;
+        try {
+          const overview = JSON.parse(event.data) as OverviewResponse;
+          setOverviewData(overview);
+          const storyUpdates = new Map(
+            overview.sprintOverview.stories.map((s) => [s.id, s])
+          );
+
+          setPendingSkill((prevPendingSkill) =>
+            shouldClearPendingSkill(
+              prevPendingSkill,
+              overview.sprintOverview.stories
+            )
+              ? null
+              : prevPendingSkill
+          );
+
+          setData((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              stories: prev.stories.map((story) => {
+                const update = storyUpdates.get(story.id);
+                return update
+                  ? { ...story, status: update.status, steps: update.steps }
+                  : story;
+              }),
+              storyDependencies: overview.storyDependencies ?? prev.storyDependencies,
+            };
+          });
+        } catch (parseError) {
+          if (mounted) {
+            setError(String(parseError));
+          }
+        }
+      };
+    }
+
     return () => {
       mounted = false;
+      eventSource?.close();
     };
   }, [epicId]);
 
@@ -148,11 +246,104 @@ function EpicDetailPage() {
     return stories.filter((story) => story.status !== "done");
   }, [hideFinishedStories, stories]);
 
+  const epicNumber = epicId.match(EPIC_NUMBER_REGEX)?.[1] ?? null;
+  const storyPrefix = epicNumber ? `${epicNumber}-` : null;
+
+  const epicRunGroups = useMemo<AgentRunGroup[]>(() => {
+    if (!storyPrefix || !overviewData) {
+      return [];
+    }
+
+    const history = overviewData.agentRunHistory ?? [];
+    const currentSessions = overviewData.runtimeState?.sessions ?? [];
+
+    const filterByEpic = (
+      sessions: typeof currentSessions
+    ): typeof currentSessions =>
+      sessions.filter((s) => s.storyId?.startsWith(storyPrefix));
+
+    const currentFiltered = filterByEpic(currentSessions);
+    const currentGroup: AgentRunGroup | null =
+      currentFiltered.length > 0
+        ? {
+            id: "run-current",
+            startedAt:
+              overviewData.runtimeState?.startedAt ??
+              new Date().toISOString(),
+            endedAt:
+              overviewData.runtimeState?.status === "running"
+                ? null
+                : (currentFiltered
+                    .map((s) => s.endedAt)
+                    .filter((t): t is string => t !== null)
+                    .sort()
+                    .at(-1) ?? null),
+            sessions: [...currentFiltered].sort((a, b) =>
+              a.startedAt < b.startedAt ? 1 : -1
+            ),
+          }
+        : null;
+
+    const historyGroups = history
+      .map((g) => ({
+        ...g,
+        sessions: filterByEpic(g.sessions).sort((a, b) =>
+          a.startedAt < b.startedAt ? 1 : -1
+        ),
+      }))
+      .filter((g) => g.sessions.length > 0);
+
+    return currentGroup ? [currentGroup, ...historyGroups] : historyGroups;
+  }, [overviewData, storyPrefix]);
+
+  const epicAgentSessions = useMemo<AgentSession[]>(() => {
+    if (!storyPrefix || !overviewData) {
+      return [];
+    }
+    return (overviewData.agentSessions ?? []).filter((s) =>
+      s.storyId?.startsWith(storyPrefix)
+    );
+  }, [overviewData, storyPrefix]);
+
+  const startSession = useCallback(async (sessionId: string) => {
+    setSessionActionPending({ sessionId, action: "start" });
+    try {
+      const response = await fetch(
+        `/api/session/${encodeURIComponent(sessionId)}/start`,
+        { method: "POST" }
+      );
+      if (!response.ok && response.status !== HTTP_CONFLICT) {
+        throw new Error(`start failed: ${response.status}`);
+      }
+    } catch (sessionStartError) {
+      setError(String(sessionStartError));
+    } finally {
+      setSessionActionPending(null);
+    }
+  }, []);
+
+  const abortSession = useCallback(async (sessionId: string) => {
+    setSessionActionPending({ sessionId, action: "abort" });
+    try {
+      const response = await fetch(
+        `/api/session/${encodeURIComponent(sessionId)}/abort`,
+        { method: "POST" }
+      );
+      if (!response.ok) {
+        throw new Error(`abort failed: ${response.status}`);
+      }
+    } catch (sessionAbortError) {
+      setError(String(sessionAbortError));
+    } finally {
+      setSessionActionPending(null);
+    }
+  }, []);
+
   if (loading) {
     return <main className="screen loading">Loading epic detail...</main>;
   }
 
-  if (error || !data) {
+  if (!data) {
     return (
       <main className="screen loading">
         <p>{error || "Epic not found"}</p>
@@ -195,9 +386,9 @@ function EpicDetailPage() {
             </thead>
             <tbody>
               {filteredStories.map((story) => {
-                const createState = deriveStoryStepState(story.status, "bmad-create-story");
-                const devState = deriveStoryStepState(story.status, "bmad-dev-story");
-                const reviewState = deriveStoryStepState(story.status, "bmad-code-review");
+                const createState = story.steps["bmad-create-story"] ?? "not-started";
+                const devState = story.steps["bmad-dev-story"] ?? "not-started";
+                const reviewState = story.steps["bmad-code-review"] ?? "not-started";
 
                 const SKILL_ORDER: { skill: SkillName; state: string }[] = [
                   { skill: "bmad-create-story", state: createState },
@@ -287,6 +478,16 @@ function EpicDetailPage() {
           </table>
         </div>
       </section>
+
+      <AgentSessionsSection
+        agentSessions={epicAgentSessions}
+        onAbortSession={abortSession}
+        onStartSession={startSession}
+        runGroups={epicRunGroups}
+        sessionActionPending={sessionActionPending}
+      />
+
+      {error ? <p className="error-banner">{error}</p> : null}
     </main>
   );
 }

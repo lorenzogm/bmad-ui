@@ -122,6 +122,7 @@ type EpicConsistency = {
 
 type AgentSession = {
   session_id?: string;
+  storyId?: string | null;
   tool: string;
   model: string;
   premium: boolean;
@@ -142,11 +143,8 @@ const artifactsRoot = path.join(projectRoot, "_bmad-output");
 const agentsDir = path.join(projectRoot, "_bmad-custom", "agents");
 const runtimeStatePath = path.join(agentsDir, "runtime-state.json");
 const runtimeLogsDir = path.join(agentsDir, "logs");
-const analyticsStorePath = path.join(agentsDir, "agents-sessions.json");
-const legacyAnalyticsStorePaths = [
-  path.join(agentsDir, "agent-sessions.json"),
-  path.join(projectRoot, "_bmad-custom", "agent-sessions.json"),
-];
+const analyticsStorePath = path.join(agentsDir, "agent-sessions.json");
+const legacyAnalyticsStorePaths: string[] = [];
 const agentSessionsPath = analyticsStorePath;
 const defaultGitWorktreesDir = path.join(projectRoot, ".git-worktrees");
 const legacyGitWorktreesDir = path.join(projectRoot, "git-worktrees");
@@ -340,6 +338,7 @@ function normalizeToAgentSession(
     | undefined;
   return {
     session_id: (entry.sessionId as string) || (entry.session_id as string) || undefined,
+    storyId: (entry.storyId as string) || null,
     tool: "vscode",
     model: (entry.model as string) || "unknown",
     premium: true,
@@ -3004,8 +3003,12 @@ function attachApi(server: ViteDevServer): void {
             return;
           }
 
-          const body = await parseJsonBody<{ skill?: string }>(req);
+          const body = await parseJsonBody<{
+            skill?: string;
+            storyId?: string;
+          }>(req);
           const skill = body.skill?.trim();
+          const storyId = body.storyId?.trim() || null;
           if (!skill) {
             res.writeHead(400, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: "skill is required" }));
@@ -3027,8 +3030,9 @@ function attachApi(server: ViteDevServer): void {
           const logPath = path.join(runtimeLogsDir, `${sessionId}.log`);
 
           const prompt = [
-            `/${skill}`,
+            storyId ? `/${skill} ${storyId}` : `/${skill}`,
             `Model: ${DEFAULT_WORKFLOW_MODEL}`,
+            ...(storyId ? [`Story: ${storyId}`] : []),
           ].join("\n");
 
           await writeFile(promptPath, `${prompt}\n`, "utf8");
@@ -3040,7 +3044,7 @@ function attachApi(server: ViteDevServer): void {
             id: sessionId,
             skill,
             model: DEFAULT_WORKFLOW_MODEL,
-            storyId: null,
+            storyId,
             command,
             promptPath,
             logPath,
