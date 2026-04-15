@@ -186,26 +186,26 @@ infra/github/
 
 ### Phase 1: Copy and Prepare Infrastructure
 
-- [ ] **Create `infra/` directory structure**
-  - [ ] Create `infra/github/` directory
-  - [ ] Create `infra/github/src/` subdirectory for Terraform files
-  - [ ] Create `.gitignore` in `infra/github/` with appropriate entries
+- [x] **Create `infra/` directory structure**
+  - [x] Create `infra/github/` directory
+  - [x] Create `infra/github/src/` subdirectory for Terraform files
+  - [x] Create `.gitignore` in `infra/github/` with appropriate entries
 
-- [ ] **Copy Terraform configuration files**
-  - [ ] Copy `../lorenzogm/infra/github/src/providers.tf` → `infra/github/src/providers.tf`
-  - [ ] Copy `../lorenzogm/infra/github/src/variables.tf` → `infra/github/src/variables.tf`
-  - [ ] Copy `../lorenzogm/infra/github/src/main.tf` → `infra/github/src/main.tf`
-  - [ ] Review and understand each file (don't make changes yet)
+- [x] **Copy Terraform configuration files**
+  - [x] Copy `../lorenzogm/infra/github/src/providers.tf` → `infra/github/src/providers.tf`
+  - [x] Copy `../lorenzogm/infra/github/src/variables.tf` → `infra/github/src/variables.tf`
+  - [x] Copy `../lorenzogm/infra/github/src/main.tf` → `infra/github/src/main.tf`
+  - [x] Review and understand each file (don't make changes yet)
 
-- [ ] **Create bmad-ui-specific `config.json`**
-  - [ ] Create `infra/github/src/config.json` with bmad-ui repository settings
-  - [ ] Repository name: `bmad-ui`
-  - [ ] Description: "BMAd UI - Visual interface for agentic development workflows"
-  - [ ] Visibility: `public`
-  - [ ] Default branch: `main`
-  - [ ] Configure branch protection for `main` branch (require status checks, no manual reviews in Phase 1)
-  - [ ] Define standard issue labels (bug, enhancement, documentation, good-first-issue, help-wanted, question, wontfix)
-  - [ ] Set topics: `["agentic", "ai", "workflow", "bmad"]`
+- [x] **Create bmad-ui-specific `config.json`**
+  - [x] Create `infra/github/src/config.json` with bmad-ui repository settings
+  - [x] Repository name: `bmad-ui`
+  - [x] Description: "BMAd UI - Visual interface for agentic development workflows"
+  - [x] Visibility: `public`
+  - [x] Default branch: `main`
+  - [x] Configure branch protection for `main` branch (require status checks, no manual reviews in Phase 1)
+  - [x] Define standard issue labels (bug, enhancement, documentation, good-first-issue, help-wanted, question, wontfix)
+  - [x] Set topics: `["agentic", "ai", "workflow", "bmad"]`
 
 ### Phase 2: Set Up Credentials & Initialize Terraform
 
@@ -312,12 +312,12 @@ infra/github/
 
 ### Phase 6: Commit and Document
 
-- [ ] **Commit Terraform infrastructure**
-  - [ ] Stage files:
+- [x] **Commit Terraform infrastructure**
+  - [x] Stage files:
     ```bash
     git add infra/github/src/*.tf infra/github/src/config.json infra/github/.gitignore
     ```
-  - [ ] Commit with message:
+  - [x] Commit with message:
     ```
     feat: add Terraform GitHub infrastructure management
     
@@ -329,14 +329,14 @@ infra/github/
     Fixes: Story 1-2
     ```
 
-- [ ] **Do NOT commit sensitive files**
-  - [ ] Verify `.env` and `.env.keys` are NOT in the commit
-  - [ ] Verify only `.gitignore` (not actual files) are in git
+- [x] **Do NOT commit sensitive files**
+  - [x] Verify `.env` and `.env.keys` are NOT in the commit
+  - [x] Verify only `.gitignore` (not actual files) are in git
 
-- [ ] **Create README or update documentation**
-  - [ ] Copy `../lorenzogm/infra/github/README.md` to `infra/github/README.md` for reference
-  - [ ] Or create `infra/github/SETUP.md` with bmad-ui-specific instructions
-  - [ ] Document:
+- [x] **Create README or update documentation**
+  - [x] Copy `../lorenzogm/infra/github/README.md` to `infra/github/README.md` for reference
+  - [x] Or create `infra/github/SETUP.md` with bmad-ui-specific instructions
+  - [x] Document:
     - How to set up credentials locally
     - How to run terraform plan/apply
     - How to maintain branch protection rules
@@ -573,6 +573,40 @@ Before marking this story **done**, verify:
 
 ---
 
-**Status:** ready-for-dev  
+**Status:** in-progress  
 **Created:** 2026-04-15  
 **Last Updated:** 2026-04-15
+
+---
+
+## Dev Agent Record
+
+### Implementation Notes
+
+- **Phase 1 & 6 complete (2026-04-15):** Terraform infrastructure files created from scratch (lorenzogm source template was inaccessible; files recreated based on story spec and GitHub provider v6.x docs).
+  - `infra/github/src/providers.tf` — GitHub provider `integrations/github ~> 6.2`, credentials via `GITHUB_TOKEN`/`GITHUB_OWNER` env vars
+  - `infra/github/src/variables.tf` — Typed variables matching `config.json` structure (ENVIRONMENT, repository object, branch_protections list, labels list, topics list)
+  - `infra/github/src/main.tf` — `github_repository`, `github_branch_protection` (for_each), `github_issue_label` (for_each); `lifecycle { prevent_destroy = true }` guards against accidental deletion
+  - `infra/github/src/config.json` — bmad-ui-specific values per story spec
+  - `infra/github/.gitignore` — Excludes `.terraform/`, `terraform.tfstate*`, `.env`, `.env.keys`
+  - `infra/github/README.md` — Full setup guide with PAT creation, dotenvx encryption, terraform commands, rotation, and troubleshooting
+- `terraform fmt -check` passes (HCL is correctly formatted)
+- Committed: `feat: add Terraform GitHub infrastructure management` (commit `1259942`)
+
+### Blocked Phases
+
+**Phases 2–5 require human action** (HALT condition: required credentials not available to AI agent):
+
+| Phase | Action Required |
+|---|---|
+| Phase 2 | Create GitHub fine-grained PAT at https://github.com/settings/tokens?type=beta, create `infra/github/.env`, encrypt with `npx dotenvx encrypt` |
+| Phase 2 | Run `cd infra/github/src && dotenvx run -- terraform init` |
+| Phase 3 | Run `dotenvx run -- terraform import -var-file="../config.json" github_repository.main bmad-ui` |
+| Phase 4 | Run `dotenvx run -- terraform plan -var-file="../config.json"`, review, then apply |
+| Phase 5 | Verify repository settings in GitHub UI (settings, branch protection, labels, security) |
+
+See `infra/github/README.md` for detailed step-by-step instructions.
+
+## Change Log
+
+- **2026-04-15:** Phase 1 & 6 complete — Terraform infrastructure files created and committed. Phases 2–5 pending human execution (credentials required).
