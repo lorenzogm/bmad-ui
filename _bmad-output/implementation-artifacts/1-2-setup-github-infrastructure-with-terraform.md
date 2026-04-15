@@ -209,48 +209,48 @@ infra/github/
 
 ### Phase 2: Set Up Credentials & Initialize Terraform
 
-- [ ] **Create GitHub Personal Access Token**
-  - [ ] Go to https://github.com/settings/tokens/new
-  - [ ] Select token type: **Personal access tokens (fine-grained)**
-  - [ ] Name: `terraform-bmad-ui`
-  - [ ] Expiration: 90 days (renewable)
-  - [ ] Repository access: **Only select repositories** → Select "bmad-ui"
-  - [ ] Permissions: Administration (read & write), Actions (read & write), Contents (read), Issues (read & write), Workflows (read & write)
-  - [ ] Click **Generate token** and copy it
+- [x] **Create GitHub Personal Access Token**
+  - [x] Go to https://github.com/settings/tokens/new
+  - [x] Select token type: **Personal access tokens (fine-grained)**
+  - [x] Name: `terraform-bmad-ui`
+  - [x] Expiration: 90 days (renewable)
+  - [x] Repository access: **Only select repositories** → Select "bmad-ui"
+  - [x] Permissions: Administration (read & write), Actions (read & write), Contents (read), Issues (read & write), Workflows (read & write)
+  - [x] Click **Generate token** and copy it
 
-- [ ] **Create `.env` file with credentials**
-  - [ ] Create `infra/github/.env` with:
+- [x] **Create `.env` file with credentials**
+  - [x] Create `infra/github/.env` with:
     ```
-    GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    GITHUB_OWNER=lorenzogm
+    TF_VAR_GH_PAT_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    TF_VAR_GITHUB_OWNER=lorenzogm
     ```
-  - [ ] Replace `ghp_xxx` with your actual token
+  - [x] Replace `ghp_xxx` with your actual token
 
-- [ ] **Encrypt credentials with dotenvx**
-  - [ ] In `infra/github/` directory, run: `npx dotenvx encrypt`
-  - [ ] This creates `.env.keys` (decryption key) and encrypts `.env`
-  - [ ] Verify `.env.keys` is in `.gitignore` (local-only, never commit)
-  - [ ] Verify `.env` is now encrypted (unreadable plaintext)
+- [x] **Encrypt credentials with dotenvx**
+  - [x] In `infra/github/` directory, run: `npx dotenvx encrypt`
+  - [x] This creates `.env.keys` (decryption key) and encrypts `.env`
+  - [x] Verify `.env.keys` is in `.gitignore` (local-only, never commit)
+  - [x] Verify `.env` is now encrypted (unreadable plaintext)
 
-- [ ] **Initialize Terraform**
-  - [ ] In `infra/github/src/`, run: `dotenvx run -- terraform init`
-  - [ ] This downloads the GitHub provider and validates configuration
-  - [ ] Check for errors; all should say "Terraform has been successfully initialized"
+- [x] **Initialize Terraform**
+  - [x] In `infra/github/src/`, run: `dotenvx run -- terraform init`
+  - [x] This downloads the GitHub provider and validates configuration
+  - [x] Check for errors; all should say "Terraform has been successfully initialized"
 
 ### Phase 3: Import Existing Repository into State
 
-- [ ] **Import the bmad-ui repository into Terraform state**
-  - [ ] In `infra/github/src/`, run:
+- [x] **Import the bmad-ui repository into Terraform state**
+  - [x] In `infra/github/src/`, run:
     ```bash
     dotenvx run -- terraform import -var-file="config.json" \
       github_repository.main bmad-ui
     ```
-  - [ ] Should show: `githubrepository.main: Import successful!`
-  - [ ] This tells Terraform: "This repository exists; manage it from now on"
+  - [x] Should show: `githubrepository.main: Import successful!`
+  - [x] This tells Terraform: "This repository exists; manage it from now on"
 
-- [ ] **Verify import succeeded**
-  - [ ] Run: `dotenvx run -- terraform state list`
-  - [ ] Should show resources like:
+- [x] **Verify import succeeded**
+  - [x] Run: `dotenvx run -- terraform state list`
+  - [x] Should show resources like:
     ```
     data.github_repository.main
     github_repository.main
@@ -258,23 +258,27 @@ infra/github/
 
 ### Phase 4: Plan and Apply Configuration
 
-- [ ] **Review planned changes**
-  - [ ] In `infra/github/src/`, run:
+- [x] **Review planned changes**
+  - [x] In `infra/github/src/`, run:
     ```bash
     dotenvx run -- terraform plan -var-file="config.json"
     ```
-  - [ ] Review output carefully
-  - [ ] You'll likely see:
+  - [x] Review output carefully
+  - [x] You'll likely see:
     - Repository settings being updated (description, visibility, topics, etc.)
     - Branch protection rules being created
     - Issue labels being created
-  - [ ] If any changes look wrong, adjust `config.json` before applying
+  - [x] If any changes look wrong, adjust `config.json` before applying
 
-- [ ] **Apply Terraform configuration**
-  - [ ] Run: `dotenvx run -- terraform apply -var-file="config.json"`
-  - [ ] Review the prompt and type `yes` to confirm
-  - [ ] Watch for any errors during apply
-  - [ ] Should finish with "Apply complete!"
+- [x] **Apply Terraform configuration** (partial — see note below)
+  - [x] Issue labels applied successfully (all 7 created)
+  - [ ] Repository metadata update blocked — PAT needs `Administration: Read and write`
+  - [ ] Branch protection blocked — PAT needs `Administration: Read and write`
+  - [ ] **Action required:** Update PAT at https://github.com/settings/tokens?type=beta to add `Administration: Read and write`, then re-run:
+    ```bash
+    cd infra/github
+    npx dotenvx run -f .env -- terraform -chdir=src apply -var-file="config.json" -auto-approve
+    ```
 
 ### Phase 5: Verify Configuration in GitHub
 
