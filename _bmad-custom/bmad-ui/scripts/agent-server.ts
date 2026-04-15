@@ -106,6 +106,20 @@ type DependencyTreeNode = {
   dependsOn: string[];
 };
 
+type ParsedEpicMarkdownRow = {
+  id: string;
+  number: number;
+  label: string;
+  dependsOn: string[];
+};
+
+type EpicConsistency = {
+  hasMismatch: boolean;
+  epicsMarkdownCount: number;
+  sprintStatusCount: number;
+  warning: string | null;
+};
+
 type AgentSession = {
   session_id?: string;
   tool: string;
@@ -128,7 +142,11 @@ const artifactsRoot = path.join(projectRoot, "_bmad-output");
 const agentsDir = path.join(projectRoot, "_bmad-custom", "agents");
 const runtimeStatePath = path.join(agentsDir, "runtime-state.json");
 const runtimeLogsDir = path.join(agentsDir, "logs");
-const analyticsStorePath = path.join(agentsDir, "agent-sessions.json");
+const analyticsStorePath = path.join(agentsDir, "agents-sessions.json");
+const legacyAnalyticsStorePaths = [
+  path.join(agentsDir, "agent-sessions.json"),
+  path.join(projectRoot, "_bmad-custom", "agent-sessions.json"),
+];
 const agentSessionsPath = analyticsStorePath;
 const defaultGitWorktreesDir = path.join(projectRoot, ".git-worktrees");
 const legacyGitWorktreesDir = path.join(projectRoot, "git-worktrees");
@@ -228,6 +246,7 @@ const EPICS_MARKDOWN_ROW_REGEX =
   /^\|\s*(\d+)\s*\|\s*([^|]+?)\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|/;
 const EPICS_STORY_HEADING_REGEX = /^###\s+Story\s+(\d+)\.(\d+):\s*(.*)$/i;
 const EPICS_EPIC_HEADING_REGEX = /^##+\s+Epic\s+(\d+)\s*:/i;
+const EPICS_EPIC_HEADING_WITH_NAME_REGEX = /^##+\s+Epic\s+(\d+)\s*:\s*(.+)$/i;
 const EPICS_STORY_FALLBACK_LABEL = "story";
 const EPIC_DEPENDENCY_NUMBER_REGEX = /\d+/g;
 const SUMMARY_LINE_REGEX = /(?:^|\n)(?:summary|resumen)\s*:\s*(.+)$/im;
@@ -244,7 +263,7 @@ const LAST_UPDATED_COMMENT_REGEX = /^#\s*last_updated:\s*.*$/m;
 const YAML_COMMENT_REGEX = /#.*$/;
 const YAML_STORY_HEADER_REGEX = /^ {2}(\d+-\d+-[a-z0-9-]+):$/;
 const YAML_DEP_ITEM_REGEX = /^\s{4}- (\d+-\d+-[a-z0-9-]+)$/;
-const ANALYTICS_REQUESTS_LINE_REGEX = /^Requests\s+(\d+)/m;
+const ANALYTICS_REQUESTS_LINE_REGEX = /^Requests\s+([\d.]+)/m;
 const ANALYTICS_TOKENS_LINE_REGEX =
   /^Tokens\s+\u2191\s*([\d.]+)([kmb]?)\s*\u2022\s*\u2193\s*([\d.]+)([kmb]?)\s*\u2022\s*([\d.]+)([kmb]?)\s*\(cached\)/m;
 const ANALYTICS_OLD_STYLE_SESSION_REGEX = /^(\d+)-(\d+)-(.+)$/;
@@ -279,12 +298,15 @@ async function readRuntimeStateFile(): Promise<RuntimeState | null> {
 }
 
 async function readAgentSessionsFile(): Promise<AgentSession[]> {
-  if (!existsSync(agentSessionsPath)) {
+  const candidatePath =
+    [agentSessionsPath, ...legacyAnalyticsStorePaths].find((p) => existsSync(p)) ||
+    null;
+  if (!candidatePath) {
     return [];
   }
 
   try {
-    const parsed = JSON.parse(await readFile(agentSessionsPath, "utf8")) as {
+    const parsed = JSON.parse(await readFile(candidatePath, "utf8")) as {
       sessions:
         | Record<string, unknown>[]
         | Record<string, Record<string, unknown>>;
@@ -550,9 +572,14 @@ async function buildOverviewPayload() {
   const epicsContent = existsSync(epicsFile)
     ? await readFile(epicsFile, "utf8")
     : "";
+  const parsedEpicRows = parseEpicMarkdownRows(epicsContent);
   const dependencyTree = {
-    nodes: buildDependencyTree(epicsContent, sprintOverview),
+    nodes: buildDependencyTree(parsedEpicRows, sprintOverview),
   };
+  const epicConsistency = summarizeEpicConsistency(
+    parsedEpicRows,
+    sprintOverview
+  );
   const storyDependencies = loadStoryDependencies();
 
   const listArtifactDir = async (dir: string): Promise<string[]> => {
@@ -600,6 +627,7 @@ async function buildOverviewPayload() {
     },
     externalProcesses,
     dependencyTree,
+    epicConsistency,
     storyDependencies,
     planningArtifactFiles,
     implementationArtifactFiles,
@@ -1153,8 +1181,85 @@ function summarizeEpicSteps(runtimeState: RuntimeState | null): Array<{
   });
 }
 
+function parseEpicMarkdownRows(
+  epicsContent: string
+): ParsedEpicMarkdownRow[] {
+  const rows: ParsedEpicMarkdownRow[] = [];
+  const seen = new Set<string>();
+
+  for (const line of epicsContent.split("\n")) {
+    const trimmed = line.trim();
+
+    // Try markdown table row first: | 1 | Name | ... | deps |
+    const tableRow = trimmed.match(EPICS_MARKDOWN_ROW_REGEX);
+    if (tableRow) {
+      const epicNumber = Number(tableRow[1]);
+      if (!Number.isFinite(epicNumber)) {
+        continue;
+      }
+      const id = `epic-${epicNumber}`;
+      if (seen.has(id)) {
+        continue;
+      }
+      const label = tableRow[2].trim();
+      const dependenciesCell = tableRow[4].trim();
+      const dependencyNumbers =
+        dependenciesCell.match(EPIC_DEPENDENCY_NUMBER_REGEX) || [];
+      const dependsOn = dependencyNumbers.map(
+        (value) => `epic-${Number(value)}`
+      );
+      rows.push({ id, number: epicNumber, label, dependsOn });
+      seen.add(id);
+      continue;
+    }
+
+    // Fallback: heading format ## Epic N: Name
+    const headingRow = trimmed.match(EPICS_EPIC_HEADING_WITH_NAME_REGEX);
+    if (headingRow) {
+      const epicNumber = Number(headingRow[1]);
+      if (!Number.isFinite(epicNumber)) {
+        continue;
+      }
+      const id = `epic-${epicNumber}`;
+      if (seen.has(id)) {
+        continue;
+      }
+      const label = headingRow[2].trim();
+      rows.push({ id, number: epicNumber, label, dependsOn: [] });
+      seen.add(id);
+    }
+  }
+
+  return rows.sort((a, b) => a.number - b.number);
+}
+
+function summarizeEpicConsistency(
+  parsedEpicRows: ParsedEpicMarkdownRow[],
+  sprintOverview: SprintOverview
+): EpicConsistency {
+  const epicsMarkdownCount = parsedEpicRows.length;
+  const sprintStatusCount = sprintOverview.epics.length;
+  const hasMismatch = epicsMarkdownCount !== sprintStatusCount;
+
+  if (!hasMismatch) {
+    return {
+      hasMismatch,
+      epicsMarkdownCount,
+      sprintStatusCount,
+      warning: null,
+    };
+  }
+
+  return {
+    hasMismatch,
+    epicsMarkdownCount,
+    sprintStatusCount,
+    warning: `Epic count mismatch: epics.md defines ${epicsMarkdownCount} epic${epicsMarkdownCount === 1 ? "" : "s"}, sprint-status.yaml tracks ${sprintStatusCount}. Re-run Sprint Planning to synchronize.`,
+  };
+}
+
 function buildDependencyTree(
-  epicsContent: string,
+  parsedEpicRows: ParsedEpicMarkdownRow[],
   sprintOverview: SprintOverview
 ): DependencyTreeNode[] {
   const sprintEpicMap = new Map(
@@ -1165,40 +1270,18 @@ function buildDependencyTree(
   );
 
   const nodes: DependencyTreeNode[] = [];
-  const seen = new Set<string>();
 
-  for (const line of epicsContent.split("\n")) {
-    const trimmed = line.trim();
-    const row = trimmed.match(EPICS_MARKDOWN_ROW_REGEX);
-    if (!row) {
-      continue;
-    }
-
-    const epicNumber = Number(row[1]);
-    if (!Number.isFinite(epicNumber)) {
-      continue;
-    }
-
-    const id = `epic-${epicNumber}`;
-    if (seen.has(id)) {
-      continue;
-    }
-
-    const label = row[2].trim();
-    const dependenciesCell = row[4].trim();
-    const dependencyNumbers =
-      dependenciesCell.match(EPIC_DEPENDENCY_NUMBER_REGEX) || [];
-    const dependsOn = dependencyNumbers.map((value) => `epic-${Number(value)}`);
+  for (const row of parsedEpicRows) {
+    const id = row.id;
     const sprintData = sprintEpicMap.get(id);
 
     nodes.push({
       id,
-      label,
+      label: row.label,
       status: sprintData?.status || "backlog",
       storyCount: sprintData?.storyCount || 0,
-      dependsOn,
+      dependsOn: row.dependsOn,
     });
-    seen.add(id);
   }
 
   if (nodes.length === 0) {
@@ -1682,7 +1765,8 @@ function parseTokenUsageFromLog(rawLogContent: string): TokenUsageData {
   const clean = stripAnsi(rawLogContent).replace(/\r/g, "");
 
   const reqMatch = clean.match(ANALYTICS_REQUESTS_LINE_REGEX);
-  const requests = reqMatch ? Number(reqMatch[1]) : 0;
+  const parsedRequests = reqMatch ? Number.parseFloat(reqMatch[1]) : 0;
+  const requests = Number.isFinite(parsedRequests) ? parsedRequests : 0;
 
   const tokMatch = clean.match(ANALYTICS_TOKENS_LINE_REGEX);
   if (!tokMatch) {
@@ -1824,11 +1908,14 @@ type AnalyticsStore = {
 };
 
 async function readAnalyticsStore(): Promise<AnalyticsStore> {
-  if (!existsSync(analyticsStorePath)) {
+  const candidatePath =
+    [analyticsStorePath, ...legacyAnalyticsStorePaths].find((p) => existsSync(p)) ||
+    null;
+  if (!candidatePath) {
     return { sessions: {} };
   }
   try {
-    const raw = await readFile(analyticsStorePath, "utf8");
+    const raw = await readFile(candidatePath, "utf8");
     const parsed = JSON.parse(raw) as {
       sessions: Record<string, Record<string, unknown>>;
       costing?: AnalyticsCostingData;
@@ -1914,7 +2001,8 @@ async function backfillAnalyticsStore(): Promise<void> {
 
   // Backfill sessions from runtime-state that have logs but no store entry
   for (const session of allSessions) {
-    if (store.sessions[session.id]) {
+    const existing = store.sessions[session.id];
+    if (existing && existing.usage.requests > 0) {
       continue;
     }
     const { logPath } = session;
@@ -1927,6 +2015,16 @@ async function backfillAnalyticsStore(): Promise<void> {
     try {
       const logContent = await readFile(logPath, "utf8");
       const usage = parseTokenUsageFromLog(logContent);
+      const hasChanged =
+        !existing ||
+        existing.usage.requests !== usage.requests ||
+        existing.usage.totalTokens !== usage.totalTokens ||
+        existing.usage.tokensIn !== usage.tokensIn ||
+        existing.usage.tokensOut !== usage.tokensOut ||
+        existing.usage.tokensCached !== usage.tokensCached;
+      if (!hasChanged) {
+        continue;
+      }
       store.sessions[session.id] = {
         sessionId: session.id,
         storyId: session.storyId,
@@ -1974,13 +2072,27 @@ async function backfillAnalyticsStore(): Promise<void> {
     }
     const logPath = path.join(runtimeLogsDir, filename);
     const sessionId = filename.slice(0, filename.length - 4);
-    if (store.sessions[sessionId] || knownLogPaths.has(logPath)) {
+    const existing = store.sessions[sessionId];
+    if (existing && existing.usage.requests > 0) {
+      continue;
+    }
+    if (knownLogPaths.has(logPath) && existing?.usage.requests && existing.usage.requests > 0) {
       continue;
     }
     try {
       const logContent = await readFile(logPath, "utf8");
       const usage = parseTokenUsageFromLog(logContent);
       if (usage.requests === 0 && usage.totalTokens === 0) {
+        continue;
+      }
+      const hasChanged =
+        !existing ||
+        existing.usage.requests !== usage.requests ||
+        existing.usage.totalTokens !== usage.totalTokens ||
+        existing.usage.tokensIn !== usage.tokensIn ||
+        existing.usage.tokensOut !== usage.tokensOut ||
+        existing.usage.tokensCached !== usage.tokensCached;
+      if (!hasChanged) {
         continue;
       }
       const storyId = inferStoryIdFromLogFilename(sessionId, sprintStoryIds);

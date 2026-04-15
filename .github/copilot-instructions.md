@@ -120,9 +120,9 @@ agent-browser install   # Downloads Chrome for Testing
 
 ## Session Analytics Logging
 
-Session tracking is **automated** via `_bmad-custom/agents/sync-sessions.mjs`, a background daemon that watches the Copilot debug logs (`~/Library/Application Support/Code - Insiders/User/workspaceStorage/…/GitHub.copilot-chat/debug-logs/*/main.jsonl`) and auto-upserts sessions into `_bmad-custom/agents/agent-sessions.json` every 5 seconds when active.
+Session tracking is **automated** via `_bmad-custom/agents/sync-sessions.mjs`, a background daemon that watches the Copilot debug logs (`~/Library/Application Support/Code - Insiders/User/workspaceStorage/…/GitHub.copilot-chat/debug-logs/*/main.jsonl`) and auto-upserts sessions into `_bmad-custom/agents/agents-sessions.json` every 5 seconds when active.
 
-**You do not need to manually update `agent-sessions.json` for `turns`, `start_date`, `end_date`, or `status`** — the daemon derives these from the debug log timestamps.
+**You do not need to manually update `agents-sessions.json` for `turns`, `start_date`, `end_date`, or `status`** — the daemon derives these from the debug log timestamps.
 
 ### What the daemon auto-tracks
 - `session_id` — from the debug log directory name

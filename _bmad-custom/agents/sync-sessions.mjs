@@ -3,7 +3,7 @@
  * sync-sessions.mjs
  *
  * Watches GitHub Copilot debug logs and auto-syncs session data into
- * _bmad-custom/agents/agent-sessions.json. Runs as a background daemon.
+ * _bmad-custom/agents/agents-sessions.json. Runs as a background daemon.
  *
  * Auto-derived fields (from main.jsonl):
  *   session_id, turns, start_date, status
@@ -32,7 +32,11 @@ const DEBUG_LOGS_BASE = join(
   'Library/Application Support/Code - Insiders/User/workspaceStorage/e33633a4b59213a9cbfe28a0c746f7af/GitHub.copilot-chat/debug-logs'
 );
 
-const OUTPUT_FILE = resolve(__dirname, 'agent-sessions.json');
+const OUTPUT_FILE = resolve(__dirname, 'agents-sessions.json');
+const LEGACY_OUTPUT_FILES = [
+  resolve(__dirname, 'agent-sessions.json'),
+  resolve(__dirname, '..', 'agent-sessions.json'),
+];
 
 /** Sessions not updated for this long are marked completed */
 const INACTIVE_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
@@ -81,24 +85,32 @@ function parseDebugLog(sessionId) {
   }
 }
 
-// ─── Read / write agent-sessions.json ────────────────────────────────────────
+// ─── Read / write agents-sessions.json ───────────────────────────────────────
 
 function readSessions() {
-  try {
-    const data = JSON.parse(readFileSync(OUTPUT_FILE, 'utf8'));
-    // Normalize: if sessions is an array, convert to dict keyed by session_id/sessionId
-    if (Array.isArray(data.sessions)) {
-      const dict = {};
-      for (const s of data.sessions) {
-        const key = s.session_id || s.sessionId || '';
-        if (key) dict[key] = s;
-      }
-      data.sessions = dict;
+  const candidateFiles = [OUTPUT_FILE, ...LEGACY_OUTPUT_FILES];
+  for (const candidate of candidateFiles) {
+    if (!existsSync(candidate)) {
+      continue;
     }
-    return data;
-  } catch {
-    return { sessions: {} };
+    try {
+      const data = JSON.parse(readFileSync(candidate, 'utf8'));
+      // Normalize: if sessions is an array, convert to dict keyed by session_id/sessionId
+      if (Array.isArray(data.sessions)) {
+        const dict = {};
+        for (const s of data.sessions) {
+          const key = s.session_id || s.sessionId || '';
+          if (key) dict[key] = s;
+        }
+        data.sessions = dict;
+      }
+      return data;
+    } catch {
+      // Keep trying fallbacks.
+    }
   }
+
+  return { sessions: {} };
 }
 
 function writeSessions(data) {

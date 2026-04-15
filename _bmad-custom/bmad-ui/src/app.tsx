@@ -25,14 +25,22 @@ const DEFAULT_SESSION_STATUS_FILTERS = [
   "failed",
   "cancelled",
 ] as const;
+const SPRINT_WARNING_FALLBACK_MESSAGE =
+  "epics.md and sprint-status.yaml are inconsistent. Re-run Sprint Planning.";
 
 type OverviewEpic = OverviewResponse["sprintOverview"]["epics"][number];
+type OverviewEpicConsistency = OverviewResponse["epicConsistency"];
 type SessionActionKind = "start" | "abort";
 
 type SessionActionState = {
   sessionId: string;
   action: SessionActionKind;
 } | null;
+
+type SessionUsageSummary = {
+  requests: number;
+  totalTokens: number;
+};
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -111,18 +119,31 @@ function toShortStoryId(storyId: string | null): string {
   return `${ticket.epic}-${ticket.story}`;
 }
 
+function formatUsageCount(value: number | undefined): string {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "-";
+  }
+  return value.toLocaleString();
+}
+
 type NormalizedSession =
   | { source: "runtime"; data: RuntimeSession }
   | { source: "copilot"; data: AgentSession };
 
 function SessionsTable(props: {
   sessions: NormalizedSession[];
+  usageBySessionId: Map<string, SessionUsageSummary>;
   sessionActionPending: SessionActionState;
   onStartSession: (sessionId: string) => void;
   onAbortSession: (sessionId: string) => void;
 }) {
-  const { sessions, sessionActionPending, onAbortSession, onStartSession } =
-    props;
+  const {
+    sessions,
+    usageBySessionId,
+    sessionActionPending,
+    onAbortSession,
+    onStartSession,
+  } = props;
   return (
     <div className="table-wrap">
       <table>
@@ -143,6 +164,7 @@ function SessionsTable(props: {
           {sessions.map((row) => {
             if (row.source === "runtime") {
               const session = row.data;
+              const usage = usageBySessionId.get(session.id);
               const hasPendingAction = sessionActionPending !== null;
               const isRowActionPending =
                 sessionActionPending?.sessionId === session.id;
@@ -169,8 +191,8 @@ function SessionsTable(props: {
                   </td>
                   <td>{formatDate(session.startedAt)}</td>
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
-                  <td>-</td>
-                  <td>-</td>
+                  <td>{formatUsageCount(usage?.requests)}</td>
+                  <td>{formatUsageCount(usage?.totalTokens)}</td>
                   <td>
                     <div className="session-actions" role="group">
                       <button
@@ -219,11 +241,9 @@ function SessionsTable(props: {
                 </td>
                 <td>{formatDate(session.start_date)}</td>
                 <td>{formatDuration(session.start_date, session.end_date)}</td>
-                <td>{session.premium_cost_units}</td>
+                <td>{formatUsageCount(session.premium_requests)}</td>
                 <td>
-                  {session.tokens?.total && session.tokens.total > 0
-                    ? session.tokens.total.toLocaleString()
-                    : "-"}
+                  {formatUsageCount(session.tokens?.total)}
                 </td>
                 <td>-</td>
               </tr>
@@ -269,6 +289,21 @@ function AgentSessionsSection(props: {
     }));
     return [...runtime, ...copilot];
   }, [runGroups, agentSessions]);
+
+  const usageBySessionId = useMemo(() => {
+    const map = new Map<string, SessionUsageSummary>();
+    for (const session of agentSessions) {
+      const sessionId = session.session_id;
+      if (!sessionId) {
+        continue;
+      }
+      map.set(sessionId, {
+        requests: session.premium_requests,
+        totalTokens: session.tokens?.total ?? 0,
+      });
+    }
+    return map;
+  }, [agentSessions]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -482,6 +517,7 @@ function AgentSessionsSection(props: {
             onStartSession={onStartSession}
             sessionActionPending={sessionActionPending}
             sessions={paginatedSessions}
+            usageBySessionId={usageBySessionId}
           />
         </>
       ) : (
@@ -700,11 +736,25 @@ function BMADWorkflowSection(props: {
   planningFiles: string[];
   implementationFiles: string[];
   activeSkill: string | null;
+  epics: OverviewEpic[];
+  epicLabels: Map<string, string>;
+  epicConsistency: OverviewEpicConsistency;
 }) {
-  const { planningFiles, implementationFiles, activeSkill } = props;
+  const {
+    planningFiles,
+    implementationFiles,
+    activeSkill,
+    epics,
+    epicLabels,
+    epicConsistency,
+  } = props;
   const { phases, nextActionStep } = detectWorkflowStatus(
     planningFiles,
     implementationFiles
+  );
+  const sortedEpics = useMemo(
+    () => [...epics].sort((a, b) => a.number - b.number),
+    [epics]
   );
 
   // Default: open the phase that contains the next action, or all if none
@@ -761,10 +811,26 @@ function BMADWorkflowSection(props: {
       <div className="workflow-phases">
         {phases.map((phase) => {
           const isOpen = openPhases.has(phase.id);
-          const doneCount = phase.steps.filter((s) => s.isCompleted).length;
           const hasNextAction = phase.steps.some(
             (s) => s.id === nextActionStep?.id
           );
+
+          // For the implementation phase, progress includes steps (Sprint Planning)
+          // plus all epics.
+          const isImplementationPhase = phase.id === "implementation";
+          const epicsDoneCount = sortedEpics.filter(
+            (e) => e.status === "done"
+          ).length;
+          const epicsTotal = sortedEpics.length;
+          const stepsDone = phase.steps.filter((s) => s.isCompleted).length;
+
+          const progressDone = isImplementationPhase && epicsTotal > 0
+            ? stepsDone + epicsDoneCount
+            : stepsDone;
+          const progressTotal = isImplementationPhase && epicsTotal > 0
+            ? phase.steps.length + epicsTotal
+            : phase.steps.length;
+
           return (
             <div
               key={phase.id}
@@ -782,9 +848,23 @@ function BMADWorkflowSection(props: {
                   <span className="workflow-step-optional">optional</span>
                 )}
                 <span className="workflow-phase-progress">
-                  {doneCount}/{phase.steps.length}
+                  {progressDone}/{progressTotal}
                 </span>
                 {(() => {
+                  if (isImplementationPhase && epicsTotal > 0) {
+                    const allDone = progressDone === progressTotal;
+                    const anyProgress = stepsDone > 0 || epicsDoneCount > 0 || sortedEpics.some((e) => e.status === "in-progress");
+                    const status = allDone
+                      ? "done"
+                      : anyProgress
+                        ? "in-progress"
+                        : "backlog";
+                    return (
+                      <span className={`step-badge step-${status}`}>
+                        {status}
+                      </span>
+                    );
+                  }
                   const requiredSteps = phase.steps.filter((s) => !s.isOptional);
                   const allRequiredDone =
                     requiredSteps.length === 0 ||
@@ -807,6 +887,27 @@ function BMADWorkflowSection(props: {
                 <div className="workflow-steps">
                   {phase.steps.map((step) => {
                     const isRunning = step.skill === effectiveActiveSkill;
+                    const shouldShowEpics =
+                      phase.id === "implementation" && step.id === "sprint";
+                    const hasSprintWarning =
+                      shouldShowEpics && epicConsistency.hasMismatch;
+                    const stepStatusClassName = isRunning
+                      ? "step-running"
+                      : hasSprintWarning
+                        ? "step-warning"
+                        : step.isCompleted
+                          ? "step-done"
+                          : "step-not-started";
+                    const stepStatusLabel = isRunning
+                      ? "running"
+                      : hasSprintWarning
+                        ? "warning"
+                        : step.isCompleted
+                          ? "done"
+                          : "pending";
+                    const sprintWarningMessage =
+                      epicConsistency.warning ?? SPRINT_WARNING_FALLBACK_MESSAGE;
+
                     return (
                       <div
                         key={step.id}
@@ -817,39 +918,63 @@ function BMADWorkflowSection(props: {
                           {step.isOptional && (
                             <span className="workflow-step-optional">optional</span>
                           )}
-                        </div>
-                        {nextActionStep?.id === step.id && !isRunning && (
-                          <button
-                            className="icon-button icon-button-play"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void handlePlayClick(step);
-                            }}
-                            title={`Run ${step.skill}`}
-                            type="button"
-                          >
-                            <span aria-hidden="true" className="icon-glyph">
-                              ▶
+                          {hasSprintWarning ? (
+                            <span
+                              className="workflow-step-warning-indicator"
+                              title={sprintWarningMessage}
+                            >
+                              ⚠
                             </span>
-                          </button>
-                        )}
+                          ) : null}
+                        </div>
+                        {(nextActionStep?.id === step.id || hasSprintWarning) &&
+                          !isRunning && (
+                            <button
+                              className="icon-button icon-button-play"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void handlePlayClick(step);
+                              }}
+                              title={`Run ${step.skill}`}
+                              type="button"
+                            >
+                              <span aria-hidden="true" className="icon-glyph">
+                                ▶
+                              </span>
+                            </button>
+                          )}
                         <span
-                          className={`step-badge ${isRunning ? "step-running" : step.isCompleted ? "step-done" : "step-not-started"}`}
+                          className={`step-badge ${stepStatusClassName}`}
+                          title={hasSprintWarning ? sprintWarningMessage : undefined}
                         >
                           {isRunning ? (
                             <>
                               <span aria-hidden="true" className="agent-icon">⬡</span>
                               {" running"}
                             </>
-                          ) : step.isCompleted ? (
-                            "done"
                           ) : (
-                            "pending"
+                            stepStatusLabel
                           )}
                         </span>
                       </div>
                     );
                   })}
+                  {phase.id === "implementation" &&
+                    sortedEpics.map((epic) => (
+                      <div className="workflow-step" key={epic.id}>
+                        <div className="workflow-step-body">
+                          <Link
+                            params={{ epicId: epic.id }}
+                            to="/epic/$epicId"
+                          >
+                            {`Epic ${epic.number}: ${epicLabels.get(epic.id) ?? epic.id}`}
+                          </Link>
+                        </div>
+                        <span className={`step-badge step-${epic.status}`}>
+                          {epic.status}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               )}
             </div>
@@ -1041,6 +1166,11 @@ export function HomePage() {
     return currentGroup ? [currentGroup, ...historyGroups] : historyGroups;
   }, [data]);
 
+  const epicLabels = useMemo(
+    () => new Map((data?.dependencyTree.nodes ?? []).map((n) => [n.id, n.label])),
+    [data?.dependencyTree.nodes]
+  );
+
   const startSession = async (sessionId: string) => {
     setSessionActionPending({ sessionId, action: "start" });
     try {
@@ -1098,10 +1228,20 @@ export function HomePage() {
       </section>
 
       <BMADWorkflowSection
-          implementationFiles={data?.implementationArtifactFiles ?? []}
-          planningFiles={data?.planningArtifactFiles ?? []}
-          activeSkill={data?.activeWorkflowSkill ?? null}
-        />
+        activeSkill={data?.activeWorkflowSkill ?? null}
+        epicLabels={epicLabels}
+        epicConsistency={
+          data?.epicConsistency ?? {
+            hasMismatch: false,
+            epicsMarkdownCount: 0,
+            sprintStatusCount: 0,
+            warning: null,
+          }
+        }
+        epics={data?.sprintOverview.epics ?? []}
+        implementationFiles={data?.implementationArtifactFiles ?? []}
+        planningFiles={data?.planningArtifactFiles ?? []}
+      />
 
       <AgentSessionsSection
         agentSessions={data?.agentSessions ?? []}

@@ -136,6 +136,13 @@ export type OverviewResponse = {
       dependsOn: string[];
     }>;
   };
+  epicConsistency: {
+    hasMismatch: boolean;
+    epicsMarkdownCount: number;
+    sprintStatusCount: number;
+    warning: string | null;
+  };
+  storyDependenciesExist: boolean;
   storyDependencies: Record<string, string[]>;
   agentRunHistory: AgentRunGroup[];
   planningArtifactFiles: string[];
@@ -179,6 +186,7 @@ export type EpicDetailResponse = {
     steps: Record<StoryWorkflowStepSkill, WorkflowStepState>;
   }>;
   plannedStories: string[];
+  storyDependencies: Record<string, string[]>;
 };
 
 export type SessionDetailResponse = {

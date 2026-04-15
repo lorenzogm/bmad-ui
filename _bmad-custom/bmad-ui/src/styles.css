@@ -738,6 +738,12 @@ a:hover {
   text-decoration: underline;
 }
 
+.step-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .step-badge {
   display: inline-flex;
   align-items: center;
@@ -779,6 +785,12 @@ a:hover {
 .step-review {
   background: rgba(56, 189, 248, 0.22);
   color: #baeaff;
+}
+
+.step-warning {
+  background: rgba(245, 158, 11, 0.24);
+  color: #ffd996;
+  border-color: rgba(245, 158, 11, 0.45);
 }
 
 .step-failed {
@@ -1194,6 +1206,19 @@ a:hover {
 
 .workflow-step-done .workflow-step-name {
   color: var(--muted);
+}
+
+.workflow-step-warning-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  color: #ffd996;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 999px;
+  width: 1.2rem;
+  height: 1.2rem;
+  background: rgba(245, 158, 11, 0.12);
 }
 
 .workflow-step-optional {

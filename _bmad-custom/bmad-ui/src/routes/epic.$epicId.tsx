@@ -1,7 +1,24 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { EpicDetailResponse } from "../types";
 import { rootRoute } from "./__root";
+
+type SkillName = "bmad-create-story" | "bmad-dev-story" | "bmad-code-review";
+
+function getBlockingStories(
+  storyId: string,
+  storyDependencies: Record<string, string[]>,
+  storyStatusMap: Map<string, string>
+): string[] {
+  const deps = storyDependencies[storyId];
+  if (!deps || deps.length === 0) {
+    return [];
+  }
+  return deps.filter((depId) => {
+    const status = storyStatusMap.get(depId);
+    return status !== "done";
+  });
+}
 
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/;
 
@@ -48,6 +65,23 @@ function EpicDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hideFinishedStories, setHideFinishedStories] = useState(false);
+  const [pendingSkill, setPendingSkill] = useState<string | null>(null);
+
+  const handleRunSkill = useCallback(
+    async (skill: SkillName, storyId: string) => {
+      setPendingSkill(`${skill}:${storyId}`);
+      try {
+        await fetch("/api/workflow/run-skill", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skill, storyId }),
+        });
+      } catch {
+        // ignore fetch errors — server will log
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -97,6 +131,14 @@ function EpicDetailPage() {
       }),
     [data]
   );
+
+  const storyStatusMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const story of stories) {
+      map.set(story.id, story.status);
+    }
+    return map;
+  }, [stories]);
 
   const filteredStories = useMemo(() => {
     if (!hideFinishedStories) {
@@ -152,7 +194,27 @@ function EpicDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredStories.map((story) => (
+              {filteredStories.map((story) => {
+                const createState = deriveStoryStepState(story.status, "bmad-create-story");
+                const devState = deriveStoryStepState(story.status, "bmad-dev-story");
+                const reviewState = deriveStoryStepState(story.status, "bmad-code-review");
+
+                const SKILL_ORDER: { skill: SkillName; state: string }[] = [
+                  { skill: "bmad-create-story", state: createState },
+                  { skill: "bmad-dev-story", state: devState },
+                  { skill: "bmad-code-review", state: reviewState },
+                ];
+                const nextSkill = SKILL_ORDER.find((s) => s.state === "not-started")?.skill ?? null;
+
+                const blockers = getBlockingStories(
+                  story.id,
+                  data.storyDependencies ?? {},
+                  storyStatusMap
+                );
+                const isBlocked = blockers.length > 0;
+                const blockedTooltip = `Blocked by ${blockers.join(", ")}`;
+
+                return (
                 <tr key={story.id}>
                   <td>
                     <Link params={{ storyId: story.id }} to="/story/$storyId">
@@ -160,28 +222,62 @@ function EpicDetailPage() {
                     </Link>
                   </td>
                   <td>
-                    <span
-                      className={`step-badge step-${deriveStoryStepState(story.status, "bmad-create-story")}`}
-                    >
-                      {deriveStoryStepState(story.status, "bmad-create-story")}
-                    </span>
+                    <div className="step-cell">
+                      <span className={`step-badge step-${createState}`}>
+                        {createState}
+                      </span>
+                      {nextSkill === "bmad-create-story" && (
+                        <button
+                          className="icon-button icon-button-play"
+                          disabled={pendingSkill !== null}
+                          onClick={() => void handleRunSkill("bmad-create-story", story.id)}
+                          title={`Run bmad-create-story for ${story.id}`}
+                          type="button"
+                        >
+                          <span aria-hidden="true" className="icon-glyph">▶</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                   <td>
-                    <span
-                      className={`step-badge step-${deriveStoryStepState(story.status, "bmad-dev-story")}`}
-                    >
-                      {deriveStoryStepState(story.status, "bmad-dev-story")}
-                    </span>
+                    <div className="step-cell">
+                      <span className={`step-badge step-${devState}`}>
+                        {devState}
+                      </span>
+                      {nextSkill === "bmad-dev-story" && (
+                        <button
+                          className="icon-button icon-button-play"
+                          disabled={pendingSkill !== null || isBlocked}
+                          onClick={() => void handleRunSkill("bmad-dev-story", story.id)}
+                          title={isBlocked ? blockedTooltip : `Run bmad-dev-story for ${story.id}`}
+                          type="button"
+                        >
+                          <span aria-hidden="true" className="icon-glyph">▶</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                   <td>
-                    <span
-                      className={`step-badge step-${deriveStoryStepState(story.status, "bmad-code-review")}`}
-                    >
-                      {deriveStoryStepState(story.status, "bmad-code-review")}
-                    </span>
+                    <div className="step-cell">
+                      <span className={`step-badge step-${reviewState}`}>
+                        {reviewState}
+                      </span>
+                      {nextSkill === "bmad-code-review" && (
+                        <button
+                          className="icon-button icon-button-play"
+                          disabled={pendingSkill !== null || isBlocked}
+                          onClick={() => void handleRunSkill("bmad-code-review", story.id)}
+                          title={isBlocked ? blockedTooltip : `Run bmad-code-review for ${story.id}`}
+                          type="button"
+                        >
+                          <span aria-hidden="true" className="icon-glyph">▶</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {filteredStories.length === 0 ? (
                 <tr>
                   <td colSpan={4}>No stories found for this epic</td>
