@@ -765,16 +765,12 @@ function BMADWorkflowSection(props: {
     [epics]
   );
 
-  // Default: open the phase that contains the next action, or all if none
-  const defaultOpen = new Set(
-    phases
-      .filter((phase) =>
-        nextActionStep
-          ? phase.steps.some((s) => s.id === nextActionStep.id)
-          : true
-      )
-      .map((phase) => phase.id)
-  );
+  // Default: open the phase containing the next required action,
+  // or the Implementation phase if all required steps are done.
+  const defaultOpenPhase = nextActionStep
+    ? phases.find((p) => p.steps.some((s) => s.id === nextActionStep.id))
+    : phases.find((p) => p.id === "implementation") ?? phases[phases.length - 1];
+  const defaultOpen = new Set([defaultOpenPhase?.id].filter(Boolean) as string[]);
   const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen);
   const [pendingActiveSkill, setPendingActiveSkill] = useState<string | null>(null);
 
@@ -996,27 +992,15 @@ function BMADWorkflowSection(props: {
 export function EpicTableSection(props: {
   filteredEpics: OverviewEpic[];
   epicLabels: Map<string, string>;
-  hideFinishedEpics: boolean;
-  onToggleHideFinishedEpics: (checked: boolean) => void;
 }) {
   const {
     filteredEpics,
     epicLabels,
-    hideFinishedEpics,
-    onToggleHideFinishedEpics,
   } = props;
 
   return (
     <section className="panel reveal delay-3">
       <h2>Epic Table</h2>
-      <label className="filter-toggle">
-        <input
-          checked={hideFinishedEpics}
-          onChange={(event) => onToggleHideFinishedEpics(event.target.checked)}
-          type="checkbox"
-        />
-        Hide 100% finished epics
-      </label>
       <div className="table-wrap">
         <table>
           <thead>

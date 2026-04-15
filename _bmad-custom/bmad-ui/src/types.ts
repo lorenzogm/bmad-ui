@@ -50,8 +50,6 @@ export type RuntimeSession = {
   skill: string;
   model: string;
   storyId: string | null;
-  worktreeMode: "git-worktree";
-  worktreePath: string | null;
   status: string;
   startedAt: string;
   endedAt: string | null;

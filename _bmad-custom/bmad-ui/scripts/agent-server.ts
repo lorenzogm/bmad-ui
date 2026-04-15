@@ -33,8 +33,7 @@ type RuntimeSession = {
   skill: string;
   model: string;
   storyId: string | null;
-  worktreeMode: "git-worktree";
-  worktreePath: string | null;
+
   status: string;
   startedAt: string;
   endedAt: string | null;
@@ -146,18 +145,7 @@ const runtimeLogsDir = path.join(agentsDir, "logs");
 const analyticsStorePath = path.join(agentsDir, "agent-sessions.json");
 const legacyAnalyticsStorePaths: string[] = [];
 const agentSessionsPath = analyticsStorePath;
-const defaultGitWorktreesDir = path.join(projectRoot, ".git-worktrees");
-const legacyGitWorktreesDir = path.join(projectRoot, "git-worktrees");
-const legacyBmadWorktreesDir = path.join(projectRoot, "bmad-worktrees");
-const runtimeWorktreesDir = process.env.BMAD_WORKTREES_DIR
-  ? path.resolve(projectRoot, process.env.BMAD_WORKTREES_DIR)
-  : existsSync(defaultGitWorktreesDir)
-    ? defaultGitWorktreesDir
-    : existsSync(legacyGitWorktreesDir)
-      ? legacyGitWorktreesDir
-      : existsSync(legacyBmadWorktreesDir)
-        ? legacyBmadWorktreesDir
-        : defaultGitWorktreesDir;
+
 
 const sprintStatusFile = path.join(
   artifactsRoot,
@@ -371,7 +359,7 @@ function createEmptyRuntimeState(): RuntimeState {
     targetStory: null,
     parallelCandidate: null,
     sessions: [],
-    notes: ["Agent sessions run in isolated git worktrees."],
+    notes: ["Agent sessions run in the workspace root."],
   };
 }
 
@@ -384,19 +372,6 @@ async function loadOrCreateRuntimeState(): Promise<RuntimeState> {
   const nextState = createEmptyRuntimeState();
   await persistRuntimeState(nextState);
   return nextState;
-}
-
-async function createSessionWorktree(sessionId: string): Promise<string> {
-  await mkdir(runtimeWorktreesDir, { recursive: true });
-  const worktreePath = path.join(runtimeWorktreesDir, sessionId);
-  await execFileAsync(
-    "git",
-    ["worktree", "add", "-b", sessionId, worktreePath, "HEAD"],
-    {
-      cwd: projectRoot,
-    }
-  );
-  return worktreePath;
 }
 
 function createRuntimeSession(params: {
@@ -413,8 +388,6 @@ function createRuntimeSession(params: {
     skill: params.skill,
     model: params.model,
     storyId: params.storyId || null,
-    worktreeMode: "git-worktree",
-    worktreePath: null,
     status: "planned",
     startedAt: new Date().toISOString(),
     endedAt: null,
@@ -431,10 +404,6 @@ async function startRuntimeSession(
   runtimeState: RuntimeState,
   session: RuntimeSession
 ): Promise<void> {
-  if (!session.worktreePath) {
-    session.worktreePath = await createSessionWorktree(session.id);
-  }
-
   session.status = "running";
   session.startedAt = new Date().toISOString();
   session.endedAt = null;
@@ -443,7 +412,7 @@ async function startRuntimeSession(
   await persistRuntimeState(runtimeState);
 
   const stageProcess = spawn(session.command, {
-    cwd: session.worktreePath || projectRoot,
+    cwd: projectRoot,
     shell: true,
     env: process.env,
   });
@@ -482,142 +451,6 @@ async function startRuntimeSession(
     await persistSessionAnalytics(session);
     resetRunningProcessState();
     runningSessionProcesses.delete(session.id);
-
-    // Merge worktree branch into main and clean up
-    if (code === 0 && !isCancelled && session.worktreePath) {
-      let mergeSucceeded = false;
-      
-      // Step 1: Ensure we're on main branch
-      try {
-        await execFileAsync("git", ["checkout", "main"], { cwd: projectRoot });
-        await writeFile(session.logPath, `\n[orchestrator] switched to main branch\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      } catch (checkoutError) {
-        await writeFile(session.logPath, `\n[orchestrator] failed to checkout main: ${String(checkoutError)}\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      }
-      
-      // Step 2: Fetch latest changes
-      try {
-        await execFileAsync("git", ["fetch", "origin", "main"], { cwd: projectRoot });
-        await writeFile(session.logPath, `\n[orchestrator] fetched latest changes from origin\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      } catch (fetchError) {
-        await writeFile(session.logPath, `\n[orchestrator] fetch warning: ${String(fetchError)}\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      }
-      
-      // Step 3: Try merge with conflict resolution strategy (prefer worktree changes)
-      try {
-        await execFileAsync(
-          "git",
-          ["merge", "--no-edit", "-X", "theirs", session.id],
-          { cwd: projectRoot }
-        );
-        mergeSucceeded = true;
-        await writeFile(session.logPath, `\n[orchestrator] ✓ successfully merged branch ${session.id} into main\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      } catch (mergeError) {
-        // Try to resolve conflicts automatically by taking their version (worktree)
-        try {
-          await execFileAsync("git", ["diff", "--name-only", "--diff-filter=U"], { cwd: projectRoot });
-          // If there are conflicts, try to resolve them
-          await execFileAsync("git", ["checkout", "--theirs", "."], { cwd: projectRoot });
-          await execFileAsync("git", ["add", "-A"], { cwd: projectRoot });
-          await execFileAsync(
-            "git",
-            ["commit", "--no-edit", "-m", `Merge branch '${session.id}' with conflict resolution`],
-            { cwd: projectRoot }
-          );
-          mergeSucceeded = true;
-          await writeFile(session.logPath, `\n[orchestrator] ✓ merged with automatic conflict resolution (accepted worktree changes)\n`, {
-            encoding: "utf8",
-            flag: "a",
-          });
-        } catch (conflictError) {
-          // Last resort: abort merge and continue cleanup
-          await writeFile(session.logPath, `\n[orchestrator] merge conflict resolution failed: ${String(conflictError)}\n`, {
-            encoding: "utf8",
-            flag: "a",
-          });
-          try {
-            await execFileAsync("git", ["merge", "--abort"], { cwd: projectRoot });
-            await writeFile(session.logPath, `\n[orchestrator] aborted merge attempt\n`, {
-              encoding: "utf8",
-              flag: "a",
-            });
-          } catch (abortError) {
-            await writeFile(session.logPath, `\n[orchestrator] merge abort failed: ${String(abortError)}\n`, {
-              encoding: "utf8",
-              flag: "a",
-            });
-          }
-        }
-      }
-
-      // Step 4: Push changes to remote if merge succeeded
-      if (mergeSucceeded) {
-        try {
-          await execFileAsync(
-            "git",
-            ["push", "origin", "main"],
-            { cwd: projectRoot }
-          );
-          await writeFile(session.logPath, `\n[orchestrator] ✓ pushed changes to origin/main\n`, {
-            encoding: "utf8",
-            flag: "a",
-          });
-        } catch (pushError) {
-          await writeFile(session.logPath, `\n[orchestrator] push to remote failed: ${String(pushError)}\n`, {
-            encoding: "utf8",
-            flag: "a",
-          });
-        }
-      }
-
-      // Step 5: Clean up worktree and branch (always attempt, even if merge failed)
-      try {
-        await execFileAsync(
-          "git",
-          ["worktree", "remove", "--force", session.worktreePath],
-          { cwd: projectRoot }
-        );
-        await writeFile(session.logPath, `\n[orchestrator] removed worktree directory\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      } catch (cleanupError) {
-        await writeFile(session.logPath, `\n[orchestrator] worktree removal failed: ${String(cleanupError)}\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      }
-      
-      try {
-        await execFileAsync("git", ["branch", "-D", session.id], {
-          cwd: projectRoot,
-        });
-        await writeFile(session.logPath, `\n[orchestrator] deleted branch ${session.id}\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      } catch (branchError) {
-        await writeFile(session.logPath, `\n[orchestrator] branch deletion failed: ${String(branchError)}\n`, {
-          encoding: "utf8",
-          flag: "a",
-        });
-      }
-    }
   });
 
   stageProcess.on("error", async (err: Error) => {
@@ -1083,13 +916,14 @@ function summarizeSprint(
       continue;
     }
 
+    const storyStatus = match[2] as StoryStatus;
     stories.push({
       id: match[1],
-      status: match[2] as StoryStatus,
+      status: storyStatus,
       steps: {
-        "bmad-create-story": "not-started",
-        "bmad-dev-story": "not-started",
-        "bmad-code-review": "not-started",
+        "bmad-create-story": deriveStoryStepStateFromStatus(storyStatus, "bmad-create-story"),
+        "bmad-dev-story": deriveStoryStepStateFromStatus(storyStatus, "bmad-dev-story"),
+        "bmad-code-review": deriveStoryStepStateFromStatus(storyStatus, "bmad-code-review"),
       },
     });
   }
@@ -1118,7 +952,12 @@ function summarizeSprint(
           .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1));
 
         if (history[0]) {
-          story.steps[step.skill] = toStepState(history[0].status);
+          const sessionState = toStepState(history[0].status);
+          // Only override for transient states (running/failed); the YAML
+          // story status is the source of truth for completed steps.
+          if (sessionState === "running" || sessionState === "failed") {
+            story.steps[step.skill] = sessionState;
+          }
         }
       }
     }
@@ -2539,9 +2378,9 @@ function attachApi(server: ViteDevServer): void {
 
           try {
             await startRuntimeSession(runtimeState, session);
-          } catch (worktreeError) {
+          } catch (startError) {
             session.status = "failed";
-            session.error = `Failed to start session: ${String(worktreeError)}`;
+            session.error = `Failed to start session: ${String(startError)}`;
             session.endedAt = new Date().toISOString();
             await persistRuntimeState(runtimeState);
             await persistSessionAnalytics(session);

@@ -64,7 +64,7 @@ function AnalyticsModelDetailPage() {
           />
           <StatCard
             label="Requests"
-            value={formatNumber(totals.requests)}
+            value={formatNumber(totals.requests, 2)}
           />
           <StatCard
             label="Total Tokens"
@@ -124,7 +124,7 @@ function AnalyticsModelDetailPage() {
                       </span>
                     </td>
                     <td className="num-col">
-                      {formatNumber(session.usage.requests)}
+                      {formatNumber(session.usage.requests, 2)}
                     </td>
                     <td className="num-col bold">
                       {formatNumber(session.usage.totalTokens)}

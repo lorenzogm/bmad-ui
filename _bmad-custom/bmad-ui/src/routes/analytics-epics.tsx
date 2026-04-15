@@ -60,7 +60,7 @@ function AnalyticsEpicsPage() {
                     </Link>
                   </td>
                   <td className="num-col">
-                    {formatNumber(epic.usage.requests)}
+                    {formatNumber(epic.usage.requests, 2)}
                   </td>
                   <td className="num-col bold">
                     {formatNumber(epic.usage.totalTokens)}

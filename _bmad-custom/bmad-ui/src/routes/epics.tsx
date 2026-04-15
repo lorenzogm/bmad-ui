@@ -1,6 +1,6 @@
 import { createRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { EpicTableSection, isEpicFullyFinished } from "../app";
+import { EpicTableSection } from "../app";
 import type { OverviewResponse } from "../types";
 import { rootRoute } from "./__root";
 
@@ -8,7 +8,6 @@ function EpicsPage() {
   const [data, setData] = useState<OverviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hideFinishedEpics, setHideFinishedEpics] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -68,9 +67,6 @@ function EpicsPage() {
   }
 
   const epics = data?.sprintOverview.epics || [];
-  const filteredEpics = epics.filter(
-    (epic) => !(hideFinishedEpics && isEpicFullyFinished(epic))
-  );
 
   return (
     <main className="screen">
@@ -86,9 +82,7 @@ function EpicsPage() {
             (data?.dependencyTree.nodes || []).map((n) => [n.id, n.label])
           )
         }
-        filteredEpics={filteredEpics}
-        hideFinishedEpics={hideFinishedEpics}
-        onToggleHideFinishedEpics={setHideFinishedEpics}
+        filteredEpics={epics}
       />
 
       {error ? <p className="error-banner">{error}</p> : null}

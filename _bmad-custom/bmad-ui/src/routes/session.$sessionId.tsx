@@ -308,14 +308,7 @@ function SessionDetailPage() {
                 <th>Story</th>
                 <td>{session.storyId || "-"}</td>
               </tr>
-              <tr>
-                <th>Workspace</th>
-                <td>{session.worktreeMode}</td>
-              </tr>
-              <tr>
-                <th>Worktree Path</th>
-                <td>{session.worktreePath || "-"}</td>
-              </tr>
+
               <tr>
                 <th>Duration</th>
                 <td>{formatDuration(session.startedAt, session.endedAt)}</td>

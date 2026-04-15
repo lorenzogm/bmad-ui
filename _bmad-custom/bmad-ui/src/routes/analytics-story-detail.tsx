@@ -42,7 +42,7 @@ function AnalyticsStoryDetailPage() {
           <div className="stat-grid">
             <StatCard
               label="Requests"
-              value={formatNumber(story.usage.requests)}
+              value={formatNumber(story.usage.requests, 2)}
             />
             <StatCard
               label="Total Tokens"
@@ -104,7 +104,7 @@ function AnalyticsStoryDetailPage() {
                       </span>
                     </td>
                     <td className="num-col">
-                      {formatNumber(session.usage.requests)}
+                      {formatNumber(session.usage.requests, 2)}
                     </td>
                     <td className="num-col bold">
                       {formatNumber(session.usage.totalTokens)}

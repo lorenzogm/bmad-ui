@@ -63,7 +63,7 @@ function AnalyticsStoriesPage() {
                     <span className="mono muted">{story.epicId ?? "—"}</span>
                   </td>
                   <td className="num-col">
-                    {formatNumber(story.usage.requests)}
+                    {formatNumber(story.usage.requests, 2)}
                   </td>
                   <td className="num-col bold">
                     {formatNumber(story.usage.totalTokens)}

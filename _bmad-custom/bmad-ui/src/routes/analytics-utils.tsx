@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import type { AnalyticsCosting, AnalyticsResponse, TokenUsage } from "../types";
 
-export function formatNumber(value: number): string {
+export function formatNumber(value: number, maxDecimals = 1): string {
   if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`;
+    return `${parseFloat((value / 1_000_000).toFixed(maxDecimals))}M`;
   }
   if (value >= 1000) {
-    return `${(value / 1000).toFixed(1)}K`;
+    return `${parseFloat((value / 1000).toFixed(maxDecimals))}K`;
   }
-  return String(value);
+  return String(parseFloat(value.toFixed(maxDecimals)));
 }
 
 export function formatUsd(value: number | null): string {
@@ -42,7 +42,7 @@ export function AnalyticsCostBanner({
         Seat/User/Month: <strong>{formatUsd(seat)}</strong>
       </span>
       <span>
-        Premium Requests: <strong>{formatNumber(costing.totals.premiumRequests)}</strong>
+        Premium Requests: <strong>{formatNumber(costing.totals.premiumRequests, 2)}</strong>
       </span>
       <span>
         Overage Estimate: <strong>{formatUsd(overage)}</strong>

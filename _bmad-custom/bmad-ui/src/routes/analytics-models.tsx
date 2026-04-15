@@ -87,7 +87,7 @@ function AnalyticsModelsPage() {
                   </td>
                   <td className="num-col">{model.sessionCount}</td>
                   <td className="num-col">
-                    {formatNumber(model.usage.requests)}
+                    {formatNumber(model.usage.requests, 2)}
                   </td>
                   <td className="num-col bold">
                     {formatNumber(model.usage.totalTokens)}

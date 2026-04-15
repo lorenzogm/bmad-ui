@@ -5,6 +5,7 @@ import type {
   AgentSession,
   EpicDetailResponse,
   OverviewResponse,
+  WorkflowStepState,
 } from "../types";
 import { AgentSessionsSection } from "../app";
 import type { SessionActionState } from "../app";
@@ -14,6 +15,7 @@ const HTTP_CONFLICT = 409;
 const EPIC_NUMBER_REGEX = /^epic-(\d+)$/;
 
 type SkillName = "bmad-create-story" | "bmad-dev-story" | "bmad-code-review";
+type WorkflowSkill = SkillName | "bmad-retrospective";
 
 function shouldClearPendingSkill(
   pendingSkill: string | null,
@@ -72,7 +74,6 @@ function EpicDetailPage() {
   const [data, setData] = useState<EpicDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hideFinishedStories, setHideFinishedStories] = useState(false);
   const [pendingSkill, setPendingSkill] = useState<string | null>(null);
   const [overviewData, setOverviewData] = useState<OverviewResponse | null>(
     null
@@ -81,8 +82,8 @@ function EpicDetailPage() {
     useState<SessionActionState>(null);
 
   const handleRunSkill = useCallback(
-    async (skill: SkillName, storyId: string) => {
-      setPendingSkill(`${skill}:${storyId}`);
+    async (skill: WorkflowSkill, storyId?: string) => {
+      setPendingSkill(storyId ? `${skill}:${storyId}` : skill);
       setError(null);
 
       try {
@@ -103,7 +104,7 @@ function EpicDetailPage() {
         }
 
         setData((prev) => {
-          if (!prev) {
+          if (!prev || !storyId || skill === "bmad-retrospective") {
             return prev;
           }
 
@@ -143,16 +144,23 @@ function EpicDetailPage() {
         if (!epicResponse.ok) {
           throw new Error(`epic detail request failed: ${epicResponse.status}`);
         }
-        const payload = (await epicResponse.json()) as EpicDetailResponse;
+        const [epicPayload, overviewPayload] = await Promise.all([
+          epicResponse.json() as Promise<EpicDetailResponse>,
+          overviewResponse.ok
+            ? (overviewResponse.json() as Promise<OverviewResponse>)
+            : Promise.resolve(null),
+        ]);
         if (mounted) {
-          setData(payload);
+          setData({
+            ...epicPayload,
+            storyDependencies:
+              overviewPayload?.storyDependencies ?? epicPayload.storyDependencies,
+          });
+          if (overviewPayload) {
+            setOverviewData(overviewPayload);
+          }
           setError(null);
           setLoading(false);
-        }
-        if (overviewResponse.ok && mounted) {
-          setOverviewData(
-            (await overviewResponse.json()) as OverviewResponse
-          );
         }
       } catch (epicError) {
         if (mounted) {
@@ -239,15 +247,28 @@ function EpicDetailPage() {
   }, [stories]);
 
   const filteredStories = useMemo(() => {
-    if (!hideFinishedStories) {
-      return stories;
-    }
-
-    return stories.filter((story) => story.status !== "done");
-  }, [hideFinishedStories, stories]);
+    return stories;
+  }, [stories]);
 
   const epicNumber = epicId.match(EPIC_NUMBER_REGEX)?.[1] ?? null;
   const storyPrefix = epicNumber ? `${epicNumber}-` : null;
+
+  const retrospectiveState = useMemo<WorkflowStepState>(() => {
+    if (!overviewData || !epicNumber) {
+      return "not-started";
+    }
+
+    const epic = overviewData.sprintOverview.epics.find(
+      (candidate) => candidate.number === Number(epicNumber)
+    );
+
+    return epic?.lifecycleSteps["bmad-retrospective"] ?? "not-started";
+  }, [overviewData, epicNumber]);
+
+  const allStoriesDone = useMemo(
+    () => stories.length > 0 && stories.every((story) => story.status === "done"),
+    [stories]
+  );
 
   const epicRunGroups = useMemo<AgentRunGroup[]>(() => {
     if (!storyPrefix || !overviewData) {
@@ -366,14 +387,6 @@ function EpicDetailPage() {
 
       <section className="panel reveal delay-1">
         <h2>Stories In This Epic</h2>
-        <label className="filter-toggle">
-          <input
-            checked={hideFinishedStories}
-            onChange={(event) => setHideFinishedStories(event.target.checked)}
-            type="checkbox"
-          />
-          Hide 100% finished stories
-        </label>
         <div className="table-wrap">
           <table>
             <thead>
@@ -480,6 +493,31 @@ function EpicDetailPage() {
           </table>
         </div>
       </section>
+
+      {stories.length > 0 ? (
+        <section className="panel reveal delay-2">
+          <h2>Run Retrospective</h2>
+          <div className="step-cell">
+            <span className={`step-badge step-${retrospectiveState}`}>
+              {retrospectiveState}
+            </span>
+            {retrospectiveState === "not-started" && allStoriesDone ? (
+              <button
+                className="icon-button icon-button-play"
+                disabled={pendingSkill !== null}
+                onClick={() => void handleRunSkill("bmad-retrospective")}
+                title={`Run bmad-retrospective for epic-${epicNumber}`}
+                type="button"
+              >
+                <span aria-hidden="true" className="icon-glyph">▶</span>
+              </button>
+            ) : null}
+            {retrospectiveState === "not-started" && !allStoriesDone ? (
+              <span className="subtitle">All stories must be completed before running the retrospective</span>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       <AgentSessionsSection
         agentSessions={epicAgentSessions}

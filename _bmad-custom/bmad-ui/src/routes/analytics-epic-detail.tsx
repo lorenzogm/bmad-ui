@@ -48,7 +48,7 @@ function AnalyticsEpicDetailPage() {
           <div className="stat-grid">
             <StatCard
               label="Requests"
-              value={formatNumber(epic.usage.requests)}
+              value={formatNumber(epic.usage.requests, 2)}
             />
             <StatCard
               label="Total Tokens"
@@ -94,7 +94,7 @@ function AnalyticsEpicDetailPage() {
                       </Link>
                     </td>
                     <td className="num-col">
-                      {formatNumber(story.usage.requests)}
+                      {formatNumber(story.usage.requests, 2)}
                     </td>
                     <td className="num-col bold">
                       {formatNumber(story.usage.totalTokens)}
@@ -150,7 +150,7 @@ function AnalyticsEpicDetailPage() {
                       <span className="mono muted">{session.model}</span>
                     </td>
                     <td className="num-col">
-                      {formatNumber(session.usage.requests)}
+                      {formatNumber(session.usage.requests, 2)}
                     </td>
                     <td className="num-col bold">
                       {formatNumber(session.usage.totalTokens)}

@@ -35,7 +35,7 @@ function AnalyticsDashboardPage() {
         <div className="stat-grid">
           <StatCard
             label="Total Requests"
-            value={formatNumber(data.project.requests)}
+            value={formatNumber(data.project.requests, 2)}
           />
           <StatCard
             label="Total Tokens"
