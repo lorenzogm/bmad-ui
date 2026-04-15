@@ -1,5 +1,5 @@
 # generated: 2026-04-15T16:46:25Z
-# last_updated: 2026-04-15T17:46:50Z
+# last_updated: 2026-04-15T23:09:40Z
 # project: bmad-ui
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,30 +35,30 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-15T22:14:01Z
+last_updated: 2026-04-15T23:03:26Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
 development_status:
-  epic-1: in-progress
+  epic-1: done
   1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter: done
   1-2-setup-github-infrastructure-with-terraform: done
   1-3-define-issue-labels-for-triage: done
-  1-4-add-basic-contribution-guidance: review
-  epic-1-retrospective: optional
+  1-4-add-basic-contribution-guidance: done
+  epic-1-retrospective: done
 
-  epic-2: in-progress
+  epic-2: done
   2-1-terraform-github-repository-infrastructure: done
-  2-2-github-actions-deployment-pipeline: review
-  2-3-environment-separation-across-infra-and-deploy-workflows: ready-for-dev
-  epic-2-retrospective: optional
+  2-2-github-actions-deployment-pipeline: done
+  2-3-environment-separation-across-infra-and-deploy-workflows: cancelled
+  epic-2-retrospective: done
 
-  epic-3: backlog
-  3-1-establish-root-level-dotenvx-secret-workflow: backlog
-  3-2-enable-contributor-workflow-without-production-secrets: backlog
-  3-3-secret-rotation-and-audit-safe-handling: backlog
+  epic-3: in-progress
+  3-1-establish-root-level-dotenvx-secret-workflow: review
+  3-2-enable-contributor-workflow-without-production-secrets: ready-for-dev
+  3-3-secret-rotation-and-audit-safe-handling: ready-for-dev
   epic-3-retrospective: optional
 
   epic-4: backlog

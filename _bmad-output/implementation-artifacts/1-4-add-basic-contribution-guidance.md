@@ -3,7 +3,7 @@ storyId: '1-4'
 storyTitle: 'Add Basic Contribution Guidance'
 epicId: '1'
 epicTitle: 'Open-Source Repository Governance & Publication'
-status: 'review'
+status: 'done'
 created: '2026-04-15'
 priority: 'high'
 ---
