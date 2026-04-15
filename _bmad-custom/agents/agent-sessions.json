@@ -373,6 +373,23 @@
         "tokensCached": 1200000,
         "totalTokens": 1206000
       }
+    },
+    "workflow-bmad-dev-story-1776281600000": {
+      "sessionId": "workflow-bmad-dev-story-1776281600000",
+      "storyId": "1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter",
+      "epicId": "epic-1",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-15T19:30:00.826Z",
+      "endedAt": "2026-04-15T19:40:00.000Z",
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
     }
   }
 }
