@@ -85,62 +85,59 @@ npm run build    # TypeScript check + Vite build
 
 ## Session Analytics Logging
 
-**Every agent session — whether run from VS Code or the Copilot CLI — must be logged to `_bmad-custom/agent-sessions.json`.**
+Session tracking is **automated** via `_bmad-custom/sync-sessions.mjs`, a background daemon that watches the Copilot debug logs (`~/Library/Application Support/Code - Insiders/User/workspaceStorage/…/GitHub.copilot-chat/debug-logs/*/main.jsonl`) and auto-upserts sessions into `_bmad-custom/agent-sessions.json` every 5 seconds when active.
 
-### When to update
+**You do not need to manually update `agent-sessions.json` for `turns`, `start_date`, `end_date`, or `status`** — the daemon derives these from the debug log timestamps.
 
-- **Start of session**: create an entry with `status: "running"`, `end_date: null`
-- **After each agent response**: set `status: "completed"`, increment `turns`, `premium_requests`, `premium_cost_units`, and token counts
-- **When the user sends a new message**: immediately set `status: "running"` before processing
-- **End of session**: set `end_date` to the current UTC timestamp
+### What the daemon auto-tracks
+- `session_id` — from the debug log directory name
+- `turns` — count of `session_start` entries in `main.jsonl`
+- `start_date` — timestamp of the first entry
+- `end_date` — timestamp of the last entry (when session has been inactive > 30 min)
+- `status` — `"running"` if active within last 30 min, `"completed"` otherwise
 
-### Schema
+### What you still update manually (when known)
+**Required after every response:**
+- Set `status: "completed"` and `end_date` to the current UTC timestamp — do this as the **last file edit before finishing your response**
+- The sync daemon will reset `status` back to `"running"` and clear `end_date` when the user sends the next message (new turn detected)
 
-```json
-{
-  "session_id": "<session id if available>",
-  "tool": "copilot-cli",
-  "model": "claude-sonnet-4.6",
-  "premium": true,
-  "premium_requests": 4,
-  "premium_multiplier": 1,
-  "premium_cost_units": 4,
-  "tokens": {
-    "input": 12000,
-    "output": 3000,
-    "total": 15000
-  },
-  "agent": "general",
-  "turns": 4,
-  "status": "running",
-  "start_date": "2026-04-15T13:20:52Z",
-  "end_date": null,
-  "notes": ""
-}
-```
+Only update these fields if you have accurate data — do not guess:
+- `model` — exact model ID (e.g. `claude-sonnet-4.6`)
+- `premium_requests` — number of individual LLM API calls (if visible in session summary)
+- `premium_cost_units` — `premium_requests × premium_multiplier`
+- `agent` — skill name if a specific skill was invoked, else `"general"`
+- `notes` — errors, retries, scope changes
 
-### Field reference
+### Schema reference
 
 | Field | Description |
 |---|---|
-| `session_id` | Copilot CLI session ID if available; omit otherwise |
+| `session_id` | Debug log directory name (auto) |
 | `tool` | `"copilot-cli"` or `"vscode"` |
 | `model` | Exact model ID (e.g. `claude-sonnet-4.6`, `claude-opus-4.5`, `gpt-4.1`) |
 | `premium` | `true` for any non-base Copilot model |
-| `premium_requests` | Number of individual LLM API calls made so far |
+| `premium_requests` | Number of individual LLM API calls |
 | `premium_multiplier` | Cost weight: Haiku=0.25 · Sonnet=1 · Opus=3 · GPT-4.1=1 · GPT-5=2 |
 | `premium_cost_units` | `premium_requests × premium_multiplier` |
-| `tokens.input` | Total input/prompt tokens consumed |
-| `tokens.output` | Total output/completion tokens generated |
-| `tokens.total` | `input + output` |
-| `agent` | Skill name if invoked (e.g. `bmad-create-prd`), otherwise `"general"` |
-| `turns` | Number of user↔agent exchanges so far |
-| `status` | `"running"` while agent is processing · `"completed"` once done (set back to `"running"` when user sends next message) |
-| `start_date` | ISO 8601 UTC timestamp when the session started |
-| `end_date` | ISO 8601 UTC timestamp when the session ended, or `null` if still active |
-| `notes` | Optional: errors, retries, scope changes |
+| `tokens.input/output/total` | Token counts (0 if unavailable) |
+| `agent` | Skill name or `"general"` |
+| `turns` | Auto-derived from debug log |
+| `status` | Auto-derived: `"running"` or `"completed"` |
+| `start_date` | Auto-derived from debug log |
+| `end_date` | Auto-derived from debug log |
+| `notes` | Optional free text |
 
-### Rules
-- Omit `session_id` key entirely if not available.
-- When running in the terminal (Copilot CLI), read token usage from the session summary when available. Otherwise set to `0`.
-- If multiple agents/skills were used in one session, log the primary one and mention others in `notes`.
+### Running the daemon
+```bash
+# Start (persistent, survives logout via launchd):
+launchctl load ~/Library/LaunchAgents/com.bmad.sync-sessions.plist
+
+# Stop:
+launchctl unload ~/Library/LaunchAgents/com.bmad.sync-sessions.plist
+
+# One-shot sync (from bmad-ui project):
+npm run sync-sessions:once
+
+# Watch logs:
+tail -f /tmp/bmad-sync-sessions.log
+```

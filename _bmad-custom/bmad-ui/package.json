@@ -8,7 +8,9 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "check:types": "tsc --noEmit",
-    "check:tests": "vitest run --passWithNoTests"
+    "check:tests": "vitest run --passWithNoTests",
+    "sync-sessions": "node ../_bmad-custom/sync-sessions.mjs",
+    "sync-sessions:once": "node ../_bmad-custom/sync-sessions.mjs --once"
   },
   "dependencies": {
     "@tanstack/react-router": "1.168.15",
