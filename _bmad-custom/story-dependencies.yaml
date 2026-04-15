@@ -1,0 +1,7 @@
+# Story-level dependency graph for all epics
+# Format: each story lists the stories it depends on (must be 'done' before starting)
+# Stories not listed here or with empty depends_on arrays have no dependencies
+#
+# This file is consumed by:
+#   - bmad-orchestrator: to schedule dev sessions in correct order
+#   - bmad-ui: to render the dependency graph and determine which stories can start
