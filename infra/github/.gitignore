@@ -7,12 +7,6 @@ src/terraform.tfstate*.json
 # Provider lock file (auto-generated; commit in production if desired)
 # src/.terraform.lock.hcl
 
-# Credentials (never commit)
-.env
-.env.keys
-.env.local
-*.env.local
-
 # Local overrides
 src/terraform.tfvars
 src/*.auto.tfvars

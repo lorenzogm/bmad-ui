@@ -3,3 +3,6 @@ node_modules
 .git-worktrees
 logs
 runtime-state.json
+
+# dotenvx — commit encrypted .env, never commit decryption keys
+.env.keys
