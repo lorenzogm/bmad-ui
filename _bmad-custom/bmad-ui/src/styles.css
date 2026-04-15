@@ -1162,14 +1162,6 @@ a:hover {
   box-shadow: 0 0 0 1px rgba(255, 159, 28, 0.12);
 }
 
-.workflow-step-icon {
-  font-size: 1.15rem;
-  line-height: 1;
-  flex-shrink: 0;
-  width: 1.6rem;
-  text-align: center;
-}
-
 .workflow-step-body {
   flex: 1;
   display: flex;

@@ -434,6 +434,22 @@ async function buildOverviewPayload() {
   };
   const storyDependencies = loadStoryDependencies();
 
+  const listArtifactDir = async (dir: string): Promise<string[]> => {
+    const dirPath = path.join(artifactsRoot, dir);
+    try {
+      const entries = await readdir(dirPath, { withFileTypes: true });
+      return entries.filter((e) => e.isFile()).map((e) => e.name);
+    } catch {
+      return [];
+    }
+  };
+
+  const [planningArtifactFiles, implementationArtifactFiles] =
+    await Promise.all([
+      listArtifactDir("planning-artifacts"),
+      listArtifactDir("implementation-artifacts"),
+    ]);
+
   return {
     steps: STORY_WORKFLOW_STEPS,
     epicSteps: summarizeEpicSteps(runtimeState),
@@ -447,6 +463,8 @@ async function buildOverviewPayload() {
     externalProcesses,
     dependencyTree,
     storyDependencies,
+    planningArtifactFiles,
+    implementationArtifactFiles,
   };
 }
 
@@ -2578,6 +2596,30 @@ function attachApi(server: ViteDevServer): void {
         } catch (analyticsError) {
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: String(analyticsError) }));
+        }
+        return;
+      }
+
+      if (
+        requestUrl.pathname === "/api/artifacts/files" &&
+        req.method === "GET"
+      ) {
+        const dir = requestUrl.searchParams.get("dir") ?? "planning";
+        const dirPath = path.join(
+          artifactsRoot,
+          dir === "implementation"
+            ? "implementation-artifacts"
+            : "planning-artifacts"
+        );
+        try {
+          const files = existsSync(dirPath)
+            ? (await readdir(dirPath)).filter((f) => !f.startsWith("."))
+            : [];
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(files));
+        } catch (filesError) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: String(filesError) }));
         }
         return;
       }

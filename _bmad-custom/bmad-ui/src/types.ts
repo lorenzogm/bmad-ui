@@ -121,6 +121,8 @@ export type OverviewResponse = {
   };
   storyDependencies: Record<string, string[]>;
   orchestratorHistory: OrchestratorRunGroup[];
+  planningArtifactFiles: string[];
+  implementationArtifactFiles: string[];
 };
 
 export type StoryDetailResponse = {

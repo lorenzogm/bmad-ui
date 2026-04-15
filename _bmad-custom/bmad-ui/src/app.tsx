@@ -441,9 +441,7 @@ function AgentSessionsSection(props: {
 type WorkflowStep = {
   id: string;
   name: string;
-  icon: string;
   isOptional: boolean;
-  filePatterns: string[];
   isCompleted: boolean;
   skill: string;
 };
@@ -465,7 +463,6 @@ type WorkflowStatus = {
 function makeStep(
   id: string,
   name: string,
-  icon: string,
   skill: string,
   isOptional: boolean,
   artifactFiles: string[],
@@ -474,9 +471,7 @@ function makeStep(
   return {
     id,
     name,
-    icon,
     isOptional,
-    filePatterns: [],
     isCompleted: matcher(artifactFiles),
     skill,
   };
@@ -499,7 +494,6 @@ function detectWorkflowStatus(
         makeStep(
           "brainstorming",
           "Brainstorming",
-          "💡",
           "bmad-brainstorming",
           true,
           planningFiles,
@@ -508,7 +502,6 @@ function detectWorkflowStatus(
         makeStep(
           "market-research",
           "Market Research",
-          "📊",
           "bmad-market-research",
           true,
           planningFiles,
@@ -517,7 +510,6 @@ function detectWorkflowStatus(
         makeStep(
           "domain-research",
           "Domain Research",
-          "🔍",
           "bmad-domain-research",
           true,
           planningFiles,
@@ -526,7 +518,6 @@ function detectWorkflowStatus(
         makeStep(
           "technical-research",
           "Technical Research",
-          "⚙️",
           "bmad-technical-research",
           true,
           planningFiles,
@@ -535,7 +526,6 @@ function detectWorkflowStatus(
         makeStep(
           "product-brief",
           "Product Brief",
-          "📄",
           "bmad-product-brief",
           true,
           planningFiles,
@@ -544,7 +534,6 @@ function detectWorkflowStatus(
         makeStep(
           "prfaq",
           "PRFAQ",
-          "📰",
           "bmad-prfaq",
           true,
           planningFiles,
@@ -562,11 +551,18 @@ function detectWorkflowStatus(
         makeStep(
           "prd",
           "Product Requirements (PRD)",
-          "📋",
           "bmad-create-prd",
           false,
           planningFiles,
-          (f) => f.some((x) => x === "prd.md" || x.toLowerCase().includes("prd"))
+          (f) => f.some((x) => x.toLowerCase() === "prd.md")
+        ),
+        makeStep(
+          "ux",
+          "UX Design",
+          "bmad-create-ux-design",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.toLowerCase().includes("ux"))
         ),
       ],
     },
@@ -574,44 +570,32 @@ function detectWorkflowStatus(
       id: "solutioning",
       number: 3,
       name: "Solutioning",
-      description: "Design architecture, UX and epics",
+      description: "Design architecture and epics",
       isOptional: false,
       steps: [
         makeStep(
           "architecture",
-          "Architecture Design",
-          "🏗️",
+          "Architecture",
           "bmad-create-architecture",
           false,
           planningFiles,
-          (f) => f.some((x) => x.includes("architecture"))
-        ),
-        makeStep(
-          "ux",
-          "UX Design",
-          "🎨",
-          "bmad-create-ux-design",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("ux"))
+          (f) => f.some((x) => x.toLowerCase().includes("architecture"))
         ),
         makeStep(
           "epics",
           "Epics & Stories",
-          "📖",
           "bmad-create-epics-and-stories",
           false,
           planningFiles,
-          (f) => f.some((x) => x.includes("epics"))
+          (f) => f.some((x) => x.toLowerCase().includes("epics"))
         ),
         makeStep(
           "readiness",
           "Implementation Readiness",
-          "✅",
           "bmad-check-implementation-readiness",
           false,
           planningFiles,
-          (f) => f.some((x) => x.includes("readiness"))
+          (f) => f.some((x) => x.toLowerCase().includes("readiness"))
         ),
       ],
     },
@@ -625,14 +609,10 @@ function detectWorkflowStatus(
         makeStep(
           "sprint",
           "Sprint Planning",
-          "⚡",
           "bmad-sprint-planning",
           false,
           allFiles,
-          (f) =>
-            f.some(
-              (x) => x.includes("sprint") && !x.includes("sprint-planning")
-            )
+          (f) => f.some((x) => x.toLowerCase().includes("sprint-status"))
         ),
       ],
     },
@@ -767,9 +747,6 @@ function BMADWorkflowSection(props: {
                       key={step.id}
                       className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}`}
                     >
-                      <span className="workflow-step-icon" aria-hidden="true">
-                        {step.icon}
-                      </span>
                       <div className="workflow-step-body">
                         <span className="workflow-step-name">{step.name}</span>
                         {step.isOptional && (
@@ -900,8 +877,6 @@ export function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [sessionActionPending, setSessionActionPending] =
     useState<SessionActionState>(null);
-  const [planningFiles, setPlanningFiles] = useState<string[]>([]);
-  const [implementationFiles, setImplementationFiles] = useState<string[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -950,41 +925,6 @@ export function DashboardPage() {
     return () => {
       mounted = false;
       eventSource?.close();
-    };
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchFiles = async (dir: string): Promise<string[]> => {
-      const response = await fetch(
-        `/api/artifacts/files?dir=${encodeURIComponent(dir)}`
-      );
-      if (!response.ok) {
-        return [];
-      }
-      return (await response.json()) as string[];
-    };
-
-    const fetchArtifactFiles = async () => {
-      try {
-        const [planning, implementation] = await Promise.all([
-          fetchFiles("planning"),
-          fetchFiles("implementation"),
-        ]);
-        if (mounted) {
-          setPlanningFiles(planning);
-          setImplementationFiles(implementation);
-        }
-      } catch (fetchError) {
-        console.error("Failed to fetch artifact files:", fetchError);
-      }
-    };
-
-    fetchArtifactFiles();
-
-    return () => {
-      mounted = false;
     };
   }, []);
 
@@ -1085,8 +1025,8 @@ export function DashboardPage() {
       </section>
 
       <BMADWorkflowSection
-          implementationFiles={implementationFiles}
-          planningFiles={planningFiles}
+          implementationFiles={data?.implementationArtifactFiles ?? []}
+          planningFiles={data?.planningArtifactFiles ?? []}
         />
 
       <AgentSessionsSection
