@@ -1,0 +1,20 @@
+{
+  "ENVIRONMENT": "production",
+  "environment_variables": {},
+  "vercel": {
+    "project_domains": [],
+    "project": {
+      "name": "bmad-ui",
+      "root_directory": "_bmad-custom/bmad-ui",
+      "build_command": "pnpm run build",
+      "install_command": "pnpm install",
+      "output_directory": "dist",
+      "framework": null,
+      "public_source": false,
+      "auto_assign_custom_domains": true,
+      "vercel_authentication": {
+        "deployment_type": "none"
+      }
+    }
+  }
+}

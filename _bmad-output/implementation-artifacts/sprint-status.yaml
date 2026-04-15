@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-15T21:46:50Z
+last_updated: 2026-04-15T22:14:01Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -45,14 +45,14 @@ development_status:
   epic-1: in-progress
   1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter: done
   1-2-setup-github-infrastructure-with-terraform: done
-  1-3-define-issue-labels-for-triage: review
+  1-3-define-issue-labels-for-triage: done
   1-4-add-basic-contribution-guidance: ready-for-dev
   epic-1-retrospective: optional
 
   epic-2: in-progress
-  2-1-terraform-github-repository-infrastructure: review
-  2-2-github-actions-deployment-pipeline: backlog
-  2-3-environment-separation-across-infra-and-deploy-workflows: backlog
+  2-1-terraform-github-repository-infrastructure: done
+  2-2-github-actions-deployment-pipeline: in-progress
+  2-3-environment-separation-across-infra-and-deploy-workflows: ready-for-dev
   epic-2-retrospective: optional
 
   epic-3: backlog
@@ -89,4 +89,3 @@ development_status:
   7-3-validate-self-referential-delivery-loop: backlog
   7-4-establish-phase-boundary-and-evolution-guardrails: backlog
   epic-7-retrospective: optional
-
