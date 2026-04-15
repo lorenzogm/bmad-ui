@@ -51,7 +51,7 @@ development_status:
 
   epic-2: in-progress
   2-1-terraform-github-repository-infrastructure: done
-  2-2-github-actions-deployment-pipeline: in-progress
+  2-2-github-actions-deployment-pipeline: review
   2-3-environment-separation-across-infra-and-deploy-workflows: ready-for-dev
   epic-2-retrospective: optional
 
