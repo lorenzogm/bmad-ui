@@ -403,6 +403,7 @@ function EpicDetailPage() {
   useEffect(() => {
     if (!isOrchestrating || !data) return
 
+    const runtimeSessions = overviewData?.runtimeState?.sessions ?? []
     const deps = data.storyDependencies ?? {}
     const currentStoryStatusMap = new Map<string, string>()
     for (const s of stories) {
@@ -411,8 +412,16 @@ function EpicDetailPage() {
 
     for (const story of stories) {
       const createState = story.steps["bmad-create-story"] ?? "not-started"
-      const devState = story.steps["bmad-dev-story"] ?? "not-started"
-      const reviewState = story.steps["bmad-code-review"] ?? "not-started"
+      const rawDevState = story.steps["bmad-dev-story"] ?? "not-started"
+      const isDevAgentRunning = runtimeSessions.some(
+        (s) => s.storyId === story.id && s.skill === "bmad-dev-story"
+      )
+      const devState = rawDevState === "running" && !isDevAgentRunning ? "not-started" : rawDevState
+      const rawReviewState = story.steps["bmad-code-review"] ?? "not-started"
+      const isReviewAgentRunning = runtimeSessions.some(
+        (s) => s.storyId === story.id && s.skill === "bmad-code-review"
+      )
+      const reviewState = rawReviewState === "running" && !isReviewAgentRunning ? "not-started" : rawReviewState
       const blockers = getBlockingStories(story.id, deps, currentStoryStatusMap)
       const isBlocked = blockers.length > 0
 
@@ -491,7 +500,7 @@ function EpicDetailPage() {
         localStorage.removeItem(orchestratingKey)
       } catch { /* storage unavailable */ }
     }
-  }, [isOrchestrating, stories, allStoriesDone, retrospectiveState, data, orchestratingKey])
+  }, [isOrchestrating, stories, allStoriesDone, retrospectiveState, data, orchestratingKey, overviewData])
 
   const doneCount = stories.filter((s) => s.status === "done").length
   const inProgressCount = stories.filter((s) =>
