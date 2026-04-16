@@ -479,6 +479,7 @@ export type WorkflowStep = {
   description: string
   isOptional: boolean
   isCompleted: boolean
+  isSkipped: boolean
   skill: string
 }
 
@@ -506,12 +507,14 @@ function makeStep(
   artifactFiles: string[],
   matcher: (files: string[]) => boolean
 ): WorkflowStep {
+  const nonSkippedFiles = artifactFiles.filter((f) => !f.endsWith(".skipped"))
   return {
     id,
     name,
     description,
     isOptional,
-    isCompleted: matcher(artifactFiles),
+    isCompleted: matcher(nonSkippedFiles),
+    isSkipped: artifactFiles.some((f) => f === `${id}.skipped`),
     skill,
   }
 }
@@ -701,7 +704,7 @@ export function detectWorkflowStatus(
   let nextActionStep: WorkflowStep | null = null
   outer: for (const phase of phases) {
     for (const step of phase.steps) {
-      if (!step.isCompleted && !step.isOptional) {
+      if (!step.isCompleted && !step.isSkipped && !step.isOptional) {
         nextActionStep = step
         break outer
       }
@@ -710,7 +713,7 @@ export function detectWorkflowStatus(
   if (!nextActionStep) {
     outer2: for (const phase of phases) {
       for (const step of phase.steps) {
-        if (!step.isCompleted) {
+        if (!step.isCompleted && !step.isSkipped) {
           nextActionStep = step
           break outer2
         }

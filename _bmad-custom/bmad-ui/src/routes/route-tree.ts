@@ -16,8 +16,8 @@ import { sessionDetailRoute } from "./session.$sessionId"
 import { sessionsRoute } from "./sessions"
 import { storyDetailRoute } from "./story.$storyId"
 import { workflowLayoutRoute } from "./workflow"
-import { workflowIndexRoute } from "./workflow-index"
 import { workflowPhaseRoute } from "./workflow.$phaseId"
+import { workflowIndexRoute } from "./workflow-index"
 
 export const routeTree = rootRoute.addChildren([
   indexRoute,

@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-router"
 import { useCallback, useMemo, useState } from "react"
-import { detectWorkflowStatus, storyStepLabel } from "../app"
 import type { WorkflowPhase, WorkflowStep } from "../app"
+import { detectWorkflowStatus, storyStepLabel } from "../app"
 import type { OverviewResponse, RuntimeSession } from "../types"
 import { workflowLayoutRoute } from "./workflow"
 
@@ -13,7 +13,9 @@ const VALID_PHASE_IDS = ["analysis", "planning", "solutioning", "implementation"
 function WorkflowPhaseDetailPage() {
   const { phaseId } = useParams({ from: "/workflow/$phaseId" as const })
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [pendingSkill, setPendingSkill] = useState<string | null>(null)
+  const [pendingSkip, setPendingSkip] = useState<string | null>(null)
 
   const { data, isLoading, error } = useQuery<OverviewResponse>({
     queryKey: ["overview"],
@@ -36,6 +38,16 @@ function WorkflowPhaseDetailPage() {
 
   const phase: WorkflowPhase | undefined = phases.find((p) => p.id === phaseId)
   const isValidPhase = VALID_PHASE_IDS.includes(phaseId)
+
+  const sortedEpics = useMemo(
+    () => [...(data?.sprintOverview.epics ?? [])].sort((a, b) => a.number - b.number),
+    [data?.sprintOverview.epics]
+  )
+
+  const epicLabels = useMemo(
+    () => new Map((data?.dependencyTree.nodes ?? []).map((n) => [n.id, n.label])),
+    [data?.dependencyTree.nodes]
+  )
 
   const handleRunSkill = useCallback(
     async (step: WorkflowStep) => {
@@ -67,7 +79,27 @@ function WorkflowPhaseDetailPage() {
     },
     [navigate]
   )
-
+  const handleSkipStep = useCallback(
+    async (step: WorkflowStep) => {
+      setPendingSkip(step.id)
+      try {
+        const response = await fetch("/api/workflow/skip-step", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stepId: step.id }),
+        })
+        if (!response.ok) {
+          throw new Error(`skip request failed: ${response.status}`)
+        }
+        void queryClient.invalidateQueries({ queryKey: ["overview"] })
+      } catch (_err) {
+        // ignore — server logs the error
+      } finally {
+        setPendingSkip(null)
+      }
+    },
+    [queryClient]
+  )
   if (isLoading) {
     return <main className="screen loading">Loading...</main>
   }
@@ -94,17 +126,9 @@ function WorkflowPhaseDetailPage() {
 
   const effectiveActiveSkill = data?.activeWorkflowSkill ?? pendingSkill
   const doneCount = phase.steps.filter((s) => s.isCompleted).length
+  const skippedCount = phase.steps.filter((s) => s.isSkipped).length
+  const activeStepCount = phase.steps.length - skippedCount
   const isImplementation = phaseId === "implementation"
-
-  const sortedEpics = useMemo(
-    () => [...(data?.sprintOverview.epics ?? [])].sort((a, b) => a.number - b.number),
-    [data?.sprintOverview.epics]
-  )
-
-  const epicLabels = useMemo(
-    () => new Map((data?.dependencyTree.nodes ?? []).map((n) => [n.id, n.label])),
-    [data?.dependencyTree.nodes]
-  )
 
   return (
     <main className="screen">
@@ -122,19 +146,24 @@ function WorkflowPhaseDetailPage() {
         <p className="epic-description">{phase.description}</p>
         <div className="epic-stats">
           <div className="epic-stat">
-            <span className="epic-stat-value">{phase.steps.length}</span>
+            <span className="epic-stat-value">{activeStepCount}</span>
             <span className="epic-stat-label">Steps</span>
           </div>
           <div className="epic-stat">
             <span className="epic-stat-value epic-stat-done">{doneCount}</span>
             <span className="epic-stat-label">Done</span>
           </div>
+          {skippedCount > 0 && (
+            <div className="epic-stat">
+              <span className="epic-stat-value" style={{ color: "var(--muted)" }}>
+                {skippedCount}
+              </span>
+              <span className="epic-stat-label">Skipped</span>
+            </div>
+          )}
           <div className="epic-stat">
             <span className="epic-stat-value">
-              {phase.steps.length > 0
-                ? Math.round((doneCount / phase.steps.length) * 100)
-                : 0}
-              %
+              {activeStepCount > 0 ? Math.round((doneCount / activeStepCount) * 100) : 0}%
             </span>
             <span className="epic-stat-label">Complete</span>
           </div>
@@ -143,7 +172,7 @@ function WorkflowPhaseDetailPage() {
           <div
             className="epic-progress-fill"
             style={{
-              width: `${phase.steps.length > 0 ? Math.round((doneCount / phase.steps.length) * 100) : 0}%`,
+              width: `${activeStepCount > 0 ? Math.round((doneCount / activeStepCount) * 100) : 0}%`,
             }}
           />
         </div>
@@ -196,7 +225,7 @@ function WorkflowPhaseDetailPage() {
                     <td>{step.isOptional ? "Yes" : "No"}</td>
                     <td style={{ whiteSpace: "nowrap" }}>
                       <span
-                        className={`step-badge step-${isRunning ? "running" : step.isCompleted ? "done" : "not-started"}`}
+                        className={`step-badge step-${isRunning ? "running" : step.isSkipped ? "skipped" : step.isCompleted ? "done" : "not-started"}`}
                       >
                         {isRunning ? (
                           <>
@@ -205,6 +234,8 @@ function WorkflowPhaseDetailPage() {
                             </span>
                             {" running"}
                           </>
+                        ) : step.isSkipped ? (
+                          "skipped"
                         ) : (
                           storyStepLabel(step.isCompleted ? "completed" : "not-started")
                         )}
@@ -212,7 +243,7 @@ function WorkflowPhaseDetailPage() {
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
                       <div className="improvement-actions">
-                        {isActionable && !isRunning && (
+                        {isActionable && !isRunning && !step.isSkipped && (
                           <button
                             className="icon-button icon-button-play"
                             disabled={pendingSkill !== null}
@@ -222,6 +253,19 @@ function WorkflowPhaseDetailPage() {
                           >
                             <span aria-hidden="true" className="icon-glyph">
                               ▶
+                            </span>
+                          </button>
+                        )}
+                        {step.isOptional && !step.isCompleted && !step.isSkipped && (
+                          <button
+                            className="icon-button icon-button-delete"
+                            disabled={pendingSkip !== null}
+                            onClick={() => void handleSkipStep(step)}
+                            title={`Skip ${step.name}`}
+                            type="button"
+                          >
+                            <span aria-hidden="true" className="icon-glyph">
+                              ⏭
                             </span>
                           </button>
                         )}

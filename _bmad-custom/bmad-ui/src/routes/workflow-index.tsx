@@ -48,45 +48,54 @@ function WorkflowIndexPage() {
       </section>
 
       <div className="workflow-phases-list reveal delay-1">
-        {phases.filter((phase) => phase.id !== "improvement").map((phase) => {
-          const isImplementation = phase.id === "implementation"
-          const epicsDoneCount = sortedEpics.filter((e) => e.status === "done").length
-          const epicsTotal = sortedEpics.length
-          const stepsDone = phase.steps.filter((s) => s.isCompleted).length
+        {phases
+          .filter((phase) => phase.id !== "improvement")
+          .map((phase) => {
+            const isImplementation = phase.id === "implementation"
+            const epicsDoneCount = sortedEpics.filter((e) => e.status === "done").length
+            const epicsTotal = sortedEpics.length
+            const stepsDone = phase.steps.filter((s) => s.isCompleted).length
+            const stepsSkipped = phase.steps.filter((s) => s.isSkipped).length
+            const activeStepCount = phase.steps.length - stepsSkipped
 
-          const progressDone =
-            isImplementation && epicsTotal > 0 ? stepsDone + epicsDoneCount : stepsDone
-          const progressTotal =
-            isImplementation && epicsTotal > 0
-              ? phase.steps.length + epicsTotal
-              : phase.steps.length
+            const progressDone =
+              isImplementation && epicsTotal > 0 ? stepsDone + epicsDoneCount : stepsDone
+            const progressTotal =
+              isImplementation && epicsTotal > 0 ? activeStepCount + epicsTotal : activeStepCount
 
-          const allDone = progressTotal > 0 && progressDone === progressTotal
-          const anyDone = progressDone > 0
-          const status = allDone ? "done" : anyDone ? "in-progress" : "pending"
+            const allSkipped = activeStepCount === 0 && stepsSkipped > 0
+            const allDone = progressTotal > 0 && progressDone === progressTotal
+            const anyDone = progressDone > 0
+            const status = allSkipped
+              ? "skipped"
+              : allDone
+                ? "done"
+                : anyDone
+                  ? "in-progress"
+                  : "pending"
 
-          return (
-            <Link
-              className="workflow-phase-card panel"
-              key={phase.id}
-              to="/workflow/$phaseId"
-              params={{ phaseId: phase.id }}
-            >
-              <div className="workflow-phase-card-header">
-                <span className="workflow-phase-number">{phase.number}</span>
-                <span className="workflow-phase-name">{phase.name}</span>
-                {phase.isOptional && <span className="workflow-step-optional">optional</span>}
-              </div>
-              <p className="workflow-phase-card-description">{phase.description}</p>
-              <div className="workflow-phase-card-footer">
-                <span className="workflow-phase-progress">
-                  {progressDone}/{progressTotal}
-                </span>
-                <span className={`step-badge step-${status}`}>{status}</span>
-              </div>
-            </Link>
-          )
-        })}
+            return (
+              <Link
+                className="workflow-phase-card panel"
+                key={phase.id}
+                to="/workflow/$phaseId"
+                params={{ phaseId: phase.id }}
+              >
+                <div className="workflow-phase-card-header">
+                  <span className="workflow-phase-number">{phase.number}</span>
+                  <span className="workflow-phase-name">{phase.name}</span>
+                  {phase.isOptional && <span className="workflow-step-optional">optional</span>}
+                </div>
+                <p className="workflow-phase-card-description">{phase.description}</p>
+                <div className="workflow-phase-card-footer">
+                  <span className="workflow-phase-progress">
+                    {progressDone}/{progressTotal}
+                  </span>
+                  <span className={`step-badge step-${status}`}>{status}</span>
+                </div>
+              </Link>
+            )
+          })}
       </div>
 
       <p className="mt-4 text-sm reveal delay-2" style={{ color: "var(--muted)" }}>

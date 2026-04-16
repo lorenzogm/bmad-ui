@@ -1753,6 +1753,11 @@ a:hover {
   color: #e2e8f0;
 }
 
+.step-skipped {
+  background: rgba(148, 163, 184, 0.18);
+  color: var(--muted);
+}
+
 .step-all {
   background: rgba(56, 189, 248, 0.2);
   color: #c7f0ff;
@@ -2301,7 +2306,9 @@ a:hover {
   padding: 1.25rem;
   text-decoration: none;
   color: var(--text);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .workflow-phase-card:hover {

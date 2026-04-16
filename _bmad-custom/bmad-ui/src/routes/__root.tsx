@@ -55,9 +55,7 @@ const AVAILABLE_SKILLS = [
   "bmad-agent-ux-designer",
 ] as const
 
-const NAV_LINKS = [
-  { label: "Sessions", to: "/sessions" },
-] as const
+const NAV_LINKS = [{ label: "Sessions", to: "/sessions" }] as const
 
 const WORKFLOW_SUBMENU = [
   { label: "Overview", phaseId: null },
@@ -243,9 +241,7 @@ function RootLayout() {
           {isWorkflowSection && (
             <div className="sidebar-submenu">
               {WORKFLOW_SUBMENU.map((link) => {
-                const linkPath = link.phaseId
-                  ? `/workflow/${link.phaseId}`
-                  : "/workflow"
+                const linkPath = link.phaseId ? `/workflow/${link.phaseId}` : "/workflow"
                 return link.phaseId ? (
                   <Link
                     aria-current={currentPath === linkPath ? "page" : undefined}

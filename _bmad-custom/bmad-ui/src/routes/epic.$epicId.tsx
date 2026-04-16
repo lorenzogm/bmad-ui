@@ -462,7 +462,11 @@ function EpicDetailPage() {
           fetch("/api/workflow/run-skill", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ skill: "bmad-code-review", storyId: story.id, autoResolve: true }),
+            body: JSON.stringify({
+              skill: "bmad-code-review",
+              storyId: story.id,
+              autoResolve: true,
+            }),
           })
             .then((r) => {
               if (r.status === HTTP_CONFLICT) {
