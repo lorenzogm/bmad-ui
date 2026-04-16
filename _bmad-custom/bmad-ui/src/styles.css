@@ -814,16 +814,21 @@ button:hover:not(:disabled) {
 .chat-messages-area {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 1rem 1rem 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  min-width: 0;
 }
 
 .chat-bubble {
   display: flex;
   gap: 0.6rem;
   max-width: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .chat-bubble-avatar {
@@ -916,6 +921,9 @@ pre.chat-bubble-content {
   font-size: 0.78rem;
   line-height: 1.55;
   color: var(--text);
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── Tool group (collapsed batch) ────────────────────────── */
@@ -932,6 +940,9 @@ pre.chat-bubble-content {
   border: 1px solid rgba(46, 196, 182, 0.12);
   color: var(--muted);
   transition: background 0.15s, color 0.15s;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .log-entry-group > summary:hover {
@@ -976,6 +987,7 @@ pre.chat-bubble-content {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  min-width: 0;
 }
 
 /* ── Individual tool item inside group ───────────────────── */
@@ -984,6 +996,8 @@ pre.chat-bubble-content {
   font-size: 0.74rem;
   color: var(--muted);
   padding: 0.1rem 0.3rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .log-tool-item-expandable > summary {
@@ -1051,6 +1065,8 @@ pre.chat-bubble-content {
 .log-entry-tool-inline {
   padding: 0.2rem 0.4rem;
   color: var(--muted);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .log-entry-tool-body {
@@ -1068,6 +1084,7 @@ pre.chat-bubble-content {
   padding: 0.25rem 0.4rem;
   white-space: pre-wrap;
   word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .log-entry-text-collapsible > summary {

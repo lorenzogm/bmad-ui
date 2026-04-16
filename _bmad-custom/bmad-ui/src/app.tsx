@@ -942,6 +942,19 @@ function BMADWorkflowSection(props: {
           )
         })}
       </div>
+      <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
+        Testing phase coming soon via{" "}
+        <a
+          className="underline"
+          href="https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/"
+          rel="noopener noreferrer"
+          style={{ color: "var(--highlight)" }}
+          target="_blank"
+        >
+          TEA (Test Engineering Agent)
+        </a>
+        .
+      </p>
     </section>
   )
 }

@@ -12,7 +12,7 @@ const ORCHESTRATOR_PREFIX = "[orchestrator]"
 const TOOL_MARKER = "● "
 const TOOL_CONTENT_PREFIX = "  │"
 const TOOL_END_PREFIX = "  └"
-const AGENT_TEXT_COLLAPSE_THRESHOLD = 4
+const AGENT_TEXT_COLLAPSE_THRESHOLD = 20
 
 type ToolItem = {
   label: string
@@ -429,7 +429,7 @@ function SessionDetailPage() {
   const handleSend = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
-      if (!data?.canSendInput || sending) {
+      if (sending) {
         return
       }
 
@@ -459,7 +459,7 @@ function SessionDetailPage() {
         setSending(false)
       }
     },
-    [chatInput, data?.canSendInput, sending, sessionId],
+    [chatInput, sending, sessionId],
   )
 
   const handleStartSession = useCallback(async () => {
@@ -650,14 +650,14 @@ function SessionDetailPage() {
             placeholder={
               data.canSendInput
                 ? "Send a message to the agent… (Enter to send, Shift+Enter for newline)"
-                : "This session is not accepting input."
+                : "Send a follow-up message… (Enter to send, Shift+Enter for newline)"
             }
             rows={1}
             value={chatInput}
           />
           <button
             className="chat-send-btn"
-            disabled={!data.canSendInput || sending || chatInput.trim().length === 0}
+            disabled={sending || chatInput.trim().length === 0}
             title="Send message"
             type="submit"
           >
