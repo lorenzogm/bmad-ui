@@ -230,9 +230,9 @@
       "epicId": null,
       "skill": "general",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-15T17:35:57.120Z",
-      "endedAt": null,
+      "endedAt": "2026-04-16T21:06:35Z",
       "usage": {
         "requests": 0,
         "tokensIn": 0,
@@ -1242,6 +1242,159 @@
         "tokensOut": 10000,
         "tokensCached": 1400000,
         "totalTokens": 1510000
+      }
+    },
+    "workflow-bmad-dev-story-1776372128925": {
+      "sessionId": "workflow-bmad-dev-story-1776372128925",
+      "storyId": "4-3-implement-deployment-workflow-triggers",
+      "epicId": "epic-4",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T20:42:08.926Z",
+      "endedAt": "2026-04-16T20:45:23.777Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1600000,
+        "tokensOut": 9200,
+        "tokensCached": 1500000,
+        "totalTokens": 1609200
+      }
+    },
+    "workflow-bmad-code-review-1776372822480": {
+      "sessionId": "workflow-bmad-code-review-1776372822480",
+      "storyId": "4-3-implement-deployment-workflow-triggers",
+      "epicId": "epic-4",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-16T20:53:42.481Z",
+      "endedAt": "2026-04-16T20:58:31.745Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1500000,
+        "tokensOut": 14400,
+        "tokensCached": 1400000,
+        "totalTokens": 1514400
+      }
+    },
+    "workflow-bmad-dev-story-1776373190900": {
+      "sessionId": "workflow-bmad-dev-story-1776373190900",
+      "storyId": "4-4-add-workflow-observability-and-failure-diagnosis",
+      "epicId": "epic-4",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T20:59:50.902Z",
+      "endedAt": "2026-04-16T21:02:16.314Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 839800,
+        "tokensOut": 6800,
+        "tokensCached": 767300,
+        "totalTokens": 846600
+      }
+    },
+    "workflow-bmad-code-review-1776373408206": {
+      "sessionId": "workflow-bmad-code-review-1776373408206",
+      "storyId": "4-4-add-workflow-observability-and-failure-diagnosis",
+      "epicId": "epic-4",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:03:28.208Z",
+      "endedAt": "2026-04-16T21:06:54.562Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1200000,
+        "tokensOut": 14200,
+        "tokensCached": 1100000,
+        "totalTokens": 1214200
+      }
+    },
+    "workflow-bmad-retrospective-1776374007869": {
+      "sessionId": "workflow-bmad-retrospective-1776374007869",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-retrospective",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:13:27.871Z",
+      "endedAt": "2026-04-16T21:15:31.297Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 620200,
+        "tokensOut": 5000,
+        "tokensCached": 529400,
+        "totalTokens": 625200
+      }
+    },
+    "workflow-bmad-quick-dev-1776374165457": {
+      "sessionId": "workflow-bmad-quick-dev-1776374165457",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-quick-dev",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:16:05.459Z",
+      "endedAt": "2026-04-16T21:17:18.076Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 392100,
+        "tokensOut": 2800,
+        "tokensCached": 368900,
+        "totalTokens": 394900
+      }
+    },
+    "workflow-bmad-retrospective-1776374017251": {
+      "sessionId": "workflow-bmad-retrospective-1776374017251",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-retrospective",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:13:37.253Z",
+      "endedAt": "2026-04-16T21:17:35.638Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1200000,
+        "tokensOut": 6000,
+        "tokensCached": 1100000,
+        "totalTokens": 1206000
+      }
+    },
+    "workflow-bmad-retrospective-1776374622847": {
+      "sessionId": "workflow-bmad-retrospective-1776374622847",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-retrospective",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:23:42.848Z",
+      "endedAt": "2026-04-16T21:28:56.159Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1500000,
+        "tokensOut": 13400,
+        "tokensCached": 1400000,
+        "totalTokens": 1513400
+      }
+    },
+    "workflow-bmad-retrospective-1776374739071": {
+      "sessionId": "workflow-bmad-retrospective-1776374739071",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-retrospective",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:25:39.072Z",
+      "endedAt": "2026-04-16T21:27:28.643Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 598100,
+        "tokensOut": 4400,
+        "tokensCached": 498700,
+        "totalTokens": 602500
       }
     }
   }
