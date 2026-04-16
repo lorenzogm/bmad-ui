@@ -72,13 +72,41 @@ Always branch from `main`: `git checkout -b feature/your-feature`
 
 See [Project Context](../_bmad-output/project-context.md) for detailed coding rules and patterns.
 
-## Secrets & Environment
+## Secrets & Credentials
 
-bmad-ui uses [dotenvx](https://dotenvx.com) to manage secrets with encryption at rest. The encrypted `.env` file is committed to the repository; the private decryption key is not.
+**Good news: frontend development requires no secrets.**
 
-**Regular contributors do not need production secret access** for local development — the app runs without secrets for UI work. Maintainers who need to run infrastructure commands (Terraform, Vercel deployments) require dotenvx set up with the private key.
+The following commands work immediately after `pnpm install` — no environment variables needed:
 
-See [Secrets Workflow](../docs/secrets-workflow.md) for the complete guide including installation, adding secrets, and CI usage.
+```bash
+cd _bmad-custom/bmad-ui
+pnpm dev           # Start dev server
+pnpm run check     # Lint + typecheck + tests + build
+pnpm run build     # Production build
+```
+
+### What Requires Production Secrets
+
+The following workflows require credentials held only by maintainers:
+
+| Task | Command / Tool | Who Can Run |
+|------|---------------|-------------|
+| Deploy to Vercel | `.github/workflows/deploy.yml` | Maintainers only |
+| Provision infrastructure | `infra/github/src/`, `infra/vercel/src/` | Maintainers only |
+| Decrypt `.env` values | `dotenvx run --` | Maintainers with `DOTENV_PRIVATE_KEY` |
+
+### For Contributors
+
+- See `.env.example` for the full list of environment variables and their purpose
+- Do **not** add plaintext secret values to `.env`, `.env.local`, or any tracked file
+- If a workflow fails with a `DOTENV_PRIVATE_KEY` error, that workflow requires maintainer access
+- Open a [GitHub Discussion](https://github.com/lorenzogm/bmad-ui/discussions) if you need help
+
+### For Maintainers
+
+- The decryption key lives in `.env.keys` (gitignored)
+- Production secrets are encrypted in `.env` using dotenvx public-key encryption
+- GitHub Secrets (`DOTENV_PRIVATE_KEY`, `TERRAFORM_STATE_ENCRYPT_KEY`) power the CI/CD pipeline
 
 ## Reporting Issues
 

@@ -1,5 +1,7 @@
 # Development Guide - bmad-ui
 
+> **No secrets required.** You can run, develop, and validate the entire app with zero environment variables. `pnpm dev`, `pnpm run check`, and `pnpm build` all work immediately after `pnpm install`. The `infra/` directory and deploy workflows are maintainer-only — contributors never need them.
+
 ## Prerequisites
 - Node.js (current LTS recommended)
 - npm or pnpm

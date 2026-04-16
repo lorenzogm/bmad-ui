@@ -3,14 +3,14 @@ storyId: '3-2'
 storyTitle: 'Enable Contributor Workflow Without Production Secrets'
 epicId: '3'
 epicTitle: 'Secrets & Environment Management'
-status: 'ready-for-dev'
+status: 'review'
 created: '2026-04-15'
 priority: 'high'
 ---
 
 # Story 3.2: Enable Contributor Workflow Without Production Secrets
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -26,21 +26,21 @@ so that I can contribute safely without privileged credentials.
 
 ## Tasks / Subtasks
 
-- [ ] Create `.env.example` at repository root documenting all env variables (AC: #3)
-  - [ ] Include all keys from `.env` (`DOTENV_PUBLIC_KEY`, `TF_VAR_GH_PAT_TOKEN`, `TF_VAR_GITHUB_OWNER`, `TERRAFORM_STATE_ENCRYPT_KEY`, `VERCEL_ORG_ID`, `VERCEL_TOKEN`)
-  - [ ] Use placeholder values (e.g. `ask-a-maintainer`) — never real secrets
-  - [ ] Add inline comments making clear all variables are infra/deploy-only — **not needed by contributors**
-- [ ] Update `.github/CONTRIBUTING.md` with a "Secrets & Credentials" section (AC: #3)
-  - [ ] Lead with the key message: **no secrets are needed to run or develop the app**
-  - [ ] Explain that all secrets in `.env` are infrastructure-only (Terraform, Vercel, CI/CD) and held by maintainers
-  - [ ] Point to `.env.example` as reference for what those variables are
-- [ ] Update `docs/development-guide-bmad-ui.md` to state zero-secret requirement explicitly (AC: #1)
-  - [ ] Make it the first thing a contributor reads: no `.env` setup required
-  - [ ] Note that `infra/` and deploy workflows are maintainer-only
-- [ ] Verify graceful failure for production-gated commands (AC: #2)
-  - [ ] Confirm `dotenvx run` fails with a clear message when `DOTENV_PRIVATE_KEY` is absent
-  - [ ] Document the expected error so contributors know they've hit a maintainer-only boundary
-- [ ] Update sprint-status.yaml to `ready-for-dev` (done automatically)
+- [x] Create `.env.example` at repository root documenting all env variables (AC: #3)
+  - [x] Include all keys from `.env` (`DOTENV_PUBLIC_KEY`, `TF_VAR_GH_PAT_TOKEN`, `TF_VAR_GITHUB_OWNER`, `TERRAFORM_STATE_ENCRYPT_KEY`, `VERCEL_ORG_ID`, `VERCEL_TOKEN`)
+  - [x] Use placeholder values (e.g. `ask-a-maintainer`) — never real secrets
+  - [x] Add inline comments making clear all variables are infra/deploy-only — **not needed by contributors**
+- [x] Update `.github/CONTRIBUTING.md` with a "Secrets & Credentials" section (AC: #3)
+  - [x] Lead with the key message: **no secrets are needed to run or develop the app**
+  - [x] Explain that all secrets in `.env` are infrastructure-only (Terraform, Vercel, CI/CD) and held by maintainers
+  - [x] Point to `.env.example` as reference for what those variables are
+- [x] Update `docs/development-guide-bmad-ui.md` to state zero-secret requirement explicitly (AC: #1)
+  - [x] Make it the first thing a contributor reads: no `.env` setup required
+  - [x] Note that `infra/` and deploy workflows are maintainer-only
+- [x] Verify graceful failure for production-gated commands (AC: #2)
+  - [x] Confirm `dotenvx run` fails with a clear message when `DOTENV_PRIVATE_KEY` is absent
+  - [x] Document the expected error so contributors know they've hit a maintainer-only boundary
+- [x] Update sprint-status.yaml to `ready-for-dev` (done automatically)
 
 ## Dev Notes
 
@@ -204,6 +204,18 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+N/A — documentation-only story, no code changes.
+
 ### Completion Notes List
 
+- Created `.env.example` at repo root with all env variables, placeholder values, and inline comments clarifying infra-only scope
+- Updated `.github/CONTRIBUTING.md`: replaced "Secrets & Environment" section with full "Secrets & Credentials" section including contributor/maintainer guidance tables
+- Updated `docs/development-guide-bmad-ui.md`: added zero-secret callout as the very first content a contributor reads
+- Verified graceful failure: dotenvx emits `MISSING_PRIVATE_KEY` error when `DOTENV_PRIVATE_KEY` is absent; contributor commands never invoke dotenvx, so they are unaffected
+
 ### File List
+
+- `.env.example` (created)
+- `.github/CONTRIBUTING.md` (modified)
+- `docs/development-guide-bmad-ui.md` (modified)
+- `_bmad-output/implementation-artifacts/3-2-enable-contributor-workflow-without-production-secrets.md` (status updated)
