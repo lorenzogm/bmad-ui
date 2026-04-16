@@ -1,10 +1,14 @@
+import { useQuery } from "@tanstack/react-query"
 import { createRootRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
+import type { AnalyticsResponse, SessionAnalytics } from "../types"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
 const DEFAULT_SKILL = "bmad-quick-dev"
 const DEFAULT_MODEL = "claude-sonnet-4.6"
+const SESSIONS_POLL_INTERVAL_MS = 10_000
+const SESSION_SKILL_PREFIX = "bmad-"
 
 const AVAILABLE_MODELS = [
   { id: "claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
@@ -216,6 +220,20 @@ function RootLayout() {
   const isAnalyticsSection = currentPath.startsWith("/analytics")
   const [chatOpen, setChatOpen] = useState(false)
 
+  const { data: runningSessions = [] } = useQuery<SessionAnalytics[]>({
+    queryKey: ["running-sessions"],
+    queryFn: async () => {
+      const response = await fetch("/api/analytics")
+      if (!response.ok) return []
+      const payload = (await response.json()) as AnalyticsResponse
+      if (!Array.isArray(payload.sessions)) return []
+      return payload.sessions
+        .filter((s) => s.status === "running")
+        .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime())
+    },
+    refetchInterval: SESSIONS_POLL_INTERVAL_MS,
+  })
+
   return (
     <div className="app-layout">
       <aside className="app-sidebar">
@@ -233,6 +251,29 @@ function RootLayout() {
               {link.label}
             </Link>
           ))}
+
+          {runningSessions.length > 0 && (
+            <div className="sidebar-sessions-section">
+              <span className="sidebar-sessions-label">Running</span>
+              <div className="sidebar-sessions-list">
+                {runningSessions.map((session) => (
+                  <Link
+                    className={`sidebar-session-item ${currentPath === `/session/${session.sessionId}` ? "is-active" : ""}`}
+                    key={session.sessionId}
+                    params={{ sessionId: session.sessionId }}
+                    to="/session/$sessionId"
+                  >
+                    <span className="step-badge step-running">●</span>
+                    <span className="sidebar-session-skill">
+                      {session.skill.startsWith(SESSION_SKILL_PREFIX)
+                        ? session.skill.slice(SESSION_SKILL_PREFIX.length)
+                        : session.skill}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           <Link
             aria-current={currentPath === "/analytics" ? "page" : undefined}
