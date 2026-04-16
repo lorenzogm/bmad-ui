@@ -292,6 +292,7 @@ const SESSION_ABORT_PATH_REGEX = /^\/api\/session\/([^/]+)\/abort$/;
 const ORCHESTRATOR_INPUT_PATH_REGEX = /^\/api\/orchestrator\/input$/;
 const MARK_REVIEW_PATH_REGEX = /^\/api\/story\/([^/]+)\/mark-review$/;
 const STORY_DETAIL_PATH_REGEX = /^\/api\/story\/([^/]+)$/;
+const STORY_PREVIEW_PATH_REGEX = /^\/api\/story-preview\/([^/]+)$/;
 const EPIC_DETAIL_PATH_REGEX = /^\/api\/epic\/epic-(\d+)$/;
 const LAST_UPDATED_COMMENT_REGEX = /^#\s*last_updated:\s*.*$/m;
 const YAML_COMMENT_REGEX = /#.*$/;
@@ -1406,6 +1407,58 @@ function getEpicMetadataFromMarkdown(
   }
 
   return { name, description: descLines.join(" ") };
+}
+
+const STORY_ID_PREFIX_REGEX = /^(\d+)-(\d+)-/;
+
+function getStoryContentFromEpics(
+  epicsContent: string,
+  storyId: string
+): { title: string; content: string } | null {
+  const idMatch = storyId.match(STORY_ID_PREFIX_REGEX);
+  if (!idMatch) {
+    return null;
+  }
+
+  const epicNum = idMatch[1];
+  const storyNum = idMatch[2];
+  const storyHeadingPrefix = `### Story ${epicNum}.${storyNum}:`;
+
+  const lines = epicsContent.split("\n");
+  let startIndex = -1;
+  let endIndex = lines.length;
+  let title = "";
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+
+    if (startIndex === -1) {
+      if (trimmed.startsWith(storyHeadingPrefix)) {
+        startIndex = i;
+        title = trimmed.replace(/^###\s*/, "");
+      }
+      continue;
+    }
+
+    if (
+      trimmed.startsWith("### ") ||
+      trimmed.startsWith("## ") ||
+      trimmed === "---"
+    ) {
+      endIndex = i;
+      break;
+    }
+  }
+
+  if (startIndex === -1) {
+    return null;
+  }
+
+  const content = lines
+    .slice(startIndex + 1, endIndex)
+    .join("\n")
+    .trim();
+  return { title, content };
 }
 
 function summarizeEpicConsistency(
@@ -3056,6 +3109,45 @@ function attachApi(server: ViteDevServer): void {
 
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(payload));
+        return;
+      }
+
+      const storyPreviewMatch = requestUrl.pathname.match(
+        STORY_PREVIEW_PATH_REGEX
+      );
+      if (storyPreviewMatch && req.method === "GET") {
+        const storyId = decodeURIComponent(storyPreviewMatch[1]);
+
+        let planningContent: { title: string; content: string } | null = null;
+        if (existsSync(epicsFile)) {
+          try {
+            const epicsContent = await readFile(epicsFile, "utf8");
+            planningContent = getStoryContentFromEpics(epicsContent, storyId);
+          } catch {
+            // ignore parse errors
+          }
+        }
+
+        const implMarkdown = await findStoryMarkdown(storyId);
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            storyId,
+            planning: planningContent
+              ? {
+                  title: planningContent.title,
+                  content: planningContent.content,
+                }
+              : null,
+            implementation: implMarkdown
+              ? {
+                  path: implMarkdown.path,
+                  content: implMarkdown.content,
+                }
+              : null,
+          })
+        );
         return;
       }
 
