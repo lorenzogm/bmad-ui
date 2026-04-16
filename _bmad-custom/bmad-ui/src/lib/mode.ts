@@ -6,6 +6,11 @@
 export const IS_LOCAL_MODE = import.meta.env.DEV
 
 /**
+ * Tooltip shown on action buttons that are disabled in production.
+ */
+export const PROD_DISABLED_TITLE = "Actions only work in local mode"
+
+/**
  * Resolve an API path to the correct URL based on mode.
  * In dev, returns the path as-is (handled by Vite dev server middleware).
  * In production, maps to static JSON files under /data/.

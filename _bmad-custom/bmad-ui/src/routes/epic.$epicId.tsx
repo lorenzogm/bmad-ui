@@ -1,7 +1,7 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { storyStepLabel } from "../app"
-import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
+import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type {
   EpicDetailResponse,
   OverviewResponse,
@@ -596,8 +596,9 @@ function EpicDetailPage() {
             {storiesNeedingPlan.length > 0 ? (
               <button
                 className="cta"
-                disabled={isPlanning}
+                disabled={!IS_LOCAL_MODE || isPlanning}
                 onClick={() => void handlePlanAllStories()}
+                title={IS_LOCAL_MODE ? undefined : PROD_DISABLED_TITLE}
                 type="button"
               >
                 {isPlanning
@@ -608,9 +609,10 @@ function EpicDetailPage() {
             {showDevelopAllButton ? (
               <button
                 className={`cta${isOrchestrating ? "" : " ghost"}`}
-                disabled={isOrchestrating}
+                disabled={!IS_LOCAL_MODE || isOrchestrating}
                 onClick={handleDevelopAllStories}
                 style={isOrchestrating ? { opacity: 0.7 } : undefined}
+                title={IS_LOCAL_MODE ? undefined : PROD_DISABLED_TITLE}
                 type="button"
               >
                 {isOrchestrating ? "Developing all stories…" : "Develop all stories"}

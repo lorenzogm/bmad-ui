@@ -3869,6 +3869,39 @@ function attachApi(server: ViteDevServer): void {
         return
       }
 
+      if (requestUrl.pathname === "/api/links" && req.method === "PUT") {
+        try {
+          const body = await readRequestBody(req)
+          const { index, title, subtitle, url, icon } = JSON.parse(body) as { index: number; title?: string; subtitle?: string; url?: string; icon?: string }
+          if (index === undefined || index === null) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "index is required" }))
+            return
+          }
+          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          if (existsSync(linksFile)) {
+            const raw = readFileSync(linksFile, "utf8")
+            links = parseSimpleYamlList(raw, "links") as typeof links
+          }
+          if (index < 0 || index >= links.length) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "invalid index" }))
+            return
+          }
+          if (title !== undefined) links[index].title = title
+          if (subtitle !== undefined) links[index].subtitle = subtitle
+          if (url !== undefined) links[index].url = url
+          if (icon !== undefined) links[index].icon = icon
+          await writeFile(linksFile, serializeLinksYaml(links), "utf8")
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ links }))
+        } catch (updateLinkError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(updateLinkError) }))
+        }
+        return
+      }
+
       if (requestUrl.pathname === "/api/links" && req.method === "DELETE") {
         try {
           const indexParam = requestUrl.searchParams.get("index")

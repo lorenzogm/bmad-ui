@@ -1,6 +1,6 @@
 import { createRootRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
-import { IS_LOCAL_MODE } from "../lib/mode"
+import { IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
@@ -301,6 +301,13 @@ function RootLayout() {
           </div>
 
           <div className="sidebar-spacer" />
+
+          {!IS_LOCAL_MODE ? (
+            <div className="sidebar-disclaimer">
+              <span className="sidebar-disclaimer-icon" aria-hidden="true">ℹ</span>
+              <span>{PROD_DISABLED_TITLE}</span>
+            </div>
+          ) : null}
 
           {IS_LOCAL_MODE ? (
             <button

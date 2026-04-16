@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
-import { apiUrl, IS_LOCAL_MODE } from "./lib/mode"
+import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "./lib/mode"
 import type { AgentRunGroup, AgentSession, OverviewResponse, RuntimeSession } from "./types"
 
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
@@ -176,9 +176,9 @@ function SessionsTable(props: {
                       <button
                         aria-label="Start session"
                         className="icon-button icon-button-play"
-                        disabled={hasPendingAction || !canStart}
+                        disabled={!IS_LOCAL_MODE || hasPendingAction || !canStart}
                         onClick={() => onStartSession(session.id)}
-                        title="Start session"
+                        title={IS_LOCAL_MODE ? "Start session" : PROD_DISABLED_TITLE}
                         type="button"
                       >
                         <span aria-hidden="true" className="icon-glyph">
@@ -188,9 +188,9 @@ function SessionsTable(props: {
                       <button
                         aria-label="Abort session"
                         className="icon-button icon-button-delete"
-                        disabled={hasPendingAction || !canAbort}
+                        disabled={!IS_LOCAL_MODE || hasPendingAction || !canAbort}
                         onClick={() => onAbortSession(session.id)}
-                        title="Abort session"
+                        title={IS_LOCAL_MODE ? "Abort session" : PROD_DISABLED_TITLE}
                         type="button"
                       >
                         <span aria-hidden="true" className="icon-glyph">
@@ -918,11 +918,12 @@ function BMADWorkflowSection(props: {
                         {isActionable && !isRunning && (
                           <button
                             className="icon-button icon-button-play"
+                            disabled={!IS_LOCAL_MODE}
                             onClick={(e) => {
                               e.stopPropagation()
                               void handlePlayClick(step)
                             }}
-                            title={`Run ${step.skill}`}
+                            title={IS_LOCAL_MODE ? `Run ${step.skill}` : PROD_DISABLED_TITLE}
                             type="button"
                           >
                             <span aria-hidden="true" className="icon-glyph">
