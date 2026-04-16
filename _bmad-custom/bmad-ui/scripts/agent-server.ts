@@ -242,8 +242,6 @@ async function markZombieSessionsAsFailed(
     return false;
   }
 
-  const ZOMBIE_GRACE_MS = 120_000; // 2 minutes grace period
-  const now = Date.now();
   let mutated = false;
 
   for (const session of runtimeState.sessions) {
@@ -255,22 +253,10 @@ async function markZombieSessionsAsFailed(
       continue;
     }
 
-    // Grace period: skip sessions that started recently (race condition window)
-    if (session.startedAt) {
-      const startedMs = new Date(session.startedAt).getTime();
-      if (now - startedMs < ZOMBIE_GRACE_MS) {
-        continue;
-      }
-    }
-
-    const logExists = session.logPath && existsSync(session.logPath);
-    const logStat = logExists ? statSync(session.logPath) : null;
-    const logEmpty = !logStat || logStat.size === 0;
-
-    // If the log file was recently modified, the process is likely still alive
-    if (logStat && now - logStat.mtimeMs < ZOMBIE_GRACE_MS) {
-      continue;
-    }
+    const logEmpty =
+      !session.logPath ||
+      !existsSync(session.logPath) ||
+      statSync(session.logPath).size === 0;
 
     if (logEmpty) {
       session.status = "failed";
