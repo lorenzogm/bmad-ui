@@ -304,7 +304,9 @@ function RootLayout() {
 
           {!IS_LOCAL_MODE ? (
             <div className="sidebar-disclaimer">
-              <span className="sidebar-disclaimer-icon" aria-hidden="true">ℹ</span>
+              <span className="sidebar-disclaimer-icon" aria-hidden="true">
+                ℹ
+              </span>
               <span>{PROD_DISABLED_TITLE}</span>
             </div>
           ) : null}

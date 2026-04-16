@@ -847,7 +847,11 @@ function EpicDetailPage() {
                 className="icon-button icon-button-play"
                 disabled={!IS_LOCAL_MODE || pendingSkill !== null}
                 onClick={() => void handleRunSkill("bmad-retrospective")}
-                title={IS_LOCAL_MODE ? `Run bmad-retrospective for epic-${epicNumber}` : PROD_DISABLED_TITLE}
+                title={
+                  IS_LOCAL_MODE
+                    ? `Run bmad-retrospective for epic-${epicNumber}`
+                    : PROD_DISABLED_TITLE
+                }
                 type="button"
               >
                 <span aria-hidden="true" className="icon-glyph">
