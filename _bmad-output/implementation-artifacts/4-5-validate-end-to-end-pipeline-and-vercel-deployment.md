@@ -91,12 +91,14 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
-- Ran `biome check --write` to auto-fix all formatting violations across 9 files
-- Manually removed unused variable import in `__root.tsx`
-- Fixed `useExhaustiveDependencies` in `__root.tsx`
-- Removed unused biome suppression comment in `session.$sessionId.tsx`
-- Pushed fix commit, monitored both workflows to `success`
-- Smoke tested Vercel deployment: all routes returned 200, no JS errors
+- Fixed all Biome lint/format violations (9 errors across 9 files) — CI now passes cleanly
+- Fixed YAML syntax error in deploy.yml (colon-space in unquoted run: value) that caused immediate workflow file errors
+- Removed Vercel team scope from Terraform providers.tf and main.tf (personal account, not team account)
+- Removed invalid teamId params from Vercel REST API calls in deploy.yml
+- ✅ `bmad-ui-ci` workflow: passes on all subsequent pushes
+- ✅ `bmad-ui-deploy` workflow: correctly skips infrastructure and deploy jobs for non-app-code changes
+- ⚠️ Vercel deployment blocked: the project `bmad-ui-dev` does not exist in the Vercel account. The VERCEL_TOKEN (stored in encrypted .env) does not have permission to create new projects via Terraform. **User action required**: create the Vercel project `bmad-ui-dev` manually in the Vercel dashboard (under personal account, not a team), then subsequent app code pushes will deploy successfully.
+- Smoke testing deferred: no Vercel deployment URL available until above blocker is resolved.
 
 ### File List
 
