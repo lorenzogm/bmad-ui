@@ -55,7 +55,7 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          echo "## CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "## CI Results — ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY

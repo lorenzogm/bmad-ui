@@ -116,6 +116,7 @@ jobs:
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
           echo "| Event | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Environment | ${{ steps.resolve-env.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Infra changed | ${{ steps.check.outputs.infra-changed }} |" >> $GITHUB_STEP_SUMMARY
@@ -486,6 +487,7 @@ jobs:
         working-directory: _bmad-custom/bmad-ui
 
       - name: Summary
+        if: always()
         run: |
           VERSION=$(node -p "require('./_bmad-custom/bmad-ui/package.json').version" 2>/dev/null || echo "unknown")
           echo "## ✅ Production Deployment" >> $GITHUB_STEP_SUMMARY
