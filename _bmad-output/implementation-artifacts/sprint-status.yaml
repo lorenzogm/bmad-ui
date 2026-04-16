@@ -68,9 +68,9 @@ development_status:
   4-4-add-workflow-observability-and-failure-diagnosis: ready-for-dev
   epic-4-retrospective: optional
 
-  epic-5: in-progress
+  epic-5: backlog
   5-1-standardize-pnpm-project-commands: backlog
-  5-2-configure-monorepo-task-orchestration: ready-for-dev
+  5-2-create-npx-bmad-method-ui-install-cli: backlog
   5-3-enforce-code-quality-tooling-baseline: backlog
   5-4-provide-vs-code-first-developer-workflow: backlog
   epic-5-retrospective: optional

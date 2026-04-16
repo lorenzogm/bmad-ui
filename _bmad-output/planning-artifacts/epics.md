@@ -139,7 +139,7 @@ _No UX Design document was found for Phase 1. Phase 1 is infrastructure-focused;
 | FR23 | Epic 5 | Execute standard local workflow from VS Code |
 | FR24 | Epic 5 | Run linting and type validation through project commands |
 | FR25 | Epic 5 | Define and enforce coding/formatting standards |
-| FR26 | Epic 5 | Define monorepo workflow conventions (Turbo) |
+| FR26 | Epic 5 | Install bmad-ui into any bmad project via npx |
 | FR27 | Epic 5 | Discover required setup steps from quickstart docs |
 | FR28 | Epic 7 | Access bmad-ui as visual companion to bmad workflows |
 | FR29 | Epic 7 | Observe workflow flow and analysis context |
@@ -173,8 +173,8 @@ Maintainers and contributors can safely manage secrets through dotenvx with envi
 Maintainers and contributors can trigger automated validation and deployment workflows on repository changes, with enforced quality gates before protected branch merges and observable pipeline outcomes.
 **FRs covered:** FR16, FR17, FR18, FR19, FR20, FR21
 
-### Epic 5: Developer Tooling & Monorepo Standards
-Contributors can install, run, lint, type-check, and build the project using pnpm following documented standards — with Turbo, Biome, TypeScript, and VS Code-first conventions established and enforced.
+### Epic 5: Developer Tooling & Portable Installation
+Contributors can install, run, lint, type-check, and build the project using pnpm following documented standards. Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`), with Biome, TypeScript, and VS Code-first conventions established and enforced.
 **FRs covered:** FR22, FR23, FR24, FR25, FR26, FR27
 
 ### Epic 6: Onboarding, Documentation & Adoption Enablement
@@ -529,9 +529,9 @@ So that I can quickly identify and fix failing stages.
 
 ---
 
-## Epic 5: Developer Tooling and Monorepo Standards
+## Epic 5: Developer Tooling and Portable Installation
 
-Contributors can install, run, lint, type-check, and build the project using pnpm following documented standards, with Turbo, Biome, TypeScript, and VS Code-first conventions established and enforced.
+Contributors can install, run, lint, type-check, and build the project using pnpm following documented standards. Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`), with Biome, TypeScript, and VS Code-first conventions established and enforced.
 
 **Story to FR mapping:**
 - Story 5.1 -> FR22
@@ -559,25 +559,29 @@ So that local and CI workflows are predictable and aligned.
 **When** commands run there,
 **Then** they use the same pnpm scripts used locally
 
-### Story 5.2: Configure Monorepo Task Orchestration
+### Story 5.2: Create npx bmad-method-ui Install CLI
 
-As a maintainer,
-I want Turbo task orchestration configured for the workspace,
-So that lint, typecheck, test, and build pipelines are cacheable and scalable.
+As a bmad user,
+I want to run `npx bmad-method-ui install` in my bmad project,
+So that bmad-ui is added to my project's `_bmad-custom` folder without manual copying or monorepo setup.
 
 **Acceptance Criteria:**
 
-**Given** monorepo config,
-**When** task pipelines are inspected,
-**Then** lint, typecheck, test, and build tasks are defined with explicit dependencies
+**Given** any directory containing a bmad project,
+**When** `npx bmad-method-ui install` is run,
+**Then** the `_bmad-custom/bmad-ui` app is copied into the current directory with all source files intact
 
-**Given** repeated local runs,
-**When** unchanged tasks are executed,
-**Then** Turbo cache behavior is observable
+**Given** the install completes,
+**When** the user follows the printed next steps,
+**Then** they can run `cd _bmad-custom/bmad-ui && pnpm install && pnpm dev` to start the UI
 
-**Given** CI runs,
-**When** workspace tasks execute,
-**Then** orchestration follows the same pipeline model as local runs
+**Given** the npm package is published,
+**When** a user runs `npx bmad-method-ui install`,
+**Then** it fetches the latest version of bmad-ui without requiring git clone or manual file copying
+
+**Given** an existing `_bmad-custom/bmad-ui` directory,
+**When** install is run again,
+**Then** the CLI warns the user before overwriting
 
 ### Story 5.3: Enforce Code Quality Tooling Baseline
 

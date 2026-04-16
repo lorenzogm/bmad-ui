@@ -1,6 +1,10 @@
 # Story 5.2: Configure Monorepo Task Orchestration
 
-Status: ready-for-dev
+Status: cancelled
+
+> **CANCELLED** — This story was cancelled during Epic 5 course correction. The monorepo approach
+> (pnpm workspaces + Turbo at repo root) was replaced with a portable installation model:
+> `npx bmad-method-ui install`. See replacement story: `5-2-create-npx-bmad-method-ui-install-cli.md`
 
 ## Story
 

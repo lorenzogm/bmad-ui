@@ -19,7 +19,7 @@ classification:
   domain: developer_tool
   complexity: medium
   projectContext: brownfield
-  coreInitiative: "Establish bmad-ui as a properly infrastructure'd, open-source project by implementing GitHub repository management, Vercel deployment, CI/CD pipelines, secrets management (dotenvx), and monorepo tooling (TypeScript, Turbo, Biome, Ultracite) — enabling Phase 2 refactoring and Phase 3 feature development."
+  coreInitiative: "Establish bmad-ui as a properly infrastructure'd, open-source project by implementing GitHub repository management, Vercel deployment, CI/CD pipelines, secrets management (dotenvx), and a portable installation CLI (npx bmad-method-ui install) — enabling Phase 2 refactoring and Phase 3 feature development."
 inputDocuments:
   - /Users/lorenzogm/lorenzogm/lorenzogm/infra/github/README.md
   - /Users/lorenzogm/lorenzogm/lorenzogm/infra/github/src/main.tf
@@ -44,7 +44,7 @@ workflowType: 'prd'
 
 ## Executive Summary
 
-bmad-ui Phase 1 establishes the foundation for publishing bmad-ui as a professional, open-source project that complements the bmad orchestration platform. The goal is to implement GitHub repository management, Vercel deployment, CI/CD pipelines, dotenvx-based secret management, and monorepo tooling standardization (TypeScript, Turbo, Biome, Ultracite) with minimal Terraform customization.
+bmad-ui Phase 1 establishes the foundation for publishing bmad-ui as a professional, open-source project that complements the bmad orchestration platform. The goal is to implement GitHub repository management, Vercel deployment, CI/CD pipelines, dotenvx-based secret management, and a portable installation CLI so any bmad project can add bmad-ui with a single command (`npx bmad-method-ui install`).
 
 The target audience is bmad users and developers building AI-assisted products who need a complete workflow orchestration system. bmad-ui is the UI layer for monitoring, controlling, and managing workflows executed by bmad. Publishing bmad-ui with production-grade infrastructure makes the ecosystem accessible and credible.
 
@@ -86,7 +86,7 @@ All infrastructure components are configured, tested, and working end-to-end. Th
 - GitHub repo fully configured with branch protection, labels, and issue templates
 - Vercel deployment working with proper environment management via dotenvx
 - CI/CD pipelines passing on all commits
-- Monorepo tooling (Turbo, Biome, TypeScript) configured and validated
+- Portable installation CLI (`npx bmad-method-ui install`) validated end-to-end
 
 ### Measurable Outcomes
 
@@ -103,7 +103,7 @@ All infrastructure components are configured, tested, and working end-to-end. Th
 - Vercel deployment pipeline working
 - CI/CD GitHub Actions workflows operational
 - dotenvx secrets management configured
-- Monorepo tooling configs standardized (TypeScript, Turbo, Biome, Ultracite)
+- Portable installation CLI (`npx bmad-method-ui install`) published and documented
 - Basic README and setup documentation
 - Publish to GitHub as public repository
 
@@ -395,7 +395,7 @@ Resource Risks:
 - FR23: Contributor can execute a standard local workflow from VS Code.
 - FR24: Contributor can run linting and type validation through documented project commands.
 - FR25: Maintainer can define and enforce coding and formatting standards for contributors.
-- FR26: Maintainer can define monorepo workflow conventions for build and task orchestration.
+- FR26: User can install bmad-ui into any bmad project using `npx bmad-method-ui install`.
 - FR27: Contributor can discover required setup steps from minimal quickstart documentation.
 
 ### Core Product Operation for Phase 1
