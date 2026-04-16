@@ -63,7 +63,7 @@ development_status:
 
   epic-4: in-progress
   4-1-create-ci-validation-workflow: done
-  4-2-enforce-protected-branch-quality-gates: ready-for-dev
+  4-2-enforce-protected-branch-quality-gates: review
   4-3-implement-deployment-workflow-triggers: ready-for-dev
   4-4-add-workflow-observability-and-failure-diagnosis: ready-for-dev
   epic-4-retrospective: optional
