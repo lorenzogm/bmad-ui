@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-16T15:47:27Z
+last_updated: 2026-04-16T15:55:28Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -55,10 +55,10 @@ development_status:
   2-3-environment-separation-across-infra-and-deploy-workflows: cancelled
   epic-2-retrospective: done
 
-  epic-3: in-progress
+  epic-3: done
   3-1-establish-root-level-dotenvx-secret-workflow: done
   3-2-enable-contributor-workflow-without-production-secrets: done
-  3-3-secret-rotation-and-audit-safe-handling: in-progress
+  3-3-secret-rotation-and-audit-safe-handling: done
   epic-3-retrospective: optional
 
   epic-4: backlog

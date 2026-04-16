@@ -1,6 +1,6 @@
 # Story 3.3: Secret Rotation and Audit-Safe Handling
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -49,10 +49,10 @@ So that credential hygiene remains strong over time.
 
 ### Review Findings
 
-- [ ] [Review][Patch] Avoid printing `DOTENV_PRIVATE_KEY` to terminal output in rotation steps [`docs/secret-rotation.md:87`]
-- [ ] [Review][Patch] Avoid writing decrypted Terraform state artifacts to shared `/tmp` paths during rotation [`docs/secret-rotation.md:134`]
-- [ ] [Review][Patch] Include explicit production-state re-encryption and commit steps in Terraform key rotation procedure [`docs/secret-rotation.md:146`]
-- [ ] [Review][Patch] Replace `git revert HEAD` rollback guidance with targeted commit rollback for `terraform-state` [`docs/secret-rotation.md:251`]
+- [x] [Review][Patch] Avoid printing `DOTENV_PRIVATE_KEY` to terminal output in rotation steps [`docs/secret-rotation.md:87`]
+- [x] [Review][Patch] Avoid writing decrypted Terraform state artifacts to shared `/tmp` paths during rotation [`docs/secret-rotation.md:134`]
+- [x] [Review][Patch] Include explicit production-state re-encryption and commit steps in Terraform key rotation procedure [`docs/secret-rotation.md:146`]
+- [x] [Review][Patch] Replace `git revert HEAD` rollback guidance with targeted commit rollback for `terraform-state` [`docs/secret-rotation.md:251`]
 
 ## Dev Notes
 

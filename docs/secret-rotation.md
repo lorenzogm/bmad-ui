@@ -81,14 +81,15 @@ Use this procedure when the private key itself is compromised or when performing
    - Re-encrypts all values in `.env` with the new public key
    - Writes the new private key to `.env.keys`
 
-2. Update the `DOTENV_PRIVATE_KEY` GitHub Secret with the new private key value:
+2. Update the `DOTENV_PRIVATE_KEY` GitHub Secret with the new private key value (without printing it to terminal):
 
    ```bash
-   # Print the new private key (do not commit this output)
-   cat .env.keys
+   NEW_DOTENV_PRIVATE_KEY="$(grep '^DOTENV_PRIVATE_KEY=' .env.keys | cut -d '=' -f2-)"
+   gh secret set DOTENV_PRIVATE_KEY --repo lorenzogm/bmad-ui --body "$NEW_DOTENV_PRIVATE_KEY"
+   unset NEW_DOTENV_PRIVATE_KEY
    ```
 
-   Navigate to **Repository → Settings → Secrets and variables → Actions** and update `DOTENV_PRIVATE_KEY`.
+   If you prefer the GitHub UI, copy the value from `.env.keys` in a local editor (not terminal output), then navigate to **Repository → Settings → Secrets and variables → Actions** and update `DOTENV_PRIVATE_KEY`.
 
 3. Commit and push the updated `.env`:
 
@@ -127,35 +128,38 @@ Use this procedure to rotate the AES-256 key used to encrypt the Terraform state
    # Save the output — this is your new TERRAFORM_STATE_ENCRYPT_KEY
    ```
 
-2. Fetch the current encrypted state:
+2. Create an isolated temporary workspace and fetch the current encrypted state:
 
    ```bash
+   STATE_TMP_DIR="$(mktemp -d)"
    git fetch origin terraform-state
-   git show origin/terraform-state:infra/vercel/src/terraform-development.tfstate.enc > /tmp/terraform-development.tfstate.enc
-   # Repeat for production if applicable:
-   git show origin/terraform-state:infra/vercel/src/terraform-production.tfstate.enc > /tmp/terraform-production.tfstate.enc
+   git show origin/terraform-state:infra/vercel/src/terraform-development.tfstate.enc > "$STATE_TMP_DIR/terraform-development.tfstate.enc"
+   git show origin/terraform-state:infra/vercel/src/terraform-production.tfstate.enc > "$STATE_TMP_DIR/terraform-production.tfstate.enc"
    ```
 
-3. Decrypt with the old key:
+3. Decrypt both state files with the old key:
 
    ```bash
    OLD_KEY="<old-key-value>"
-   echo "$OLD_KEY" | openssl enc -aes-256-cbc -d -in /tmp/terraform-development.tfstate.enc -out /tmp/terraform.tfstate -pass stdin
+   echo "$OLD_KEY" | openssl enc -aes-256-cbc -d -in "$STATE_TMP_DIR/terraform-development.tfstate.enc" -out "$STATE_TMP_DIR/terraform-development.tfstate" -pass stdin
+   echo "$OLD_KEY" | openssl enc -aes-256-cbc -d -in "$STATE_TMP_DIR/terraform-production.tfstate.enc" -out "$STATE_TMP_DIR/terraform-production.tfstate" -pass stdin
    ```
 
-4. Re-encrypt with the new key:
+4. Re-encrypt both state files with the new key:
 
    ```bash
    NEW_KEY="<new-key-value>"
-   echo "$NEW_KEY" | openssl enc -aes-256-cbc -in /tmp/terraform.tfstate -out /tmp/terraform-development.tfstate.enc -pass stdin
+   echo "$NEW_KEY" | openssl enc -aes-256-cbc -in "$STATE_TMP_DIR/terraform-development.tfstate" -out "$STATE_TMP_DIR/terraform-development.tfstate.enc" -pass stdin
+   echo "$NEW_KEY" | openssl enc -aes-256-cbc -in "$STATE_TMP_DIR/terraform-production.tfstate" -out "$STATE_TMP_DIR/terraform-production.tfstate.enc" -pass stdin
    ```
 
-5. Push the re-encrypted state to the `terraform-state` branch:
+5. Push the re-encrypted development and production state files to the `terraform-state` branch:
 
    ```bash
    git checkout terraform-state
-   cp /tmp/terraform-development.tfstate.enc infra/vercel/src/terraform-development.tfstate.enc
-   git add infra/vercel/src/terraform-development.tfstate.enc
+   cp "$STATE_TMP_DIR/terraform-development.tfstate.enc" infra/vercel/src/terraform-development.tfstate.enc
+   cp "$STATE_TMP_DIR/terraform-production.tfstate.enc" infra/vercel/src/terraform-production.tfstate.enc
+   git add infra/vercel/src/terraform-development.tfstate.enc infra/vercel/src/terraform-production.tfstate.enc
    git commit -m "chore: re-encrypt terraform state with new key"
    git push origin terraform-state
    git checkout main
@@ -174,10 +178,10 @@ Use this procedure to rotate the AES-256 key used to encrypt the Terraform state
    git push origin main
    ```
 
-7. Securely delete local plaintext state files:
+7. Securely delete local plaintext state files and temporary artifacts:
 
    ```bash
-   rm -f /tmp/terraform.tfstate /tmp/terraform-development.tfstate.enc /tmp/terraform-production.tfstate.enc
+   rm -rf "$STATE_TMP_DIR"
    ```
 
 8. Verify by triggering a workflow run (see [Verification](#verification-steps)).
@@ -244,11 +248,12 @@ If the new key breaks decryption:
 If the new Terraform state encryption key breaks deployment:
 
 1. Restore the previous `TERRAFORM_STATE_ENCRYPT_KEY` GitHub Secret value.
-2. Restore the old encrypted state file on the `terraform-state` branch:
+2. Restore the old encrypted state commit on the `terraform-state` branch:
 
    ```bash
    git checkout terraform-state
-   git revert HEAD
+   git --no-pager log --oneline -n 10
+   git revert <commit-sha-that-rotated-terraform-state>
    git push origin terraform-state
    git checkout main
    ```
