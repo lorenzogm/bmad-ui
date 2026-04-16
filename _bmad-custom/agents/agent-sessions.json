@@ -1005,6 +1005,57 @@
         "tokensCached": 985300,
         "totalTokens": 1108500
       }
+    },
+    "workflow-bmad-dev-story-1776360908131": {
+      "sessionId": "workflow-bmad-dev-story-1776360908131",
+      "storyId": "4-1-create-ci-validation-workflow",
+      "epicId": "epic-4",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T17:35:08.133Z",
+      "endedAt": "2026-04-16T17:36:43.169Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 473900,
+        "tokensOut": 3400,
+        "tokensCached": 432900,
+        "totalTokens": 477300
+      }
+    },
+    "workflow-bmad-create-story-1776360715511": {
+      "sessionId": "workflow-bmad-create-story-1776360715511",
+      "storyId": "5-2-configure-monorepo-task-orchestration",
+      "epicId": "epic-5",
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T17:31:55.516Z",
+      "endedAt": "2026-04-16T17:36:46.246Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1600000,
+        "tokensOut": 12100,
+        "tokensCached": 1500000,
+        "totalTokens": 1612100
+      }
+    },
+    "7fe9522f-1c95-4fa8-80c0-5595ccb3d94a": {
+      "sessionId": "7fe9522f-1c95-4fa8-80c0-5595ccb3d94a",
+      "storyId": "4-1-create-ci-validation-workflow",
+      "epicId": "epic-4",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-16T17:44:42.911Z",
+      "endedAt": "2026-04-16T17:44:42.911Z",
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
     }
   }
 }

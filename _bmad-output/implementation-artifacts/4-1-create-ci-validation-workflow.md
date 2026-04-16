@@ -1,6 +1,6 @@
 # Story 4.1: Create CI Validation Workflow
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -31,6 +31,10 @@ so that code quality is automatically validated before integration.
   - [x] Add "Build" step: `pnpm build` in `_bmad-custom/bmad-ui`
 - [x] Verify workflow runs on an open PR or via `workflow_dispatch` (AC: #1, #3)
 - [x] Confirm that a lockfile mismatch causes install to fail (AC: #2)
+
+### Review Findings
+
+- [ ] [Review][Patch] Add a job-level timeout to cap CI runtime and align with NFR2 (<=15 minutes) [.github/workflows/ci.yml:15]
 
 ## Dev Notes
 
