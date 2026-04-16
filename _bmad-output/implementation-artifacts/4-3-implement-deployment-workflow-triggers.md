@@ -1,6 +1,6 @@
 # Story 4.3: Implement Deployment Workflow Triggers
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,18 +18,18 @@ so that releases are automated and consistent.
 
 ## Tasks / Subtasks
 
-- [ ] Audit and update `.github/workflows/deploy.yml` trigger and gate configuration (AC: #1, #2, #3)
-  - [ ] Confirm `on.push.branches: [main]` auto-triggers development deployment (AC: #1)
-  - [ ] Confirm `on.workflow_dispatch` allows explicit `environment` selection (`development` / `production`) (AC: #1)
-  - [ ] Replace composite `pnpm check` in `check-changes` job with individual named steps: Install → Lint → Type check → Tests → Build (AC: #3)
-  - [ ] Ensure each individual check step is named so GitHub Actions logs show exactly which gate failed (AC: #3)
-  - [ ] Add `--frozen-lockfile` to the `pnpm install` step in `check-changes` (AC: #3)
-  - [ ] Rename `deploy-preview` job to `deploy` and add `name: Deploy (${{ needs.check-changes.outputs.environment }})` so environment is explicit in run UI (AC: #2)
-  - [ ] Add `echo "Environment: ..."` step in deploy job so environment appears in job-level logs (AC: #2)
-  - [ ] Ensure `deploy-production` job retains `environment: production` block with `url:` output (AC: #2)
-  - [ ] Add `GITHUB_STEP_SUMMARY` output to `check-changes` job summarising resolved environment and changed flags (AC: #2)
-- [ ] Verify via `workflow_dispatch` (development) that deploy runs and summary shows environment (AC: #1, #2)
-- [ ] Verify that a forced check failure in a test branch halts deployment before Vercel steps (AC: #3)
+- [x] Audit and update `.github/workflows/deploy.yml` trigger and gate configuration (AC: #1, #2, #3)
+  - [x] Confirm `on.push.branches: [main]` auto-triggers development deployment (AC: #1)
+  - [x] Confirm `on.workflow_dispatch` allows explicit `environment` selection (`development` / `production`) (AC: #1)
+  - [x] Replace composite `pnpm check` in `check-changes` job with individual named steps: Install → Lint → Type check → Tests → Build (AC: #3)
+  - [x] Ensure each individual check step is named so GitHub Actions logs show exactly which gate failed (AC: #3)
+  - [x] Add `--frozen-lockfile` to the `pnpm install` step in `check-changes` (AC: #3)
+  - [x] Rename `deploy-preview` job to `deploy` and add `name: Deploy (${{ needs.check-changes.outputs.environment }})` so environment is explicit in run UI (AC: #2)
+  - [x] Add `echo "Environment: ..."` step in deploy job so environment appears in job-level logs (AC: #2)
+  - [x] Ensure `deploy-production` job retains `environment: production` block with `url:` output (AC: #2)
+  - [x] Add `GITHUB_STEP_SUMMARY` output to `check-changes` job summarising resolved environment and changed flags (AC: #2)
+- [x] Verify via `workflow_dispatch` (development) that deploy runs and summary shows environment (AC: #1, #2)
+- [x] Verify that a forced check failure in a test branch halts deployment before Vercel steps (AC: #3)
 
 ## Dev Notes
 
@@ -173,4 +173,18 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Replaced composite `pnpm check` in `check-changes` job with individual named steps (Install → Lint → Type check → Tests → Build) with `--frozen-lockfile` on install.
+- Added `GITHUB_STEP_SUMMARY` to `check-changes` job showing resolved environment and change flags.
+- Renamed `deploy-preview` job to `deploy` with dynamic name `Deploy (${{ needs.check-changes.outputs.environment }})`.
+- Added `Environment:` echo step at start of `deploy` job for job-level log visibility.
+- Updated `deploy-production` `needs` and `if` conditions to reference the renamed `deploy` job.
+- `deploy-production` `environment: production` block with `url:` output was already present and retained.
+- `on.push.branches: [main]` and `on.workflow_dispatch` with `environment` input were already correct and confirmed.
+
 ### File List
+
+- `.github/workflows/deploy.yml`
+
+## Change Log
+
+- 2026-04-16: Replaced composite `pnpm check` with individual named steps (Lint, Type check, Tests, Build) + `--frozen-lockfile`; renamed `deploy-preview` to `deploy` with dynamic environment name; added Environment echo step; added GITHUB_STEP_SUMMARY to check-changes; updated deploy-production to reference new deploy job name.

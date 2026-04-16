@@ -46,11 +46,23 @@ jobs:
           cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
         working-directory: _bmad-custom/bmad-ui
 
-      - name: Run code quality checks
-        run: pnpm check
+      - name: Lint
+        run: pnpm check:lint
+        working-directory: _bmad-custom/bmad-ui
+
+      - name: Type check
+        run: pnpm check:types
+        working-directory: _bmad-custom/bmad-ui
+
+      - name: Tests
+        run: pnpm check:tests
+        working-directory: _bmad-custom/bmad-ui
+
+      - name: Build
+        run: pnpm build
         working-directory: _bmad-custom/bmad-ui
 
       - name: Resolve environment
@@ -95,6 +107,13 @@ jobs:
           else
             echo "app-changed=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Summary
+        run: |
+          echo "### Deploy triggered" >> $GITHUB_STEP_SUMMARY
+          echo "Environment: ${{ steps.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "Infra changed: ${{ steps.check.outputs.infra-changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "App changed: ${{ steps.check.outputs.app-changed }}" >> $GITHUB_STEP_SUMMARY
 
   infra-deploy:
     needs: check-changes
@@ -262,14 +281,14 @@ jobs:
           git commit -m "chore: update terraform state for ${{ env.TF_VAR_ENVIRONMENT }}"
           git push origin terraform-state
 
-  deploy-preview:
+  deploy:
     needs: [check-changes, infra-deploy]
     if: |
       always() &&
       needs.infra-deploy.result != 'failure' &&
       (needs.check-changes.outputs.app-changed == 'true' || needs.check-changes.outputs.infra-changed == 'true')
     runs-on: ubuntu-latest
-    name: Deploy Preview
+    name: Deploy (${{ needs.check-changes.outputs.environment }})
     outputs:
       preview-url: ${{ steps.preview-deploy.outputs.preview-url }}
     env:
@@ -278,6 +297,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Environment
+        run: echo "Environment: ${{ needs.check-changes.outputs.environment }}"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
@@ -354,11 +376,11 @@ jobs:
         working-directory: _bmad-custom/bmad-ui
 
   deploy-production:
-    needs: [check-changes, infra-deploy, deploy-preview]
+    needs: [check-changes, infra-deploy, deploy]
     if: |
       always() &&
       needs.check-changes.outputs.environment == 'production' &&
-      needs.deploy-preview.result == 'success' &&
+      needs.deploy.result == 'success' &&
       needs.infra-deploy.result != 'failure'
     runs-on: ubuntu-latest
     name: Deploy Production
