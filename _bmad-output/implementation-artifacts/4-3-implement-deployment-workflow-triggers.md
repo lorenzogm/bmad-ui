@@ -1,6 +1,6 @@
 # Story 4.3: Implement Deployment Workflow Triggers
 
-Status: review
+Status: done
 
 ## Story
 
