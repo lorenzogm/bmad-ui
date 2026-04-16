@@ -1,5 +1,36 @@
-import { useEffect, useState } from "react"
-import type { AnalyticsCosting, AnalyticsResponse, TokenUsage } from "../types"
+import * as echarts from "echarts"
+import { useCallback, useEffect, useRef, useState } from "react"
+import type {
+  AnalyticsCosting,
+  AnalyticsResponse,
+  EpicAnalytics,
+  SessionAnalytics,
+  TokenUsage,
+} from "../types"
+
+// ── Chart theme constants ──────────────────────────────────────────
+const CHART_TEXT_COLOR = "#e6edf4"
+const CHART_MUTED_COLOR = "#a6b9c8"
+const CHART_BORDER_COLOR = "rgba(151, 177, 205, 0.22)"
+const CHART_BG_TRANSPARENT = "transparent"
+const CHART_ACCENT_TEAL = "#2ec4b6"
+const CHART_ACCENT_AMBER = "#ff9f1c"
+const CHART_ACCENT_GREEN = "#22c55e"
+const CHART_ACCENT_BLUE = "#38bdf8"
+const CHART_ACCENT_PURPLE = "#a78bfa"
+const CHART_ACCENT_PINK = "#f472b6"
+const CHART_ACCENT_RED = "#ef4444"
+const CHART_ACCENT_CYAN = "#06b6d4"
+const CHART_PALETTE = [
+  CHART_ACCENT_TEAL,
+  CHART_ACCENT_AMBER,
+  CHART_ACCENT_GREEN,
+  CHART_ACCENT_BLUE,
+  CHART_ACCENT_PURPLE,
+  CHART_ACCENT_PINK,
+  CHART_ACCENT_RED,
+  CHART_ACCENT_CYAN,
+]
 
 export function formatNumber(value: number, maxDecimals = 1): string {
   if (value >= 1_000_000) {
@@ -120,4 +151,290 @@ export function useAnalyticsData() {
   }, [])
 
   return { data, loading, error }
+}
+
+// ── EChart component ───────────────────────────────────────────────
+
+export function EChart({ option }: { option: echarts.EChartsOption }) {
+  const chartInstanceRef = useRef<echarts.ECharts | null>(null)
+  const observerRef = useRef<ResizeObserver | null>(null)
+
+  const containerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      // Cleanup previous instance
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.dispose()
+        chartInstanceRef.current = null
+      }
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+        observerRef.current = null
+      }
+
+      if (!node) return
+
+      const instance = echarts.init(node)
+      instance.setOption(option)
+      chartInstanceRef.current = instance
+
+      const ro = new ResizeObserver(() => {
+        instance.resize()
+      })
+      ro.observe(node)
+      observerRef.current = ro
+    },
+    [option]
+  )
+
+  return <div ref={containerRef} className="chart-container" />
+}
+
+// ── Chart option builders ──────────────────────────────────────────
+
+function buildBaseChartOption(): echarts.EChartsOption {
+  return {
+    backgroundColor: CHART_BG_TRANSPARENT,
+    textStyle: { color: CHART_TEXT_COLOR, fontFamily: "Space Grotesk, sans-serif" },
+    legend: { textStyle: { color: CHART_MUTED_COLOR } },
+    tooltip: {
+      backgroundColor: "rgba(10, 19, 29, 0.94)",
+      borderColor: CHART_BORDER_COLOR,
+      textStyle: { color: CHART_TEXT_COLOR },
+    },
+    grid: {
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
+    },
+  }
+}
+
+export function buildRequestsOverTimeOption(sessions: SessionAnalytics[]): echarts.EChartsOption {
+  const dayMap = new Map<string, { requests: number; tokens: number }>()
+
+  for (const s of sessions) {
+    if (!s.startedAt) continue
+    const day = s.startedAt.slice(0, 10) // YYYY-MM-DD
+    const existing = dayMap.get(day) ?? { requests: 0, tokens: 0 }
+    existing.requests += s.usage.requests
+    existing.tokens += s.usage.totalTokens
+    dayMap.set(day, existing)
+  }
+
+  const sorted = [...dayMap.entries()].sort(([a], [b]) => a.localeCompare(b))
+  const dates = sorted.map(([d]) => d)
+  const requests = sorted.map(([, v]) => v.requests)
+  const tokens = sorted.map(([, v]) => v.tokens)
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      trigger: "axis",
+    },
+    legend: {
+      data: ["Requests", "Tokens"],
+      textStyle: { color: CHART_MUTED_COLOR },
+    },
+    xAxis: {
+      type: "category",
+      data: dates,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+    },
+    yAxis: [
+      {
+        type: "value",
+        name: "Requests",
+        nameTextStyle: { color: CHART_MUTED_COLOR },
+        axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+        axisLabel: { color: CHART_MUTED_COLOR },
+        splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      },
+      {
+        type: "value",
+        name: "Tokens",
+        nameTextStyle: { color: CHART_MUTED_COLOR },
+        axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+        axisLabel: { color: CHART_MUTED_COLOR },
+        splitLine: { show: false },
+      },
+    ],
+    series: [
+      {
+        name: "Requests",
+        type: "line",
+        smooth: true,
+        data: requests,
+        itemStyle: { color: CHART_ACCENT_TEAL },
+        areaStyle: { color: "rgba(46, 196, 182, 0.15)" },
+      },
+      {
+        name: "Tokens",
+        type: "line",
+        smooth: true,
+        yAxisIndex: 1,
+        data: tokens,
+        itemStyle: { color: CHART_ACCENT_AMBER },
+        areaStyle: { color: "rgba(255, 159, 28, 0.12)" },
+      },
+    ],
+  }
+}
+
+export function buildTokensByModelOption(sessions: SessionAnalytics[]): echarts.EChartsOption {
+  const modelMap = new Map<string, { tokensIn: number; tokensOut: number; tokensCached: number }>()
+
+  for (const s of sessions) {
+    const model = s.model || "unknown"
+    const existing = modelMap.get(model) ?? { tokensIn: 0, tokensOut: 0, tokensCached: 0 }
+    existing.tokensIn += s.usage.tokensIn
+    existing.tokensOut += s.usage.tokensOut
+    existing.tokensCached += s.usage.tokensCached
+    modelMap.set(model, existing)
+  }
+
+  const sorted = [...modelMap.entries()].sort(
+    ([, a], [, b]) =>
+      b.tokensIn + b.tokensOut + b.tokensCached - (a.tokensIn + a.tokensOut + a.tokensCached)
+  )
+  const models = sorted.map(([m]) => m)
+  const tokensIn = sorted.map(([, v]) => v.tokensIn)
+  const tokensOut = sorted.map(([, v]) => v.tokensOut)
+  const cached = sorted.map(([, v]) => v.tokensCached)
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+    },
+    legend: {
+      data: ["Tokens In", "Tokens Out", "Cached"],
+      textStyle: { color: CHART_MUTED_COLOR },
+    },
+    xAxis: {
+      type: "category",
+      data: models,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR, rotate: models.length > 4 ? 30 : 0 },
+    },
+    yAxis: {
+      type: "value",
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+      splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+    },
+    series: [
+      {
+        name: "Tokens In",
+        type: "bar",
+        stack: "tokens",
+        data: tokensIn,
+        itemStyle: { color: CHART_ACCENT_TEAL },
+      },
+      {
+        name: "Tokens Out",
+        type: "bar",
+        stack: "tokens",
+        data: tokensOut,
+        itemStyle: { color: CHART_ACCENT_AMBER },
+      },
+      {
+        name: "Cached",
+        type: "bar",
+        stack: "tokens",
+        data: cached,
+        itemStyle: { color: CHART_ACCENT_GREEN },
+      },
+    ],
+  }
+}
+
+export function buildSessionsBySkillOption(sessions: SessionAnalytics[]): echarts.EChartsOption {
+  const skillMap = new Map<string, number>()
+
+  for (const s of sessions) {
+    const skill = s.skill || "unknown"
+    skillMap.set(skill, (skillMap.get(skill) ?? 0) + 1)
+  }
+
+  const pieData = [...skillMap.entries()]
+    .sort(([, a], [, b]) => b - a)
+    .map(([name, value], i) => ({
+      name,
+      value,
+      itemStyle: { color: CHART_PALETTE[i % CHART_PALETTE.length] },
+    }))
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      trigger: "item",
+      formatter: "{b}: {c} ({d}%)",
+    },
+    legend: {
+      orient: "vertical" as const,
+      right: "5%",
+      top: "center",
+      textStyle: { color: CHART_MUTED_COLOR },
+    },
+    series: [
+      {
+        type: "pie",
+        radius: ["40%", "70%"],
+        center: ["40%", "50%"],
+        avoidLabelOverlap: true,
+        itemStyle: { borderColor: "rgba(10, 19, 29, 0.88)", borderWidth: 2 },
+        label: {
+          show: true,
+          color: CHART_MUTED_COLOR,
+          formatter: "{b}\n{d}%",
+        },
+        data: pieData,
+      },
+    ],
+  }
+}
+
+export function buildRequestsByEpicOption(epics: EpicAnalytics[]): echarts.EChartsOption {
+  const sorted = [...epics].sort((a, b) => b.usage.requests - a.usage.requests)
+  const epicIds = sorted.map((e) => e.epicId)
+  const requests = sorted.map((e) => e.usage.requests)
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+    },
+    xAxis: {
+      type: "category",
+      data: epicIds,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR, rotate: epicIds.length > 4 ? 30 : 0 },
+    },
+    yAxis: {
+      type: "value",
+      name: "Requests",
+      nameTextStyle: { color: CHART_MUTED_COLOR },
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+      splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+    },
+    series: [
+      {
+        type: "bar",
+        data: requests.map((v, i) => ({
+          value: v,
+          itemStyle: { color: CHART_PALETTE[i % CHART_PALETTE.length] },
+        })),
+        barMaxWidth: 40,
+      },
+    ],
+  }
 }

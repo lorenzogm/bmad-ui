@@ -2455,3 +2455,17 @@ a:hover {
 .md-rendered a:hover {
   text-decoration: underline;
 }
+
+/* ── Charts ────────────────────────────────────────────────────────── */
+
+.chart-container {
+  width: 100%;
+  min-height: 320px;
+  height: 360px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}

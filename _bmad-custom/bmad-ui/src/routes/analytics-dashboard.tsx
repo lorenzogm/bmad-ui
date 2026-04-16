@@ -1,6 +1,16 @@
 import { createRoute } from "@tanstack/react-router"
 import { analyticsLayoutRoute } from "./analytics"
-import { AnalyticsCostBanner, formatNumber, StatCard, useAnalyticsData } from "./analytics-utils"
+import {
+  AnalyticsCostBanner,
+  buildRequestsByEpicOption,
+  buildRequestsOverTimeOption,
+  buildSessionsBySkillOption,
+  buildTokensByModelOption,
+  EChart,
+  formatNumber,
+  StatCard,
+  useAnalyticsData,
+} from "./analytics-utils"
 
 function AnalyticsDashboardPage() {
   const { data, loading, error } = useAnalyticsData()
@@ -20,6 +30,9 @@ function AnalyticsDashboardPage() {
   const sessionsWithUsage = data.sessions.filter(
     (s) => s.usage.totalTokens > 0 || s.usage.requests > 0
   )
+
+  const hasSessions = data.sessions.length > 0
+  const hasEpics = data.epics.length > 0
 
   return (
     <main className="screen">
@@ -52,6 +65,36 @@ function AnalyticsDashboardPage() {
           <StatCard label="Epics Tracked" value={String(data.epics.length)} />
         </div>
       </section>
+
+      {hasSessions && (
+        <section className="panel reveal delay-1">
+          <h3>Requests &amp; Tokens Over Time</h3>
+          <EChart option={buildRequestsOverTimeOption(data.sessions)} />
+        </section>
+      )}
+
+      <div className="chart-grid">
+        {hasSessions && (
+          <section className="panel reveal delay-2">
+            <h3>Token Usage by Model</h3>
+            <EChart option={buildTokensByModelOption(data.sessions)} />
+          </section>
+        )}
+
+        {hasSessions && (
+          <section className="panel reveal delay-2">
+            <h3>Sessions by Skill</h3>
+            <EChart option={buildSessionsBySkillOption(data.sessions)} />
+          </section>
+        )}
+      </div>
+
+      {hasEpics && (
+        <section className="panel reveal delay-3">
+          <h3>Requests by Epic</h3>
+          <EChart option={buildRequestsByEpicOption(data.epics)} />
+        </section>
+      )}
     </main>
   )
 }
