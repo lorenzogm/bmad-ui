@@ -314,6 +314,14 @@ function EpicDetailPage() {
     return epic?.lifecycleSteps["bmad-retrospective"] ?? "not-started"
   }, [overviewData, epicNumber])
 
+  const latestRetroSession = useMemo(() => {
+    const runtimeSessions = overviewData?.runtimeState?.sessions ?? []
+    const matching = runtimeSessions
+      .filter((s) => s.skill === "bmad-retrospective" && s.status !== "planned")
+      .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))
+    return matching[0] ?? null
+  }, [overviewData])
+
   const allStoriesDone = useMemo(
     () => stories.length > 0 && stories.every((story) => story.status === "done"),
     [stories]
@@ -796,6 +804,7 @@ function EpicDetailPage() {
             <span className={`step-badge step-${retrospectiveState}`}>
               {storyStepLabel(retrospectiveState)}
             </span>
+            <SessionLink session={latestRetroSession} />
             {retrospectiveState === "not-started" && allStoriesDone ? (
               <button
                 className="icon-button icon-button-play"
