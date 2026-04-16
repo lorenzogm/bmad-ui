@@ -1,6 +1,6 @@
 # Story 4.4: Add Workflow Observability and Failure Diagnosis
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,20 +18,20 @@ so that I can quickly identify and fix failing stages.
 
 ## Tasks / Subtasks
 
-- [ ] Add CI summary step to `.github/workflows/ci.yml` (AC: #1, #2, #3)
-  - [ ] Add a final `Summary` step with `if: always()` that writes to `$GITHUB_STEP_SUMMARY`
-  - [ ] Include commit SHA, branch/ref, trigger event, and PR number (if applicable) in the summary
-  - [ ] Indicate overall CI result (pass/fail) in the summary header
-- [ ] Enhance `deploy.yml` `check-changes` job summary (AC: #1, #3)
-  - [ ] Add a `Summary` step writing trigger context (event, environment, SHA) and what will run (infra/app) to `$GITHUB_STEP_SUMMARY`
-- [ ] Enhance `deploy.yml` `deploy-preview` job summary (AC: #1, #3)
-  - [ ] Add/update a `Summary` step writing preview URL and commit SHA to `$GITHUB_STEP_SUMMARY`
-- [ ] Enhance `deploy.yml` `deploy-production` job summary (AC: #1, #3)
-  - [ ] Expand existing `Summary` step to include commit SHA, app version from `package.json`, and environment
-- [ ] Add failure annotations to key failure points in `deploy.yml` (AC: #2)
-  - [ ] Add `::error::` annotation when Terraform state decryption fails (already has one — verify it surfaces in UI)
-  - [ ] Add `::error::` annotation when Vercel project ID resolution fails (already has one — verify)
-  - [ ] Add `::error::` annotation for any new explicitly detectable failure points
+- [x] Add CI summary step to `.github/workflows/ci.yml` (AC: #1, #2, #3)
+  - [x] Add a final `Summary` step with `if: always()` that writes to `$GITHUB_STEP_SUMMARY`
+  - [x] Include commit SHA, branch/ref, trigger event, and PR number (if applicable) in the summary
+  - [x] Indicate overall CI result (pass/fail) in the summary header
+- [x] Enhance `deploy.yml` `check-changes` job summary (AC: #1, #3)
+  - [x] Add a `Summary` step writing trigger context (event, environment, SHA) and what will run (infra/app) to `$GITHUB_STEP_SUMMARY`
+- [x] Enhance `deploy.yml` `deploy-preview` job summary (AC: #1, #3)
+  - [x] Add/update a `Summary` step writing preview URL and commit SHA to `$GITHUB_STEP_SUMMARY`
+- [x] Enhance `deploy.yml` `deploy-production` job summary (AC: #1, #3)
+  - [x] Expand existing `Summary` step to include commit SHA, app version from `package.json`, and environment
+- [x] Add failure annotations to key failure points in `deploy.yml` (AC: #2)
+  - [x] Add `::error::` annotation when Terraform state decryption fails (already has one — verify it surfaces in UI)
+  - [x] Add `::error::` annotation when Vercel project ID resolution fails (already has one — verify)
+  - [x] Add `::error::` annotation for any new explicitly detectable failure points
 
 ## Dev Notes
 
@@ -195,6 +195,17 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+Implementation straightforward — two workflow files modified. All `::error::` annotations were pre-existing and verified present. No new annotations required.
+
 ### Completion Notes List
 
+- Added `Summary` step with `if: always()` to `ci.yml` validate job — includes commit SHA, branch, trigger, and PR number for PR events.
+- Enhanced `check-changes` Summary in `deploy.yml` — now uses rich Markdown table with `if: always()`, event, environment, SHA, infra/app changed flags.
+- Added `Summary` step to `deploy` (preview) job in `deploy.yml` — shows preview URL with `::notice::` annotation or failure message, plus commit SHA and environment.
+- Enhanced `deploy-production` Summary in `deploy.yml` — now includes app version from package.json, commit SHA, environment, and URL with `::notice::` annotation.
+- All pre-existing `::error::` annotations verified present (state decrypt, state not found, Vercel project ID resolution for preview and production).
+
 ### File List
+
+- `.github/workflows/ci.yml`
+- `.github/workflows/deploy.yml`

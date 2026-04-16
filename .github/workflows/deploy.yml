@@ -109,11 +109,17 @@ jobs:
           fi
 
       - name: Summary
+        if: always()
         run: |
-          echo "### Deploy triggered" >> $GITHUB_STEP_SUMMARY
-          echo "Environment: ${{ steps.resolve-env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
-          echo "Infra changed: ${{ steps.check.outputs.infra-changed }}" >> $GITHUB_STEP_SUMMARY
-          echo "App changed: ${{ steps.check.outputs.app-changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "## Deploy Trigger Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Event | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ steps.resolve-env.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Infra changed | ${{ steps.check.outputs.infra-changed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| App changed | ${{ steps.check.outputs.app-changed }} |" >> $GITHUB_STEP_SUMMARY
 
   infra-deploy:
     needs: check-changes
@@ -375,6 +381,24 @@ jobs:
           echo "preview-url=$PREVIEW_URL" >> $GITHUB_OUTPUT
         working-directory: _bmad-custom/bmad-ui
 
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Preview Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          PREVIEW_URL="${{ steps.preview-deploy.outputs.preview-url }}"
+          if [ -n "$PREVIEW_URL" ]; then
+            echo "✅ Preview deployed: $PREVIEW_URL" >> $GITHUB_STEP_SUMMARY
+            echo "::notice::Preview URL: $PREVIEW_URL"
+          else
+            echo "❌ Preview deployment did not produce a URL" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ needs.check-changes.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+
   deploy-production:
     needs: [check-changes, infra-deploy, deploy]
     if: |
@@ -470,6 +494,13 @@ jobs:
 
       - name: Summary
         run: |
-          echo "### ✅ Deployed to production" >> $GITHUB_STEP_SUMMARY
-          echo "Environment: ${{ needs.check-changes.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
-          echo "URL: ${{ steps.production-deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          VERSION=$(node -p "require('./_bmad-custom/bmad-ui/package.json').version" 2>/dev/null || echo "unknown")
+          echo "## ✅ Production Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ needs.check-changes.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | ${{ steps.production-deploy.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | $VERSION |" >> $GITHUB_STEP_SUMMARY
+          echo "::notice::Deployed to production: ${{ steps.production-deploy.outputs.url }}"
