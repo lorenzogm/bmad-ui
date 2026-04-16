@@ -1098,8 +1098,8 @@
       "skill": "bmad-correct-course",
       "model": "claude-sonnet-4.6",
       "status": "completed",
-      "startedAt": "2026-04-16T18:56:41.275Z",
-      "endedAt": "2026-04-16T18:57:44.362Z",
+      "startedAt": "2026-04-16T19:16:32.078Z",
+      "endedAt": "2026-04-16T19:19:06.744Z",
       "usage": {
         "requests": 1,
         "tokensIn": 359000,
@@ -1123,6 +1123,23 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
+      }
+    },
+    "workflow-bmad-code-review-1776366164898": {
+      "sessionId": "workflow-bmad-code-review-1776366164898",
+      "storyId": "4-2-enforce-protected-branch-quality-gates",
+      "epicId": "epic-4",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-16T19:02:44.900Z",
+      "endedAt": "2026-04-16T19:05:16.694Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 710700,
+        "tokensOut": 6600,
+        "tokensCached": 662900,
+        "totalTokens": 717300
       }
     }
   }

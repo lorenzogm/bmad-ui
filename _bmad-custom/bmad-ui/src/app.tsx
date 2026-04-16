@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
 import type { AgentRunGroup, AgentSession, OverviewResponse, RuntimeSession } from "./types"
 
@@ -729,9 +729,11 @@ function BMADWorkflowSection(props: {
   epics: OverviewEpic[]
   epicLabels: Map<string, string>
   epicConsistency: OverviewEpicConsistency
+  runtimeSessions: RuntimeSession[]
 }) {
-  const { planningFiles, implementationFiles, activeSkill, epics, epicLabels, epicConsistency } =
+  const { planningFiles, implementationFiles, activeSkill, epics, epicLabels, epicConsistency, runtimeSessions } =
     props
+  const navigate = useNavigate()
   const { phases, nextActionStep } = detectWorkflowStatus(planningFiles, implementationFiles)
   const sortedEpics = useMemo(() => [...epics].sort((a, b) => a.number - b.number), [epics])
 
@@ -765,11 +767,17 @@ function BMADWorkflowSection(props: {
   const handlePlayClick = async (step: WorkflowStep) => {
     setPendingActiveSkill(step.skill)
     try {
-      await fetch("/api/workflow/run-skill", {
+      const response = await fetch("/api/workflow/run-skill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ skill: step.skill }),
       })
+      if (response.ok) {
+        const result = await response.json() as { sessionId: string }
+        if (result.sessionId) {
+          void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
+        }
+      }
     } catch (_err) {
       // ignore fetch errors — server will log
     }
@@ -907,6 +915,21 @@ function BMADWorkflowSection(props: {
                             </span>
                           </button>
                         )}
+                        {(() => {
+                          const matchingSession = runtimeSessions.find(
+                            (s) => s.skill === step.skill && s.status !== "planned"
+                          )
+                          return matchingSession ? (
+                            <Link
+                              className={`session-link-icon${matchingSession.status === "running" ? " session-link-running" : ""}${matchingSession.status === "failed" || matchingSession.status === "cancelled" ? " session-link-failed" : ""}`}
+                              params={{ sessionId: matchingSession.id }}
+                              title={`View session: ${matchingSession.id}`}
+                              to="/session/$sessionId"
+                            >
+                              ◉
+                            </Link>
+                          ) : null
+                        })()}
                         <span
                           className={`step-badge ${stepStatusClassName}`}
                           title={hasSprintWarning ? sprintWarningMessage : undefined}
@@ -1152,6 +1175,7 @@ export function HomePage() {
         epics={data?.sprintOverview.epics ?? []}
         implementationFiles={data?.implementationArtifactFiles ?? []}
         planningFiles={data?.planningArtifactFiles ?? []}
+        runtimeSessions={data?.runtimeState?.sessions ?? []}
       />
 
       {error ? <p className="error-banner">{error}</p> : null}

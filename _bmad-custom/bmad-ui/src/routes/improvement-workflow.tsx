@@ -1,4 +1,4 @@
-import { createRoute, Link } from "@tanstack/react-router"
+import { createRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
 import { IMPROVEMENT_STEPS, storyStepLabel } from "../app"
 import type { WorkflowStepState } from "../types"
@@ -9,11 +9,13 @@ const HTTP_CONFLICT = 409
 type ImprovementStepStatus = {
   skill: string
   state: WorkflowStepState
+  sessionId: string | null
 }
 
 function ImprovementWorkflowPage() {
+  const navigate = useNavigate()
   const [stepStatuses, setStepStatuses] = useState<ImprovementStepStatus[]>(
-    IMPROVEMENT_STEPS.map((s) => ({ skill: s.skill, state: "not-started" }))
+    IMPROVEMENT_STEPS.map((s) => ({ skill: s.skill, state: "not-started", sessionId: null }))
   )
   const [pendingSkill, setPendingSkill] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -39,14 +41,18 @@ function ImprovementWorkflowPage() {
         throw new Error(`workflow request failed: ${response.status}`)
       }
 
+      const result = await response.json() as { sessionId: string }
+
       setStepStatuses((prev) =>
-        prev.map((s) => (s.skill === skill ? { ...s, state: "running" } : s))
+        prev.map((s) => (s.skill === skill ? { ...s, state: "running", sessionId: result.sessionId } : s))
       )
+
+      void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
     } catch (runError) {
       setPendingSkill(null)
       setError(String(runError))
     }
-  }, [])
+  }, [navigate])
 
   const handleMarkDone = useCallback((skill: string) => {
     setStepStatuses((prev) =>
@@ -189,6 +195,16 @@ function ImprovementWorkflowPage() {
                             {isDone ? "↺" : "✓ Done"}
                           </button>
                         )}
+                        {status.sessionId ? (
+                          <Link
+                            className={`session-link-icon${isRunning ? " session-link-running" : ""}`}
+                            params={{ sessionId: status.sessionId }}
+                            title={`View session: ${status.sessionId}`}
+                            to="/session/$sessionId"
+                          >
+                            ◉
+                          </Link>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
