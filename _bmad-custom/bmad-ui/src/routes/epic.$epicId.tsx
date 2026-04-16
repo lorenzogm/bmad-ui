@@ -13,6 +13,7 @@ import { rootRoute } from "./__root"
 const HTTP_CONFLICT = 409
 const EPIC_NUMBER_REGEX = /^epic-(\d+)$/
 const PERCENT_MULTIPLIER = 100
+const ORCHESTRATING_STORAGE_PREFIX = "bmad-orchestrating:"
 
 type SkillName = "bmad-create-story" | "bmad-dev-story" | "bmad-code-review"
 type WorkflowSkill = SkillName | "bmad-retrospective"
@@ -133,7 +134,14 @@ function EpicDetailPage() {
   const [pendingSkill, setPendingSkill] = useState<string | null>(null)
   const [overviewData, setOverviewData] = useState<OverviewResponse | null>(null)
   const [isPlanning, setIsPlanning] = useState(false)
-  const [isOrchestrating, setIsOrchestrating] = useState(false)
+  const orchestratingKey = `${ORCHESTRATING_STORAGE_PREFIX}${epicId}`
+  const [isOrchestrating, setIsOrchestrating] = useState(() => {
+    try {
+      return localStorage.getItem(orchestratingKey) === "true"
+    } catch {
+      return false
+    }
+  })
   const [bulkError, setBulkError] = useState<string | null>(null)
   const initiatedRef = useRef(new Set<string>())
 
@@ -378,8 +386,18 @@ function EpicDetailPage() {
   const handleDevelopAllStories = useCallback(() => {
     initiatedRef.current.clear()
     setIsOrchestrating(true)
+    try {
+      localStorage.setItem(orchestratingKey, "true")
+    } catch { /* storage unavailable */ }
     setBulkError(null)
-  }, [])
+  }, [orchestratingKey])
+
+  const handleStopOrchestration = useCallback(() => {
+    setIsOrchestrating(false)
+    try {
+      localStorage.removeItem(orchestratingKey)
+    } catch { /* storage unavailable */ }
+  }, [orchestratingKey])
 
   // Orchestration driver: fires dev-story → code-review → retrospective as stories progress
   useEffect(() => {
@@ -469,8 +487,11 @@ function EpicDetailPage() {
 
     if (retrospectiveState === "completed") {
       setIsOrchestrating(false)
+      try {
+        localStorage.removeItem(orchestratingKey)
+      } catch { /* storage unavailable */ }
     }
-  }, [isOrchestrating, stories, allStoriesDone, retrospectiveState, data])
+  }, [isOrchestrating, stories, allStoriesDone, retrospectiveState, data, orchestratingKey])
 
   const doneCount = stories.filter((s) => s.status === "done").length
   const inProgressCount = stories.filter((s) =>
@@ -562,9 +583,18 @@ function EpicDetailPage() {
               </button>
             ) : null}
             {isOrchestrating ? (
-              <span className="subtitle" style={{ fontSize: "0.8rem" }}>
-                Auto-running dev → review → retrospective
-              </span>
+              <>
+                <button
+                  className="ghost"
+                  onClick={handleStopOrchestration}
+                  type="button"
+                >
+                  Stop
+                </button>
+                <span className="subtitle" style={{ fontSize: "0.8rem" }}>
+                  Auto-running dev → review → retrospective
+                </span>
+              </>
             ) : null}
           </div>
         ) : null}
