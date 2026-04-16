@@ -1,0 +1,53 @@
+name: bmad-ui-ci
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          package_json_file: _bmad-custom/bmad-ui/package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: _bmad-custom/bmad-ui
+
+      - name: Lint
+        run: pnpm check:lint
+        working-directory: _bmad-custom/bmad-ui
+
+      - name: Type check
+        run: pnpm check:types
+        working-directory: _bmad-custom/bmad-ui
+
+      - name: Tests
+        run: pnpm check:tests
+        working-directory: _bmad-custom/bmad-ui
+
+      - name: Build
+        run: pnpm build
+        working-directory: _bmad-custom/bmad-ui

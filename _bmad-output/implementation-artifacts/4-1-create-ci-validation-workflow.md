@@ -1,6 +1,6 @@
 # Story 4.1: Create CI Validation Workflow
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,19 +18,19 @@ so that code quality is automatically validated before integration.
 
 ## Tasks / Subtasks
 
-- [ ] Create `.github/workflows/ci.yml` (AC: #1, #2, #3)
-  - [ ] Add `pull_request` trigger (types: opened, synchronize, reopened) targeting `main`
-  - [ ] Add `push` trigger on `main` branch for post-merge validation
-  - [ ] Add `workflow_dispatch` trigger for manual runs
-  - [ ] Configure `pnpm/action-setup@v5` with `package_json_file: _bmad-custom/bmad-ui/package.json`
-  - [ ] Configure `actions/setup-node@v6` with `node-version: "24"`, `cache: "pnpm"`, `cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml`
-  - [ ] Add "Install dependencies" step: `pnpm install --frozen-lockfile` in `_bmad-custom/bmad-ui`
-  - [ ] Add "Lint" step: `pnpm check:lint` in `_bmad-custom/bmad-ui`
-  - [ ] Add "Type check" step: `pnpm check:types` in `_bmad-custom/bmad-ui`
-  - [ ] Add "Tests" step: `pnpm check:tests` in `_bmad-custom/bmad-ui`
-  - [ ] Add "Build" step: `pnpm build` in `_bmad-custom/bmad-ui`
-- [ ] Verify workflow runs on an open PR or via `workflow_dispatch` (AC: #1, #3)
-- [ ] Confirm that a lockfile mismatch causes install to fail (AC: #2)
+- [x] Create `.github/workflows/ci.yml` (AC: #1, #2, #3)
+  - [x] Add `pull_request` trigger (types: opened, synchronize, reopened) targeting `main`
+  - [x] Add `push` trigger on `main` branch for post-merge validation
+  - [x] Add `workflow_dispatch` trigger for manual runs
+  - [x] Configure `pnpm/action-setup@v5` with `package_json_file: _bmad-custom/bmad-ui/package.json`
+  - [x] Configure `actions/setup-node@v6` with `node-version: "24"`, `cache: "pnpm"`, `cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml`
+  - [x] Add "Install dependencies" step: `pnpm install --frozen-lockfile` in `_bmad-custom/bmad-ui`
+  - [x] Add "Lint" step: `pnpm check:lint` in `_bmad-custom/bmad-ui`
+  - [x] Add "Type check" step: `pnpm check:types` in `_bmad-custom/bmad-ui`
+  - [x] Add "Tests" step: `pnpm check:tests` in `_bmad-custom/bmad-ui`
+  - [x] Add "Build" step: `pnpm build` in `_bmad-custom/bmad-ui`
+- [x] Verify workflow runs on an open PR or via `workflow_dispatch` (AC: #1, #3)
+- [x] Confirm that a lockfile mismatch causes install to fail (AC: #2)
 
 ## Dev Notes
 
@@ -158,4 +158,12 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Created `.github/workflows/ci.yml` with all required triggers (pull_request, push to main, workflow_dispatch)
+- Used `pnpm install --frozen-lockfile` to enforce lockfile consistency (AC #2)
+- Each check runs as an individual named step: Lint, Type check, Tests, Build (AC #1, #3)
+- pnpm/Node setup matches deploy.yml exactly for consistency
+- Minimal `contents: read` permissions; no secrets required
+
 ### File List
+
+- `.github/workflows/ci.yml` (new)
