@@ -13,23 +13,36 @@ const CHART_TEXT_COLOR = "#e6edf4"
 const CHART_MUTED_COLOR = "#a6b9c8"
 const CHART_BORDER_COLOR = "rgba(151, 177, 205, 0.22)"
 const CHART_BG_TRANSPARENT = "transparent"
-const CHART_ACCENT_TEAL = "#2ec4b6"
-const CHART_ACCENT_AMBER = "#ff9f1c"
-const CHART_ACCENT_GREEN = "#22c55e"
-const CHART_ACCENT_BLUE = "#38bdf8"
-const CHART_ACCENT_PURPLE = "#a78bfa"
-const CHART_ACCENT_PINK = "#f472b6"
-const CHART_ACCENT_RED = "#ef4444"
-const CHART_ACCENT_CYAN = "#06b6d4"
+
+// Palette derived from the two primary accent colors:
+// teal (#2ec4b6) and green (#22c55e), spanning hue variants
+// from green → teal → cyan → blue with consistent saturation/lightness.
+const CHART_COLOR_01 = "#22c55e" // green (--status-progress)
+const CHART_COLOR_02 = "#2ec4b6" // teal  (--highlight)
+const CHART_COLOR_03 = "#34d399" // emerald — midpoint green↔teal
+const CHART_COLOR_04 = "#06b6d4" // cyan
+const CHART_COLOR_05 = "#0ea5e9" // sky blue
+const CHART_COLOR_06 = "#38bdf8" // light sky
+const CHART_COLOR_07 = "#2dd4bf" // teal-light
+const CHART_COLOR_08 = "#4ade80" // green-light
+const CHART_COLOR_09 = "#14b8a6" // teal-deep
+const CHART_COLOR_10 = "#10b981" // emerald-deep
+const CHART_COLOR_11 = "#67e8f9" // cyan-light
+const CHART_COLOR_12 = "#a7f3d0" // mint
+
 const CHART_PALETTE = [
-  CHART_ACCENT_TEAL,
-  CHART_ACCENT_AMBER,
-  CHART_ACCENT_GREEN,
-  CHART_ACCENT_BLUE,
-  CHART_ACCENT_PURPLE,
-  CHART_ACCENT_PINK,
-  CHART_ACCENT_RED,
-  CHART_ACCENT_CYAN,
+  CHART_COLOR_01,
+  CHART_COLOR_02,
+  CHART_COLOR_03,
+  CHART_COLOR_04,
+  CHART_COLOR_05,
+  CHART_COLOR_06,
+  CHART_COLOR_07,
+  CHART_COLOR_08,
+  CHART_COLOR_09,
+  CHART_COLOR_10,
+  CHART_COLOR_11,
+  CHART_COLOR_12,
 ]
 
 export function formatNumber(value: number, maxDecimals = 1): string {
@@ -267,7 +280,7 @@ export function buildRequestsOverTimeOption(sessions: SessionAnalytics[]): echar
         type: "line",
         smooth: true,
         data: requests,
-        itemStyle: { color: CHART_ACCENT_TEAL },
+        itemStyle: { color: CHART_COLOR_02 },
         areaStyle: { color: "rgba(46, 196, 182, 0.15)" },
       },
       {
@@ -276,8 +289,8 @@ export function buildRequestsOverTimeOption(sessions: SessionAnalytics[]): echar
         smooth: true,
         yAxisIndex: 1,
         data: tokens,
-        itemStyle: { color: CHART_ACCENT_AMBER },
-        areaStyle: { color: "rgba(255, 159, 28, 0.12)" },
+        itemStyle: { color: CHART_COLOR_04 },
+        areaStyle: { color: "rgba(6, 182, 212, 0.12)" },
       },
     ],
   }
@@ -333,21 +346,21 @@ export function buildTokensByModelOption(sessions: SessionAnalytics[]): echarts.
         type: "bar",
         stack: "tokens",
         data: tokensIn,
-        itemStyle: { color: CHART_ACCENT_TEAL },
+        itemStyle: { color: CHART_COLOR_02 },
       },
       {
         name: "Tokens Out",
         type: "bar",
         stack: "tokens",
         data: tokensOut,
-        itemStyle: { color: CHART_ACCENT_AMBER },
+        itemStyle: { color: CHART_COLOR_05 },
       },
       {
         name: "Cached",
         type: "bar",
         stack: "tokens",
         data: cached,
-        itemStyle: { color: CHART_ACCENT_GREEN },
+        itemStyle: { color: CHART_COLOR_01 },
       },
     ],
   }
