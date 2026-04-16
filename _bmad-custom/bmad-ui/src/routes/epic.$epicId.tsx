@@ -310,83 +310,13 @@ function EpicDetailPage() {
     [stories]
   )
 
-  const epicRunGroups = useMemo<AgentRunGroup[]>(() => {
-    if (!storyPrefix || !overviewData) {
-      return []
-    }
-
-    const history = overviewData.agentRunHistory ?? []
-    const currentSessions = overviewData.runtimeState?.sessions ?? []
-
-    const filterByEpic = (sessions: typeof currentSessions): typeof currentSessions =>
-      sessions.filter((s) => s.storyId?.startsWith(storyPrefix))
-
-    const currentFiltered = filterByEpic(currentSessions)
-    const currentGroup: AgentRunGroup | null =
-      currentFiltered.length > 0
-        ? {
-            id: "run-current",
-            startedAt: overviewData.runtimeState?.startedAt ?? new Date().toISOString(),
-            endedAt:
-              overviewData.runtimeState?.status === "running"
-                ? null
-                : (currentFiltered
-                    .map((s) => s.endedAt)
-                    .filter((t): t is string => t !== null)
-                    .sort()
-                    .at(-1) ?? null),
-            sessions: [...currentFiltered].sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
-          }
-        : null
-
-    const historyGroups = history
-      .map((g) => ({
-        ...g,
-        sessions: filterByEpic(g.sessions).sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
-      }))
-      .filter((g) => g.sessions.length > 0)
-
-    return currentGroup ? [currentGroup, ...historyGroups] : historyGroups
-  }, [overviewData, storyPrefix])
-
-  const epicAgentSessions = useMemo<AgentSession[]>(() => {
-    if (!storyPrefix || !overviewData) {
-      return []
-    }
-    return (overviewData.agentSessions ?? []).filter((s) => s.storyId?.startsWith(storyPrefix))
-  }, [overviewData, storyPrefix])
-
-  const startSession = useCallback(async (sessionId: string) => {
-    setSessionActionPending({ sessionId, action: "start" })
-    try {
-      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/start`, {
-        method: "POST",
-      })
-      if (!response.ok && response.status !== HTTP_CONFLICT) {
-        throw new Error(`start failed: ${response.status}`)
-      }
-    } catch (sessionStartError) {
-      setError(String(sessionStartError))
-    } finally {
-      setSessionActionPending(null)
-    }
-  }, [])
-
-  const abortSession = useCallback(async (sessionId: string) => {
-    setSessionActionPending({ sessionId, action: "abort" })
-    try {
-      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/abort`, {
-        method: "POST",
-      })
-      if (!response.ok) {
-        throw new Error(`abort failed: ${response.status}`)
-      }
-    } catch (sessionAbortError) {
-      setError(String(sessionAbortError))
-    } finally {
-      setSessionActionPending(null)
-    }
-  }, [])
+  const doneCount = stories.filter((s) => s.status === "done").length
+  const inProgressCount = stories.filter((s) =>
+    s.status === "in-progress" || s.status === "review" || s.status === "ready-for-dev"
+  ).length
+  const progressPercent = stories.length > 0
+    ? Math.round((doneCount / stories.length) * PERCENT_MULTIPLIER)
+    : 0
 
   if (loading) {
     return <main className="screen loading">Loading epic detail...</main>
