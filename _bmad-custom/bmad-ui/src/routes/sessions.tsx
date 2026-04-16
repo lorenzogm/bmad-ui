@@ -1,11 +1,24 @@
+import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import type { AnalyticsResponse, SessionAnalytics } from "../types"
 import { rootRoute } from "./__root"
 
+const SESSION_STATUS_FILTER_STORAGE_KEY = "bmad-session-status-filter"
+const ALL_FILTER = "all"
+const KNOWN_STATUSES = ["running", "completed", "failed"] as const
+
+function getTimestamp(iso: string | null): number {
+  if (!iso) return 0
+  const t = new Date(iso).getTime()
+  return Number.isNaN(t) ? 0 : t
+}
+
 function formatDate(iso: string | null): string {
   if (!iso) return "—"
-  return new Date(iso).toLocaleString(undefined, {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return "—"
+  return d.toLocaleString(undefined, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -15,42 +28,49 @@ function formatDate(iso: string | null): string {
 }
 
 function SessionsPage() {
-  const [sessions, setSessions] = useState<SessionAnalytics[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let mounted = true
-    const load = async () => {
-      try {
-        const response = await fetch("/api/analytics")
-        if (!response.ok) throw new Error(`Request failed: ${response.status}`)
-        const payload = (await response.json()) as AnalyticsResponse
-        if (mounted) {
-          const sorted = [...payload.sessions].sort(
-            (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
-          )
-          setSessions(sorted)
-          setLoading(false)
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(String(err))
-          setLoading(false)
-        }
-      }
+  const [statusFilter, setStatusFilter] = useState<string>(() => {
+    try {
+      return localStorage.getItem(SESSION_STATUS_FILTER_STORAGE_KEY) ?? ALL_FILTER
+    } catch {
+      return ALL_FILTER
     }
-    load()
-    return () => {
-      mounted = false
-    }
-  }, [])
+  })
 
-  if (loading) return <main className="screen loading">Loading sessions...</main>
+  const {
+    data: sessions = [],
+    isLoading,
+    error,
+  } = useQuery<SessionAnalytics[]>({
+    queryKey: ["sessions"],
+    queryFn: async () => {
+      const response = await fetch("/api/analytics")
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`)
+      const payload = (await response.json()) as AnalyticsResponse
+      if (!Array.isArray(payload.sessions)) return []
+      return [...payload.sessions].sort(
+        (a, b) => getTimestamp(b.startedAt) - getTimestamp(a.startedAt)
+      )
+    },
+  })
+
+  const uniqueStatuses = [...new Set(sessions.map((s) => s.status))].sort()
+  const filteredSessions =
+    statusFilter === ALL_FILTER ? sessions : sessions.filter((s) => s.status === statusFilter)
+
+  function handleFilterChange(value: string) {
+    setStatusFilter(value)
+    try {
+      localStorage.setItem(SESSION_STATUS_FILTER_STORAGE_KEY, value)
+    } catch {
+      // localStorage unavailable
+    }
+  }
+
+  if (isLoading) return <main className="screen loading">Loading sessions...</main>
   if (error)
     return (
       <main className="screen loading">
-        <p>{error}</p>
+        <p>{String(error)}</p>
       </main>
     )
 
@@ -59,6 +79,40 @@ function SessionsPage() {
       <section className="panel reveal">
         <p className="eyebrow">Workspace</p>
         <h2>Sessions</h2>
+
+        <div className="sessions-filter-bar">
+          <label className="sessions-filter-label" htmlFor="session-status-filter">
+            Status
+          </label>
+          <select
+            className="sessions-filter-select"
+            id="session-status-filter"
+            onChange={(e) => handleFilterChange(e.target.value)}
+            value={statusFilter}
+          >
+            <option value={ALL_FILTER}>All ({sessions.length})</option>
+            {KNOWN_STATUSES.map((status) => {
+              const count = sessions.filter((s) => s.status === status).length
+              if (count === 0) return null
+              return (
+                <option key={status} value={status}>
+                  {status} ({count})
+                </option>
+              )
+            })}
+            {uniqueStatuses
+              .filter((s) => !(KNOWN_STATUSES as readonly string[]).includes(s))
+              .map((status) => {
+                const count = sessions.filter((s) => s.status === status).length
+                return (
+                  <option key={status} value={status}>
+                    {status} ({count})
+                  </option>
+                )
+              })}
+          </select>
+        </div>
+
         <div className="table-wrap">
           <table>
             <thead>
@@ -73,7 +127,7 @@ function SessionsPage() {
               </tr>
             </thead>
             <tbody>
-              {sessions.map((session) => (
+              {filteredSessions.map((session) => (
                 <tr key={session.sessionId}>
                   <td>
                     <Link
@@ -104,7 +158,7 @@ function SessionsPage() {
                   <td className="muted">{formatDate(session.endedAt)}</td>
                 </tr>
               ))}
-              {sessions.length === 0 && (
+              {filteredSessions.length === 0 && (
                 <tr>
                   <td className="empty-row" colSpan={7}>
                     No sessions found

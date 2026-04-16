@@ -1508,6 +1508,40 @@ pre.chat-bubble-content {
   overflow-x: auto;
 }
 
+/* ── Sessions Filter Bar ───────────────────────────────────────────── */
+
+.sessions-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.sessions-filter-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sessions-filter-select {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.84rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: rgba(2, 10, 16, 0.66);
+  color: var(--text);
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.sessions-filter-select:focus {
+  outline: 1px solid var(--highlight);
+  border-color: var(--highlight);
+}
+
 .filter-toggle {
   display: inline-flex;
   align-items: center;

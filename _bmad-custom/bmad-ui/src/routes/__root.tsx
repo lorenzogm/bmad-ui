@@ -229,7 +229,11 @@ function RootLayout() {
       if (!Array.isArray(payload.sessions)) return []
       return payload.sessions
         .filter((s) => s.status === "running")
-        .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime())
+        .sort((a, b) => {
+          const ta = a.startedAt ? new Date(a.startedAt).getTime() : 0
+          const tb = b.startedAt ? new Date(b.startedAt).getTime() : 0
+          return (Number.isNaN(tb) ? 0 : tb) - (Number.isNaN(ta) ? 0 : ta)
+        })
     },
     refetchInterval: SESSIONS_POLL_INTERVAL_MS,
   })
