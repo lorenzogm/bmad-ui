@@ -221,6 +221,20 @@ body {
   transition: border-color 120ms ease;
 }
 
+select.new-chat-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a6b9c8'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 1.5rem;
+}
+
+select.new-chat-input option {
+  background: rgb(10, 19, 29);
+  color: var(--text);
+}
+
 .new-chat-input:focus,
 .new-chat-textarea:focus {
   border-color: var(--highlight);

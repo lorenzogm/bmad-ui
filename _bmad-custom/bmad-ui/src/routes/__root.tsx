@@ -3,6 +3,51 @@ import { useCallback, useState } from "react"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
+const DEFAULT_SKILL = "bmad-quick-dev"
+
+const AVAILABLE_SKILLS = [
+  "bmad-quick-dev",
+  "bmad-dev-story",
+  "bmad-create-story",
+  "bmad-code-review",
+  "bmad-correct-course",
+  "bmad-create-architecture",
+  "bmad-create-epics-and-stories",
+  "bmad-create-prd",
+  "bmad-create-ux-design",
+  "bmad-edit-prd",
+  "bmad-validate-prd",
+  "bmad-check-implementation-readiness",
+  "bmad-generate-project-context",
+  "bmad-sprint-planning",
+  "bmad-sprint-status",
+  "bmad-retrospective",
+  "bmad-brainstorming",
+  "bmad-domain-research",
+  "bmad-market-research",
+  "bmad-technical-research",
+  "bmad-document-project",
+  "bmad-product-brief",
+  "bmad-prfaq",
+  "bmad-qa-generate-e2e-tests",
+  "bmad-checkpoint-preview",
+  "bmad-advanced-elicitation",
+  "bmad-distillator",
+  "bmad-editorial-review-prose",
+  "bmad-editorial-review-structure",
+  "bmad-review-adversarial-general",
+  "bmad-review-edge-case-hunter",
+  "bmad-shard-doc",
+  "bmad-index-docs",
+  "bmad-help",
+  "bmad-party-mode",
+  "bmad-agent-analyst",
+  "bmad-agent-architect",
+  "bmad-agent-dev",
+  "bmad-agent-pm",
+  "bmad-agent-tech-writer",
+  "bmad-agent-ux-designer",
+] as const
 
 const NAV_LINKS = [{ label: "Dashboard", to: "/" }] as const
 
@@ -17,7 +62,7 @@ const ANALYTICS_SUBMENU = [
 function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
   const { open, onClose } = props
   const navigate = useNavigate()
-  const [skill, setSkill] = useState("")
+  const [skill, setSkill] = useState(DEFAULT_SKILL)
   const [prompt, setPrompt] = useState("")
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -64,7 +109,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
           throw new Error("Server did not return a session ID")
         }
 
-        setSkill("")
+        setSkill(DEFAULT_SKILL)
         setPrompt("")
         onClose()
 
@@ -106,16 +151,19 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
         <label className="new-chat-label" htmlFor="new-chat-skill">
           Skill
         </label>
-        <input
-          autoComplete="off"
+        <select
           className="new-chat-input"
           disabled={sending}
           id="new-chat-skill"
           onChange={(e) => setSkill(e.target.value)}
-          placeholder="e.g. bmad-correct-course"
-          type="text"
           value={skill}
-        />
+        >
+          {AVAILABLE_SKILLS.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
         <label className="new-chat-label" htmlFor="new-chat-prompt">
           Prompt <span className="new-chat-optional">(optional)</span>
         </label>
@@ -131,7 +179,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
         {error ? <p className="new-chat-error">{error}</p> : null}
         <button
           className="cta new-chat-submit"
-          disabled={sending || !skill.trim()}
+          disabled={sending}
           type="submit"
         >
           {sending ? "Starting..." : "Run"}

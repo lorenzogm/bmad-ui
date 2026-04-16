@@ -1141,6 +1141,57 @@
         "tokensCached": 662900,
         "totalTokens": 717300
       }
+    },
+    "workflow-quick-dev-1776367975861": {
+      "sessionId": "workflow-quick-dev-1776367975861",
+      "storyId": null,
+      "epicId": null,
+      "skill": "quick-dev",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T19:32:55.863Z",
+      "endedAt": "2026-04-16T19:36:18.725Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1200000,
+        "tokensOut": 7100,
+        "tokensCached": 1100000,
+        "totalTokens": 1207100
+      }
+    },
+    "workflow-bmad-edit-prd-1776368201690": {
+      "sessionId": "workflow-bmad-edit-prd-1776368201690",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-edit-prd",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T19:43:32.333Z",
+      "endedAt": "2026-04-16T19:44:56.877Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 129100,
+        "tokensOut": 705,
+        "tokensCached": 104300,
+        "totalTokens": 129805
+      }
+    },
+    "workflow-bmad-sprint-planning-1776369533587": {
+      "sessionId": "workflow-bmad-sprint-planning-1776369533587",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-sprint-planning",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T19:58:53.589Z",
+      "endedAt": "2026-04-16T20:02:15.708Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 781100,
+        "tokensOut": 10400,
+        "tokensCached": 709900,
+        "totalTokens": 791500
+      }
     }
   }
 }
