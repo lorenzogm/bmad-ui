@@ -3,7 +3,7 @@ import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-route
 import { useCallback, useMemo, useState } from "react"
 import type { WorkflowPhase, WorkflowStep } from "../app"
 import { detectWorkflowStatus, storyStepLabel } from "../app"
-import { IS_LOCAL_MODE, apiUrl } from "../lib/mode"
+import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type { OverviewResponse, RuntimeSession } from "../types"
 import { workflowLayoutRoute } from "./workflow"
 

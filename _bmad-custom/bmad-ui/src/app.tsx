@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
-import { IS_LOCAL_MODE, apiUrl } from "./lib/mode"
+import { apiUrl, IS_LOCAL_MODE } from "./lib/mode"
 import type { AgentRunGroup, AgentSession, OverviewResponse, RuntimeSession } from "./types"
 
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/

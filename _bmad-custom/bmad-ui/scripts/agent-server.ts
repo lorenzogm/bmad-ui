@@ -152,7 +152,7 @@ const sprintStatusFile = path.join(artifactsRoot, "implementation-artifacts", "s
 const epicsFile = path.join(artifactsRoot, "planning-artifacts", "epics.md")
 const storyDependenciesFile = path.join(projectRoot, "_bmad-custom", "story-dependencies.yaml")
 const linksFile = path.join(projectRoot, "_bmad-custom", "links.yaml")
-const notesFile = path.join(projectRoot, "_bmad-custom", "notes.yaml")
+const notesFile = path.join(projectRoot, "_bmad-custom", "notes.json")
 
 const STORY_WORKFLOW_STEPS: Array<{
   skill: StoryWorkflowStepSkill
@@ -2863,18 +2863,6 @@ function serializeLinksYaml(links: Array<{ title: string; subtitle: string; url:
   return `${lines.join("\n")}\n`
 }
 
-function serializeNotesYaml(notes: Array<{ id: string; text: string; color: string; createdAt: string }>): string {
-  if (notes.length === 0) return "notes: []\n"
-  const lines = ["notes:"]
-  for (const note of notes) {
-    lines.push(`  - id: ${note.id}`)
-    lines.push(`    text: "${note.text.replace(/"/g, '\\"')}"`)
-    lines.push(`    color: ${note.color}`)
-    lines.push(`    createdAt: ${note.createdAt}`)
-  }
-  return `${lines.join("\n")}\n`
-}
-
 function attachApi(server: ViteDevServer): void {
   server.middlewares.use((req, res, next) => {
     const requestPromise = (async () => {
@@ -3917,7 +3905,8 @@ function attachApi(server: ViteDevServer): void {
           let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
-            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+            const parsed = JSON.parse(raw) as { notes: typeof notes }
+            notes = parsed.notes ?? []
           }
           res.writeHead(200, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ notes }))
@@ -3940,11 +3929,12 @@ function attachApi(server: ViteDevServer): void {
           let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
-            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+            const parsed = JSON.parse(raw) as { notes: typeof notes }
+            notes = parsed.notes ?? []
           }
           const id = `note-${Date.now()}`
           notes.push({ id, text, color: color || "teal", createdAt: new Date().toISOString() })
-          await writeFile(notesFile, serializeNotesYaml(notes), "utf8")
+          await writeFile(notesFile, JSON.stringify({ notes }, null, 2), "utf8")
           res.writeHead(201, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ notes }))
         } catch (addNoteError) {
@@ -3966,7 +3956,8 @@ function attachApi(server: ViteDevServer): void {
           let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
-            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+            const parsed = JSON.parse(raw) as { notes: typeof notes }
+            notes = parsed.notes ?? []
           }
           const idx = notes.findIndex((n) => n.id === id)
           if (idx === -1) {
@@ -3976,7 +3967,7 @@ function attachApi(server: ViteDevServer): void {
           }
           if (text !== undefined) notes[idx].text = text
           if (color !== undefined) notes[idx].color = color
-          await writeFile(notesFile, serializeNotesYaml(notes), "utf8")
+          await writeFile(notesFile, JSON.stringify({ notes }, null, 2), "utf8")
           res.writeHead(200, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ notes }))
         } catch (updateNoteError) {
@@ -3997,10 +3988,11 @@ function attachApi(server: ViteDevServer): void {
           let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
-            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+            const parsed = JSON.parse(raw) as { notes: typeof notes }
+            notes = parsed.notes ?? []
           }
           notes = notes.filter((n) => n.id !== noteId)
-          await writeFile(notesFile, serializeNotesYaml(notes), "utf8")
+          await writeFile(notesFile, JSON.stringify({ notes }, null, 2), "utf8")
           res.writeHead(200, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ notes }))
         } catch (deleteNoteError) {

@@ -1,7 +1,7 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { storyStepLabel } from "../app"
-import { IS_LOCAL_MODE, apiUrl } from "../lib/mode"
+import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type {
   EpicDetailResponse,
   OverviewResponse,

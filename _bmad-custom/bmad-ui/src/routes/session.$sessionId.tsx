@@ -1,6 +1,6 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react"
-import { IS_LOCAL_MODE, apiUrl } from "../lib/mode"
+import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type { SessionDetailResponse } from "../types"
 import { rootRoute } from "./__root"
 
@@ -550,8 +550,8 @@ function SessionDetailPage() {
           >
             {showPrompt ? "Hide prompt" : "Prompt"}
           </button>
-          {/* biome-ignore lint/a11y/useSemanticElements: action group in session header */}
           {IS_LOCAL_MODE ? (
+            // biome-ignore lint/a11y/useSemanticElements: action group in session header
             <div className="session-actions" role="group">
               <button
                 aria-label="Start session"
