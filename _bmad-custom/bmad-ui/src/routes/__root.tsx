@@ -1,118 +1,5 @@
 import { createRootRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
-import { useCallback, useEffect, useState } from "react"
-import type { OverviewResponse } from "../types"
-
-const SIDEBAR_SESSIONS_LIMIT = 20
-const SIDEBAR_SESSIONS_POLL_MS = 5000
-
-type SidebarSessionItem = {
-  id: string
-  skill: string
-  status: string
-  startedAt: string
-  isRuntime: boolean
-}
-
-function useSidebarSessions(): SidebarSessionItem[] {
-  const [sessions, setSessions] = useState<SidebarSessionItem[]>([])
-
-  useEffect(() => {
-    let mounted = true
-
-    const load = async () => {
-      try {
-        const response = await fetch("/api/overview")
-        if (!response.ok || !mounted) return
-
-        const data = (await response.json()) as OverviewResponse
-
-        const runtime: SidebarSessionItem[] = data.agentRunHistory
-          .flatMap((g) => g.sessions)
-          .map((s) => ({
-            id: s.id,
-            skill: s.skill,
-            status: s.status,
-            startedAt: s.startedAt,
-            isRuntime: true,
-          }))
-
-        const copilot: SidebarSessionItem[] = data.agentSessions
-          .filter((s) => !!s.session_id)
-          .map((s) => ({
-            id: s.session_id as string,
-            skill: s.agent,
-            status: s.status,
-            startedAt: s.start_date,
-            isRuntime: false,
-          }))
-
-        const seen = new Set<string>()
-        const merged = [...runtime, ...copilot]
-          .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
-          .filter((s) => {
-            if (seen.has(s.id)) return false
-            seen.add(s.id)
-            return true
-          })
-
-        if (mounted) setSessions(merged)
-      } catch {
-        // ignore fetch errors silently
-      }
-    }
-
-    load()
-    const interval = setInterval(load, SIDEBAR_SESSIONS_POLL_MS)
-    return () => {
-      mounted = false
-      clearInterval(interval)
-    }
-  }, [])
-
-  return sessions
-}
-
-function SidebarSessions() {
-  const sessions = useSidebarSessions()
-  const location = useLocation()
-  const currentPath = location.pathname
-
-  return (
-    <div className="sidebar-sessions-section">
-      <span className="sidebar-sessions-label">Sessions</span>
-      {sessions.length === 0 ? (
-        <span className="sidebar-sessions-empty">No sessions yet</span>
-      ) : (
-        <div className="sidebar-sessions-list">
-          {sessions.slice(0, SIDEBAR_SESSIONS_LIMIT).map((session) => {
-            const to = `/session/${session.id}`
-            const isActive = currentPath === to
-            if (session.isRuntime) {
-              return (
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={`sidebar-session-item${isActive ? " is-active" : ""}`}
-                  key={session.id}
-                  params={{ sessionId: session.id }}
-                  to="/session/$sessionId"
-                >
-                  <span className={`step-badge step-${session.status}`} />
-                  <span className="sidebar-session-skill">{session.skill}</span>
-                </Link>
-              )
-            }
-            return (
-              <div className="sidebar-session-item sidebar-session-item--static" key={session.id}>
-                <span className={`step-badge step-${session.status}`} />
-                <span className="sidebar-session-skill">{session.skill}</span>
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  )
-}
+import { useCallback, useState } from "react"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
@@ -162,7 +49,10 @@ const AVAILABLE_SKILLS = [
   "bmad-agent-ux-designer",
 ] as const
 
-const NAV_LINKS = [{ label: "Dashboard", to: "/" }] as const
+const NAV_LINKS = [
+  { label: "Dashboard", to: "/" },
+  { label: "Sessions", to: "/analytics/sessions" },
+] as const
 
 const ANALYTICS_SUBMENU = [
   { label: "Overview", to: "/analytics" },
@@ -325,8 +215,6 @@ function RootLayout() {
               {link.label}
             </Link>
           ))}
-
-          <SidebarSessions />
 
           <Link
             aria-current={currentPath === "/analytics" ? "page" : undefined}
