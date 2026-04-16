@@ -1,6 +1,6 @@
 # Story 4.2: Enforce Protected Branch Quality Gates
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -28,6 +28,11 @@ so that only pull requests that pass CI validation can be merged.
 - [x] Update `infra/github/src/config.json`: add `required_status_check_contexts` array with the CI job context string to the `main` branch protection entry (AC: #1, #2, #3)
 - [x] Trigger Terraform deploy via `workflow_dispatch` on `deploy.yml` to apply the updated branch protection (AC: #1)
 - [x] Verify in GitHub that merge is blocked on a PR with a failing check (AC: #1, #2)
+
+### Review Findings
+
+- [ ] [Review][Patch] Enforce non-empty required status check contexts when status checks are enabled [infra/github/src/variables.tf:25]
+- [ ] [Review][Patch] Update branch protection README guidance to describe explicit `required_status_check_contexts` configuration (not auto-detection) [infra/github/README.md:151]
 
 ## Dev Notes
 
