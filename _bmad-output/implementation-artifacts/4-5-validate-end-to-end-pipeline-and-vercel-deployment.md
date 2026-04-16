@@ -1,6 +1,6 @@
 # Story 4.5: Validate End-to-End Pipeline and Vercel Deployment
 
-Status: done
+Status: in-progress
 
 ## Story
 
@@ -45,6 +45,13 @@ so that I can confirm the full CI/CD pipeline is operational end-to-end.
 - [x] Verify CI workflow passes (AC: #4)
   - [x] Run `workflow_dispatch` on `bmad-ui-ci` or confirm latest push passed
   - [x] Verify all steps: lint, types, tests, build → success
+
+### Review Findings
+
+- [ ] [Review][Decision] Confirm review target scope for story 4.5 — current diff changes only UI/server files under `_bmad-custom/bmad-ui/*`, while AC #1/#2/#5 require workflow changes in `.github/workflows/deploy.yml` and `.github/workflows/ci.yml`.
+- [ ] [Review][Patch] Reinstate sequential-step gating for run actions to prevent out-of-order execution in sequential phases [_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx:217-258]
+- [ ] [Review][Patch] Restrict skip/unskip API to optional workflow step IDs before writing/removing `.skipped` files [_bmad-custom/bmad-ui/scripts/agent-server.ts:3507-3550]
+- [ ] [Review][Patch] Make unskip idempotent under concurrent requests (avoid 500 on ENOENT race) [_bmad-custom/bmad-ui/scripts/agent-server.ts:3546-3548]
 
 ## Dev Notes
 
