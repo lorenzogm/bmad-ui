@@ -1466,6 +1466,19 @@ function summarizeSprint(
       ) {
         story.steps["bmad-create-story"] = "completed";
       }
+
+      // Derive story status from steps — sessions are more up-to-date than YAML
+      if (story.steps["bmad-code-review"] === "completed") {
+        story.status = "done";
+      } else if (story.steps["bmad-code-review"] === "running") {
+        story.status = "review";
+      } else if (story.steps["bmad-dev-story"] === "running") {
+        story.status = "in-progress";
+      } else if (story.steps["bmad-dev-story"] === "completed") {
+        story.status = "review";
+      } else if (story.steps["bmad-create-story"] === "completed") {
+        story.status = "ready-for-dev";
+      }
     }
   }
 

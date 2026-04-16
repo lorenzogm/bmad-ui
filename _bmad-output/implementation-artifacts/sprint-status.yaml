@@ -65,7 +65,7 @@ development_status:
   4-1-create-ci-validation-workflow: done
   4-2-enforce-protected-branch-quality-gates: done
   4-3-implement-deployment-workflow-triggers: done
-  4-4-add-workflow-observability-and-failure-diagnosis: in-progress
+  4-4-add-workflow-observability-and-failure-diagnosis: done
   epic-4-retrospective: optional
 
   epic-5: backlog
