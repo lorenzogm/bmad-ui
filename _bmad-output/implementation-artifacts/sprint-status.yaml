@@ -1,5 +1,5 @@
 # generated: 2026-04-15T16:46:25Z
-# last_updated: 2026-04-15T23:09:40Z
+# last_updated: 2026-04-16T19:58:59Z
 # project: bmad-ui
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-16T19:02:50Z
+last_updated: 2026-04-16T19:58:59Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -44,7 +44,7 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   epic-1: done
   1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter: done
-  1-2-setup-github-infrastructure-with-terraform: done
+  1-2-configure-branch-protection-rules: done
   1-3-define-issue-labels-for-triage: done
   1-4-add-basic-contribution-guidance: done
   epic-1-retrospective: done
@@ -69,10 +69,9 @@ development_status:
   epic-4-retrospective: optional
 
   epic-5: backlog
-  5-1-standardize-pnpm-project-commands: backlog
-  5-2-create-npx-bmad-method-ui-install-cli: backlog
-  5-3-enforce-code-quality-tooling-baseline: backlog
-  5-4-provide-vs-code-first-developer-workflow: backlog
+  5-1-create-npx-bmad-method-ui-install-cli: backlog
+  5-2-enforce-code-quality-tooling-baseline: backlog
+  5-3-provide-vs-code-first-developer-workflow: backlog
   epic-5-retrospective: optional
 
   epic-6: backlog
@@ -89,3 +88,10 @@ development_status:
   7-3-validate-self-referential-delivery-loop: backlog
   7-4-establish-phase-boundary-and-evolution-guardrails: backlog
   epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-improve-empty-states-and-loading-feedback: backlog
+  8-2-navigation-and-active-route-clarity: backlog
+  8-3-status-badge-consistency-across-views: backlog
+  8-4-responsive-layout-and-spacing-refinements: backlog
+  epic-8-retrospective: optional
