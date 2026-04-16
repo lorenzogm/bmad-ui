@@ -354,6 +354,12 @@ jobs:
             exit 1
           fi
           echo "VERCEL_PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+          # Resolve the actual project owner to use as org ID
+          ACCOUNT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            "https://api.vercel.com/v9/projects/${PROJECT_ID}" | jq -r '.accountId // empty')
+          if [ -n "$ACCOUNT_ID" ]; then
+            echo "VERCEL_ORG_ID=$ACCOUNT_ID" >> $GITHUB_ENV
+          fi
 
       - name: Write Vercel project config
         run: |
@@ -468,6 +474,12 @@ jobs:
             exit 1
           fi
           echo "VERCEL_PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+          # Resolve the actual project owner to use as org ID
+          ACCOUNT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            "https://api.vercel.com/v9/projects/${PROJECT_ID}" | jq -r '.accountId // empty')
+          if [ -n "$ACCOUNT_ID" ]; then
+            echo "VERCEL_ORG_ID=$ACCOUNT_ID" >> $GITHUB_ENV
+          fi
 
       - name: Write Vercel project config
         run: |
