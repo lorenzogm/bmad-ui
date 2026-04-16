@@ -720,7 +720,7 @@ function EpicDetailPage() {
                           {storyStepLabel(createState)}
                         </span>
                         <SessionLink session={latestCreateSession} />
-                        {nextSkill === "bmad-create-story" && (
+                        {nextSkill === "bmad-create-story" && IS_LOCAL_MODE && (
                           <Link
                             className="icon-button icon-button-play"
                             params={{ storyId: story.id }}
@@ -733,6 +733,17 @@ function EpicDetailPage() {
                             </span>
                           </Link>
                         )}
+                        {nextSkill === "bmad-create-story" && !IS_LOCAL_MODE && (
+                          <span
+                            className="icon-button icon-button-play"
+                            style={{ opacity: 0.4, cursor: "not-allowed" }}
+                            title={PROD_DISABLED_TITLE}
+                          >
+                            <span aria-hidden="true" className="icon-glyph">
+                              ▶
+                            </span>
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td>
@@ -741,7 +752,7 @@ function EpicDetailPage() {
                           {storyStepLabel(devState)}
                         </span>
                         <SessionLink session={latestDevSession} />
-                        {nextSkill === "bmad-dev-story" && !isBlocked && (
+                        {nextSkill === "bmad-dev-story" && !isBlocked && IS_LOCAL_MODE && (
                           <Link
                             className="icon-button icon-button-play"
                             params={{ storyId: story.id }}
@@ -753,6 +764,17 @@ function EpicDetailPage() {
                               ▶
                             </span>
                           </Link>
+                        )}
+                        {nextSkill === "bmad-dev-story" && !isBlocked && !IS_LOCAL_MODE && (
+                          <span
+                            className="icon-button icon-button-play"
+                            style={{ opacity: 0.4, cursor: "not-allowed" }}
+                            title={PROD_DISABLED_TITLE}
+                          >
+                            <span aria-hidden="true" className="icon-glyph">
+                              ▶
+                            </span>
+                          </span>
                         )}
                         {nextSkill === "bmad-dev-story" && isBlocked && (
                           <span
@@ -776,10 +798,14 @@ function EpicDetailPage() {
                         {nextSkill === "bmad-code-review" && (
                           <button
                             className="icon-button icon-button-play"
-                            disabled={pendingSkill !== null || isBlocked}
+                            disabled={!IS_LOCAL_MODE || pendingSkill !== null || isBlocked}
                             onClick={() => void handleRunSkill("bmad-code-review", story.id)}
                             title={
-                              isBlocked ? blockedTooltip : `Run bmad-code-review for ${story.id}`
+                              !IS_LOCAL_MODE
+                                ? PROD_DISABLED_TITLE
+                                : isBlocked
+                                  ? blockedTooltip
+                                  : `Run bmad-code-review for ${story.id}`
                             }
                             type="button"
                           >
@@ -819,9 +845,9 @@ function EpicDetailPage() {
             {retrospectiveState === "not-started" && allStoriesDone ? (
               <button
                 className="icon-button icon-button-play"
-                disabled={pendingSkill !== null}
+                disabled={!IS_LOCAL_MODE || pendingSkill !== null}
                 onClick={() => void handleRunSkill("bmad-retrospective")}
-                title={`Run bmad-retrospective for epic-${epicNumber}`}
+                title={IS_LOCAL_MODE ? `Run bmad-retrospective for epic-${epicNumber}` : PROD_DISABLED_TITLE}
                 type="button"
               >
                 <span aria-hidden="true" className="icon-glyph">

@@ -13,6 +13,8 @@ import {
   getCompletedSessionSummary,
   getEpicMetadataFromMarkdown,
   getStoryContentFromEpics,
+  linksFile,
+  parseSimpleYamlList,
   readRuntimeStateFile,
   setBuildMode,
 } from "./agent-server"
@@ -129,6 +131,14 @@ function staticDataPlugin(): Plugin {
             : null,
         })
       }
+
+      // ── Links ─────────────────────────────────────────
+      let links: Array<Record<string, string>> = []
+      if (existsSync(linksFile)) {
+        const raw = await readFile(linksFile, "utf8")
+        links = parseSimpleYamlList(raw, "links")
+      }
+      emit("links.json", { links })
 
       // ── Session details ────────────────────────────────────
       for (const session of runtimeState?.sessions || []) {

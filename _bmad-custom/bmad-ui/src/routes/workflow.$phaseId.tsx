@@ -3,7 +3,7 @@ import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-route
 import { useCallback, useMemo, useState } from "react"
 import type { WorkflowPhase, WorkflowStep } from "../app"
 import { detectWorkflowStatus, storyStepLabel } from "../app"
-import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
+import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type { OverviewResponse, RuntimeSession } from "../types"
 import { workflowLayoutRoute } from "./workflow"
 
@@ -265,9 +265,9 @@ function WorkflowPhaseDetailPage() {
                         {!isRunning && !step.isSkipped && !step.isCompleted && (
                           <button
                             className="icon-button icon-button-play"
-                            disabled={pendingSkill !== null}
+                            disabled={!IS_LOCAL_MODE || pendingSkill !== null}
                             onClick={() => void handleRunSkill(step)}
-                            title={`Run ${step.skill}`}
+                            title={IS_LOCAL_MODE ? `Run ${step.skill}` : PROD_DISABLED_TITLE}
                             type="button"
                           >
                             <span aria-hidden="true" className="icon-glyph">
@@ -278,9 +278,9 @@ function WorkflowPhaseDetailPage() {
                         {step.isOptional && !step.isCompleted && !step.isSkipped && (
                           <button
                             className="icon-button icon-button-delete"
-                            disabled={pendingSkip !== null}
+                            disabled={!IS_LOCAL_MODE || pendingSkip !== null}
                             onClick={() => void handleSkipStep(step)}
-                            title={`Skip ${step.name}`}
+                            title={IS_LOCAL_MODE ? `Skip ${step.name}` : PROD_DISABLED_TITLE}
                             type="button"
                           >
                             <span aria-hidden="true" className="icon-glyph">
@@ -291,9 +291,9 @@ function WorkflowPhaseDetailPage() {
                         {step.isOptional && step.isSkipped && (
                           <button
                             className="icon-button icon-button-play"
-                            disabled={pendingSkip !== null}
+                            disabled={!IS_LOCAL_MODE || pendingSkip !== null}
                             onClick={() => void handleUnskipStep(step)}
-                            title={`Unskip ${step.name}`}
+                            title={IS_LOCAL_MODE ? `Unskip ${step.name}` : PROD_DISABLED_TITLE}
                             type="button"
                           >
                             <span aria-hidden="true" className="icon-glyph">

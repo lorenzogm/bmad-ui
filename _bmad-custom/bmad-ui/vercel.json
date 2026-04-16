@@ -6,6 +6,7 @@
     { "source": "/api/story-preview/:id", "destination": "/data/story-preview/:id.json" },
     { "source": "/api/story/:id", "destination": "/data/story/:id.json" },
     { "source": "/api/session/:id", "destination": "/data/session/:id.json" },
+    { "source": "/api/links", "destination": "/data/links.json" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
