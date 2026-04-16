@@ -2,7 +2,9 @@
   "ENVIRONMENT": "production",
   "environment_variables": {},
   "vercel": {
-    "project_domains": [],
+    "project_domains": [
+      { "domain": "bmad.lorenzogm.com" }
+    ],
     "project": {
       "name": "bmad-ui",
       "root_directory": "_bmad-custom/bmad-ui",
