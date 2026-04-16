@@ -516,9 +516,14 @@ function makeStep(
   }
 }
 
+function hasCompletedSkillSession(sessions: RuntimeSession[], skill: string): boolean {
+  return sessions.some((s) => s.skill === skill && s.status === "completed" && s.exitCode === 0)
+}
+
 function detectWorkflowStatus(
   planningFiles: string[],
-  implementationFiles: string[]
+  implementationFiles: string[],
+  runtimeSessions: RuntimeSession[] = []
 ): WorkflowStatus {
   const allFiles = [...planningFiles, ...implementationFiles]
 
@@ -691,7 +696,7 @@ function detectWorkflowStatus(
           s.skill,
           false,
           [],
-          () => false
+          () => hasCompletedSkillSession(runtimeSessions, s.skill)
         )
       ),
     },
@@ -734,7 +739,7 @@ function BMADWorkflowSection(props: {
   const { planningFiles, implementationFiles, activeSkill, epics, epicLabels, epicConsistency, runtimeSessions } =
     props
   const navigate = useNavigate()
-  const { phases, nextActionStep } = detectWorkflowStatus(planningFiles, implementationFiles)
+  const { phases, nextActionStep } = detectWorkflowStatus(planningFiles, implementationFiles, runtimeSessions)
   const sortedEpics = useMemo(() => [...epics].sort((a, b) => a.number - b.number), [epics])
 
   const defaultOpenPhase =
