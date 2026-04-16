@@ -333,14 +333,39 @@ function EpicDetailPage() {
 
   return (
     <main className="screen">
-      <section className="panel reveal">
-        <h2>Epic Summary</h2>
-        <p className="eyebrow">Epic Detail</p>
-        <h1>{data.epic.id}</h1>
-        <p className="subtitle">Current status: {data.epic.status}</p>
-        <p>
-          <Link to="/">Back to home</Link>
-        </p>
+      <section className="panel reveal epic-header">
+        <div className="epic-header-top">
+          <Link className="epic-back-link" to="/">← Home</Link>
+          <span className={`step-badge step-${data.epic.status}`}>{data.epic.status}</span>
+        </div>
+        <p className="eyebrow">Epic {data.epic.number}</p>
+        <h1 className="epic-title">{data.epic.name || data.epic.id}</h1>
+        {data.epic.description ? (
+          <p className="epic-description">{data.epic.description}</p>
+        ) : null}
+        <div className="epic-stats">
+          <div className="epic-stat">
+            <span className="epic-stat-value">{stories.length}</span>
+            <span className="epic-stat-label">Stories</span>
+          </div>
+          <div className="epic-stat">
+            <span className="epic-stat-value epic-stat-done">{doneCount}</span>
+            <span className="epic-stat-label">Done</span>
+          </div>
+          <div className="epic-stat">
+            <span className="epic-stat-value epic-stat-progress">{inProgressCount}</span>
+            <span className="epic-stat-label">In Progress</span>
+          </div>
+          <div className="epic-stat">
+            <span className="epic-stat-value">{progressPercent}%</span>
+            <span className="epic-stat-label">Complete</span>
+          </div>
+        </div>
+        {stories.length > 0 ? (
+          <div className="epic-progress-bar">
+            <div className="epic-progress-fill" style={{ width: `${progressPercent}%` }} />
+          </div>
+        ) : null}
       </section>
 
       <section className="panel reveal delay-1">
@@ -374,6 +399,10 @@ function EpicDetailPage() {
                   rawReviewState === "running" && !isReviewAgentRunning
                     ? "not-started"
                     : rawReviewState
+
+                const latestCreateSession = findLatestSession(runtimeSessions, story.id, "bmad-create-story")
+                const latestDevSession = findLatestSession(runtimeSessions, story.id, "bmad-dev-story")
+                const latestReviewSession = findLatestSession(runtimeSessions, story.id, "bmad-code-review")
 
                 const SKILL_ORDER: { skill: SkillName; state: string }[] = [
                   { skill: "bmad-create-story", state: createState },
@@ -409,6 +438,7 @@ function EpicDetailPage() {
                         <span className={`step-badge step-${createState}`}>
                           {storyStepLabel(createState)}
                         </span>
+                        <SessionLink session={latestCreateSession} />
                         {nextSkill === "bmad-create-story" && (
                           <Link
                             className="icon-button icon-button-play"
@@ -429,6 +459,7 @@ function EpicDetailPage() {
                         <span className={`step-badge step-${devState}`}>
                           {storyStepLabel(devState)}
                         </span>
+                        <SessionLink session={latestDevSession} />
                         {nextSkill === "bmad-dev-story" && !isBlocked && (
                           <Link
                             className="icon-button icon-button-play"
@@ -460,6 +491,7 @@ function EpicDetailPage() {
                         <span className={`step-badge step-${reviewState}`}>
                           {storyStepLabel(reviewState)}
                         </span>
+                        <SessionLink session={latestReviewSession} />
                         {nextSkill === "bmad-code-review" && (
                           <button
                             className="icon-button icon-button-play"
@@ -523,14 +555,6 @@ function EpicDetailPage() {
           </div>
         </section>
       ) : null}
-
-      <AgentSessionsSection
-        agentSessions={epicAgentSessions}
-        onAbortSession={abortSession}
-        onStartSession={startSession}
-        runGroups={epicRunGroups}
-        sessionActionPending={sessionActionPending}
-      />
 
       {error ? <p className="error-banner">{error}</p> : null}
     </main>
