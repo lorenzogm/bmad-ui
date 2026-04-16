@@ -59,7 +59,7 @@ development_status:
   3-1-establish-root-level-dotenvx-secret-workflow: done
   3-2-enable-contributor-workflow-without-production-secrets: done
   3-3-secret-rotation-and-audit-safe-handling: done
-  epic-3-retrospective: optional
+  epic-3-retrospective: done
 
   epic-4: backlog
   4-1-create-ci-validation-workflow: backlog
