@@ -4,6 +4,12 @@ import { useCallback, useState } from "react"
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
 const DEFAULT_SKILL = "bmad-quick-dev"
+const DEFAULT_MODEL = "claude-sonnet-4.6"
+
+const AVAILABLE_MODELS = [
+  { id: "claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
+  { id: "claude-opus-4.5", label: "Claude Opus 4.5" },
+] as const
 
 const AVAILABLE_SKILLS = [
   "bmad-quick-dev",
@@ -66,6 +72,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
   const { open, onClose } = props
   const navigate = useNavigate()
   const [skill, setSkill] = useState(DEFAULT_SKILL)
+  const [model, setModel] = useState(DEFAULT_MODEL)
   const [prompt, setPrompt] = useState("")
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -80,7 +87,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
       setError(null)
 
       try {
-        const body: { skill: string; prompt?: string } = { skill: trimmedSkill }
+        const body: { skill: string; model: string; prompt?: string } = { skill: trimmedSkill, model }
         const trimmedPrompt = prompt.trim()
         if (trimmedPrompt) {
           body.prompt = trimmedPrompt
@@ -113,6 +120,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
         }
 
         setSkill(DEFAULT_SKILL)
+        setModel(DEFAULT_MODEL)
         setPrompt("")
         onClose()
 
@@ -126,7 +134,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
         setSending(false)
       }
     },
-    [skill, prompt, navigate, onClose]
+    [skill, model, prompt, navigate, onClose]
   )
 
   if (!open) return null
@@ -164,6 +172,22 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
           {AVAILABLE_SKILLS.map((s) => (
             <option key={s} value={s}>
               {s}
+            </option>
+          ))}
+        </select>
+        <label className="new-chat-label" htmlFor="new-chat-model">
+          Model
+        </label>
+        <select
+          className="new-chat-input"
+          disabled={sending}
+          id="new-chat-model"
+          onChange={(e) => setModel(e.target.value)}
+          value={model}
+        >
+          {AVAILABLE_MODELS.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.label}
             </option>
           ))}
         </select>
