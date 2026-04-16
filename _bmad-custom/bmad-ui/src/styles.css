@@ -2107,3 +2107,154 @@ a:hover {
 .improvement-flow-list strong {
   color: var(--text);
 }
+
+/* ── Rendered Markdown ── */
+.md-rendered {
+  color: var(--muted);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.75;
+  word-break: break-word;
+}
+
+.md-rendered h1 {
+  color: var(--text);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.md-rendered h2 {
+  color: var(--highlight);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.5rem;
+}
+
+.md-rendered h3 {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.35rem;
+}
+
+.md-rendered p {
+  margin: 0.5rem 0;
+}
+
+.md-rendered strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.md-rendered ul,
+.md-rendered ol {
+  margin: 0.4rem 0 0.6rem;
+  padding-left: 1.5rem;
+}
+
+.md-rendered li {
+  margin: 0.25rem 0;
+}
+
+.md-rendered li > ul,
+.md-rendered li > ol {
+  margin: 0.15rem 0 0.15rem;
+}
+
+.md-rendered input[type="checkbox"] {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  background: rgba(2, 10, 16, 0.66);
+  vertical-align: middle;
+  margin-right: 0.35rem;
+  position: relative;
+  top: -1px;
+  pointer-events: none;
+}
+
+.md-rendered input[type="checkbox"]:checked {
+  background: var(--highlight);
+  border-color: var(--highlight);
+}
+
+.md-rendered code {
+  background: rgba(2, 10, 16, 0.7);
+  border: 1px solid rgba(151, 177, 205, 0.18);
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82em;
+  color: var(--highlight-2);
+}
+
+.md-rendered pre {
+  background: rgba(2, 10, 16, 0.8);
+  border: 1px solid rgba(151, 177, 205, 0.22);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.6rem 0;
+}
+
+.md-rendered pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.md-rendered blockquote {
+  border-left: 3px solid var(--highlight);
+  margin: 0.6rem 0;
+  padding: 0.3rem 0.8rem;
+  background: rgba(46, 196, 182, 0.06);
+  color: var(--muted);
+}
+
+.md-rendered blockquote p {
+  margin: 0.25rem 0;
+}
+
+.md-rendered table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.6rem 0;
+  font-size: 0.84rem;
+}
+
+.md-rendered th {
+  color: var(--text);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--panel-border);
+  background: rgba(2, 10, 16, 0.5);
+}
+
+.md-rendered td {
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid rgba(151, 177, 205, 0.1);
+}
+
+.md-rendered hr {
+  border: none;
+  border-top: 1px solid var(--panel-border);
+  margin: 1.25rem 0;
+}
+
+.md-rendered a {
+  color: var(--highlight);
+  text-decoration: none;
+}
+
+.md-rendered a:hover {
+  text-decoration: underline;
+}

@@ -188,6 +188,12 @@ export type SessionDetailResponse = {
   canSendInput: boolean
 }
 
+export type StoryPreviewResponse = {
+  storyId: string
+  planning: { title: string; content: string } | null
+  implementation: { path: string; content: string } | null
+}
+
 export type TokenUsage = {
   requests: number
   tokensIn: number

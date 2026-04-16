@@ -1,7 +1,6 @@
 import { type ChildProcess, execFile, spawn } from "node:child_process";
-import { createWriteStream, existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
@@ -144,7 +143,6 @@ const artifactsRoot = path.join(projectRoot, "_bmad-output");
 const agentsDir = path.join(projectRoot, "_bmad-custom", "agents");
 const runtimeStatePath = path.join(agentsDir, "runtime-state.json");
 const runtimeLogsDir = path.join(agentsDir, "logs");
-const copilotSessionStateDir = path.join(os.homedir(), ".copilot", "session-state");
 const analyticsStorePath = path.join(agentsDir, "agent-sessions.json");
 const legacyAnalyticsStorePaths: string[] = [];
 const agentSessionsPath = analyticsStorePath;
@@ -308,7 +306,7 @@ const ANALYTICS_EPIC_SESSION_REGEX = /^epic-(\d+)-(.+)$/;
 function buildAgentCommand(model: string, promptFilePath: string): string {
   const template =
     process.env.BMAD_AGENT_COMMAND_TEMPLATE ||
-    'copilot --model "{model}" --allow-all-tools --no-ask-user --no-color --plain-diff -p "$(cat "{promptFile}")"';
+    'copilot --model "{model}" --allow-all-tools --no-ask-user -p "$(cat "{promptFile}")"';
 
   return template
     .replaceAll("{model}", model)
@@ -482,16 +480,21 @@ async function startRuntimeSession(
   runningProcessCanAcceptInput = false;
   runningSessionProcesses.set(session.id, stageProcess);
 
-  const logCapture = attachProcessLogCapture(stageProcess, session.logPath);
-  let isSessionFinalized = false;
+  stageProcess.stdout?.on("data", async (chunk: Buffer | string) => {
+    await writeFile(session.logPath, chunk.toString(), {
+      encoding: "utf8",
+      flag: "a",
+    });
+  });
+
+  stageProcess.stderr?.on("data", async (chunk: Buffer | string) => {
+    await writeFile(session.logPath, chunk.toString(), {
+      encoding: "utf8",
+      flag: "a",
+    });
+  });
 
   stageProcess.on("close", async (code: number | null) => {
-    if (isSessionFinalized) {
-      return;
-    }
-    isSessionFinalized = true;
-    await logCapture.flushAndClose();
-
     const isCancelled = session.status === "cancelled";
     session.exitCode = session.exitCode ?? code ?? null;
     if (!isCancelled) {
@@ -658,12 +661,6 @@ async function startRuntimeSession(
   });
 
   stageProcess.on("error", async (err: Error) => {
-    if (isSessionFinalized) {
-      return;
-    }
-    isSessionFinalized = true;
-    await logCapture.flushAndClose();
-
     const isCancelled = session.status === "cancelled";
     if (!isCancelled) {
       session.status = "failed";
@@ -977,310 +974,6 @@ async function loadSprintOverview(
   return summarizeSprintFromEpics(epicsContent, runtimeState);
 }
 
-// ---------------------------------------------------------------------------
-// Build clean log content from Copilot CLI events.jsonl
-// ---------------------------------------------------------------------------
-
-const SESSION_TIMESTAMP_REGEX = /(\d{13})$/;
-const SESSION_MATCH_WINDOW_MS = 30_000;
-
-type CliEvent = {
-  type: string;
-  data?: Record<string, unknown>;
-  timestamp?: string;
-};
-
-function describeToolCall(
-  toolName: string,
-  args: Record<string, unknown>
-): string {
-  switch (toolName) {
-    case "bash":
-      return (args.description as string) || (args.command as string) || "Run command";
-    case "view":
-      if (args.path) {
-        const p = String(args.path);
-        const name = p.split("/").pop() || p;
-        return `Read ${name}`;
-      }
-      return "Read file";
-    case "apply_patch":
-      return "Edit file";
-    case "glob":
-      return "Search (glob)";
-    case "rg":
-      return "Search (ripgrep)";
-    case "skill":
-      return `skill(${args.skill || "unknown"})`;
-    case "report_intent":
-      return String(args.intent || "");
-    case "task":
-      return `Subagent: ${args.description || args.name || "task"}`;
-    case "read_agent":
-      return `Read subagent: ${args.name || "agent"}`;
-    default:
-      return toolName;
-  }
-}
-
-async function findCliEventsJsonl(sessionId: string): Promise<string | null> {
-  const match = SESSION_TIMESTAMP_REGEX.exec(sessionId);
-  if (!match) {
-    return null;
-  }
-
-  const sessionTimestamp = Number(match[1]);
-
-  if (!existsSync(copilotSessionStateDir)) {
-    return null;
-  }
-
-  let entries: string[];
-  try {
-    entries = await readdir(copilotSessionStateDir);
-  } catch {
-    return null;
-  }
-
-  for (const entry of entries) {
-    const wsPath = path.join(copilotSessionStateDir, entry, "workspace.yaml");
-    if (!existsSync(wsPath)) {
-      continue;
-    }
-
-    try {
-      const wsContent = await readFile(wsPath, "utf8");
-      const createdMatch = /created_at:\s*(\S+)/.exec(wsContent);
-      if (!createdMatch) {
-        continue;
-      }
-
-      const createdMs = Date.parse(createdMatch[1]);
-      if (Number.isNaN(createdMs)) {
-        continue;
-      }
-
-      if (Math.abs(createdMs - sessionTimestamp) <= SESSION_MATCH_WINDOW_MS) {
-        const eventsPath = path.join(
-          copilotSessionStateDir,
-          entry,
-          "events.jsonl"
-        );
-        if (existsSync(eventsPath)) {
-          return eventsPath;
-        }
-      }
-    } catch {
-      continue;
-    }
-  }
-
-  return null;
-}
-
-function buildLogFromEvents(eventsContent: string): string {
-  const lines: string[] = [];
-  const events: CliEvent[] = [];
-
-  for (const raw of eventsContent.split("\n")) {
-    if (!raw.trim()) {
-      continue;
-    }
-    try {
-      events.push(JSON.parse(raw) as CliEvent);
-    } catch {
-      // skip malformed lines
-    }
-  }
-
-  // Build a map of toolCallId -> intentionSummary from assistant.message toolRequests
-  const toolSummaries = new Map<string, string>();
-  for (const ev of events) {
-    if (ev.type === "assistant.message" && ev.data) {
-      const reqs = ev.data.toolRequests as
-        | Array<{
-            toolCallId: string;
-            name: string;
-            arguments: Record<string, unknown> | string;
-            intentionSummary?: string;
-          }>
-        | undefined;
-      if (reqs) {
-        for (const req of reqs) {
-          let args = req.arguments;
-          if (typeof args === "string") {
-            try {
-              args = JSON.parse(args);
-            } catch {
-              args = {};
-            }
-          }
-          const summary =
-            req.intentionSummary ||
-            describeToolCall(req.name, args as Record<string, unknown>);
-          if (summary && req.toolCallId) {
-            toolSummaries.set(req.toolCallId, summary);
-          }
-        }
-      }
-    }
-  }
-
-  for (const ev of events) {
-    const d = ev.data || {};
-
-    switch (ev.type) {
-      case "assistant.message": {
-        const content = d.content as string | undefined;
-        if (content && content.trim().length > 0) {
-          lines.push(content.trim());
-          lines.push("");
-        }
-        break;
-      }
-
-      case "tool.execution_start": {
-        const toolCallId = d.toolCallId as string;
-        const toolName = d.toolName as string;
-        let args = d.arguments as Record<string, unknown> | string | undefined;
-        if (typeof args === "string") {
-          try {
-            args = JSON.parse(args);
-          } catch {
-            args = {};
-          }
-        }
-
-        // Use pre-built summary, or build one from tool name + args
-        const summary =
-          toolSummaries.get(toolCallId) ||
-          describeToolCall(toolName, (args || {}) as Record<string, unknown>);
-
-        // Skip report_intent — it's just UI fluff
-        if (toolName === "report_intent") {
-          break;
-        }
-
-        lines.push(`● ${summary}`);
-        break;
-      }
-
-      case "tool.execution_complete": {
-        const success = d.success as boolean | undefined;
-        const result = d.result as
-          | { content?: string; detailedContent?: string }
-          | undefined;
-
-        if (result) {
-          const output = result.content || "";
-          if (output && !success) {
-            lines.push(`  └ Error: ${output.slice(0, 200)}`);
-          } else if (output) {
-            // Condense long output to one line
-            const firstLine = output.split("\n")[0].trim();
-            if (firstLine.length > 0 && firstLine.length <= 120) {
-              lines.push(`  └ ${firstLine}`);
-            } else if (output.length > 0) {
-              const lineCount = output.split("\n").length;
-              lines.push(`  └ ${lineCount} lines...`);
-            }
-          }
-        }
-        break;
-      }
-
-      case "user.message": {
-        const content = d.content as string | undefined;
-        if (content) {
-          lines.push(`[user] ${content.trim()}`);
-          lines.push("");
-        }
-        break;
-      }
-
-      case "system.notification": {
-        const message = d.message as string | undefined;
-        if (message) {
-          lines.push(`[orchestrator] ${message.trim()}`);
-        }
-        break;
-      }
-
-      case "subagent.started": {
-        const name = d.name as string | undefined;
-        if (name) {
-          lines.push(`● Subagent started: ${name}`);
-        }
-        break;
-      }
-
-      case "subagent.completed": {
-        const name = d.name as string | undefined;
-        if (name) {
-          lines.push(`● Subagent completed: ${name}`);
-        }
-        break;
-      }
-
-      // Ignore all other event types (session.start, turn_start, etc.)
-      default:
-        break;
-    }
-  }
-
-  return lines.join("\n");
-}
-
-async function buildCleanLogContent(
-  sessionId: string,
-  fallbackRawLog: string | null
-): Promise<string | null> {
-  const eventsPath = await findCliEventsJsonl(sessionId);
-  if (eventsPath) {
-    try {
-      const eventsContent = await readFile(eventsPath, "utf8");
-      const built = buildLogFromEvents(eventsContent);
-      if (built.trim().length > 0) {
-        // The events.jsonl only covers the original copilot run. If the raw
-        // log contains follow-up user messages (from session continuation),
-        // append the raw log content starting from the first follow-up
-        // [user] message that isn't already in the events-based log.
-        if (fallbackRawLog) {
-          const eventsUserMessages = new Set<string>();
-          for (const line of built.split("\n")) {
-            if (line.startsWith("[user] ")) {
-              eventsUserMessages.add(line.slice("[user] ".length).trim());
-            }
-          }
-
-          const rawLines = fallbackRawLog.split("\n");
-          let appendFromIndex = -1;
-          for (let i = 0; i < rawLines.length; i++) {
-            if (rawLines[i].startsWith("[user] ")) {
-              const msg = rawLines[i].slice("[user] ".length).trim();
-              if (!eventsUserMessages.has(msg)) {
-                appendFromIndex = i;
-                break;
-              }
-            }
-          }
-
-          if (appendFromIndex >= 0) {
-            const followUpContent = rawLines.slice(appendFromIndex).join("\n").trim();
-            if (followUpContent.length > 0) {
-              return `${built}\n\n${followUpContent}`;
-            }
-          }
-        }
-        return built;
-      }
-    } catch {
-      // fall through to raw log
-    }
-  }
-  return fallbackRawLog;
-}
-
 async function buildSessionDetailPayload(
   sessionId: string
 ): Promise<SessionDetailResponse | null> {
@@ -1294,9 +987,7 @@ async function buildSessionDetailPayload(
     return null;
   }
 
-  const rawLogContent = await readOptionalTextFile(session.logPath);
-  const fallbackLog = rawLogContent ? stripAnsi(rawLogContent).replace(/\r/g, "") : null;
-  const logContent = await buildCleanLogContent(session.id, fallbackLog);
+  const logContent = await readOptionalTextFile(session.logPath);
   const promptContent = await readOptionalTextFile(session.promptPath);
 
   return {
@@ -1308,60 +999,6 @@ async function buildSessionDetailPayload(
     isRunning:
       session.status === "running" || runningSessionProcesses.has(session.id),
     canSendInput: runningSessionProcesses.has(session.id),
-  };
-}
-
-type ProcessLogCapture = {
-  flushAndClose: () => Promise<void>;
-};
-
-function attachProcessLogCapture(
-  stageProcess: ChildProcess,
-  logPath: string
-): ProcessLogCapture {
-  const logStream = createWriteStream(logPath, {
-    encoding: "utf8",
-    flags: "a",
-  });
-
-  let streamClosed = false;
-  const waitForClose = new Promise<void>((resolve) => {
-    const complete = () => {
-      if (streamClosed) {
-        return;
-      }
-      streamClosed = true;
-      resolve();
-    };
-    logStream.once("finish", complete);
-    logStream.once("close", complete);
-    logStream.once("error", complete);
-  });
-
-  const appendChunk = (chunk: Buffer | string) => {
-    if (streamClosed || logStream.destroyed) {
-      return;
-    }
-    logStream.write(chunk.toString());
-  };
-
-  const closeStream = () => {
-    if (streamClosed || logStream.destroyed) {
-      return;
-    }
-    logStream.end();
-  };
-
-  stageProcess.stdout?.on("data", appendChunk);
-  stageProcess.stderr?.on("data", appendChunk);
-  stageProcess.once("close", closeStream);
-  stageProcess.once("error", closeStream);
-
-  return {
-    flushAndClose: async () => {
-      closeStream();
-      await waitForClose;
-    },
   };
 }
 
@@ -1744,9 +1381,8 @@ function getEpicMetadataFromMarkdown(
 ): { name: string; description: string } {
   const lines = epicsContent.split("\n");
   let name = "";
-  let description = "";
-  let foundHeading = false;
   const descLines: string[] = [];
+  let foundHeading = false;
 
   for (let i = 0; i < lines.length; i++) {
     const trimmed = lines[i].trim();
@@ -1760,7 +1396,6 @@ function getEpicMetadataFromMarkdown(
       continue;
     }
 
-    // Stop at next heading or section marker
     if (trimmed.startsWith("#") || trimmed.startsWith("**Story to FR") || trimmed.startsWith("**FRs covered")) {
       break;
     }
@@ -1770,8 +1405,7 @@ function getEpicMetadataFromMarkdown(
     }
   }
 
-  description = descLines.join(" ");
-  return { name, description };
+  return { name, description: descLines.join(" ") };
 }
 
 function summarizeEpicConsistency(
@@ -2945,6 +2579,15 @@ function attachApi(server: ViteDevServer): void {
             return;
           }
 
+          const processForSession = runningSessionProcesses.get(sessionId);
+          if (!processForSession?.stdin || processForSession.stdin.destroyed) {
+            res.writeHead(409, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({ error: "session is not accepting input" })
+            );
+            return;
+          }
+
           const userMessage = {
             id: `msg-${Date.now()}`,
             text: message,
@@ -2960,91 +2603,10 @@ function attachApi(server: ViteDevServer): void {
             flag: "a",
           });
 
-          const processForSession = runningSessionProcesses.get(sessionId);
-          if (processForSession?.stdin && !processForSession.stdin.destroyed) {
-            // Session process is running — forward to stdin
-            processForSession.stdin.write(`${message}\n`);
-            res.writeHead(202, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ status: "sent", message: userMessage }));
-          } else {
-            // Session process is not running — respawn with a follow-up prompt
-            const followUpPromptPath = path.join(
-              runtimeLogsDir,
-              `${sessionId}.follow-up.prompt.txt`
-            );
-            const followUpPrompt = `Continue the previous session. The user sent a follow-up message:\n\n${message}`;
-            await writeFile(followUpPromptPath, `${followUpPrompt}\n`, "utf8");
+          processForSession.stdin.write(`${message}\n`);
 
-            const command = buildAgentCommand(session.model, followUpPromptPath);
-            session.status = "running";
-            session.endedAt = null;
-            session.exitCode = null;
-            session.error = null;
-            session.command = command;
-            await persistRuntimeState(runtimeState);
-
-            const stageProcess = spawn(command, {
-              cwd: projectRoot,
-              shell: true,
-              env: process.env,
-            });
-            if (!runningProcess) {
-              runningProcess = stageProcess;
-              runningProcessKind = "stage";
-            }
-            runningProcessCanAcceptInput = false;
-            runningSessionProcesses.set(sessionId, stageProcess);
-
-            const logCapture = attachProcessLogCapture(
-              stageProcess,
-              session.logPath
-            );
-
-            let isFinalized = false;
-            const finalizeFollowUpSession = async (
-              code: number | null,
-              processError: Error | null = null
-            ) => {
-              if (isFinalized) {
-                return;
-              }
-              isFinalized = true;
-
-              await logCapture.flushAndClose();
-
-              const isCancelled = session.status === "cancelled";
-              session.exitCode = session.exitCode ?? code ?? null;
-              if (!isCancelled) {
-                session.status =
-                  code === 0 && processError === null ? "completed" : "failed";
-              }
-              if (session.endedAt === null) {
-                session.endedAt = new Date().toISOString();
-              }
-              if (!isCancelled && processError && !session.error) {
-                session.error = `Agent command errored: ${String(processError)}`;
-              } else if (!isCancelled && code !== 0 && !session.error) {
-                session.error = `Agent command exited with code ${code}`;
-              }
-              await persistRuntimeState(runtimeState);
-              await persistSessionAnalytics(session);
-              if (runningProcess === stageProcess) {
-                resetRunningProcessState();
-              }
-              runningSessionProcesses.delete(sessionId);
-            };
-
-            stageProcess.on("close", (code: number | null) => {
-              void finalizeFollowUpSession(code);
-            });
-
-            stageProcess.on("error", (error: Error) => {
-              void finalizeFollowUpSession(null, error);
-            });
-
-            res.writeHead(202, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ status: "continued", message: userMessage }));
-          }
+          res.writeHead(202, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ status: "sent", message: userMessage }));
         } catch (sessionInputError) {
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: String(sessionInputError) }));

@@ -11,6 +11,7 @@ import { analyticsStoryDetailRoute } from "./analytics-story-detail"
 import { epicDetailRoute } from "./epic.$epicId"
 import { improvementWorkflowRoute } from "./improvement-workflow"
 import { indexRoute } from "./index"
+import { prepareStoryRoute } from "./prepare-story.$storyId"
 import { sessionDetailRoute } from "./session.$sessionId"
 import { storyDetailRoute } from "./story.$storyId"
 
@@ -18,6 +19,7 @@ export const routeTree = rootRoute.addChildren([
   indexRoute,
   epicDetailRoute,
   improvementWorkflowRoute,
+  prepareStoryRoute,
   storyDetailRoute,
   sessionDetailRoute,
   analyticsLayoutRoute.addChildren([

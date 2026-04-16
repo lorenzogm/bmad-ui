@@ -141,7 +141,7 @@ function EpicDetailPage() {
       const response = await fetch("/api/workflow/run-skill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ skill, storyId, epicId: skill === "bmad-retrospective" ? epicId : undefined }),
+        body: JSON.stringify({ skill, storyId }),
       })
 
       if (response.status === HTTP_CONFLICT) {
@@ -178,7 +178,7 @@ function EpicDetailPage() {
       setPendingSkill(null)
       setError(String(runSkillError))
     }
-  }, [epicId])
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -310,13 +310,83 @@ function EpicDetailPage() {
     [stories]
   )
 
-  const doneCount = stories.filter((s) => s.status === "done").length
-  const inProgressCount = stories.filter((s) =>
-    s.status === "in-progress" || s.status === "review" || s.status === "ready-for-dev"
-  ).length
-  const progressPercent = stories.length > 0
-    ? Math.round((doneCount / stories.length) * PERCENT_MULTIPLIER)
-    : 0
+  const epicRunGroups = useMemo<AgentRunGroup[]>(() => {
+    if (!storyPrefix || !overviewData) {
+      return []
+    }
+
+    const history = overviewData.agentRunHistory ?? []
+    const currentSessions = overviewData.runtimeState?.sessions ?? []
+
+    const filterByEpic = (sessions: typeof currentSessions): typeof currentSessions =>
+      sessions.filter((s) => s.storyId?.startsWith(storyPrefix))
+
+    const currentFiltered = filterByEpic(currentSessions)
+    const currentGroup: AgentRunGroup | null =
+      currentFiltered.length > 0
+        ? {
+            id: "run-current",
+            startedAt: overviewData.runtimeState?.startedAt ?? new Date().toISOString(),
+            endedAt:
+              overviewData.runtimeState?.status === "running"
+                ? null
+                : (currentFiltered
+                    .map((s) => s.endedAt)
+                    .filter((t): t is string => t !== null)
+                    .sort()
+                    .at(-1) ?? null),
+            sessions: [...currentFiltered].sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
+          }
+        : null
+
+    const historyGroups = history
+      .map((g) => ({
+        ...g,
+        sessions: filterByEpic(g.sessions).sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1)),
+      }))
+      .filter((g) => g.sessions.length > 0)
+
+    return currentGroup ? [currentGroup, ...historyGroups] : historyGroups
+  }, [overviewData, storyPrefix])
+
+  const epicAgentSessions = useMemo<AgentSession[]>(() => {
+    if (!storyPrefix || !overviewData) {
+      return []
+    }
+    return (overviewData.agentSessions ?? []).filter((s) => s.storyId?.startsWith(storyPrefix))
+  }, [overviewData, storyPrefix])
+
+  const startSession = useCallback(async (sessionId: string) => {
+    setSessionActionPending({ sessionId, action: "start" })
+    try {
+      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/start`, {
+        method: "POST",
+      })
+      if (!response.ok && response.status !== HTTP_CONFLICT) {
+        throw new Error(`start failed: ${response.status}`)
+      }
+    } catch (sessionStartError) {
+      setError(String(sessionStartError))
+    } finally {
+      setSessionActionPending(null)
+    }
+  }, [])
+
+  const abortSession = useCallback(async (sessionId: string) => {
+    setSessionActionPending({ sessionId, action: "abort" })
+    try {
+      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/abort`, {
+        method: "POST",
+      })
+      if (!response.ok) {
+        throw new Error(`abort failed: ${response.status}`)
+      }
+    } catch (sessionAbortError) {
+      setError(String(sessionAbortError))
+    } finally {
+      setSessionActionPending(null)
+    }
+  }, [])
 
   if (loading) {
     return <main className="screen loading">Loading epic detail...</main>
@@ -333,39 +403,14 @@ function EpicDetailPage() {
 
   return (
     <main className="screen">
-      <section className="panel reveal epic-header">
-        <div className="epic-header-top">
-          <Link className="epic-back-link" to="/">← Home</Link>
-          <span className={`step-badge step-${data.epic.status}`}>{data.epic.status}</span>
-        </div>
-        <p className="eyebrow">Epic {data.epic.number}</p>
-        <h1 className="epic-title">{data.epic.name || data.epic.id}</h1>
-        {data.epic.description ? (
-          <p className="epic-description">{data.epic.description}</p>
-        ) : null}
-        <div className="epic-stats">
-          <div className="epic-stat">
-            <span className="epic-stat-value">{stories.length}</span>
-            <span className="epic-stat-label">Stories</span>
-          </div>
-          <div className="epic-stat">
-            <span className="epic-stat-value epic-stat-done">{doneCount}</span>
-            <span className="epic-stat-label">Done</span>
-          </div>
-          <div className="epic-stat">
-            <span className="epic-stat-value epic-stat-progress">{inProgressCount}</span>
-            <span className="epic-stat-label">In Progress</span>
-          </div>
-          <div className="epic-stat">
-            <span className="epic-stat-value">{progressPercent}%</span>
-            <span className="epic-stat-label">Complete</span>
-          </div>
-        </div>
-        {stories.length > 0 ? (
-          <div className="epic-progress-bar">
-            <div className="epic-progress-fill" style={{ width: `${progressPercent}%` }} />
-          </div>
-        ) : null}
+      <section className="panel reveal">
+        <h2>Epic Summary</h2>
+        <p className="eyebrow">Epic Detail</p>
+        <h1>{data.epic.id}</h1>
+        <p className="subtitle">Current status: {data.epic.status}</p>
+        <p>
+          <Link to="/">Back to home</Link>
+        </p>
       </section>
 
       <section className="panel reveal delay-1">
@@ -399,10 +444,6 @@ function EpicDetailPage() {
                   rawReviewState === "running" && !isReviewAgentRunning
                     ? "not-started"
                     : rawReviewState
-
-                const latestCreateSession = findLatestSession(runtimeSessions, story.id, "bmad-create-story")
-                const latestDevSession = findLatestSession(runtimeSessions, story.id, "bmad-dev-story")
-                const latestReviewSession = findLatestSession(runtimeSessions, story.id, "bmad-code-review")
 
                 const SKILL_ORDER: { skill: SkillName; state: string }[] = [
                   { skill: "bmad-create-story", state: createState },
@@ -438,19 +479,18 @@ function EpicDetailPage() {
                         <span className={`step-badge step-${createState}`}>
                           {storyStepLabel(createState)}
                         </span>
-                        <SessionLink session={latestCreateSession} />
                         {nextSkill === "bmad-create-story" && (
-                          <button
+                          <Link
                             className="icon-button icon-button-play"
-                            disabled={pendingSkill !== null}
-                            onClick={() => void handleRunSkill("bmad-create-story", story.id)}
-                            title={`Run bmad-create-story for ${story.id}`}
-                            type="button"
+                            params={{ storyId: story.id }}
+                            search={{ skill: "bmad-create-story", epicId }}
+                            title={`Prepare bmad-create-story for ${story.id}`}
+                            to="/prepare-story/$storyId"
                           >
                             <span aria-hidden="true" className="icon-glyph">
                               ▶
                             </span>
-                          </button>
+                          </Link>
                         )}
                       </div>
                     </td>
@@ -459,21 +499,29 @@ function EpicDetailPage() {
                         <span className={`step-badge step-${devState}`}>
                           {storyStepLabel(devState)}
                         </span>
-                        <SessionLink session={latestDevSession} />
-                        {nextSkill === "bmad-dev-story" && (
-                          <button
+                        {nextSkill === "bmad-dev-story" && !isBlocked && (
+                          <Link
                             className="icon-button icon-button-play"
-                            disabled={pendingSkill !== null || isBlocked}
-                            onClick={() => void handleRunSkill("bmad-dev-story", story.id)}
-                            title={
-                              isBlocked ? blockedTooltip : `Run bmad-dev-story for ${story.id}`
-                            }
-                            type="button"
+                            params={{ storyId: story.id }}
+                            search={{ skill: "bmad-dev-story", epicId }}
+                            title={`Prepare bmad-dev-story for ${story.id}`}
+                            to="/prepare-story/$storyId"
                           >
                             <span aria-hidden="true" className="icon-glyph">
                               ▶
                             </span>
-                          </button>
+                          </Link>
+                        )}
+                        {nextSkill === "bmad-dev-story" && isBlocked && (
+                          <span
+                            className="icon-button icon-button-play"
+                            style={{ opacity: 0.4, cursor: "not-allowed" }}
+                            title={blockedTooltip}
+                          >
+                            <span aria-hidden="true" className="icon-glyph">
+                              ▶
+                            </span>
+                          </span>
                         )}
                       </div>
                     </td>
@@ -482,7 +530,6 @@ function EpicDetailPage() {
                         <span className={`step-badge step-${reviewState}`}>
                           {storyStepLabel(reviewState)}
                         </span>
-                        <SessionLink session={latestReviewSession} />
                         {nextSkill === "bmad-code-review" && (
                           <button
                             className="icon-button icon-button-play"
@@ -546,6 +593,14 @@ function EpicDetailPage() {
           </div>
         </section>
       ) : null}
+
+      <AgentSessionsSection
+        agentSessions={epicAgentSessions}
+        onAbortSession={abortSession}
+        onStartSession={startSession}
+        runGroups={epicRunGroups}
+        sessionActionPending={sessionActionPending}
+      />
 
       {error ? <p className="error-banner">{error}</p> : null}
     </main>
