@@ -366,25 +366,13 @@ jobs:
           mkdir -p _bmad-custom/bmad-ui/.vercel
           echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > _bmad-custom/bmad-ui/.vercel/project.json
 
-      - name: Install dependencies
-        run: pnpm install
-        working-directory: _bmad-custom/bmad-ui
-
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
-
-      - name: Pull Vercel Preview Environment
-        run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
-        working-directory: _bmad-custom/bmad-ui
-
-      - name: Build Preview Artifacts
-        run: vercel build --token=$VERCEL_TOKEN
-        working-directory: _bmad-custom/bmad-ui
 
       - name: Deploy to Vercel Preview
         id: preview-deploy
         run: |
-          PREVIEW_URL=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN)
+          PREVIEW_URL=$(vercel deploy --token=$VERCEL_TOKEN)
           echo "preview-url=$PREVIEW_URL" >> $GITHUB_OUTPUT
         working-directory: _bmad-custom/bmad-ui
 
@@ -486,25 +474,13 @@ jobs:
           mkdir -p _bmad-custom/bmad-ui/.vercel
           echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > _bmad-custom/bmad-ui/.vercel/project.json
 
-      - name: Install dependencies
-        run: pnpm install
-        working-directory: _bmad-custom/bmad-ui
-
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
-
-      - name: Pull Vercel Production Environment
-        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-        working-directory: _bmad-custom/bmad-ui
-
-      - name: Build Production Artifacts
-        run: vercel build --prod --token=$VERCEL_TOKEN
-        working-directory: _bmad-custom/bmad-ui
 
       - name: Deploy to Vercel Production
         id: production-deploy
         run: |
-          URL=$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN)
+          URL=$(vercel deploy --prod --token=$VERCEL_TOKEN)
           echo "url=$URL" >> $GITHUB_OUTPUT
         working-directory: _bmad-custom/bmad-ui
 
