@@ -173,9 +173,9 @@ Maintainers and contributors can safely manage secrets through dotenvx with envi
 Maintainers and contributors can trigger automated validation and deployment workflows on repository changes, with enforced quality gates before protected branch merges and observable pipeline outcomes.
 **FRs covered:** FR16, FR17, FR18, FR19, FR20, FR21
 
-### Epic 5: Developer Tooling & Portable Installation
-Contributors can install, run, lint, type-check, and build the project using pnpm following documented standards. Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`), with Biome, TypeScript, and VS Code-first conventions established and enforced.
-**FRs covered:** FR22, FR23, FR24, FR25, FR26, FR27
+### Epic 5: Portable Installation & Developer Tooling
+Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`) — no monorepo, no global setup. The app lives entirely under `_bmad-custom/bmad-ui` and is self-contained. Contributors can install, run, lint, type-check, and build using npm with Biome and TypeScript conventions enforced.
+**FRs covered:** FR22, FR23, FR24, FR25, FR27
 
 ### Epic 6: Onboarding, Documentation & Adoption Enablement
 New users can complete local setup and deployment from repository documentation in under 15 minutes; support users can diagnose common failures from a troubleshooting guide; contributors can submit improvements; maintainer can observe early adoption signals.
@@ -185,9 +185,10 @@ New users can complete local setup and deployment from repository documentation 
 Users can access bmad-ui as a working visual companion to bmad orchestration workflows, observing flow and analysis context without reading raw logs. Maintainer can validate the self-referential execution loop, establishing the Phase 2 baseline.
 **FRs covered:** FR28, FR29, FR30, FR31, FR32, FR38, FR39, FR40
 
----
+### Epic 8: UI Improvements & Polish
+Users experience a polished, responsive bmad-ui with improved empty states, loading skeletons, navigation clarity, and accessible status indicators — making the tool feel production-ready and easy to use daily.
 
-## Epic 1: Open-Source Repository Governance & Publication
+---
 
 Maintainer can publish bmad-ui as a professional, governed public open-source repository with branch protections, labels, contribution guidelines, and project metadata all in place.
 
@@ -529,51 +530,30 @@ So that I can quickly identify and fix failing stages.
 
 ---
 
-## Epic 5: Developer Tooling and Portable Installation
+## Epic 5: Portable Installation & Developer Tooling
 
-Contributors can install, run, lint, type-check, and build the project using pnpm following documented standards. Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`), with Biome, TypeScript, and VS Code-first conventions established and enforced.
+Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`) — no monorepo, no global setup. The app lives entirely under `_bmad-custom/bmad-ui` and is self-contained. Contributors can install, run, lint, type-check, and build using npm with Biome and TypeScript conventions enforced.
 
 **Story to FR mapping:**
-- Story 5.1 -> FR22
-- Story 5.2 -> FR26
-- Story 5.3 -> FR24, FR25
-- Story 5.4 -> FR23, FR27
+- Story 5.1 -> FR22, FR27
+- Story 5.2 -> FR24, FR25
+- Story 5.3 -> FR23
 
-### Story 5.1: Standardize pnpm Project Commands
-
-As a contributor,
-I want a canonical set of pnpm commands for install, dev, lint, typecheck, test, and build,
-So that local and CI workflows are predictable and aligned.
-
-**Acceptance Criteria:**
-
-**Given** the project scripts,
-**When** reviewed,
-**Then** install, dev, lint, typecheck, test, and build commands are defined and documented
-
-**Given** a fresh clone,
-**When** pnpm install and pnpm validation commands are executed,
-**Then** the project runs without undocumented setup steps
-
-**Given** CI execution,
-**When** commands run there,
-**Then** they use the same pnpm scripts used locally
-
-### Story 5.2: Create npx bmad-method-ui Install CLI
+### Story 5.1: Create `npx bmad-method-ui install` CLI
 
 As a bmad user,
 I want to run `npx bmad-method-ui install` in my bmad project,
-So that bmad-ui is added to my project's `_bmad-custom` folder without manual copying or monorepo setup.
+So that bmad-ui is added to my project's `_bmad-custom/bmad-ui` folder instantly without manual copying or monorepo setup.
 
 **Acceptance Criteria:**
 
 **Given** any directory containing a bmad project,
 **When** `npx bmad-method-ui install` is run,
-**Then** the `_bmad-custom/bmad-ui` app is copied into the current directory with all source files intact
+**Then** the `_bmad-custom/bmad-ui` app is copied into the current directory with all source files intact and a printed next-steps message is shown
 
 **Given** the install completes,
 **When** the user follows the printed next steps,
-**Then** they can run `cd _bmad-custom/bmad-ui && pnpm install && pnpm dev` to start the UI
+**Then** they can run `cd _bmad-custom/bmad-ui && npm install && npm run dev` to start the UI
 
 **Given** the npm package is published,
 **When** a user runs `npx bmad-method-ui install`,
@@ -581,9 +561,13 @@ So that bmad-ui is added to my project's `_bmad-custom` folder without manual co
 
 **Given** an existing `_bmad-custom/bmad-ui` directory,
 **When** install is run again,
-**Then** the CLI warns the user before overwriting
+**Then** the CLI warns the user before overwriting and requires explicit confirmation
 
-### Story 5.3: Enforce Code Quality Tooling Baseline
+**Given** a successful install,
+**When** the user opens `_bmad-custom/bmad-ui`,
+**Then** the folder is fully self-contained: no external workspace dependencies, no monorepo tooling required
+
+### Story 5.2: Enforce Code Quality Tooling Baseline
 
 As a maintainer,
 I want Biome and TypeScript quality standards enforced,
@@ -603,7 +587,7 @@ So that contributors follow consistent formatting and typing rules.
 **When** quality checks run in CI,
 **Then** violations fail the pipeline with actionable diagnostics
 
-### Story 5.4: Provide VS Code-First Developer Workflow
+### Story 5.3: Provide VS Code-First Developer Workflow
 
 As a contributor,
 I want a clear VS Code-oriented setup and workflow guide,
@@ -827,3 +811,95 @@ So that the project can evolve without destabilizing foundational workflows.
 **Given** architecture and project-context artifacts,
 **When** reviewed,
 **Then** they reflect a stable baseline for future refactoring and feature growth
+
+---
+
+## Epic 8: UI Improvements & Polish
+
+Users experience a polished, responsive bmad-ui with improved empty states, loading skeletons, navigation clarity, and accessible status indicators — making the tool feel production-ready and easy to use daily.
+
+**Story to FR mapping:**
+- Story 8.1 -> NFR3, NFR21, NFR22
+- Story 8.2 -> NFR3, NFR21
+- Story 8.3 -> NFR20, NFR21
+- Story 8.4 -> NFR3, NFR22
+
+### Story 8.1: Improve Empty States and Loading Feedback
+
+As a user,
+I want clear loading skeletons and empty state messages,
+So that I never see a blank screen or raw spinner without context.
+
+**Acceptance Criteria:**
+
+**Given** any page loading data,
+**When** a fetch is in progress,
+**Then** a skeleton or shimmer placeholder is shown that matches the final layout
+
+**Given** a page with no data,
+**When** loaded,
+**Then** a friendly empty state message with a relevant icon and suggested action is displayed
+
+**Given** a fetch error,
+**When** encountered,
+**Then** an error state with a retry action replaces the blank content area
+
+### Story 8.2: Navigation & Active Route Clarity
+
+As a user,
+I want the active navigation item to be clearly highlighted,
+So that I always know which section of the app I'm in.
+
+**Acceptance Criteria:**
+
+**Given** any top-level route,
+**When** the user is on that page,
+**Then** the corresponding nav item is visually distinct using `var(--highlight)` or a background accent
+
+**Given** the navigation bar,
+**When** viewed on a narrow viewport,
+**Then** nav items remain accessible and do not overflow or truncate illegibly
+
+**Given** navigating between routes,
+**When** the route changes,
+**Then** the active state updates immediately without a stale highlight on the previous item
+
+### Story 8.3: Status Badge Consistency Across Views
+
+As a user,
+I want consistent, accessible status badges on all entities (epics, stories, sessions),
+So that I can quickly scan status without decoding inconsistent label styles.
+
+**Acceptance Criteria:**
+
+**Given** any status value (done, in-progress, ready, backlog, running, completed),
+**When** displayed,
+**Then** it uses the canonical `.step-badge` variant with the correct CSS variable color
+
+**Given** all views that show statuses,
+**When** reviewed,
+**Then** no hardcoded colors or one-off badge styles exist outside the design system
+
+**Given** screen-reader context,
+**When** a badge is read aloud,
+**Then** the status label text is meaningful (e.g., "Done", "In Progress") not just an icon
+
+### Story 8.4: Responsive Layout and Spacing Refinements
+
+As a user,
+I want the layout to feel clean and well-proportioned on common screen sizes,
+So that the app is comfortable to use for extended monitoring sessions.
+
+**Acceptance Criteria:**
+
+**Given** the dashboard at 1280px wide,
+**When** rendered,
+**Then** panels use consistent gap and padding without unintended overflow or crowding
+
+**Given** long text content (epic titles, session notes),
+**When** displayed in a panel,
+**Then** text truncates gracefully with ellipsis rather than breaking the layout
+
+**Given** the session table and epic list,
+**When** viewed,
+**Then** rows have consistent row height and readable line spacing aligned with the design system
