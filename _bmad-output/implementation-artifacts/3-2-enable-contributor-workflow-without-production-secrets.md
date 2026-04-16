@@ -3,14 +3,14 @@ storyId: '3-2'
 storyTitle: 'Enable Contributor Workflow Without Production Secrets'
 epicId: '3'
 epicTitle: 'Secrets & Environment Management'
-status: 'review'
+status: 'in-progress'
 created: '2026-04-15'
 priority: 'high'
 ---
 
 # Story 3.2: Enable Contributor Workflow Without Production Secrets
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -41,6 +41,10 @@ so that I can contribute safely without privileged credentials.
   - [x] Confirm `dotenvx run` fails with a clear message when `DOTENV_PRIVATE_KEY` is absent
   - [x] Document the expected error so contributors know they've hit a maintainer-only boundary
 - [x] Update sprint-status.yaml to `ready-for-dev` (done automatically)
+
+### Review Findings
+
+- [ ] [Review][Patch] Story checklist says `ready-for-dev` but the workflow transition applied is `review` [_bmad-output/implementation-artifacts/3-2-enable-contributor-workflow-without-production-secrets.md:43]
 
 ## Dev Notes
 
