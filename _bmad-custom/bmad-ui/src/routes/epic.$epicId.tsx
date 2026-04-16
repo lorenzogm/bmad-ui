@@ -1,6 +1,7 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { storyStepLabel } from "../app"
+import { IS_LOCAL_MODE, apiUrl } from "../lib/mode"
 import type {
   EpicDetailResponse,
   OverviewResponse,
@@ -143,6 +144,9 @@ function EpicDetailPage() {
   const initiatedRef = useRef(new Set<string>())
 
   const handleRunSkill = useCallback(async (skill: WorkflowSkill, storyId?: string) => {
+    if (!IS_LOCAL_MODE) {
+      return
+    }
     setPendingSkill(storyId ? `${skill}:${storyId}` : skill)
     setError(null)
 
@@ -196,8 +200,8 @@ function EpicDetailPage() {
     const load = async () => {
       try {
         const [epicResponse, overviewResponse] = await Promise.all([
-          fetch(`/api/epic/${encodeURIComponent(epicId)}`),
-          fetch("/api/overview"),
+          fetch(apiUrl(`/api/epic/${encodeURIComponent(epicId)}`)),
+          fetch(apiUrl("/api/overview")),
         ])
         if (!epicResponse.ok) {
           throw new Error(`epic detail request failed: ${epicResponse.status}`)
@@ -229,7 +233,7 @@ function EpicDetailPage() {
 
     load()
 
-    if (typeof EventSource !== "undefined") {
+    if (IS_LOCAL_MODE && typeof EventSource !== "undefined") {
       eventSource = new EventSource("/api/events/overview")
       eventSource.onmessage = (event) => {
         if (!mounted) return
@@ -342,7 +346,7 @@ function EpicDetailPage() {
   )
 
   const handlePlanAllStories = useCallback(async () => {
-    if (!data) return
+    if (!IS_LOCAL_MODE || !data) return
     setIsPlanning(true)
     setBulkError(null)
 
@@ -386,6 +390,7 @@ function EpicDetailPage() {
   }, [data, stories])
 
   const handleDevelopAllStories = useCallback(() => {
+    if (!IS_LOCAL_MODE) return
     initiatedRef.current.clear()
     setIsOrchestrating(true)
     try {

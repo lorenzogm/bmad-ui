@@ -1447,6 +1447,23 @@
         "tokensCached": 1400000,
         "totalTokens": 1515700
       }
+    },
+    "workflow-bmad-code-review-1776380863789": {
+      "sessionId": "workflow-bmad-code-review-1776380863789",
+      "storyId": "4-5-validate-end-to-end-pipeline-and-vercel-deployment",
+      "epicId": "epic-4",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-16T23:07:43.791Z",
+      "endedAt": "2026-04-16T23:10:48.537Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 906200,
+        "tokensOut": 12500,
+        "tokensCached": 794600,
+        "totalTokens": 918700
+      }
     }
   }
 }

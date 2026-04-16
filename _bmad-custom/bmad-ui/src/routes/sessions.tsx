@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
+import { apiUrl } from "../lib/mode"
 import type { AnalyticsResponse, SessionAnalytics } from "../types"
 import { rootRoute } from "./__root"
 
@@ -43,7 +44,7 @@ function SessionsPage() {
   } = useQuery<SessionAnalytics[]>({
     queryKey: ["sessions"],
     queryFn: async () => {
-      const response = await fetch("/api/analytics")
+      const response = await fetch(apiUrl("/api/analytics"))
       if (!response.ok) throw new Error(`Request failed: ${response.status}`)
       const payload = (await response.json()) as AnalyticsResponse
       if (!Array.isArray(payload.sessions)) return []

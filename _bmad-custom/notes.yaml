@@ -1,0 +1,39 @@
+notes:
+  - id: note-1776382258979
+    text: "pues eso"
+    color: teal
+    createdAt: 2026-04-16T23:30:58.979Z
+  - id: note-1776382270038
+    text: "pues eso asdfasdf"
+    color: amber
+    createdAt: 2026-04-16T23:31:10.038Z
+  - id: note-1776382295761
+    text: "asdf"
+    color: teal
+    createdAt: 2026-04-16T23:31:35.761Z
+  - id: note-1776382298083
+    text: "asdf"
+    color: teal
+    createdAt: 2026-04-16T23:31:38.083Z
+  - id: note-1776382300335
+    text: "asdf"
+    color: teal
+    createdAt: 2026-04-16T23:31:40.335Z
+  - id: note-1776382303100
+    text: "asdf"
+    color: teal
+    createdAt: 2026-04-16T23:31:43.100Z
+  - id: note-1776382341366
+    text: "\\"asdfasdfasdfasdfasdfasdfasd fasdfasdfasdfasdfasdf"
+    color: teal
+    createdAt: 2026-04-16T23:32:21.366Z
+  - id: note-1776382365250
+    text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    color: teal
+    createdAt: 2026-04-16T23:32:45.250Z
+  - id: note-1776382370894
+    text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    color: teal
+    createdAt: 2026-04-16T23:32:50.894Z

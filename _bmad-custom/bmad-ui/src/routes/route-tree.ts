@@ -9,8 +9,8 @@ import { analyticsSessionsRoute } from "./analytics-sessions"
 import { analyticsStoriesRoute } from "./analytics-stories"
 import { analyticsStoryDetailRoute } from "./analytics-story-detail"
 import { epicDetailRoute } from "./epic.$epicId"
+import { homeRoute } from "./home"
 import { improvementWorkflowRoute } from "./improvement-workflow"
-import { indexRoute } from "./index"
 import { prepareStoryRoute } from "./prepare-story.$storyId"
 import { sessionDetailRoute } from "./session.$sessionId"
 import { sessionsRoute } from "./sessions"
@@ -20,7 +20,7 @@ import { workflowPhaseRoute } from "./workflow.$phaseId"
 import { workflowIndexRoute } from "./workflow-index"
 
 export const routeTree = rootRoute.addChildren([
-  indexRoute,
+  homeRoute,
   sessionsRoute,
   epicDetailRoute,
   improvementWorkflowRoute,

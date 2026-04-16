@@ -1,6 +1,7 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 import { storyStepLabel } from "../app"
+import { apiUrl } from "../lib/mode"
 import type { StoryDetailResponse, StoryPreviewResponse, WorkflowStepState } from "../types"
 import { rootRoute } from "./__root"
 
@@ -184,8 +185,8 @@ function StoryDetailPage() {
     const load = async () => {
       try {
         const [detailRes, previewRes] = await Promise.all([
-          fetch(`/api/story/${encodeURIComponent(storyId)}`),
-          fetch(`/api/story-preview/${encodeURIComponent(storyId)}`),
+          fetch(apiUrl(`/api/story/${encodeURIComponent(storyId)}`)),
+          fetch(apiUrl(`/api/story-preview/${encodeURIComponent(storyId)}`)),
         ])
         if (!detailRes.ok) {
           throw new Error(`detail request failed: ${detailRes.status}`)

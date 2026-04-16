@@ -3,6 +3,7 @@ import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-route
 import { useCallback, useMemo, useState } from "react"
 import type { WorkflowPhase, WorkflowStep } from "../app"
 import { detectWorkflowStatus, storyStepLabel } from "../app"
+import { IS_LOCAL_MODE, apiUrl } from "../lib/mode"
 import type { OverviewResponse, RuntimeSession } from "../types"
 import { workflowLayoutRoute } from "./workflow"
 
@@ -20,7 +21,7 @@ function WorkflowPhaseDetailPage() {
   const { data, isLoading, error } = useQuery<OverviewResponse>({
     queryKey: ["overview"],
     queryFn: async () => {
-      const response = await fetch("/api/overview")
+      const response = await fetch(apiUrl("/api/overview"))
       if (!response.ok) {
         throw new Error(`overview request failed: ${response.status}`)
       }
@@ -30,7 +31,7 @@ function WorkflowPhaseDetailPage() {
 
   const runtimeSessions: RuntimeSession[] = data?.runtimeState?.sessions ?? []
 
-  const { phases, nextActionStep } = detectWorkflowStatus(
+  const { phases } = detectWorkflowStatus(
     data?.planningArtifactFiles ?? [],
     data?.implementationArtifactFiles ?? [],
     runtimeSessions
@@ -51,6 +52,7 @@ function WorkflowPhaseDetailPage() {
 
   const handleRunSkill = useCallback(
     async (step: WorkflowStep) => {
+      if (!IS_LOCAL_MODE) return
       setPendingSkill(step.skill)
       try {
         const response = await fetch("/api/workflow/run-skill", {
@@ -81,6 +83,7 @@ function WorkflowPhaseDetailPage() {
   )
   const handleSkipStep = useCallback(
     async (step: WorkflowStep) => {
+      if (!IS_LOCAL_MODE) return
       setPendingSkip(step.id)
       try {
         const response = await fetch("/api/workflow/skip-step", {
@@ -90,6 +93,28 @@ function WorkflowPhaseDetailPage() {
         })
         if (!response.ok) {
           throw new Error(`skip request failed: ${response.status}`)
+        }
+        void queryClient.invalidateQueries({ queryKey: ["overview"] })
+      } catch (_err) {
+        // ignore — server logs the error
+      } finally {
+        setPendingSkip(null)
+      }
+    },
+    [queryClient]
+  )
+  const handleUnskipStep = useCallback(
+    async (step: WorkflowStep) => {
+      if (!IS_LOCAL_MODE) return
+      setPendingSkip(step.id)
+      try {
+        const response = await fetch("/api/workflow/unskip-step", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stepId: step.id }),
+        })
+        if (!response.ok) {
+          throw new Error(`unskip request failed: ${response.status}`)
         }
         void queryClient.invalidateQueries({ queryKey: ["overview"] })
       } catch (_err) {
@@ -196,12 +221,6 @@ function WorkflowPhaseDetailPage() {
             <tbody>
               {phase.steps.map((step, index) => {
                 const isRunning = step.skill === effectiveActiveSkill
-                const isNext = nextActionStep?.id === step.id
-                const isSequentialNext =
-                  phase.isSequential &&
-                  !step.isCompleted &&
-                  index === phase.steps.findIndex((s) => !s.isCompleted)
-                const isActionable = isNext || isSequentialNext
                 const matchingSession = runtimeSessions.find(
                   (s) => s.skill === step.skill && s.status !== "planned"
                 )
@@ -212,7 +231,7 @@ function WorkflowPhaseDetailPage() {
                       <span
                         className={`improvement-step-number${step.isCompleted ? " improvement-step-number-done" : ""}`}
                       >
-                        {step.isCompleted ? "✓" : index + 1}
+                        {index + 1}
                       </span>
                     </td>
                     <td>
@@ -243,7 +262,7 @@ function WorkflowPhaseDetailPage() {
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
                       <div className="improvement-actions">
-                        {isActionable && !isRunning && !step.isSkipped && (
+                        {!isRunning && !step.isSkipped && !step.isCompleted && (
                           <button
                             className="icon-button icon-button-play"
                             disabled={pendingSkill !== null}
@@ -266,6 +285,19 @@ function WorkflowPhaseDetailPage() {
                           >
                             <span aria-hidden="true" className="icon-glyph">
                               ⏭
+                            </span>
+                          </button>
+                        )}
+                        {step.isOptional && step.isSkipped && (
+                          <button
+                            className="icon-button icon-button-play"
+                            disabled={pendingSkip !== null}
+                            onClick={() => void handleUnskipStep(step)}
+                            title={`Unskip ${step.name}`}
+                            type="button"
+                          >
+                            <span aria-hidden="true" className="icon-glyph">
+                              ↩
                             </span>
                           </button>
                         )}

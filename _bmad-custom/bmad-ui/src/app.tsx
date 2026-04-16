@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
+import { IS_LOCAL_MODE, apiUrl } from "./lib/mode"
 import type { AgentRunGroup, AgentSession, OverviewResponse, RuntimeSession } from "./types"
 
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
@@ -778,6 +779,7 @@ function BMADWorkflowSection(props: {
   }
 
   const handlePlayClick = async (step: WorkflowStep) => {
+    if (!IS_LOCAL_MODE) return
     setPendingActiveSkill(step.skill)
     try {
       const response = await fetch("/api/workflow/run-skill", {
@@ -1122,7 +1124,7 @@ export function HomePage() {
 
     const load = async () => {
       try {
-        const response = await fetch("/api/overview")
+        const response = await fetch(apiUrl("/api/overview"))
         if (!response.ok) {
           throw new Error(`overview request failed: ${response.status}`)
         }
@@ -1137,7 +1139,7 @@ export function HomePage() {
 
     load()
 
-    if (typeof EventSource !== "undefined") {
+    if (IS_LOCAL_MODE && typeof EventSource !== "undefined") {
       eventSource = new EventSource("/api/events/overview")
       eventSource.onmessage = (event) => {
         try {

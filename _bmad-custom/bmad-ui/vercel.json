@@ -1,5 +1,11 @@
 {
   "rewrites": [
+    { "source": "/api/overview", "destination": "/data/overview.json" },
+    { "source": "/api/analytics", "destination": "/data/analytics.json" },
+    { "source": "/api/epic/:id", "destination": "/data/epic/:id.json" },
+    { "source": "/api/story-preview/:id", "destination": "/data/story-preview/:id.json" },
+    { "source": "/api/story/:id", "destination": "/data/story/:id.json" },
+    { "source": "/api/session/:id", "destination": "/data/session/:id.json" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

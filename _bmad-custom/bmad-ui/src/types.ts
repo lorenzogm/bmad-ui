@@ -93,6 +93,7 @@ export type OverviewResponse = {
     epics: Array<{
       id: string
       number: number
+      name: string
       status: EpicStatus
       storyCount: number
       plannedStoryCount: number

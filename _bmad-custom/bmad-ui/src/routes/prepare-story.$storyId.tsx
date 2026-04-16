@@ -1,6 +1,7 @@
 import { createRoute, Link, useNavigate, useParams, useSearch } from "@tanstack/react-router"
 import { marked } from "marked"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { IS_LOCAL_MODE, apiUrl } from "../lib/mode"
 import type { StoryPreviewResponse } from "../types"
 import { rootRoute } from "./__root"
 
@@ -157,7 +158,7 @@ function PrepareStoryPage() {
 
     const load = async () => {
       try {
-        const response = await fetch(`/api/story-preview/${encodeURIComponent(storyId)}`)
+        const response = await fetch(apiUrl(`/api/story-preview/${encodeURIComponent(storyId)}`))
         if (!response.ok) {
           throw new Error(`preview request failed: ${response.status}`)
         }
@@ -182,6 +183,7 @@ function PrepareStoryPage() {
   }, [storyId])
 
   const handleStart = useCallback(async () => {
+    if (!IS_LOCAL_MODE) return
     setStarting(true)
     setError(null)
 

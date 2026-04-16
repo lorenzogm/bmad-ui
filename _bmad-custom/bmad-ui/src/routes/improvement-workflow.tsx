@@ -1,6 +1,7 @@
 import { createRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
 import { IMPROVEMENT_STEPS, storyStepLabel } from "../app"
+import { IS_LOCAL_MODE } from "../lib/mode"
 import type { WorkflowStepState } from "../types"
 import { rootRoute } from "./__root"
 
@@ -22,6 +23,7 @@ function ImprovementWorkflowPage() {
 
   const handleRunSkill = useCallback(
     async (skill: string) => {
+      if (!IS_LOCAL_MODE) return
       setPendingSkill(skill)
       setError(null)
 

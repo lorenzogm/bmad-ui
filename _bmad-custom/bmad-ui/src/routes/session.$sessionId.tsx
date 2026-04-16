@@ -1,5 +1,6 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react"
+import { IS_LOCAL_MODE, apiUrl } from "../lib/mode"
 import type { SessionDetailResponse } from "../types"
 import { rootRoute } from "./__root"
 
@@ -391,7 +392,7 @@ function SessionDetailPage() {
 
     const load = async () => {
       try {
-        const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}`)
+        const response = await fetch(apiUrl(`/api/session/${encodeURIComponent(sessionId)}`))
         if (!response.ok) {
           throw new Error(`session detail request failed: ${response.status}`)
         }
@@ -407,7 +408,7 @@ function SessionDetailPage() {
 
     load()
 
-    if (typeof EventSource !== "undefined") {
+    if (IS_LOCAL_MODE && typeof EventSource !== "undefined") {
       eventSource = new EventSource(`/api/events/session/${encodeURIComponent(sessionId)}`)
       eventSource.onmessage = (event) => {
         try {
@@ -550,37 +551,39 @@ function SessionDetailPage() {
             {showPrompt ? "Hide prompt" : "Prompt"}
           </button>
           {/* biome-ignore lint/a11y/useSemanticElements: action group in session header */}
-          <div className="session-actions" role="group">
-            <button
-              aria-label="Start session"
-              className="icon-button icon-button-play"
-              disabled={
-                sessionActionPending !== null || session.status !== "planned" || data.isRunning
-              }
-              onClick={handleStartSession}
-              title="Start session"
-              type="button"
-            >
-              <span aria-hidden="true" className="icon-glyph">
-                ▶
-              </span>
-            </button>
-            <button
-              aria-label="Abort session"
-              className="icon-button icon-button-delete"
-              disabled={
-                sessionActionPending !== null ||
-                !(session.status === "planned" || session.status === "running")
-              }
-              onClick={handleAbortSession}
-              title="Abort session"
-              type="button"
-            >
-              <span aria-hidden="true" className="icon-glyph">
-                ✕
-              </span>
-            </button>
-          </div>
+          {IS_LOCAL_MODE ? (
+            <div className="session-actions" role="group">
+              <button
+                aria-label="Start session"
+                className="icon-button icon-button-play"
+                disabled={
+                  sessionActionPending !== null || session.status !== "planned" || data.isRunning
+                }
+                onClick={handleStartSession}
+                title="Start session"
+                type="button"
+              >
+                <span aria-hidden="true" className="icon-glyph">
+                  ▶
+                </span>
+              </button>
+              <button
+                aria-label="Abort session"
+                className="icon-button icon-button-delete"
+                disabled={
+                  sessionActionPending !== null ||
+                  !(session.status === "planned" || session.status === "running")
+                }
+                onClick={handleAbortSession}
+                title="Abort session"
+                type="button"
+              >
+                <span aria-hidden="true" className="icon-glyph">
+                  ✕
+                </span>
+              </button>
+            </div>
+          ) : null}
         </div>
       </header>
 
@@ -665,7 +668,7 @@ function SessionDetailPage() {
         ) : null}
 
         {entries.length > 0 ? (
-          <details className="chat-log-collapse" open={data.isRunning}>
+          <details className="chat-log-collapse">
             <summary className="chat-log-collapse-summary">
               Full conversation ({entries.length} entries)
             </summary>
@@ -673,16 +676,16 @@ function SessionDetailPage() {
               {entries.map((entry) => (
                 <LogEntryView entry={entry} key={entry.id} />
               ))}
-
-              {data.isRunning && entries.length > 0 ? (
-                <div className="chat-typing-indicator">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-              ) : null}
             </div>
           </details>
+        ) : null}
+
+        {data.isRunning && entries.length > 0 ? (
+          <div className="chat-typing-indicator">
+            <span />
+            <span />
+            <span />
+          </div>
         ) : null}
 
         {data.summary && !data.isRunning ? (
@@ -696,38 +699,40 @@ function SessionDetailPage() {
       </div>
 
       {/* ── Input area ──────────────────────────────────── */}
-      <footer className="chat-input-footer">
-        {sendError ? <p className="chat-error">{sendError}</p> : null}
-        {data.isRunning ? (
-          <p style={{ color: "var(--muted)", margin: 0, fontSize: "0.85rem" }}>
-            Agent is running — input disabled while processing.
-          </p>
-        ) : (
-          <form className="chat-input-form" onSubmit={handleSend}>
-            <textarea
-              disabled={sending}
-              onChange={(event) => setChatInput(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault()
-                  event.currentTarget.form?.requestSubmit()
-                }
-              }}
-              placeholder="Send a follow-up message… (Enter to send, Shift+Enter for newline)"
-              rows={1}
-              value={chatInput}
-            />
-            <button
-              className="chat-send-btn"
-              disabled={sending || chatInput.trim().length === 0}
-              title="Send message"
-              type="submit"
-            >
-              {sending ? "…" : "↑"}
-            </button>
-          </form>
-        )}
-      </footer>
+      {IS_LOCAL_MODE ? (
+        <footer className="chat-input-footer">
+          {sendError ? <p className="chat-error">{sendError}</p> : null}
+          {data.isRunning ? (
+            <p style={{ color: "var(--muted)", margin: 0, fontSize: "0.85rem" }}>
+              Agent is running — input disabled while processing.
+            </p>
+          ) : (
+            <form className="chat-input-form" onSubmit={handleSend}>
+              <textarea
+                disabled={sending}
+                onChange={(event) => setChatInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault()
+                    event.currentTarget.form?.requestSubmit()
+                  }
+                }}
+                placeholder="Send a follow-up message… (Enter to send, Shift+Enter for newline)"
+                rows={1}
+                value={chatInput}
+              />
+              <button
+                className="chat-send-btn"
+                disabled={sending || chatInput.trim().length === 0}
+                title="Send message"
+                type="submit"
+              >
+                {sending ? "…" : "↑"}
+              </button>
+            </form>
+          )}
+        </footer>
+      ) : null}
     </main>
   )
 }

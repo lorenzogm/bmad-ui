@@ -1,5 +1,6 @@
 import * as echarts from "echarts"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { apiUrl } from "../lib/mode"
 import type {
   AnalyticsCosting,
   AnalyticsResponse,
@@ -138,7 +139,7 @@ export function useAnalyticsData() {
 
     const load = async () => {
       try {
-        const response = await fetch("/api/analytics")
+        const response = await fetch(apiUrl("/api/analytics"))
         if (!response.ok) {
           throw new Error(`analytics request failed: ${response.status}`)
         }

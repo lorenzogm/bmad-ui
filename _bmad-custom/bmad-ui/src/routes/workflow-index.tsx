@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { detectWorkflowStatus } from "../app"
+import { apiUrl } from "../lib/mode"
 import type { OverviewResponse } from "../types"
 import { workflowLayoutRoute } from "./workflow"
 
@@ -9,7 +10,7 @@ function WorkflowIndexPage() {
   const { data, isLoading, error } = useQuery<OverviewResponse>({
     queryKey: ["overview"],
     queryFn: async () => {
-      const response = await fetch("/api/overview")
+      const response = await fetch(apiUrl("/api/overview"))
       if (!response.ok) {
         throw new Error(`overview request failed: ${response.status}`)
       }

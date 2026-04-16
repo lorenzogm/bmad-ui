@@ -1,0 +1,9 @@
+links:
+  - title: GitHub
+    subtitle: lorenzogm/bmad-ui
+    url: https://github.com/lorenzogm/bmad-ui
+    icon: github
+  - title: BMAD Method
+    subtitle: docs.bmad-method.org
+    url: https://docs.bmad-method.org/
+    icon: book

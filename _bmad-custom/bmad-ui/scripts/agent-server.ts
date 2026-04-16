@@ -1,11 +1,15 @@
 import { type ChildProcess, execFile, spawn } from "node:child_process"
 import { existsSync, readFileSync, statSync } from "node:fs"
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises"
+import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 import process from "node:process"
 import { promisify } from "node:util"
+import { fileURLToPath } from "node:url"
 import type { ViteDevServer } from "vite"
+
+const __agentServerDirname =
+  typeof __dirname !== "undefined" ? __dirname : fileURLToPath(new URL(".", import.meta.url))
 
 const execFileAsync = promisify(execFile)
 
@@ -70,6 +74,7 @@ type SprintOverview = {
   epics: Array<{
     id: string
     number: number
+    name: string
     status: EpicStatus
     storyCount: number
     byStoryStatus: Record<StoryStatus, number>
@@ -134,7 +139,7 @@ type AgentSession = {
   notes?: string
 }
 
-const projectRoot = path.resolve(__dirname, "..", "..", "..")
+const projectRoot = path.resolve(__agentServerDirname, "..", "..", "..")
 const artifactsRoot = path.join(projectRoot, "_bmad-output")
 const agentsDir = path.join(projectRoot, "_bmad-custom", "agents")
 const runtimeStatePath = path.join(agentsDir, "runtime-state.json")
@@ -146,6 +151,8 @@ const agentSessionsPath = analyticsStorePath
 const sprintStatusFile = path.join(artifactsRoot, "implementation-artifacts", "sprint-status.yaml")
 const epicsFile = path.join(artifactsRoot, "planning-artifacts", "epics.md")
 const storyDependenciesFile = path.join(projectRoot, "_bmad-custom", "story-dependencies.yaml")
+const linksFile = path.join(projectRoot, "_bmad-custom", "links.yaml")
+const notesFile = path.join(projectRoot, "_bmad-custom", "notes.yaml")
 
 const STORY_WORKFLOW_STEPS: Array<{
   skill: StoryWorkflowStepSkill
@@ -172,6 +179,12 @@ const DEFAULT_STAGE_MODELS = {
 const DEFAULT_WORKFLOW_MODEL = "claude-sonnet-4.6"
 const SKILL_MODEL_OVERRIDES: Record<string, string> = {
   "bmad-code-review": "gpt-5.3-codex",
+}
+
+let buildMode = false
+
+function setBuildMode(value: boolean): void {
+  buildMode = value
 }
 
 let runningProcess: ReturnType<typeof spawn> | null = null
@@ -214,6 +227,9 @@ function ensureRunningProcessStateIsFresh(): void {
 }
 
 async function markZombieSessionsAsFailed(runtimeState: RuntimeState | null): Promise<boolean> {
+  if (buildMode) {
+    return false
+  }
   if (!runtimeState?.sessions) {
     return false
   }
@@ -796,14 +812,24 @@ function summarizeSprintFromEpics(
 
   const seenStoryIds = new Set<string>()
   const mentionedEpicNumbers = new Set<number>()
+  const epicNames = new Map<number, string>()
 
   for (const line of epicsContent.split("\n")) {
     const raw = line.trim()
-    const epicMatch = raw.match(EPICS_EPIC_HEADING_REGEX)
-    if (epicMatch) {
-      const epicNumber = Number(epicMatch[1])
+    const epicNameMatch = raw.match(EPICS_EPIC_HEADING_WITH_NAME_REGEX)
+    if (epicNameMatch) {
+      const epicNumber = Number(epicNameMatch[1])
       if (Number.isFinite(epicNumber)) {
         mentionedEpicNumbers.add(epicNumber)
+        epicNames.set(epicNumber, epicNameMatch[2].trim())
+      }
+    } else {
+      const epicMatch = raw.match(EPICS_EPIC_HEADING_REGEX)
+      if (epicMatch) {
+        const epicNumber = Number(epicMatch[1])
+        if (Number.isFinite(epicNumber)) {
+          mentionedEpicNumbers.add(epicNumber)
+        }
       }
     }
 
@@ -901,6 +927,7 @@ function summarizeSprintFromEpics(
     {
       id: string
       number: number
+      name: string
       status: EpicStatus
       storyCount: number
       byStoryStatus: Record<StoryStatus, number>
@@ -916,6 +943,7 @@ function summarizeSprintFromEpics(
     epicMap.set(epicNumber, {
       id: `epic-${epicNumber}`,
       number: epicNumber,
+      name: epicNames.get(epicNumber) ?? `Epic ${epicNumber}`,
       status: "backlog",
       storyCount: 0,
       byStoryStatus: {
@@ -979,21 +1007,48 @@ function summarizeSprintFromEpics(
 }
 
 async function loadSprintOverview(runtimeState: RuntimeState | null): Promise<SprintOverview> {
-  if (existsSync(sprintStatusFile)) {
-    const sprintContent = await readFile(sprintStatusFile, "utf8")
-    return summarizeSprint(sprintContent, runtimeState)
-  }
-
-  let epicsContent = ""
+  let epicNames = new Map<number, string>()
   if (existsSync(epicsFile)) {
     try {
-      epicsContent = await readFile(epicsFile, "utf8")
+      const epicsContent = await readFile(epicsFile, "utf8")
+      for (const line of epicsContent.split("\n")) {
+        const m = line.trim().match(EPICS_EPIC_HEADING_WITH_NAME_REGEX)
+        if (m) {
+          const n = Number(m[1])
+          if (Number.isFinite(n)) {
+            epicNames.set(n, m[2].trim())
+          }
+        }
+      }
     } catch {
-      epicsContent = ""
+      epicNames = new Map()
     }
   }
 
-  return summarizeSprintFromEpics(epicsContent, runtimeState)
+  let overview: SprintOverview
+  if (existsSync(sprintStatusFile)) {
+    const sprintContent = await readFile(sprintStatusFile, "utf8")
+    overview = summarizeSprint(sprintContent, runtimeState)
+  } else {
+    let epicsContent = ""
+    if (existsSync(epicsFile)) {
+      try {
+        epicsContent = await readFile(epicsFile, "utf8")
+      } catch {
+        epicsContent = ""
+      }
+    }
+    overview = summarizeSprintFromEpics(epicsContent, runtimeState)
+  }
+
+  for (const epic of overview.epics) {
+    const name = epicNames.get(epic.number)
+    if (name) {
+      epic.name = name
+    }
+  }
+
+  return overview
 }
 
 function describeToolCall(toolName: string): string {
@@ -1268,6 +1323,9 @@ async function parseJsonBody<T>(req: AsyncIterable<Buffer | string>): Promise<T>
 }
 
 async function getExternalCliProcesses(): Promise<ExternalProcess[]> {
+  if (buildMode) {
+    return []
+  }
   const { stdout } = await execFileAsync("ps", ["-ax", "-o", "pid=,etime=,command="])
   const keywords = ["copilot", "orchestrator.mjs", "bmad:orchestrate", "agent run"]
 
@@ -1451,6 +1509,7 @@ function summarizeSprint(content: string, runtimeState: RuntimeState | null): Sp
     {
       id: string
       number: number
+      name: string
       status: EpicStatus
       storyCount: number
       byStoryStatus: Record<StoryStatus, number>
@@ -1468,6 +1527,7 @@ function summarizeSprint(content: string, runtimeState: RuntimeState | null): Sp
       epicMap.set(storyNumber, {
         id: `epic-${storyNumber}`,
         number: storyNumber,
+        name: `Epic ${storyNumber}`,
         status: explicitEpicStatus.get(storyNumber) || "backlog",
         storyCount: 0,
         byStoryStatus: {
@@ -1499,6 +1559,7 @@ function summarizeSprint(content: string, runtimeState: RuntimeState | null): Sp
       epicMap.set(epicNumber, {
         id: `epic-${epicNumber}`,
         number: epicNumber,
+        name: `Epic ${epicNumber}`,
         status,
         storyCount: 0,
         byStoryStatus: {
@@ -2512,6 +2573,9 @@ async function persistSessionAnalytics(session: RuntimeSession): Promise<void> {
 }
 
 async function backfillAnalyticsStore(): Promise<void> {
+  if (buildMode) {
+    return
+  }
   const runtimeState = await parseRuntimeStateRobust()
   const allSessions = runtimeState?.sessions || []
   const store = await readAnalyticsStore()
@@ -2741,6 +2805,74 @@ async function buildAnalyticsPayload() {
     project: projectUsage,
     costing,
   }
+}
+
+function readRequestBody(req: import("node:http").IncomingMessage): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = []
+    req.on("data", (chunk: Buffer) => chunks.push(chunk))
+    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")))
+    req.on("error", reject)
+  })
+}
+
+function parseSimpleYamlList(raw: string, key: string): Array<Record<string, string>> {
+  const items: Array<Record<string, string>> = []
+  const lines = raw.split("\n")
+  let inList = false
+  let current: Record<string, string> | null = null
+
+  for (const line of lines) {
+    if (line.trim() === `${key}:` || line.trim() === `${key}: []`) {
+      inList = true
+      continue
+    }
+    if (!inList) continue
+
+    const itemMatch = line.match(/^\s+-\s+(\w+):\s*(.*)$/)
+    const propMatch = line.match(/^\s+(\w+):\s*(.*)$/)
+
+    if (itemMatch) {
+      current = { [itemMatch[1]]: stripYamlQuotes(itemMatch[2]) }
+      items.push(current)
+    } else if (propMatch && current && !line.trim().startsWith("-")) {
+      current[propMatch[1]] = stripYamlQuotes(propMatch[2])
+    }
+  }
+
+  return items
+}
+
+function stripYamlQuotes(val: string): string {
+  const trimmed = val.trim()
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1)
+  }
+  return trimmed
+}
+
+function serializeLinksYaml(links: Array<{ title: string; subtitle: string; url: string; icon: string }>): string {
+  if (links.length === 0) return "links: []\n"
+  const lines = ["links:"]
+  for (const link of links) {
+    lines.push(`  - title: "${link.title}"`)
+    lines.push(`    subtitle: "${link.subtitle}"`)
+    lines.push(`    url: ${link.url}`)
+    lines.push(`    icon: ${link.icon}`)
+  }
+  return `${lines.join("\n")}\n`
+}
+
+function serializeNotesYaml(notes: Array<{ id: string; text: string; color: string; createdAt: string }>): string {
+  if (notes.length === 0) return "notes: []\n"
+  const lines = ["notes:"]
+  for (const note of notes) {
+    lines.push(`  - id: ${note.id}`)
+    lines.push(`    text: "${note.text.replace(/"/g, '\\"')}"`)
+    lines.push(`    color: ${note.color}`)
+    lines.push(`    createdAt: ${note.createdAt}`)
+  }
+  return `${lines.join("\n")}\n`
 }
 
 function attachApi(server: ViteDevServer): void {
@@ -3504,6 +3636,57 @@ function attachApi(server: ViteDevServer): void {
         return
       }
 
+      if (requestUrl.pathname === "/api/workflow/skip-step" && req.method === "POST") {
+        try {
+          const body = await parseJsonBody<{ stepId?: string }>(req)
+          const stepId = body.stepId?.trim()
+          if (!stepId || !/^[a-z0-9-]+$/.test(stepId)) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "valid stepId is required" }))
+            return
+          }
+          const skipFilePath = path.join(
+            artifactsRoot,
+            "planning-artifacts",
+            `${stepId}.skipped`
+          )
+          await mkdir(path.join(artifactsRoot, "planning-artifacts"), { recursive: true })
+          await writeFile(skipFilePath, "", "utf8")
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ status: "skipped", stepId }))
+        } catch (skipError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(skipError) }))
+        }
+        return
+      }
+
+      if (requestUrl.pathname === "/api/workflow/unskip-step" && req.method === "POST") {
+        try {
+          const body = await parseJsonBody<{ stepId?: string }>(req)
+          const stepId = body.stepId?.trim()
+          if (!stepId || !/^[a-z0-9-]+$/.test(stepId)) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "valid stepId is required" }))
+            return
+          }
+          const skipFilePath = path.join(
+            artifactsRoot,
+            "planning-artifacts",
+            `${stepId}.skipped`
+          )
+          if (existsSync(skipFilePath)) {
+            await unlink(skipFilePath)
+          }
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ status: "unskipped", stepId }))
+        } catch (unskipError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(unskipError) }))
+        }
+        return
+      }
+
       if (requestUrl.pathname === "/api/artifacts/files" && req.method === "GET") {
         const dir = requestUrl.searchParams.get("dir") ?? "planning"
         const dirPath = path.join(
@@ -3655,6 +3838,178 @@ function attachApi(server: ViteDevServer): void {
         return
       }
 
+      // --- Links CRUD ---
+      if (requestUrl.pathname === "/api/links" && req.method === "GET") {
+        try {
+          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          if (existsSync(linksFile)) {
+            const raw = readFileSync(linksFile, "utf8")
+            const parsed = parseSimpleYamlList(raw, "links")
+            links = parsed as typeof links
+          }
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ links }))
+        } catch (linksError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(linksError) }))
+        }
+        return
+      }
+
+      if (requestUrl.pathname === "/api/links" && req.method === "POST") {
+        try {
+          const body = await readRequestBody(req)
+          const { title, subtitle, url, icon } = JSON.parse(body) as { title: string; subtitle: string; url: string; icon: string }
+          if (!title || !url) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "title and url are required" }))
+            return
+          }
+          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          if (existsSync(linksFile)) {
+            const raw = readFileSync(linksFile, "utf8")
+            links = parseSimpleYamlList(raw, "links") as typeof links
+          }
+          links.push({ title, subtitle: subtitle || "", url, icon: icon || "link" })
+          await writeFile(linksFile, serializeLinksYaml(links), "utf8")
+          res.writeHead(201, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ links }))
+        } catch (addLinkError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(addLinkError) }))
+        }
+        return
+      }
+
+      if (requestUrl.pathname === "/api/links" && req.method === "DELETE") {
+        try {
+          const indexParam = requestUrl.searchParams.get("index")
+          if (indexParam === null) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "index query param required" }))
+            return
+          }
+          const index = Number.parseInt(indexParam, 10)
+          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          if (existsSync(linksFile)) {
+            const raw = readFileSync(linksFile, "utf8")
+            links = parseSimpleYamlList(raw, "links") as typeof links
+          }
+          if (index < 0 || index >= links.length) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "invalid index" }))
+            return
+          }
+          links.splice(index, 1)
+          await writeFile(linksFile, serializeLinksYaml(links), "utf8")
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ links }))
+        } catch (deleteLinkError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(deleteLinkError) }))
+        }
+        return
+      }
+
+      // --- Notes CRUD ---
+      if (requestUrl.pathname === "/api/notes" && req.method === "GET") {
+        try {
+          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          if (existsSync(notesFile)) {
+            const raw = readFileSync(notesFile, "utf8")
+            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+          }
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ notes }))
+        } catch (notesError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(notesError) }))
+        }
+        return
+      }
+
+      if (requestUrl.pathname === "/api/notes" && req.method === "POST") {
+        try {
+          const body = await readRequestBody(req)
+          const { text, color } = JSON.parse(body) as { text: string; color?: string }
+          if (!text) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "text is required" }))
+            return
+          }
+          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          if (existsSync(notesFile)) {
+            const raw = readFileSync(notesFile, "utf8")
+            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+          }
+          const id = `note-${Date.now()}`
+          notes.push({ id, text, color: color || "teal", createdAt: new Date().toISOString() })
+          await writeFile(notesFile, serializeNotesYaml(notes), "utf8")
+          res.writeHead(201, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ notes }))
+        } catch (addNoteError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(addNoteError) }))
+        }
+        return
+      }
+
+      if (requestUrl.pathname === "/api/notes" && req.method === "PUT") {
+        try {
+          const body = await readRequestBody(req)
+          const { id, text, color } = JSON.parse(body) as { id: string; text?: string; color?: string }
+          if (!id) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "id is required" }))
+            return
+          }
+          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          if (existsSync(notesFile)) {
+            const raw = readFileSync(notesFile, "utf8")
+            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+          }
+          const idx = notes.findIndex((n) => n.id === id)
+          if (idx === -1) {
+            res.writeHead(404, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "note not found" }))
+            return
+          }
+          if (text !== undefined) notes[idx].text = text
+          if (color !== undefined) notes[idx].color = color
+          await writeFile(notesFile, serializeNotesYaml(notes), "utf8")
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ notes }))
+        } catch (updateNoteError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(updateNoteError) }))
+        }
+        return
+      }
+
+      if (requestUrl.pathname === "/api/notes" && req.method === "DELETE") {
+        try {
+          const noteId = requestUrl.searchParams.get("id")
+          if (!noteId) {
+            res.writeHead(400, { "Content-Type": "application/json" })
+            res.end(JSON.stringify({ error: "id query param required" }))
+            return
+          }
+          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          if (existsSync(notesFile)) {
+            const raw = readFileSync(notesFile, "utf8")
+            notes = parseSimpleYamlList(raw, "notes") as typeof notes
+          }
+          notes = notes.filter((n) => n.id !== noteId)
+          await writeFile(notesFile, serializeNotesYaml(notes), "utf8")
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ notes }))
+        } catch (deleteNoteError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(deleteNoteError) }))
+        }
+        return
+      }
+
       res.writeHead(404, { "Content-Type": "application/json" })
       res.end(JSON.stringify({ error: "not found" }))
     })()
@@ -3670,4 +4025,21 @@ function attachApi(server: ViteDevServer): void {
   })
 }
 
-export { attachApi }
+export {
+  attachApi,
+  setBuildMode,
+  buildOverviewPayload,
+  buildAnalyticsPayload,
+  buildSessionDetailPayload,
+  loadSprintOverview,
+  readRuntimeStateFile,
+  getEpicMetadataFromMarkdown,
+  getStoryContentFromEpics,
+  findStoryMarkdown,
+  deriveStoryStepStateFromStatus,
+  getCompletedSessionSummary,
+  fallbackSummary,
+  epicsFile,
+  artifactsRoot,
+  STORY_WORKFLOW_STEPS,
+}

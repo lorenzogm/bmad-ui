@@ -1,5 +1,6 @@
 import { createRootRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
+import { IS_LOCAL_MODE } from "../lib/mode"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
@@ -219,52 +220,52 @@ function RootLayout() {
   const location = useLocation()
   const currentPath = location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/"
   const isAnalyticsSection = currentPath.startsWith("/analytics")
-  const isWorkflowSection = currentPath === "/" || currentPath.startsWith("/workflow")
+  const isWorkflowSection = currentPath.startsWith("/workflow")
   const [chatOpen, setChatOpen] = useState(false)
 
   return (
     <div className="app-layout">
       <aside className="app-sidebar">
         <div className="sidebar-brand">
-          <h1 className="sidebar-title">BMAD UI</h1>
+          <Link to="/" className="sidebar-title-link">
+            <h1 className="sidebar-title">BMAD UI</h1>
+          </Link>
         </div>
         <nav aria-label="Main navigation" className="sidebar-nav">
           <Link
-            aria-current={currentPath === "/workflow" || currentPath === "/" ? "page" : undefined}
-            aria-expanded={isWorkflowSection}
-            className={`sidebar-link ${isWorkflowSection ? "is-section-active" : ""}`}
+            aria-current={currentPath.startsWith("/workflow") ? "page" : undefined}
+            className={`sidebar-link sidebar-link-section ${isWorkflowSection ? "is-section-active" : ""}`}
             to="/workflow"
           >
             Workflow
           </Link>
 
-          {isWorkflowSection && (
-            <div className="sidebar-submenu">
-              {WORKFLOW_SUBMENU.map((link) => {
-                const linkPath = link.phaseId ? `/workflow/${link.phaseId}` : "/workflow"
-                return link.phaseId ? (
-                  <Link
-                    aria-current={currentPath === linkPath ? "page" : undefined}
-                    className="sidebar-sublink"
-                    key={link.label}
-                    params={{ phaseId: link.phaseId }}
-                    to="/workflow/$phaseId"
-                  >
-                    {link.label}
-                  </Link>
-                ) : (
-                  <Link
-                    aria-current={currentPath === linkPath ? "page" : undefined}
-                    className="sidebar-sublink"
-                    key={link.label}
-                    to="/workflow"
-                  >
-                    {link.label}
-                  </Link>
-                )
-              })}
-            </div>
-          )}
+          <div className="sidebar-submenu">
+            {WORKFLOW_SUBMENU.map((link) => {
+              const linkPath = link.phaseId ? `/workflow/${link.phaseId}` : "/workflow"
+              return link.phaseId ? (
+                <Link
+                  aria-current={currentPath === linkPath ? "page" : undefined}
+                  className="sidebar-sublink"
+                  key={link.label}
+                  params={{ phaseId: link.phaseId }}
+                  to="/workflow/$phaseId"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <Link
+                  activeOptions={{ exact: true }}
+                  aria-current={currentPath === linkPath ? "page" : undefined}
+                  className="sidebar-sublink"
+                  key={link.label}
+                  to="/workflow"
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
+          </div>
 
           {NAV_LINKS.map((link) => (
             <Link
@@ -279,42 +280,44 @@ function RootLayout() {
 
           <Link
             aria-current={currentPath === "/analytics" ? "page" : undefined}
-            aria-expanded={isAnalyticsSection}
-            className={`sidebar-link ${isAnalyticsSection ? "is-section-active" : ""}`}
+            className={`sidebar-link sidebar-link-section ${isAnalyticsSection ? "is-section-active" : ""}`}
             to="/analytics"
           >
             Analytics
           </Link>
 
-          {isAnalyticsSection && (
-            <div className="sidebar-submenu">
-              {ANALYTICS_SUBMENU.map((link) => (
-                <Link
-                  aria-current={currentPath === link.to ? "page" : undefined}
-                  className="sidebar-sublink"
-                  key={link.to}
-                  to={link.to}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          )}
+          <div className="sidebar-submenu">
+            {ANALYTICS_SUBMENU.map((link) => (
+              <Link
+                activeOptions={link.to === "/analytics" ? { exact: true } : undefined}
+                aria-current={currentPath === link.to ? "page" : undefined}
+                className="sidebar-sublink"
+                key={link.to}
+                to={link.to}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
           <div className="sidebar-spacer" />
 
-          <button
-            aria-controls="new-chat-flyout"
-            aria-expanded={chatOpen}
-            className="sidebar-link new-chat-trigger"
-            onClick={() => setChatOpen((prev) => !prev)}
-            type="button"
-          >
-            + New Chat
-          </button>
+          {IS_LOCAL_MODE ? (
+            <button
+              aria-controls="new-chat-flyout"
+              aria-expanded={chatOpen}
+              className="sidebar-link new-chat-trigger"
+              onClick={() => setChatOpen((prev) => !prev)}
+              type="button"
+            >
+              + New Chat
+            </button>
+          ) : null}
         </nav>
 
-        <NewChatFlyout open={chatOpen} onClose={() => setChatOpen(false)} />
+        {IS_LOCAL_MODE ? (
+          <NewChatFlyout open={chatOpen} onClose={() => setChatOpen(false)} />
+        ) : null}
       </aside>
 
       <div className="app-content">
