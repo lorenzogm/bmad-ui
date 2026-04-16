@@ -47,7 +47,12 @@ function SessionsPage() {
   }, [])
 
   if (loading) return <main className="screen loading">Loading sessions...</main>
-  if (error) return <main className="screen loading"><p>{error}</p></main>
+  if (error)
+    return (
+      <main className="screen loading">
+        <p>{error}</p>
+      </main>
+    )
 
   return (
     <main className="screen">

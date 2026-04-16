@@ -165,7 +165,12 @@ function groupEntries(raw: RawEntry[]): LogEntry[] {
       toolBuffer.push({ label: r.summary, details: r.details })
     } else {
       flushTools()
-      entries.push({ id: `${r.kind}-${entryIndex}`, kind: r.kind, summary: r.summary, details: r.details })
+      entries.push({
+        id: `${r.kind}-${entryIndex}`,
+        kind: r.kind,
+        summary: r.summary,
+        details: r.details,
+      })
       entryIndex += 1
     }
   }
@@ -346,11 +351,7 @@ function LogEntryView(props: { entry: LogEntry }) {
     )
   }
 
-  return (
-    <div className="log-entry log-entry-text">
-      {entry.summary}
-    </div>
-  )
+  return <div className="log-entry log-entry-text">{entry.summary}</div>
 }
 
 function SessionDetailPage() {
@@ -374,7 +375,6 @@ function SessionDetailPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [streamContent, userMessageCount])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: SSE subscription on mount
   useEffect(() => {
     let mounted = true
     let eventSource: EventSource | null = null
@@ -459,7 +459,7 @@ function SessionDetailPage() {
         setSending(false)
       }
     },
-    [chatInput, sending, sessionId],
+    [chatInput, sending, sessionId]
   )
 
   const handleStartSession = useCallback(async () => {
@@ -518,11 +518,17 @@ function SessionDetailPage() {
       {/* ── Top bar ─────────────────────────────────────── */}
       <header className="chat-topbar">
         <div className="chat-topbar-left">
-          <Link className="chat-back-link" params={session.storyId ? { epicId: `epic-${session.storyId.split("-")[0]}` } : undefined} to={session.storyId ? "/epic/$epicId" : "/"}>← Back</Link>
+          <Link
+            className="chat-back-link"
+            params={
+              session.storyId ? { epicId: `epic-${session.storyId.split("-")[0]}` } : undefined
+            }
+            to={session.storyId ? "/epic/$epicId" : "/"}
+          >
+            ← Back
+          </Link>
           <span className="chat-topbar-skill">{session.skill}</span>
-          {session.storyId ? (
-            <span className="chat-topbar-story">{session.storyId}</span>
-          ) : null}
+          {session.storyId ? <span className="chat-topbar-story">{session.storyId}</span> : null}
           <span className={`step-badge step-${session.status}`}>{session.status}</span>
           <span className="chat-topbar-meta">
             {session.model} · {formatDuration(session.startedAt, session.endedAt)}
@@ -555,7 +561,9 @@ function SessionDetailPage() {
               title="Start session"
               type="button"
             >
-              <span aria-hidden="true" className="icon-glyph">▶</span>
+              <span aria-hidden="true" className="icon-glyph">
+                ▶
+              </span>
             </button>
             <button
               aria-label="Abort session"
@@ -568,7 +576,9 @@ function SessionDetailPage() {
               title="Abort session"
               type="button"
             >
-              <span aria-hidden="true" className="icon-glyph">✕</span>
+              <span aria-hidden="true" className="icon-glyph">
+                ✕
+              </span>
             </button>
           </div>
         </div>
@@ -580,15 +590,42 @@ function SessionDetailPage() {
           <div className="table-wrap">
             <table>
               <tbody>
-                <tr><th>Session ID</th><td className="mono">{session.id}</td></tr>
-                <tr><th>Skill</th><td>{session.skill}</td></tr>
-                <tr><th>Model</th><td>{session.model}</td></tr>
-                <tr><th>Story</th><td>{session.storyId || "-"}</td></tr>
-                <tr><th>Started</th><td>{formatDate(session.startedAt)}</td></tr>
-                <tr><th>Duration</th><td>{formatDuration(session.startedAt, session.endedAt)}</td></tr>
-                <tr><th>Exit Code</th><td>{session.exitCode ?? "-"}</td></tr>
-                <tr><th>Error</th><td>{session.error || "-"}</td></tr>
-                <tr><th>Log Path</th><td className="mono">{session.logPath}</td></tr>
+                <tr>
+                  <th>Session ID</th>
+                  <td className="mono">{session.id}</td>
+                </tr>
+                <tr>
+                  <th>Skill</th>
+                  <td>{session.skill}</td>
+                </tr>
+                <tr>
+                  <th>Model</th>
+                  <td>{session.model}</td>
+                </tr>
+                <tr>
+                  <th>Story</th>
+                  <td>{session.storyId || "-"}</td>
+                </tr>
+                <tr>
+                  <th>Started</th>
+                  <td>{formatDate(session.startedAt)}</td>
+                </tr>
+                <tr>
+                  <th>Duration</th>
+                  <td>{formatDuration(session.startedAt, session.endedAt)}</td>
+                </tr>
+                <tr>
+                  <th>Exit Code</th>
+                  <td>{session.exitCode ?? "-"}</td>
+                </tr>
+                <tr>
+                  <th>Error</th>
+                  <td>{session.error || "-"}</td>
+                </tr>
+                <tr>
+                  <th>Log Path</th>
+                  <td className="mono">{session.logPath}</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -599,7 +636,9 @@ function SessionDetailPage() {
       {showPrompt ? (
         <section className="chat-meta-drawer">
           <h3>Prompt</h3>
-          <pre className="story-markdown">{data.promptContent || "No prompt content available."}</pre>
+          <pre className="story-markdown">
+            {data.promptContent || "No prompt content available."}
+          </pre>
         </section>
       ) : null}
 
@@ -608,7 +647,9 @@ function SessionDetailPage() {
         {entries.length === 0 && !data.isRunning ? (
           <div className="chat-empty-state">
             <p>No log output available for this session.</p>
-            {!data.logExists ? <p className="muted">Log file not found at: {session.logPath}</p> : null}
+            {!data.logExists ? (
+              <p className="muted">Log file not found at: {session.logPath}</p>
+            ) : null}
           </div>
         ) : null}
 
@@ -616,7 +657,9 @@ function SessionDetailPage() {
           <div className="chat-empty-state">
             <p>Waiting for agent output…</p>
             <div className="chat-typing-indicator">
-              <span /><span /><span />
+              <span />
+              <span />
+              <span />
             </div>
           </div>
         ) : null}
@@ -627,7 +670,9 @@ function SessionDetailPage() {
 
         {data.isRunning && entries.length > 0 ? (
           <div className="chat-typing-indicator">
-            <span /><span /><span />
+            <span />
+            <span />
+            <span />
           </div>
         ) : null}
 

@@ -689,14 +689,8 @@ function detectWorkflowStatus(
       isOptional: true,
       isSequential: true,
       steps: IMPROVEMENT_STEPS.map((s) =>
-        makeStep(
-          s.skill,
-          s.name,
-          s.description,
-          s.skill,
-          false,
-          [],
-          () => hasCompletedSkillSession(runtimeSessions, s.skill)
+        makeStep(s.skill, s.name, s.description, s.skill, false, [], () =>
+          hasCompletedSkillSession(runtimeSessions, s.skill)
         )
       ),
     },
@@ -736,10 +730,21 @@ function BMADWorkflowSection(props: {
   epicConsistency: OverviewEpicConsistency
   runtimeSessions: RuntimeSession[]
 }) {
-  const { planningFiles, implementationFiles, activeSkill, epics, epicLabels, epicConsistency, runtimeSessions } =
-    props
+  const {
+    planningFiles,
+    implementationFiles,
+    activeSkill,
+    epics,
+    epicLabels,
+    epicConsistency,
+    runtimeSessions,
+  } = props
   const navigate = useNavigate()
-  const { phases, nextActionStep } = detectWorkflowStatus(planningFiles, implementationFiles, runtimeSessions)
+  const { phases, nextActionStep } = detectWorkflowStatus(
+    planningFiles,
+    implementationFiles,
+    runtimeSessions
+  )
   const sortedEpics = useMemo(() => [...epics].sort((a, b) => a.number - b.number), [epics])
 
   const defaultOpenPhase =
@@ -778,7 +783,7 @@ function BMADWorkflowSection(props: {
         body: JSON.stringify({ skill: step.skill }),
       })
       if (response.ok) {
-        const result = await response.json() as { sessionId: string }
+        const result = (await response.json()) as { sessionId: string }
         if (result.sessionId) {
           void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
         }
@@ -793,7 +798,8 @@ function BMADWorkflowSection(props: {
       <h2>BMAD Workflow</h2>
       <p className="subtitle" style={{ marginBottom: "1rem" }}>
         The BMAD Method guides your project from idea to shipped product through five phases. Each
-        phase produces artifacts that feed the next, keeping AI agents aligned and humans in control.
+        phase produces artifacts that feed the next, keeping AI agents aligned and humans in
+        control.
       </p>
 
       <div className="workflow-phases">
@@ -880,8 +886,7 @@ function BMADWorkflowSection(props: {
                     const isSequentialNext =
                       phase.isSequential &&
                       !step.isCompleted &&
-                      stepIndex ===
-                        phase.steps.findIndex((s) => !s.isCompleted)
+                      stepIndex === phase.steps.findIndex((s) => !s.isCompleted)
                     const isActionable =
                       nextActionStep?.id === step.id || hasSprintWarning || isSequentialNext
 

@@ -137,7 +137,14 @@ function renderMarkdownContent(text: string) {
 
 function SectionHeader(props: { title: string; state: WorkflowStepState; stepNumber: number }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: "1rem",
+      }}
+    >
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
         <span
           style={{
@@ -236,9 +243,7 @@ function StoryDetailPage() {
           </Link>
         </div>
         <p className="eyebrow">{storyLabel}</p>
-        <h1 className="epic-title">
-          {preview?.planning?.title || data.story.id}
-        </h1>
+        <h1 className="epic-title">{preview?.planning?.title || data.story.id}</h1>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.5rem" }}>
           <span
             className={`step-badge step-${data.story.status === "done" ? "done" : data.story.status === "in-progress" ? "running" : data.story.status === "review" ? "running" : "not-started"}`}
@@ -343,10 +348,20 @@ function StoryDetailPage() {
               padding: "1.25rem",
             }}
           >
-            <ul style={{ listStyleType: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <ul
+              style={{
+                listStyleType: "none",
+                margin: 0,
+                padding: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+              }}
+            >
               {fileList.map((file) => {
                 const dashIdx = file.indexOf(" — ")
-                const filePath = dashIdx > 0 ? file.slice(0, dashIdx).replace(/`/g, "") : file.replace(/`/g, "")
+                const filePath =
+                  dashIdx > 0 ? file.slice(0, dashIdx).replace(/`/g, "") : file.replace(/`/g, "")
                 const description = dashIdx > 0 ? file.slice(dashIdx + 3) : null
                 return (
                   <li

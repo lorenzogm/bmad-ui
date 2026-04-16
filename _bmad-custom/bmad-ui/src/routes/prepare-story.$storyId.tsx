@@ -202,7 +202,7 @@ function PrepareStoryPage() {
         throw new Error(`workflow request failed: ${response.status}`)
       }
 
-      const result = await response.json() as { sessionId?: string }
+      const result = (await response.json()) as { sessionId?: string }
       if (result.sessionId) {
         void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
       } else {
@@ -218,7 +218,11 @@ function PrepareStoryPage() {
     if (!data?.implementation?.content) {
       return ""
     }
-    return marked.parse(data.implementation.content, { async: false, gfm: true, breaks: false }) as string
+    return marked.parse(data.implementation.content, {
+      async: false,
+      gfm: true,
+      breaks: false,
+    }) as string
   }, [data?.implementation?.content])
 
   if (loading) {

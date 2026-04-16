@@ -85,7 +85,7 @@ function parseStoryTicket(storyId: string): { epic: number; story: number } {
 function findLatestSession(
   runtimeSessions: RuntimeSession[],
   storyId: string,
-  skill: string,
+  skill: string
 ): RuntimeSession | null {
   const matching = runtimeSessions
     .filter((s) => s.storyId === storyId && s.skill === skill && s.status !== "planned")
@@ -105,10 +105,7 @@ function SessionLink(props: { session: RuntimeSession | null }) {
 
   if (!hasLog) {
     return (
-      <span
-        className="session-link-icon session-link-disabled"
-        title="No log available"
-      >
+      <span className="session-link-icon session-link-disabled" title="No log available">
         ⊘
       </span>
     )
@@ -332,10 +329,7 @@ function EpicDetailPage() {
   }, [data?.plannedStories, stories])
 
   const showDevelopAllButton = useMemo(
-    () =>
-      stories.some(
-        (s) => s.steps["bmad-create-story"] === "completed" && s.status !== "done"
-      ),
+    () => stories.some((s) => s.steps["bmad-create-story"] === "completed" && s.status !== "done"),
     [stories]
   )
 
@@ -388,7 +382,9 @@ function EpicDetailPage() {
     setIsOrchestrating(true)
     try {
       localStorage.setItem(orchestratingKey, "true")
-    } catch { /* storage unavailable */ }
+    } catch {
+      /* storage unavailable */
+    }
     setBulkError(null)
   }, [orchestratingKey])
 
@@ -396,7 +392,9 @@ function EpicDetailPage() {
     setIsOrchestrating(false)
     try {
       localStorage.removeItem(orchestratingKey)
-    } catch { /* storage unavailable */ }
+    } catch {
+      /* storage unavailable */
+    }
   }, [orchestratingKey])
 
   // Orchestration driver: fires dev-story → code-review → retrospective as stories progress
@@ -421,7 +419,8 @@ function EpicDetailPage() {
       const isReviewAgentRunning = runtimeSessions.some(
         (s) => s.storyId === story.id && s.skill === "bmad-code-review"
       )
-      const reviewState = rawReviewState === "running" && !isReviewAgentRunning ? "not-started" : rawReviewState
+      const reviewState =
+        rawReviewState === "running" && !isReviewAgentRunning ? "not-started" : rawReviewState
       const blockers = getBlockingStories(story.id, deps, currentStoryStatusMap)
       const isBlocked = blockers.length > 0
 
@@ -498,17 +497,26 @@ function EpicDetailPage() {
       setIsOrchestrating(false)
       try {
         localStorage.removeItem(orchestratingKey)
-      } catch { /* storage unavailable */ }
+      } catch {
+        /* storage unavailable */
+      }
     }
-  }, [isOrchestrating, stories, allStoriesDone, retrospectiveState, data, orchestratingKey, overviewData])
+  }, [
+    isOrchestrating,
+    stories,
+    allStoriesDone,
+    retrospectiveState,
+    data,
+    orchestratingKey,
+    overviewData,
+  ])
 
   const doneCount = stories.filter((s) => s.status === "done").length
-  const inProgressCount = stories.filter((s) =>
-    s.status === "in-progress" || s.status === "review" || s.status === "ready-for-dev"
+  const inProgressCount = stories.filter(
+    (s) => s.status === "in-progress" || s.status === "review" || s.status === "ready-for-dev"
   ).length
-  const progressPercent = stories.length > 0
-    ? Math.round((doneCount / stories.length) * PERCENT_MULTIPLIER)
-    : 0
+  const progressPercent =
+    stories.length > 0 ? Math.round((doneCount / stories.length) * PERCENT_MULTIPLIER) : 0
 
   if (loading) {
     return <main className="screen loading">Loading epic detail...</main>
@@ -527,14 +535,14 @@ function EpicDetailPage() {
     <main className="screen">
       <section className="panel reveal epic-header">
         <div className="epic-header-top">
-          <Link className="epic-back-link" to="/">← Home</Link>
+          <Link className="epic-back-link" to="/">
+            ← Home
+          </Link>
           <span className={`step-badge step-${data.epic.status}`}>{data.epic.status}</span>
         </div>
         <p className="eyebrow">Epic {data.epic.number}</p>
         <h1 className="epic-title">{data.epic.name || data.epic.id}</h1>
-        {data.epic.description ? (
-          <p className="epic-description">{data.epic.description}</p>
-        ) : null}
+        {data.epic.description ? <p className="epic-description">{data.epic.description}</p> : null}
         <div className="epic-stats">
           <div className="epic-stat">
             <span className="epic-stat-value">{stories.length}</span>
@@ -558,7 +566,7 @@ function EpicDetailPage() {
             <div className="epic-progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
         ) : null}
-        {(storiesNeedingPlan.length > 0 || showDevelopAllButton) ? (
+        {storiesNeedingPlan.length > 0 || showDevelopAllButton ? (
           <div
             style={{
               display: "flex",
@@ -593,11 +601,7 @@ function EpicDetailPage() {
             ) : null}
             {isOrchestrating ? (
               <>
-                <button
-                  className="ghost"
-                  onClick={handleStopOrchestration}
-                  type="button"
-                >
+                <button className="ghost" onClick={handleStopOrchestration} type="button">
                   Stop
                 </button>
                 <span className="subtitle" style={{ fontSize: "0.8rem" }}>
@@ -607,7 +611,11 @@ function EpicDetailPage() {
             ) : null}
           </div>
         ) : null}
-        {bulkError ? <p className="error-banner" style={{ marginTop: "0.75rem" }}>{bulkError}</p> : null}
+        {bulkError ? (
+          <p className="error-banner" style={{ marginTop: "0.75rem" }}>
+            {bulkError}
+          </p>
+        ) : null}
       </section>
 
       <section className="panel reveal delay-1">
@@ -642,9 +650,21 @@ function EpicDetailPage() {
                     ? "not-started"
                     : rawReviewState
 
-                const latestCreateSession = findLatestSession(runtimeSessions, story.id, "bmad-create-story")
-                const latestDevSession = findLatestSession(runtimeSessions, story.id, "bmad-dev-story")
-                const latestReviewSession = findLatestSession(runtimeSessions, story.id, "bmad-code-review")
+                const latestCreateSession = findLatestSession(
+                  runtimeSessions,
+                  story.id,
+                  "bmad-create-story"
+                )
+                const latestDevSession = findLatestSession(
+                  runtimeSessions,
+                  story.id,
+                  "bmad-dev-story"
+                )
+                const latestReviewSession = findLatestSession(
+                  runtimeSessions,
+                  story.id,
+                  "bmad-code-review"
+                )
 
                 const SKILL_ORDER: { skill: SkillName; state: string }[] = [
                   { skill: "bmad-create-story", state: createState },

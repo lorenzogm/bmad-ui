@@ -20,39 +20,44 @@ function ImprovementWorkflowPage() {
   const [pendingSkill, setPendingSkill] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const handleRunSkill = useCallback(async (skill: string) => {
-    setPendingSkill(skill)
-    setError(null)
+  const handleRunSkill = useCallback(
+    async (skill: string) => {
+      setPendingSkill(skill)
+      setError(null)
 
-    try {
-      const response = await fetch("/api/workflow/run-skill", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ skill }),
-      })
+      try {
+        const response = await fetch("/api/workflow/run-skill", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skill }),
+        })
 
-      if (response.status === HTTP_CONFLICT) {
-        throw new Error(
-          "Another workflow is already running. Wait for it to finish before starting a new one."
+        if (response.status === HTTP_CONFLICT) {
+          throw new Error(
+            "Another workflow is already running. Wait for it to finish before starting a new one."
+          )
+        }
+
+        if (!response.ok) {
+          throw new Error(`workflow request failed: ${response.status}`)
+        }
+
+        const result = (await response.json()) as { sessionId: string }
+
+        setStepStatuses((prev) =>
+          prev.map((s) =>
+            s.skill === skill ? { ...s, state: "running", sessionId: result.sessionId } : s
+          )
         )
+
+        void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
+      } catch (runError) {
+        setPendingSkill(null)
+        setError(String(runError))
       }
-
-      if (!response.ok) {
-        throw new Error(`workflow request failed: ${response.status}`)
-      }
-
-      const result = await response.json() as { sessionId: string }
-
-      setStepStatuses((prev) =>
-        prev.map((s) => (s.skill === skill ? { ...s, state: "running", sessionId: result.sessionId } : s))
-      )
-
-      void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
-    } catch (runError) {
-      setPendingSkill(null)
-      setError(String(runError))
-    }
-  }, [navigate])
+    },
+    [navigate]
+  )
 
   const handleMarkDone = useCallback((skill: string) => {
     setStepStatuses((prev) =>
@@ -98,9 +103,7 @@ function ImprovementWorkflowPage() {
             <span className="epic-stat-label">Done</span>
           </div>
           <div className="epic-stat">
-            <span className="epic-stat-value">
-              {Math.round((doneCount / totalSteps) * 100)}%
-            </span>
+            <span className="epic-stat-value">{Math.round((doneCount / totalSteps) * 100)}%</span>
             <span className="epic-stat-label">Complete</span>
           </div>
         </div>

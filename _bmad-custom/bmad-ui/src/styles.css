@@ -711,7 +711,10 @@ button:hover:not(:disabled) {
   color: #03101d;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 160ms ease, opacity 160ms ease, box-shadow 160ms ease;
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .cta:hover {
@@ -886,7 +889,7 @@ button:hover:not(:disabled) {
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text);
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 .epic-stat-done {
@@ -1136,7 +1139,9 @@ pre.chat-bubble-content {
   background: rgba(46, 196, 182, 0.05);
   border: 1px solid rgba(46, 196, 182, 0.12);
   color: var(--muted);
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
   overflow-wrap: break-word;
   word-break: break-word;
   min-width: 0;
@@ -1204,7 +1209,9 @@ pre.chat-bubble-content {
   color: var(--muted);
   padding: 0.1rem 0.3rem;
   border-radius: 4px;
-  transition: color 0.12s, background 0.12s;
+  transition:
+    color 0.12s,
+    background 0.12s;
 }
 
 .log-tool-item-expandable > summary:hover {
@@ -1233,7 +1240,9 @@ pre.chat-bubble-content {
   padding: 0.2rem 0.4rem;
   border-radius: 6px;
   color: var(--muted);
-  transition: color 0.15s, background 0.15s;
+  transition:
+    color 0.15s,
+    background 0.15s;
 }
 
 .log-entry-tool-single > summary:hover {
@@ -1356,8 +1365,15 @@ pre.chat-bubble-content {
 }
 
 @keyframes typing-pulse {
-  0%, 100% { opacity: 0.25; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 
 .chat-input-footer {
@@ -1415,7 +1431,9 @@ pre.chat-bubble-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
 }
 
 .chat-send-btn:hover:not(:disabled) {
@@ -1552,7 +1570,9 @@ a:hover {
   border-radius: 6px;
   color: var(--highlight);
   text-decoration: none;
-  transition: transform 100ms ease, color 100ms ease;
+  transition:
+    transform 100ms ease,
+    color 100ms ease;
 }
 
 .session-link-icon:hover {
@@ -1576,8 +1596,13 @@ a:hover {
 }
 
 @keyframes session-pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .step-badge {

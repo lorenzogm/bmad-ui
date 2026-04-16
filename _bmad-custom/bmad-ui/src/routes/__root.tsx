@@ -87,7 +87,10 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
       setError(null)
 
       try {
-        const body: { skill: string; model: string; prompt?: string } = { skill: trimmedSkill, model }
+        const body: { skill: string; model: string; prompt?: string } = {
+          skill: trimmedSkill,
+          model,
+        }
         const trimmedPrompt = prompt.trim()
         if (trimmedPrompt) {
           body.prompt = trimmedPrompt
@@ -140,12 +143,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
   if (!open) return null
 
   return (
-    <div
-      aria-label="New Chat"
-      className="new-chat-flyout"
-      id="new-chat-flyout"
-      role="dialog"
-    >
+    <div aria-label="New Chat" className="new-chat-flyout" id="new-chat-flyout" role="dialog">
       <div className="new-chat-header">
         <span className="new-chat-title">New Chat</span>
         <button
@@ -204,11 +202,7 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
           value={prompt}
         />
         {error ? <p className="new-chat-error">{error}</p> : null}
-        <button
-          className="cta new-chat-submit"
-          disabled={sending}
-          type="submit"
-        >
+        <button className="cta new-chat-submit" disabled={sending} type="submit">
           {sending ? "Starting..." : "Run"}
         </button>
       </form>
