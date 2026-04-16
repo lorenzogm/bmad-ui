@@ -1,6 +1,6 @@
 # Story 4.5: Validate End-to-End Pipeline and Vercel Deployment
 
-Status: in-progress
+Status: done
 
 ## Story
 
