@@ -1,6 +1,6 @@
 # Story 4.5: Validate End-to-End Pipeline and Vercel Deployment
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -33,15 +33,15 @@ so that I can confirm the full CI/CD pipeline is operational end-to-end.
   - [x] Add `${{ job.status }}` pass/fail to CI summary header in `ci.yml`
   - [x] Add branch/ref context to deploy.yml `check-changes` Summary step
   - [x] Add `if: always()` to `deploy-production` Summary step
-- [ ] Trigger `workflow_dispatch` to create Vercel infra + deploy (AC: #1)
+- [x] Trigger `workflow_dispatch` to create Vercel infra + deploy (AC: #1)
   - [x] Run `workflow_dispatch` with `environment=development`
-  - [ ] Verify `infra-deploy` job completes — Terraform creates Vercel project `bmad-ui-dev`
-  - [ ] Verify `deploy` job completes — app is deployed to Vercel preview
-- [ ] Smoke test the live deployment (AC: #3)
-  - [ ] Get the Vercel preview URL from the deploy job summary/output
-  - [ ] Verify HTTP 200 on `/`, `/epics`, `/analytics`
-  - [ ] Check for JS errors (use browser dev tools or `agent-browser errors`)
-  - [ ] Verify the home page renders correctly (not stuck on loading)
+  - [x] Verify `infra-deploy` job completes — Terraform creates Vercel project `bmad-ui-dev`
+  - [x] Verify `deploy` job completes — app is deployed to Vercel preview
+- [x] Smoke test the live deployment (AC: #3)
+  - [x] Get the Vercel preview URL from the deploy job summary/output
+  - [x] Verify HTTP 200 on `/`, `/epics`, `/analytics`
+  - [x] Check for JS errors (use browser dev tools or `agent-browser errors`)
+  - [x] Verify the home page renders correctly (not stuck on loading)
 - [x] Verify CI workflow passes (AC: #4)
   - [x] Run `workflow_dispatch` on `bmad-ui-ci` or confirm latest push passed
   - [x] Verify all steps: lint, types, tests, build → success
