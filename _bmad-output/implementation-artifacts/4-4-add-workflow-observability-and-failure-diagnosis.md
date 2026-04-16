@@ -1,6 +1,6 @@
 # Story 4.4: Add Workflow Observability and Failure Diagnosis
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -32,6 +32,13 @@ so that I can quickly identify and fix failing stages.
   - [x] Add `::error::` annotation when Terraform state decryption fails (already has one — verify it surfaces in UI)
   - [x] Add `::error::` annotation when Vercel project ID resolution fails (already has one — verify)
   - [x] Add `::error::` annotation for any new explicitly detectable failure points
+
+### Review Findings
+
+- [ ] [Review][Patch] CI summary header does not report overall pass/fail result (`${{ job.status }}` or equivalent) [.github/workflows/ci.yml:58]
+- [ ] [Review][Patch] Deploy summaries omit branch/ref context required by AC #3 [.github/workflows/deploy.yml:118]
+- [ ] [Review][Patch] `deploy-production` summary step lacks `if: always()` and is skipped when earlier steps fail [.github/workflows/deploy.yml:495]
+- [ ] [Review][Patch] Dynamic values are written to `$GITHUB_STEP_SUMMARY`/`::notice::` without sanitization, allowing markdown breakage or command/log injection edge cases [.github/workflows/ci.yml:63, .github/workflows/deploy.yml:392]
 
 ## Dev Notes
 

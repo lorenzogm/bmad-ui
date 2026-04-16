@@ -1,5 +1,5 @@
 # generated: 2026-04-15T16:46:25Z
-# last_updated: 2026-04-16T20:57:30Z
+# last_updated: 2026-04-16T21:03:32Z
 # project: bmad-ui
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-16T20:57:30Z
+last_updated: 2026-04-16T21:03:32Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -65,7 +65,7 @@ development_status:
   4-1-create-ci-validation-workflow: done
   4-2-enforce-protected-branch-quality-gates: done
   4-3-implement-deployment-workflow-triggers: done
-  4-4-add-workflow-observability-and-failure-diagnosis: review
+  4-4-add-workflow-observability-and-failure-diagnosis: in-progress
   epic-4-retrospective: optional
 
   epic-5: backlog
