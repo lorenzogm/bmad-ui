@@ -1,6 +1,6 @@
 # Story 3.3: Secret Rotation and Audit-Safe Handling
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -20,32 +20,32 @@ So that credential hygiene remains strong over time.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Fix CI log masking for dotenvx-decrypted secrets (AC: #2)
-  - [ ] Audit `deploy.yml` for every step that writes a decrypted secret to `$GITHUB_ENV` or uses it in a shell expression
-  - [ ] Add `echo "::add-mask::$VALUE"` before each `echo "KEY=$VALUE" >> "$GITHUB_ENV"` write for `VERCEL_TOKEN` and `VERCEL_ORG_ID` (these are decrypted by dotenvx and are not auto-masked by GitHub Actions)
-  - [ ] Verify `TERRAFORM_STATE_ENCRYPT_KEY` (a direct GitHub Secret) is already auto-masked since it comes from `${{ secrets.TERRAFORM_STATE_ENCRYPT_KEY }}`
-  - [ ] Verify `DOTENV_PRIVATE_KEY` (a direct GitHub Secret) is auto-masked
-  - [ ] Confirm no `set -x` or `run: env` debug commands are present in the workflow
+- [x] Task 1: Fix CI log masking for dotenvx-decrypted secrets (AC: #2)
+  - [x] Audit `deploy.yml` for every step that writes a decrypted secret to `$GITHUB_ENV` or uses it in a shell expression
+  - [x] Add `echo "::add-mask::$VALUE"` before each `echo "KEY=$VALUE" >> "$GITHUB_ENV"` write for `VERCEL_TOKEN` and `VERCEL_ORG_ID` (these are decrypted by dotenvx and are not auto-masked by GitHub Actions)
+  - [x] Verify `TERRAFORM_STATE_ENCRYPT_KEY` (a direct GitHub Secret) is already auto-masked since it comes from `${{ secrets.TERRAFORM_STATE_ENCRYPT_KEY }}`
+  - [x] Verify `DOTENV_PRIVATE_KEY` (a direct GitHub Secret) is auto-masked
+  - [x] Confirm no `set -x` or `run: env` debug commands are present in the workflow
 
-- [ ] Task 2: Run plaintext-secret audit scan (AC: #3)
-  - [ ] Confirm `.env.keys` is in `.gitignore` and has never been tracked: `git ls-files --cached .env.keys` (must return empty)
-  - [ ] Scan all tracked files for patterns matching `DOTENV_PRIVATE_KEY_*=`, `TF_VAR_GH_PAT_TOKEN=`, raw token-like strings using `git grep -i "private_key\s*=\s*[^e]"` — any hit that is NOT prefixed `encrypted:` is a plaintext leak
-  - [ ] Confirm the committed `.env` file contains only `encrypted:...` values (no plaintext), verifiable with `grep -v "encrypted:" .env | grep "="` returning only `DOTENV_PUBLIC_KEY=`
-  - [ ] Run `git log --all --full-history -- '.env.keys'` to verify the file has never been committed
-  - [ ] Document audit results in the runbook
+- [x] Task 2: Run plaintext-secret audit scan (AC: #3)
+  - [x] Confirm `.env.keys` is in `.gitignore` and has never been tracked: `git ls-files --cached .env.keys` (must return empty)
+  - [x] Scan all tracked files for patterns matching `DOTENV_PRIVATE_KEY_*=`, `TF_VAR_GH_PAT_TOKEN=`, raw token-like strings using `git grep -i "private_key\s*=\s*[^e]"` — any hit that is NOT prefixed `encrypted:` is a plaintext leak
+  - [x] Confirm the committed `.env` file contains only `encrypted:...` values (no plaintext), verifiable with `grep -v "encrypted:" .env | grep "="` returning only `DOTENV_PUBLIC_KEY=`
+  - [x] Run `git log --all --full-history -- '.env.keys'` to verify the file has never been committed
+  - [x] Document audit results in the runbook
 
-- [ ] Task 3: Create secret rotation runbook (AC: #1, #4)
-  - [ ] Create `docs/secret-rotation.md` with the full rotation procedure (see Dev Notes for required sections)
-  - [ ] Document dotenvx re-encryption steps for updating a secret value
-  - [ ] Document how to update the `DOTENV_PRIVATE_KEY` GitHub Secret when the encryption key changes
-  - [ ] Document how to update `TERRAFORM_STATE_ENCRYPT_KEY` GitHub Secret
-  - [ ] Verify pipeline continues working after rotation by documenting test steps
+- [x] Task 3: Create secret rotation runbook (AC: #1, #4)
+  - [x] Create `docs/secret-rotation.md` with the full rotation procedure (see Dev Notes for required sections)
+  - [x] Document dotenvx re-encryption steps for updating a secret value
+  - [x] Document how to update the `DOTENV_PRIVATE_KEY` GitHub Secret when the encryption key changes
+  - [x] Document how to update `TERRAFORM_STATE_ENCRYPT_KEY` GitHub Secret
+  - [x] Verify pipeline continues working after rotation by documenting test steps
 
-- [ ] Task 4: Document rollback procedure (AC: #4)
-  - [ ] Add rollback section to `docs/secret-rotation.md`
-  - [ ] Describe reverting encrypted `.env` via `git revert` or `git checkout <sha> -- .env`
-  - [ ] Describe restoring previous GitHub Secret values
-  - [ ] Describe re-running deploy workflow to confirm system recovery
+- [x] Task 4: Document rollback procedure (AC: #4)
+  - [x] Add rollback section to `docs/secret-rotation.md`
+  - [x] Describe reverting encrypted `.env` via `git revert` or `git checkout <sha> -- .env`
+  - [x] Describe restoring previous GitHub Secret values
+  - [x] Describe re-running deploy workflow to confirm system recovery
 
 ## Dev Notes
 
@@ -160,6 +160,25 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+None — implementation was straightforward with no blockers.
+
 ### Completion Notes List
 
+- Added `::add-mask::` commands for `VERCEL_TOKEN` and `VERCEL_ORG_ID` in all 3 job locations in `deploy.yml` (infra-deploy, deploy-preview, deploy-production). Masks are issued inside the dotenvx run context where decryption occurs, before values are written to `$GITHUB_ENV`.
+- Confirmed `DOTENV_PRIVATE_KEY` and `TERRAFORM_STATE_ENCRYPT_KEY` are auto-masked by GitHub Actions (they are direct `${{ secrets.* }}` references).
+- All audit checks passed: `.env.keys` never committed, `.env` contains only encrypted values, no debug commands in workflow.
+- Created comprehensive `docs/secret-rotation.md` covering all rotation scenarios and rollback procedures.
+- Updated `docs/index.md` to reference new Operations & Security section.
+
 ### File List
+
+- `.github/workflows/deploy.yml` — added `::add-mask::` for VERCEL_TOKEN and VERCEL_ORG_ID in 3 locations
+- `docs/secret-rotation.md` — new secret rotation and rollback runbook
+- `docs/index.md` — added Operations & Security section with links
+
+## Change Log
+
+- **2026-04-16**: Story 3.3 implementation
+  - Fixed CI log masking gap: dotenvx-decrypted secrets (VERCEL_TOKEN, VERCEL_ORG_ID) were not auto-masked by GitHub Actions; added `::add-mask::` in all 3 workflow job locations
+  - Ran full plaintext-secret audit; all checks clean
+  - Created `docs/secret-rotation.md` with complete rotation procedures for application secrets, dotenvx key rotation, Terraform state key rotation, verification steps, and rollback procedures

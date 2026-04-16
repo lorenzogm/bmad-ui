@@ -33,6 +33,10 @@
 - [Integration Architecture](./integration-architecture.md)
 - [Project Parts Metadata](./project-parts.json)
 
+## Operations & Security
+- [Secrets Workflow](./secrets-workflow.md)
+- [Secret Rotation Runbook](./secret-rotation.md)
+
 ## Existing Documentation
 - [BMAD UI README](../_bmad-custom/bmad-ui/README.md)
 - [BMAD Orchestrator README](../_bmad-custom/bmad-orchestrator/README.md)

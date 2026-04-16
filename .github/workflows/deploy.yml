@@ -127,6 +127,8 @@ jobs:
       - name: Load secrets from encrypted .env
         run: |
           pnpm dlx @dotenvx/dotenvx run -- sh -c '
+            echo "::add-mask::$VERCEL_TOKEN"
+            echo "::add-mask::$VERCEL_ORG_ID"
             write_env_var() {
               local key="$1"
               local value="$2"
@@ -292,6 +294,8 @@ jobs:
       - name: Load secrets from encrypted .env
         run: |
           pnpm dlx @dotenvx/dotenvx run -- sh -c '
+            echo "::add-mask::$VERCEL_TOKEN"
+            echo "::add-mask::$VERCEL_ORG_ID"
             write_env_var() {
               local key="$1"
               local value="$2"
@@ -383,6 +387,8 @@ jobs:
       - name: Load secrets from encrypted .env
         run: |
           pnpm dlx @dotenvx/dotenvx run -- sh -c '
+            echo "::add-mask::$VERCEL_TOKEN"
+            echo "::add-mask::$VERCEL_ORG_ID"
             write_env_var() {
               local key="$1"
               local value="$2"
