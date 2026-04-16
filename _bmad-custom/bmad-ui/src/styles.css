@@ -136,6 +136,113 @@ body {
   background: rgba(46, 196, 182, 0.1);
 }
 
+.sidebar-spacer {
+  flex: 1;
+}
+
+.new-chat-trigger {
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  color: var(--highlight) !important;
+  font-weight: 600 !important;
+}
+
+/* ── New Chat Flyout ───────────────────────────────────────────────── */
+
+.new-chat-flyout {
+  border-top: 1px solid rgba(151, 177, 205, 0.2);
+  padding: 0.75rem;
+  background: rgba(2, 10, 16, 0.7);
+}
+
+.new-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.new-chat-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--highlight);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.new-chat-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  transition: color 120ms ease;
+}
+
+.new-chat-close:hover {
+  color: var(--text);
+}
+
+.new-chat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.new-chat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.new-chat-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.6;
+}
+
+.new-chat-input,
+.new-chat-textarea {
+  width: 100%;
+  background: rgba(10, 19, 29, 0.88);
+  border: 1px solid rgba(151, 177, 205, 0.22);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.5rem;
+  outline: none;
+  transition: border-color 120ms ease;
+}
+
+.new-chat-input:focus,
+.new-chat-textarea:focus {
+  border-color: var(--highlight);
+}
+
+.new-chat-textarea {
+  resize: vertical;
+  min-height: 3.5rem;
+}
+
+.new-chat-error {
+  font-size: 0.75rem;
+  color: #f87171;
+  margin: 0;
+}
+
+.new-chat-submit {
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.75rem;
+}
+
 /* ── Content ───────────────────────────────────────────────────────── */
 
 .app-content {

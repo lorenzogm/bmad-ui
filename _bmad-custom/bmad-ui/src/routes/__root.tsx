@@ -1,6 +1,8 @@
-import { createRootRoute, Link, Outlet, useLocation } from "@tanstack/react-router"
+import { createRootRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
+import { useCallback, useState } from "react"
 
 const TRAILING_SLASH_REGEX = /\/+$/
+const HTTP_CONFLICT = 409
 
 const NAV_LINKS = [{ label: "Dashboard", to: "/" }] as const
 
@@ -12,10 +14,138 @@ const ANALYTICS_SUBMENU = [
   { label: "Models", to: "/analytics/models" },
 ] as const
 
+function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
+  const { open, onClose } = props
+  const navigate = useNavigate()
+  const [skill, setSkill] = useState("")
+  const [prompt, setPrompt] = useState("")
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      const trimmedSkill = skill.trim()
+      if (!trimmedSkill) return
+
+      setSending(true)
+      setError(null)
+
+      try {
+        const body: { skill: string; prompt?: string } = { skill: trimmedSkill }
+        const trimmedPrompt = prompt.trim()
+        if (trimmedPrompt) {
+          body.prompt = trimmedPrompt
+        }
+
+        const response = await fetch("/api/workflow/run-skill", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        })
+
+        if (response.status === HTTP_CONFLICT) {
+          throw new Error("Another workflow is already running.")
+        }
+
+        if (!response.ok) {
+          let errorMessage = `Request failed: ${response.status}`
+          try {
+            const data = (await response.json()) as { error?: string }
+            if (data.error) errorMessage = data.error
+          } catch (_parseError) {
+            // non-JSON response — use status code message
+          }
+          throw new Error(errorMessage)
+        }
+
+        const result = (await response.json()) as { sessionId: string }
+        if (!result.sessionId) {
+          throw new Error("Server did not return a session ID")
+        }
+
+        setSkill("")
+        setPrompt("")
+        onClose()
+
+        void navigate({
+          to: "/session/$sessionId",
+          params: { sessionId: result.sessionId },
+        })
+      } catch (submitError) {
+        setError(submitError instanceof Error ? submitError.message : String(submitError))
+      } finally {
+        setSending(false)
+      }
+    },
+    [skill, prompt, navigate, onClose]
+  )
+
+  if (!open) return null
+
+  return (
+    <div
+      aria-label="New Chat"
+      className="new-chat-flyout"
+      id="new-chat-flyout"
+      role="dialog"
+    >
+      <div className="new-chat-header">
+        <span className="new-chat-title">New Chat</span>
+        <button
+          aria-label="Close new chat panel"
+          className="new-chat-close"
+          onClick={onClose}
+          title="Close"
+          type="button"
+        >
+          ✕
+        </button>
+      </div>
+      <form className="new-chat-form" onSubmit={(e) => void handleSubmit(e)}>
+        <label className="new-chat-label" htmlFor="new-chat-skill">
+          Skill
+        </label>
+        <input
+          autoComplete="off"
+          className="new-chat-input"
+          disabled={sending}
+          id="new-chat-skill"
+          onChange={(e) => setSkill(e.target.value)}
+          placeholder="e.g. bmad-correct-course"
+          type="text"
+          value={skill}
+        />
+        <label className="new-chat-label" htmlFor="new-chat-prompt">
+          Prompt <span className="new-chat-optional">(optional)</span>
+        </label>
+        <textarea
+          className="new-chat-textarea"
+          disabled={sending}
+          id="new-chat-prompt"
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Custom prompt text..."
+          rows={5}
+          value={prompt}
+        />
+        {error ? <p className="new-chat-error">{error}</p> : null}
+        <button
+          className="cta new-chat-submit"
+          disabled={sending || !skill.trim()}
+          type="submit"
+        >
+          {sending ? "Starting..." : "Run"}
+        </button>
+      </form>
+    </div>
+  )
+}
+
 function RootLayout() {
   const location = useLocation()
   const currentPath = location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/"
   const isAnalyticsSection = currentPath.startsWith("/analytics")
+  const [chatOpen, setChatOpen] = useState(false)
 
   return (
     <div className="app-layout">
@@ -58,7 +188,21 @@ function RootLayout() {
               ))}
             </div>
           )}
+
+          <div className="sidebar-spacer" />
+
+          <button
+            aria-controls="new-chat-flyout"
+            aria-expanded={chatOpen}
+            className="sidebar-link new-chat-trigger"
+            onClick={() => setChatOpen((prev) => !prev)}
+            type="button"
+          >
+            + New Chat
+          </button>
         </nav>
+
+        <NewChatFlyout open={chatOpen} onClose={() => setChatOpen(false)} />
       </aside>
 
       <div className="app-content">

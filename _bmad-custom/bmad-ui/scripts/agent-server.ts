@@ -3583,15 +3583,28 @@ function attachApi(server: ViteDevServer): void {
             skill?: string;
             storyId?: string;
             epicId?: string;
+            prompt?: string;
           }>(req);
           const skill = body.skill?.trim();
           const storyId = body.storyId?.trim() || null;
           const epicId = body.epicId?.trim() || null;
+          const rawPrompt = body.prompt?.trim() || null;
           if (!skill) {
             res.writeHead(400, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: "skill is required" }));
             return;
           }
+
+          if (rawPrompt && (storyId || epicId)) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "prompt cannot be combined with storyId or epicId" }));
+            return;
+          }
+
+          const MAX_CUSTOM_PROMPT_LENGTH = 10_000;
+          const customPrompt = rawPrompt
+            ? rawPrompt.slice(0, MAX_CUSTOM_PROMPT_LENGTH).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "")
+            : null;
 
           const isValidSkill = /^[a-z0-9-]+$/.test(skill);
           if (!isValidSkill) {
@@ -3645,11 +3658,13 @@ function attachApi(server: ViteDevServer): void {
 
           const skillModel = SKILL_MODEL_OVERRIDES[skill] ?? DEFAULT_WORKFLOW_MODEL;
 
-          const prompt = [
-            storyId ? `/${skill} ${storyId}` : epicId ? `/${skill} ${epicId}` : `/${skill}`,
-            `Model: ${skillModel}`,
-            ...(storyId ? [`Story: ${storyId}`] : []),
-          ].join("\n");
+          const prompt = customPrompt
+            ? customPrompt
+            : [
+                storyId ? `/${skill} ${storyId}` : epicId ? `/${skill} ${epicId}` : `/${skill}`,
+                `Model: ${skillModel}`,
+                ...(storyId ? [`Story: ${storyId}`] : []),
+              ].join("\n");
 
           await writeFile(promptPath, `${prompt}\n`, "utf8");
           await writeFile(logPath, "", "utf8");
