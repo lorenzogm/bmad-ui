@@ -355,6 +355,11 @@ jobs:
           fi
           echo "VERCEL_PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
 
+      - name: Write Vercel project config
+        run: |
+          mkdir -p _bmad-custom/bmad-ui/.vercel
+          echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > _bmad-custom/bmad-ui/.vercel/project.json
+
       - name: Install dependencies
         run: pnpm install
         working-directory: _bmad-custom/bmad-ui
@@ -463,6 +468,11 @@ jobs:
             exit 1
           fi
           echo "VERCEL_PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+
+      - name: Write Vercel project config
+        run: |
+          mkdir -p _bmad-custom/bmad-ui/.vercel
+          echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > _bmad-custom/bmad-ui/.vercel/project.json
 
       - name: Install dependencies
         run: pnpm install
