@@ -83,6 +83,25 @@ cd _bmad-custom/bmad-ui
 npm run build    # TypeScript check + Vite build
 ```
 
+## BMAD Git Finalization Policy
+
+For any BMAD workflow execution (create-story, dev-story, code-review, sprint planning/status, retrospectives, and any bmad-* skill):
+
+1. If the workflow modified files, the agent must create a commit before ending the task.
+2. The commit must include only files related to the workflow outcome (no unrelated files).
+3. The agent must push the commit to `origin` before reporting completion.
+4. If push fails, the agent must report the exact failure and keep the task in a non-complete state.
+5. If there are no file changes, the agent must explicitly report "no changes to commit".
+
+Required end-of-work checks:
+
+- `git status --short`
+- `git add -A` (or targeted add for scoped files)
+- `git commit -m "<clear scoped message>"`
+- `git push origin <current-branch>`
+
+This policy is global and applies even when individual skill files do not explicitly mention git commit/push steps.
+
 ## App Verification with agent-browser
 
 After making UI changes, verify the app works using [agent-browser](https://github.com/vercel-labs/agent-browser):

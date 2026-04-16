@@ -1,5 +1,5 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
-import { type FormEvent, useEffect, useRef, useState } from "react"
+import { type FormEvent, useCallback, useEffect, useRef, useState } from "react"
 import type { SessionDetailResponse } from "../types"
 import { rootRoute } from "./__root"
 
@@ -7,6 +7,14 @@ const SECONDS_PER_MINUTE = 60
 const SECONDS_PER_HOUR = 3600
 const SECONDS_PER_DAY = 86_400
 const MILLISECONDS_PER_SECOND = 1000
+const USER_MESSAGE_PREFIX = "[user] "
+const ORCHESTRATOR_PREFIX = "[orchestrator]"
+
+type ChatBubble = {
+  id: string
+  role: "agent" | "user" | "system"
+  content: string
+}
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -52,6 +60,83 @@ function formatDuration(startedAt: string | null, endedAt: string | null): strin
   return parts.join(" ")
 }
 
+function parseLogIntoBubbles(logContent: string | null): ChatBubble[] {
+  if (!logContent) {
+    return []
+  }
+
+  const bubbles: ChatBubble[] = []
+  const lines = logContent.split("\n")
+  let agentBuffer: string[] = []
+  let bubbleIndex = 0
+
+  const flushAgent = () => {
+    const text = agentBuffer.join("\n").trim()
+    if (text.length > 0) {
+      bubbles.push({ id: `agent-${bubbleIndex}`, role: "agent", content: text })
+      bubbleIndex += 1
+    }
+    agentBuffer = []
+  }
+
+  for (const line of lines) {
+    if (line.startsWith(USER_MESSAGE_PREFIX)) {
+      flushAgent()
+      const text = line.slice(USER_MESSAGE_PREFIX.length).trim()
+      if (text.length > 0) {
+        bubbles.push({ id: `user-${bubbleIndex}`, role: "user", content: text })
+        bubbleIndex += 1
+      }
+    } else if (line.startsWith(ORCHESTRATOR_PREFIX)) {
+      flushAgent()
+      const text = line.slice(ORCHESTRATOR_PREFIX.length).trim()
+      if (text.length > 0) {
+        bubbles.push({ id: `sys-${bubbleIndex}`, role: "system", content: text })
+        bubbleIndex += 1
+      }
+    } else {
+      agentBuffer.push(line)
+    }
+  }
+
+  flushAgent()
+  return bubbles
+}
+
+function ChatBubbleView(props: { bubble: ChatBubble }) {
+  const { bubble } = props
+
+  if (bubble.role === "system") {
+    return (
+      <div className="chat-bubble chat-bubble-system">
+        <span className="chat-bubble-system-text">{bubble.content}</span>
+      </div>
+    )
+  }
+
+  if (bubble.role === "user") {
+    return (
+      <div className="chat-bubble chat-bubble-user">
+        <div className="chat-bubble-avatar chat-bubble-avatar-user">U</div>
+        <div className="chat-bubble-body">
+          <p className="chat-bubble-role">You</p>
+          <div className="chat-bubble-content">{bubble.content}</div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="chat-bubble chat-bubble-agent">
+      <div className="chat-bubble-avatar chat-bubble-avatar-agent">A</div>
+      <div className="chat-bubble-body">
+        <p className="chat-bubble-role">Copilot Agent</p>
+        <pre className="chat-bubble-content">{bubble.content}</pre>
+      </div>
+    </div>
+  )
+}
+
 function SessionDetailPage() {
   const { sessionId } = useParams({ from: "/session/$sessionId" })
   const [data, setData] = useState<SessionDetailResponse | null>(null)
@@ -61,10 +146,19 @@ function SessionDetailPage() {
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState<string | null>(null)
   const [sessionActionPending, setSessionActionPending] = useState<"start" | "abort" | null>(null)
-  const chatStreamRef = useRef<HTMLDivElement | null>(null)
+  const [showMeta, setShowMeta] = useState(false)
+  const [showPrompt, setShowPrompt] = useState(false)
+  const chatEndRef = useRef<HTMLDivElement | null>(null)
   const streamContent = data?.logContent || ""
   const userMessageCount = data?.session.userMessages?.length || 0
+  const bubbles = parseLogIntoBubbles(data?.logContent ?? null)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on content change
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [streamContent, userMessageCount])
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: SSE subscription on mount
   useEffect(() => {
     let mounted = true
     let eventSource: EventSource | null = null
@@ -116,55 +210,43 @@ function SessionDetailPage() {
     }
   }, [sessionId])
 
-  useEffect(() => {
-    if (!chatStreamRef.current) {
-      return
-    }
-
-    const shouldSmoothScroll = streamContent.length > 0 || userMessageCount > 0
-
-    chatStreamRef.current.scrollTo({
-      top: chatStreamRef.current.scrollHeight,
-      behavior: shouldSmoothScroll ? "smooth" : "auto",
-    })
-  }, [streamContent, userMessageCount])
-
-  const handleSend = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!data?.canSendInput || sending) {
-      return
-    }
-
-    const message = chatInput.trim()
-    if (!message) {
-      return
-    }
-
-    setSending(true)
-    setSendError(null)
-
-    try {
-      const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/input`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`session input request failed: ${response.status}`)
+  const handleSend = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      if (!data?.canSendInput || sending) {
+        return
       }
 
-      setChatInput("")
-    } catch (sessionInputError) {
-      setSendError(String(sessionInputError))
-    } finally {
-      setSending(false)
-    }
-  }
+      const message = chatInput.trim()
+      if (!message) {
+        return
+      }
 
-  const handleStartSession = async () => {
+      setSending(true)
+      setSendError(null)
+
+      try {
+        const response = await fetch(`/api/session/${encodeURIComponent(sessionId)}/input`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`session input request failed: ${response.status}`)
+        }
+
+        setChatInput("")
+      } catch (sessionInputError) {
+        setSendError(String(sessionInputError))
+      } finally {
+        setSending(false)
+      }
+    },
+    [chatInput, data?.canSendInput, sending, sessionId],
+  )
+
+  const handleStartSession = useCallback(async () => {
     setSessionActionPending("start")
     setSendError(null)
     try {
@@ -180,9 +262,9 @@ function SessionDetailPage() {
     } finally {
       setSessionActionPending(null)
     }
-  }
+  }, [sessionId])
 
-  const handleAbortSession = async () => {
+  const handleAbortSession = useCallback(async () => {
     setSessionActionPending("abort")
     setSendError(null)
     try {
@@ -198,7 +280,7 @@ function SessionDetailPage() {
     } finally {
       setSessionActionPending(null)
     }
-  }
+  }, [sessionId])
 
   if (loading) {
     return <main className="screen loading">Loading session detail...</main>
@@ -216,17 +298,35 @@ function SessionDetailPage() {
   const { session } = data
 
   return (
-    <main className="screen">
-      <section className="panel reveal">
-        <h2>Agent Session Detail</h2>
-        <p className="eyebrow">Session</p>
-        <h1>{session.skill}</h1>
-        <p className="subtitle">{session.id}</p>
-        <div className="status-row">
+    <main className="chat-layout">
+      {/* ── Top bar ─────────────────────────────────────── */}
+      <header className="chat-topbar">
+        <div className="chat-topbar-left">
+          <Link className="chat-back-link" params={session.storyId ? { epicId: `epic-${session.storyId.split("-")[0]}` } : undefined} to={session.storyId ? "/epic/$epicId" : "/"}>← Back</Link>
+          <span className="chat-topbar-skill">{session.skill}</span>
+          {session.storyId ? (
+            <span className="chat-topbar-story">{session.storyId}</span>
+          ) : null}
           <span className={`step-badge step-${session.status}`}>{session.status}</span>
-          <span className="runtime-pill">
-            {data.isRunning ? "Streaming logs" : "Terminal finished"}
+          <span className="chat-topbar-meta">
+            {session.model} · {formatDuration(session.startedAt, session.endedAt)}
           </span>
+        </div>
+        <div className="chat-topbar-right">
+          <button
+            className="ghost chat-topbar-toggle"
+            onClick={() => setShowMeta((v) => !v)}
+            type="button"
+          >
+            {showMeta ? "Hide details" : "Details"}
+          </button>
+          <button
+            className="ghost chat-topbar-toggle"
+            onClick={() => setShowPrompt((v) => !v)}
+            type="button"
+          >
+            {showPrompt ? "Hide prompt" : "Prompt"}
+          </button>
           {/* biome-ignore lint/a11y/useSemanticElements: action group in session header */}
           <div className="session-actions" role="group">
             <button
@@ -239,9 +339,7 @@ function SessionDetailPage() {
               title="Start session"
               type="button"
             >
-              <span aria-hidden="true" className="icon-glyph">
-                ▶
-              </span>
+              <span aria-hidden="true" className="icon-glyph">▶</span>
             </button>
             <button
               aria-label="Abort session"
@@ -254,123 +352,103 @@ function SessionDetailPage() {
               title="Abort session"
               type="button"
             >
-              <span aria-hidden="true" className="icon-glyph">
-                ✕
-              </span>
+              <span aria-hidden="true" className="icon-glyph">✕</span>
             </button>
           </div>
         </div>
-        <p>
-          <Link to="/">Back to dashboard</Link>
-        </p>
-      </section>
+      </header>
 
-      <section className="panel reveal delay-1">
-        <h2>Session Metadata</h2>
-        <div className="table-wrap">
-          <table>
-            <tbody>
-              <tr>
-                <th>Skill</th>
-                <td>{session.skill}</td>
-              </tr>
-              <tr>
-                <th>Model</th>
-                <td>{session.model}</td>
-              </tr>
-              <tr>
-                <th>Story</th>
-                <td>{session.storyId || "-"}</td>
-              </tr>
+      {/* ── Collapsible metadata panel ──────────────────── */}
+      {showMeta ? (
+        <section className="chat-meta-drawer">
+          <div className="table-wrap">
+            <table>
+              <tbody>
+                <tr><th>Session ID</th><td className="mono">{session.id}</td></tr>
+                <tr><th>Skill</th><td>{session.skill}</td></tr>
+                <tr><th>Model</th><td>{session.model}</td></tr>
+                <tr><th>Story</th><td>{session.storyId || "-"}</td></tr>
+                <tr><th>Started</th><td>{formatDate(session.startedAt)}</td></tr>
+                <tr><th>Duration</th><td>{formatDuration(session.startedAt, session.endedAt)}</td></tr>
+                <tr><th>Exit Code</th><td>{session.exitCode ?? "-"}</td></tr>
+                <tr><th>Error</th><td>{session.error || "-"}</td></tr>
+                <tr><th>Log Path</th><td className="mono">{session.logPath}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
 
-              <tr>
-                <th>Duration</th>
-                <td>{formatDuration(session.startedAt, session.endedAt)}</td>
-              </tr>
-              <tr>
-                <th>Exit Code</th>
-                <td>{session.exitCode ?? "-"}</td>
-              </tr>
-              <tr>
-                <th>Command</th>
-                <td>{session.command}</td>
-              </tr>
-              <tr>
-                <th>Log Path</th>
-                <td>{session.logPath}</td>
-              </tr>
-              <tr>
-                <th>Prompt Path</th>
-                <td>{session.promptPath}</td>
-              </tr>
-              <tr>
-                <th>Error</th>
-                <td>{session.error || "-"}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {/* ── Collapsible prompt panel ────────────────────── */}
+      {showPrompt ? (
+        <section className="chat-meta-drawer">
+          <h3>Prompt</h3>
+          <pre className="story-markdown">{data.promptContent || "No prompt content available."}</pre>
+        </section>
+      ) : null}
 
-      <section className="panel reveal delay-2">
-        <h2>Agent Chat</h2>
-        <p className="subtitle">
-          {data.logExists
-            ? "Streaming output from Copilot CLI plus your input messages."
-            : "No log file found for this session."}
-        </p>
-        <div className="chat-stream" ref={chatStreamRef}>
-          {(session.userMessages || []).map((message) => (
-            <article className="chat-message chat-message-user" key={message.id}>
-              <header>
-                <strong>You</strong>
-                <span>{formatDate(message.sentAt)}</span>
-              </header>
-              <p>{message.text}</p>
-            </article>
-          ))}
+      {/* ── Messages area ───────────────────────────────── */}
+      <div className="chat-messages-area">
+        {bubbles.length === 0 && !data.isRunning ? (
+          <div className="chat-empty-state">
+            <p>No log output available for this session.</p>
+            {!data.logExists ? <p className="muted">Log file not found at: {session.logPath}</p> : null}
+          </div>
+        ) : null}
 
-          <article className="chat-message chat-message-agent">
-            <header>
-              <strong>Copilot CLI</strong>
-              <span>{data.isRunning ? "streaming" : "finished"}</span>
-            </header>
-            <pre>{data.logContent || "No log output available yet."}</pre>
-          </article>
-        </div>
+        {bubbles.length === 0 && data.isRunning ? (
+          <div className="chat-empty-state">
+            <p>Waiting for agent output…</p>
+            <div className="chat-typing-indicator">
+              <span /><span /><span />
+            </div>
+          </div>
+        ) : null}
 
-        <form className="chat-input-row" onSubmit={handleSend}>
+        {bubbles.map((bubble) => (
+          <ChatBubbleView bubble={bubble} key={bubble.id} />
+        ))}
+
+        {data.isRunning && bubbles.length > 0 ? (
+          <div className="chat-typing-indicator">
+            <span /><span /><span />
+          </div>
+        ) : null}
+
+        <div ref={chatEndRef} />
+      </div>
+
+      {/* ── Input area ──────────────────────────────────── */}
+      <footer className="chat-input-footer">
+        {sendError ? <p className="chat-error">{sendError}</p> : null}
+        <form className="chat-input-form" onSubmit={handleSend}>
           <textarea
             disabled={sending}
             onChange={(event) => setChatInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault()
+                event.currentTarget.form?.requestSubmit()
+              }
+            }}
             placeholder={
               data.canSendInput
-                ? "Send a message to Copilot CLI..."
-                : "Write your message. This session is not accepting input yet."
+                ? "Send a message to the agent… (Enter to send, Shift+Enter for newline)"
+                : "This session is not accepting input."
             }
-            rows={3}
+            rows={1}
             value={chatInput}
           />
           <button
-            className="cta"
+            className="chat-send-btn"
             disabled={!data.canSendInput || sending || chatInput.trim().length === 0}
+            title="Send message"
             type="submit"
           >
-            {sending ? "Sending..." : "Send"}
+            {sending ? "…" : "↑"}
           </button>
         </form>
-        {sendError ? <p className="chat-error">{sendError}</p> : null}
-      </section>
-
-      <section className="panel reveal delay-3">
-        <h2>Prompt</h2>
-        <p className="subtitle">
-          {data.promptExists
-            ? "Prompt used to start this agent session."
-            : "No prompt file found for this session."}
-        </p>
-        <pre className="story-markdown">{data.promptContent || "No prompt content available."}</pre>
-      </section>
+      </footer>
     </main>
   )
 }

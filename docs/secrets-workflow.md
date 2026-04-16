@@ -61,10 +61,10 @@ dotenvx run -- env | grep VERCEL_TOKEN
 ### Verifying decryption works
 
 ```bash
-dotenvx run -- env | grep DOTENV_PUBLIC_KEY
+dotenvx run -- sh -c 'test -n "$VERCEL_TOKEN" && echo "VERCEL_TOKEN is available"'
 ```
 
-If decryption succeeds, you will see the plaintext value.
+If decryption succeeds, the command confirms the secret is available without printing its plaintext.
 
 ---
 

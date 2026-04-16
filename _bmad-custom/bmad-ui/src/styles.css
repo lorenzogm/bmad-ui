@@ -618,6 +618,388 @@ button:hover:not(:disabled) {
   color: #ffcbcb;
 }
 
+/* ── Epic Header ─────────────────────────────────────────── */
+
+.epic-header {
+  position: relative;
+}
+
+.epic-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.epic-back-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 150ms ease;
+}
+
+.epic-back-link:hover {
+  color: var(--highlight);
+}
+
+.epic-title {
+  font-size: 1.6rem;
+  line-height: 1.3;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.epic-description {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 1.25rem;
+  max-width: 56ch;
+}
+
+.epic-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.epic-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.epic-stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.epic-stat-done {
+  color: var(--status-done);
+}
+
+.epic-stat-progress {
+  color: var(--status-ready);
+}
+
+.epic-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.epic-progress-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(151, 177, 205, 0.15);
+  overflow: hidden;
+}
+
+.epic-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--status-done);
+  transition: width 400ms ease;
+}
+
+/* ── Session Chat Layout ─────────────────────────────────────────── */
+
+.chat-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.chat-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: rgba(2, 10, 16, 0.92);
+  border-bottom: 1px solid rgba(130, 161, 188, 0.18);
+  flex-shrink: 0;
+}
+
+.chat-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.chat-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chat-back-link {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.chat-back-link:hover {
+  color: var(--highlight);
+}
+
+.chat-topbar-skill {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.chat-topbar-story {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  color: var(--highlight);
+  padding: 0.12rem 0.4rem;
+  border-radius: 6px;
+  background: rgba(46, 196, 182, 0.1);
+  border: 1px solid rgba(46, 196, 182, 0.25);
+}
+
+.chat-topbar-meta {
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.chat-topbar-toggle {
+  font-size: 0.78rem;
+  padding: 0.25rem 0.55rem;
+}
+
+.chat-meta-drawer {
+  padding: 0.6rem 1rem;
+  background: rgba(2, 10, 16, 0.88);
+  border-bottom: 1px solid rgba(130, 161, 188, 0.14);
+  flex-shrink: 0;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.chat-meta-drawer h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.chat-meta-drawer .story-markdown {
+  max-height: 180px;
+}
+
+.chat-messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.chat-bubble {
+  display: flex;
+  gap: 0.6rem;
+  max-width: 100%;
+}
+
+.chat-bubble-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.chat-bubble-avatar-agent {
+  background: rgba(46, 196, 182, 0.18);
+  color: var(--highlight);
+  border: 1px solid rgba(46, 196, 182, 0.35);
+}
+
+.chat-bubble-avatar-user {
+  background: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.chat-bubble-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-bubble-role {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.chat-bubble-content {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+pre.chat-bubble-content {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+}
+
+.chat-bubble-agent {
+  padding: 0.65rem 0.75rem;
+  border-radius: 0 12px 12px 12px;
+  background: rgba(1, 18, 15, 0.64);
+  border: 1px solid rgba(46, 196, 182, 0.18);
+}
+
+.chat-bubble-user {
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px 0 12px 12px;
+  background: rgba(6, 34, 54, 0.65);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  margin-left: 2rem;
+}
+
+.chat-bubble-system {
+  display: flex;
+  justify-content: center;
+  padding: 0.35rem 0;
+}
+
+.chat-bubble-system-text {
+  font-size: 0.72rem;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--muted);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(130, 161, 188, 0.08);
+  border: 1px solid rgba(130, 161, 188, 0.12);
+}
+
+.chat-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+  text-align: center;
+  flex: 1;
+}
+
+.chat-typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 0.5rem 0 0.5rem 2.6rem;
+}
+
+.chat-typing-indicator span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--highlight);
+  opacity: 0.4;
+  animation: typing-pulse 1.4s ease-in-out infinite;
+}
+
+.chat-typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.chat-typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.chat-input-footer {
+  padding: 0.5rem 1rem 0.7rem;
+  background: rgba(2, 10, 16, 0.92);
+  border-top: 1px solid rgba(130, 161, 188, 0.18);
+  flex-shrink: 0;
+}
+
+.chat-input-footer .chat-error {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+}
+
+.chat-input-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.chat-input-form textarea {
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid rgba(130, 161, 188, 0.24);
+  background: rgba(6, 18, 28, 0.82);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 0.55rem 0.75rem;
+  resize: none;
+  min-height: 40px;
+  max-height: 120px;
+  line-height: 1.45;
+}
+
+.chat-input-form textarea:focus {
+  outline: none;
+  border-color: rgba(46, 196, 182, 0.55);
+}
+
+.chat-input-form textarea:disabled {
+  opacity: 0.5;
+}
+
+.chat-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: var(--highlight);
+  color: #0a131d;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.chat-send-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.chat-send-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .grid {
   display: grid;
   gap: 1rem;
@@ -728,6 +1110,45 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+}
+
+.session-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  border-radius: 6px;
+  color: var(--highlight);
+  text-decoration: none;
+  transition: transform 100ms ease, color 100ms ease;
+}
+
+.session-link-icon:hover {
+  transform: scale(1.15);
+  text-decoration: none;
+}
+
+.session-link-running {
+  color: var(--status-ready);
+  animation: session-pulse 2s ease-in-out infinite;
+}
+
+.session-link-failed {
+  color: #f87171;
+}
+
+.session-link-disabled {
+  color: var(--muted);
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@keyframes session-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 .step-badge {

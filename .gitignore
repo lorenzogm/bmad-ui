@@ -11,6 +11,10 @@ runtime-state.json
 .env.*.local
 .env.production
 .env.development
+.env.test
+.env.staging
+.env.preview
+.env.*.keys
 
 # Terraform
 **/.terraform/

@@ -1,5 +1,5 @@
 import { type ChildProcess, execFile, spawn } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
@@ -224,6 +224,50 @@ function ensureRunningProcessStateIsFresh(): void {
   if (!isChildProcessAlive(runningProcess)) {
     resetRunningProcessState();
   }
+}
+
+async function markZombieSessionsAsFailed(
+  runtimeState: RuntimeState | null,
+): Promise<boolean> {
+  if (!runtimeState?.sessions) {
+    return false;
+  }
+
+  let mutated = false;
+
+  for (const session of runtimeState.sessions) {
+    if (session.status !== "running") {
+      continue;
+    }
+
+    if (runningSessionProcesses.has(session.id)) {
+      continue;
+    }
+
+    const logEmpty =
+      !session.logPath ||
+      !existsSync(session.logPath) ||
+      statSync(session.logPath).size === 0;
+
+    if (logEmpty) {
+      session.status = "failed";
+      session.error = "Agent process produced no output (0-byte log)";
+      session.endedAt = session.endedAt || new Date().toISOString();
+      session.exitCode = session.exitCode ?? -1;
+      mutated = true;
+    } else {
+      session.status = "completed";
+      session.endedAt = session.endedAt || new Date().toISOString();
+      session.exitCode = session.exitCode ?? 0;
+      mutated = true;
+    }
+  }
+
+  if (mutated) {
+    await persistRuntimeState(runtimeState);
+  }
+
+  return mutated;
 }
 
 const PS_LINE_REGEX = /^(\d+)\s+([^\s]+)\s+(.+)$/;
@@ -641,6 +685,7 @@ async function startRuntimeSession(
 async function buildOverviewPayload() {
   ensureRunningProcessStateIsFresh();
   const runtimeState = await readRuntimeStateFile();
+  await markZombieSessionsAsFailed(runtimeState);
   const sprintOverview = await loadSprintOverview(runtimeState);
   const externalProcesses = await getExternalCliProcesses();
   const epicsContent = existsSync(epicsFile)
@@ -933,6 +978,7 @@ async function buildSessionDetailPayload(
   sessionId: string
 ): Promise<SessionDetailResponse | null> {
   const runtimeState = await readRuntimeStateFile();
+  await markZombieSessionsAsFailed(runtimeState);
   const session =
     runtimeState?.sessions.find((candidate) => candidate.id === sessionId) ||
     null;
@@ -1327,6 +1373,42 @@ function parseEpicMarkdownRows(
   }
 
   return rows.sort((a, b) => a.number - b.number);
+}
+
+function getEpicMetadataFromMarkdown(
+  epicsContent: string,
+  epicNumber: number
+): { name: string; description: string } {
+  const lines = epicsContent.split("\n");
+  let name = "";
+  let description = "";
+  let foundHeading = false;
+  const descLines: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+
+    if (!foundHeading) {
+      const headingMatch = trimmed.match(EPICS_EPIC_HEADING_WITH_NAME_REGEX);
+      if (headingMatch && Number(headingMatch[1]) === epicNumber) {
+        name = headingMatch[2].trim();
+        foundHeading = true;
+      }
+      continue;
+    }
+
+    // Stop at next heading or section marker
+    if (trimmed.startsWith("#") || trimmed.startsWith("**Story to FR") || trimmed.startsWith("**FRs covered")) {
+      break;
+    }
+
+    if (trimmed.length > 0) {
+      descLines.push(trimmed);
+    }
+  }
+
+  description = descLines.join(" ");
+  return { name, description };
 }
 
 function summarizeEpicConsistency(
@@ -3008,13 +3090,27 @@ function attachApi(server: ViteDevServer): void {
           .filter((story) => Number(story.id.split("-")[0]) === epicNumber)
           .sort((a, b) => (a.id > b.id ? 1 : -1));
 
+        let epicMeta = { name: "", description: "" };
+        if (existsSync(epicsFile)) {
+          try {
+            const epicsContent = await readFile(epicsFile, "utf8");
+            epicMeta = getEpicMetadataFromMarkdown(epicsContent, epicNumber);
+          } catch {
+            // ignore parse errors
+          }
+        }
+
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(
           JSON.stringify({
             epic: {
               id: epic.id,
               number: epic.number,
+              name: epicMeta.name,
+              description: epicMeta.description,
               status: epic.status,
+              storyCount: epic.storyCount,
+              byStoryStatus: epic.byStoryStatus,
             },
             stories,
           })

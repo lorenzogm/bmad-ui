@@ -161,7 +161,11 @@ export type EpicDetailResponse = {
   epic: {
     id: string
     number: number
+    name: string
+    description: string
     status: EpicStatus
+    storyCount: number
+    byStoryStatus: Record<StoryStatus, number>
     plannedStoryCount: number
     storiesToCreate: number
   }

@@ -3,14 +3,14 @@ storyId: '3-1'
 storyTitle: 'Establish Root-Level dotenvx Secret Workflow'
 epicId: '3'
 epicTitle: 'Secrets & Environment Management'
-status: review
+status: done
 created: '2026-04-15'
 priority: high
 ---
 
 # Story 3.1: Establish Root-Level dotenvx Secret Workflow
 
-Status: review
+Status: done
 
 ## Story
 
@@ -44,6 +44,13 @@ So that all environments use a consistent encrypted secrets process.
 - [x] Update root `README.md` prerequisites section (AC: #1)
   - [x] Add note that maintainer setup requires dotenvx installed locally
   - [x] Link to `docs/secrets-workflow.md` for full workflow details
+
+### Review Findings
+
+- [x] [Review][Patch] Decryption verification command now validates a decrypted secret without printing plaintext [docs/secrets-workflow.md:63]
+- [x] [Review][Patch] `.gitignore` now blocks additional plaintext/key env variants (`.env.test`, `.env.staging`, `.env.preview`, `.env.*.keys`) [.gitignore:9]
+- [x] [Review][Patch] Safe multiline writes are used when exporting dotenvx-derived secrets into `$GITHUB_ENV` [.github/workflows/deploy.yml:127]
+- [x] [Review][Patch] Terraform state decryption failures now hard-fail the workflow instead of continuing with empty state [.github/workflows/deploy.yml:151]
 
 ## Dev Notes
 

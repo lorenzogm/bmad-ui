@@ -127,8 +127,19 @@ jobs:
       - name: Load secrets from encrypted .env
         run: |
           pnpm dlx @dotenvx/dotenvx run -- sh -c '
-            echo "TF_VAR_VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
-            echo "TF_VAR_VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+            write_env_var() {
+              local key="$1"
+              local value="$2"
+              local delimiter
+              delimiter="$(openssl rand -hex 16)"
+              {
+                echo "${key}<<${delimiter}"
+                printf "%s\n" "$value"
+                echo "${delimiter}"
+              } >> "$GITHUB_ENV"
+            }
+            write_env_var "TF_VAR_VERCEL_TOKEN" "$VERCEL_TOKEN"
+            write_env_var "TF_VAR_VERCEL_ORG_ID" "$VERCEL_ORG_ID"
           '
 
       - name: Fetch Terraform State from state branch
@@ -151,8 +162,9 @@ jobs:
             if echo "$TERRAFORM_STATE_ENCRYPT_KEY" | openssl enc -aes-256-cbc -d -in "$STATE_FILE" -out "terraform.tfstate" -pass stdin 2>/dev/null; then
               echo "State file decrypted"
             else
-              echo "::warning::Failed to decrypt state — proceeding without existing state"
+              echo "::error::Failed to decrypt state"
               rm -f terraform.tfstate
+              exit 1
             fi
           fi
 
@@ -280,8 +292,19 @@ jobs:
       - name: Load secrets from encrypted .env
         run: |
           pnpm dlx @dotenvx/dotenvx run -- sh -c '
-            echo "VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
-            echo "VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+            write_env_var() {
+              local key="$1"
+              local value="$2"
+              local delimiter
+              delimiter="$(openssl rand -hex 16)"
+              {
+                echo "${key}<<${delimiter}"
+                printf "%s\n" "$value"
+                echo "${delimiter}"
+              } >> "$GITHUB_ENV"
+            }
+            write_env_var "VERCEL_TOKEN" "$VERCEL_TOKEN"
+            write_env_var "VERCEL_ORG_ID" "$VERCEL_ORG_ID"
           '
 
       - name: Resolve Vercel Project ID
@@ -360,8 +383,19 @@ jobs:
       - name: Load secrets from encrypted .env
         run: |
           pnpm dlx @dotenvx/dotenvx run -- sh -c '
-            echo "VERCEL_TOKEN=$VERCEL_TOKEN" >> "$GITHUB_ENV"
-            echo "VERCEL_ORG_ID=$VERCEL_ORG_ID" >> "$GITHUB_ENV"
+            write_env_var() {
+              local key="$1"
+              local value="$2"
+              local delimiter
+              delimiter="$(openssl rand -hex 16)"
+              {
+                echo "${key}<<${delimiter}"
+                printf "%s\n" "$value"
+                echo "${delimiter}"
+              } >> "$GITHUB_ENV"
+            }
+            write_env_var "VERCEL_TOKEN" "$VERCEL_TOKEN"
+            write_env_var "VERCEL_ORG_ID" "$VERCEL_ORG_ID"
           '
 
       - name: Resolve Vercel Project ID
