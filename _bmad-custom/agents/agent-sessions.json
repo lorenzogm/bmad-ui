@@ -1090,6 +1090,40 @@
         "tokensCached": 0,
         "totalTokens": 0
       }
+    },
+    "workflow-bmad-correct-course-1776365801274": {
+      "sessionId": "workflow-bmad-correct-course-1776365801274",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-correct-course",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T18:56:41.275Z",
+      "endedAt": "2026-04-16T18:57:44.362Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 359000,
+        "tokensOut": 1900,
+        "tokensCached": 309000,
+        "totalTokens": 360900
+      }
+    },
+    "8731a1fe-611c-4b58-ae27-6e902484e63d": {
+      "sessionId": "8731a1fe-611c-4b58-ae27-6e902484e63d",
+      "storyId": "4-2-enforce-protected-branch-quality-gates",
+      "epicId": "epic-4",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T18:55:26.044Z",
+      "endedAt": "2026-04-16T19:10:00.000Z",
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
     }
   }
 }
