@@ -3,14 +3,14 @@ storyId: '3-2'
 storyTitle: 'Enable Contributor Workflow Without Production Secrets'
 epicId: '3'
 epicTitle: 'Secrets & Environment Management'
-status: 'in-progress'
+status: 'done'
 created: '2026-04-15'
 priority: 'high'
 ---
 
 # Story 3.2: Enable Contributor Workflow Without Production Secrets
 
-Status: in-progress
+Status: done
 
 ## Story
 
