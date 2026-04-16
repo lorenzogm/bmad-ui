@@ -49,10 +49,8 @@ resource "github_branch_protection" "protections" {
     for_each = each.value.require_status_checks ? [1] : []
 
     content {
-      strict = true
-      # Context names are populated automatically after CI workflows run at
-      # least once; leave empty for initial setup.
-      contexts = []
+      strict   = true
+      contexts = each.value.required_status_check_contexts
     }
   }
 

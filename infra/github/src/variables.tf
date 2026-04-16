@@ -25,11 +25,12 @@ variable "repository" {
 variable "branch_protections" {
   description = "Branch protection rules to create"
   type = list(object({
-    branch_name                  = string
-    require_status_checks        = bool
-    require_code_owner_reviews   = bool
-    require_pull_request_reviews = bool
-    required_review_count        = number
+    branch_name                          = string
+    require_status_checks                = bool
+    required_status_check_contexts       = list(string)
+    require_code_owner_reviews           = bool
+    require_pull_request_reviews         = bool
+    required_review_count                = number
     dismiss_stale_reviews                = bool
     require_linear_history               = bool
     require_conversation_resolution      = bool

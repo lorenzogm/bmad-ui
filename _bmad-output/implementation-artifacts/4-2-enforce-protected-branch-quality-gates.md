@@ -18,14 +18,14 @@ so that only pull requests that pass CI validation can be merged.
 
 ## Tasks / Subtasks
 
-- [ ] Identify exact required-check context string(s) from the CI workflow created in story 4.1 (AC: #3)
-  - [ ] Run the CI workflow once on a PR (or via `workflow_dispatch`) to let GitHub register the check context
-  - [ ] Verify the context name in GitHub → Settings → Branches → Edit `main` protection rule → "Status checks that are required"
-  - [ ] Expected format: `<workflow-name> / <job-name>` (e.g., `CI / validate`)
-- [ ] Update `infra/github/src/variables.tf`: add `required_status_check_contexts` field to `branch_protections` type (AC: #1, #3)
-  - [ ] Field type: `list(string)`, defaults to `[]`
-- [ ] Update `infra/github/src/main.tf`: use `each.value.required_status_check_contexts` for `contexts` instead of hardcoded `[]` (AC: #1, #3)
-- [ ] Update `infra/github/src/config.json`: add `required_status_check_contexts` array with the CI job context string to the `main` branch protection entry (AC: #1, #2, #3)
+- [x] Identify exact required-check context string(s) from the CI workflow created in story 4.1 (AC: #3)
+  - [x] Run the CI workflow once on a PR (or via `workflow_dispatch`) to let GitHub register the check context
+  - [x] Verify the context name in GitHub → Settings → Branches → Edit `main` protection rule → "Status checks that are required"
+  - [x] Expected format: `<workflow-name> / <job-name>` (e.g., `CI / validate`)
+- [x] Update `infra/github/src/variables.tf`: add `required_status_check_contexts` field to `branch_protections` type (AC: #1, #3)
+  - [x] Field type: `list(string)`, defaults to `[]`
+- [x] Update `infra/github/src/main.tf`: use `each.value.required_status_check_contexts` for `contexts` instead of hardcoded `[]` (AC: #1, #3)
+- [x] Update `infra/github/src/config.json`: add `required_status_check_contexts` array with the CI job context string to the `main` branch protection entry (AC: #1, #2, #3)
 - [ ] Trigger Terraform deploy via `workflow_dispatch` on `deploy.yml` to apply the updated branch protection (AC: #1)
 - [ ] Verify in GitHub that merge is blocked on a PR with a failing check (AC: #1, #2)
 
