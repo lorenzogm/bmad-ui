@@ -637,33 +637,35 @@ function SessionDetailPage() {
       {/* ── Input area ──────────────────────────────────── */}
       <footer className="chat-input-footer">
         {sendError ? <p className="chat-error">{sendError}</p> : null}
-        <form className="chat-input-form" onSubmit={handleSend}>
-          <textarea
-            disabled={sending}
-            onChange={(event) => setChatInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault()
-                event.currentTarget.form?.requestSubmit()
-              }
-            }}
-            placeholder={
-              data.canSendInput
-                ? "Send a message to the agent… (Enter to send, Shift+Enter for newline)"
-                : "Send a follow-up message… (Enter to send, Shift+Enter for newline)"
-            }
-            rows={1}
-            value={chatInput}
-          />
-          <button
-            className="chat-send-btn"
-            disabled={sending || chatInput.trim().length === 0}
-            title="Send message"
-            type="submit"
-          >
-            {sending ? "…" : "↑"}
-          </button>
-        </form>
+        {data.isRunning ? (
+          <p style={{ color: "var(--muted)", margin: 0, fontSize: "0.85rem" }}>
+            Agent is running — input disabled while processing.
+          </p>
+        ) : (
+          <form className="chat-input-form" onSubmit={handleSend}>
+            <textarea
+              disabled={sending}
+              onChange={(event) => setChatInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault()
+                  event.currentTarget.form?.requestSubmit()
+                }
+              }}
+              placeholder="Send a follow-up message… (Enter to send, Shift+Enter for newline)"
+              rows={1}
+              value={chatInput}
+            />
+            <button
+              className="chat-send-btn"
+              disabled={sending || chatInput.trim().length === 0}
+              title="Send message"
+              type="submit"
+            >
+              {sending ? "…" : "↑"}
+            </button>
+          </form>
+        )}
       </footer>
     </main>
   )

@@ -1056,6 +1056,40 @@
         "tokensCached": 0,
         "totalTokens": 0
       }
+    },
+    "workflow-bmad-code-review-1776361474809": {
+      "sessionId": "workflow-bmad-code-review-1776361474809",
+      "storyId": "4-1-create-ci-validation-workflow",
+      "epicId": "epic-4",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-16T17:44:34.813Z",
+      "endedAt": "2026-04-16T17:48:37.341Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1100000,
+        "tokensOut": 11100,
+        "tokensCached": 1000000,
+        "totalTokens": 1111100
+      }
+    },
+    "workflow-bmad-create-story-1776359419326": {
+      "sessionId": "workflow-bmad-create-story-1776359419326",
+      "storyId": "5-1-standardize-pnpm-project-commands",
+      "epicId": "epic-5",
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T17:10:19.328Z",
+      "endedAt": "2026-04-16T17:18:23.223Z",
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
     }
   }
 }

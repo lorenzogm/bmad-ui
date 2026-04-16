@@ -1,11 +1,20 @@
 import { type ChildProcess, execFile, spawn } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import type { ViteDevServer } from "vite";
 const execFileAsync = promisify(execFile);
+
+const copilotSessionStateDir = path.join(
+  os.homedir(),
+  ".copilot",
+  "session-state"
+);
+const SESSION_TIMESTAMP_REGEX = /(\d{13})$/;
+const SESSION_MATCH_WINDOW_MS = 30_000;
 
 type StoryStatus =
   | "backlog"
@@ -307,7 +316,7 @@ const ANALYTICS_EPIC_SESSION_REGEX = /^epic-(\d+)-(.+)$/;
 function buildAgentCommand(model: string, promptFilePath: string): string {
   const template =
     process.env.BMAD_AGENT_COMMAND_TEMPLATE ||
-    'copilot --model "{model}" --allow-all-tools --no-ask-user -p "$(cat "{promptFile}")"';
+    'copilot --model "{model}" --allow-all-tools --no-ask-user --no-color --plain-diff -p "$(cat "{promptFile}")"';
 
   return template
     .replaceAll("{model}", model)
@@ -844,6 +853,20 @@ function summarizeSprintFromEpics(
         }
       }
 
+      // Implicit step inference: later steps imply earlier steps are completed
+      if (
+        story.steps["bmad-code-review"] === "completed" ||
+        story.steps["bmad-code-review"] === "running"
+      ) {
+        story.steps["bmad-dev-story"] = "completed";
+      }
+      if (
+        story.steps["bmad-dev-story"] === "completed" ||
+        story.steps["bmad-dev-story"] === "running"
+      ) {
+        story.steps["bmad-create-story"] = "completed";
+      }
+
       if (story.steps["bmad-code-review"] === "completed") {
         story.status = "done";
       } else if (story.steps["bmad-code-review"] === "running") {
@@ -975,6 +998,241 @@ async function loadSprintOverview(
   return summarizeSprintFromEpics(epicsContent, runtimeState);
 }
 
+function describeToolCall(toolName: string): string {
+  const map: Record<string, string> = {
+    read_file: "Reading file",
+    grep_search: "Searching code",
+    file_search: "Finding files",
+    list_dir: "Listing directory",
+    semantic_search: "Searching semantically",
+    replace_string_in_file: "Editing file",
+    multi_replace_string_in_file: "Editing files",
+    create_file: "Creating file",
+    run_in_terminal: "Running command",
+    execution_subagent: "Running subagent",
+    search_subagent: "Running search",
+    runSubagent: "Running subagent",
+    get_errors: "Checking errors",
+    manage_todo_list: "Updating todos",
+    memory: "Using memory",
+    vscode_listCodeUsages: "Finding usages",
+    vscode_renameSymbol: "Renaming symbol",
+    fetch_webpage: "Fetching webpage",
+  };
+  return map[toolName] || toolName;
+}
+
+async function findAllCliEventsJsonl(
+  sessionId: string,
+  userMessages: Array<{ sentAt: string }>
+): Promise<string[]> {
+  const match = SESSION_TIMESTAMP_REGEX.exec(sessionId);
+  if (!match) {
+    return [];
+  }
+
+  // Collect all timestamps to match: the session ID ts + each userMessage sentAt
+  const timestamps: number[] = [Number(match[1])];
+  for (const msg of userMessages) {
+    const ms = Date.parse(msg.sentAt);
+    if (!Number.isNaN(ms)) {
+      timestamps.push(ms);
+    }
+  }
+
+  if (!existsSync(copilotSessionStateDir)) {
+    return [];
+  }
+
+  let entries: string[];
+  try {
+    entries = await readdir(copilotSessionStateDir);
+  } catch {
+    return [];
+  }
+
+  // Build index of CLI session created_at timestamps
+  const cliIndex: Array<{ createdMs: number; eventsPath: string }> = [];
+  for (const entry of entries) {
+    const wsPath = path.join(copilotSessionStateDir, entry, "workspace.yaml");
+    if (!existsSync(wsPath)) {
+      continue;
+    }
+
+    try {
+      const wsContent = await readFile(wsPath, "utf8");
+      const createdMatch = /created_at:\s*(\S+)/.exec(wsContent);
+      if (!createdMatch) {
+        continue;
+      }
+
+      const createdMs = Date.parse(createdMatch[1]);
+      if (Number.isNaN(createdMs)) {
+        continue;
+      }
+
+      const eventsPath = path.join(
+        copilotSessionStateDir,
+        entry,
+        "events.jsonl"
+      );
+      if (existsSync(eventsPath)) {
+        cliIndex.push({ createdMs, eventsPath });
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  // Match each timestamp to a CLI session
+  const matched: Array<{ ts: number; eventsPath: string }> = [];
+  for (const ts of timestamps) {
+    for (const cli of cliIndex) {
+      if (Math.abs(cli.createdMs - ts) <= SESSION_MATCH_WINDOW_MS) {
+        matched.push({ ts, eventsPath: cli.eventsPath });
+        break;
+      }
+    }
+  }
+
+  // Sort by timestamp to get chronological order
+  matched.sort((a, b) => a.ts - b.ts);
+
+  // Deduplicate paths (same CLI session could match multiple timestamps)
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const m of matched) {
+    if (!seen.has(m.eventsPath)) {
+      seen.add(m.eventsPath);
+      result.push(m.eventsPath);
+    }
+  }
+
+  return result;
+}
+
+function buildLogFromEvents(eventsContent: string): string {
+  const lines = eventsContent.split("\n").filter((l) => l.trim().length > 0);
+  const output: string[] = [];
+
+  for (const line of lines) {
+    let event: {
+      type: string;
+      data?: {
+        content?: string;
+        toolRequests?: Array<{
+          name?: string;
+          arguments?: string;
+        }>;
+        toolCallId?: string;
+        toolName?: string;
+        result?: string;
+        success?: boolean;
+      };
+    };
+    try {
+      event = JSON.parse(line);
+    } catch {
+      continue;
+    }
+
+    switch (event.type) {
+      case "user.message": {
+        const content = event.data?.content?.trim();
+        if (content) {
+          output.push(`[user] ${content}`);
+        }
+        break;
+      }
+
+      case "assistant.message": {
+        const content = event.data?.content?.trim();
+        if (content) {
+          output.push(content);
+        }
+
+        const toolRequests = event.data?.toolRequests;
+        if (toolRequests && toolRequests.length > 0) {
+          for (const req of toolRequests) {
+            const name = req.name || "unknown";
+            const desc = describeToolCall(name);
+            let detail = "";
+
+            if (req.arguments) {
+              try {
+                const args = JSON.parse(req.arguments);
+                if (args.filePath) {
+                  detail = ` ${path.basename(args.filePath)}`;
+                } else if (args.query) {
+                  const q =
+                    typeof args.query === "string"
+                      ? args.query.slice(0, 60)
+                      : "";
+                  detail = q ? ` "${q}"` : "";
+                } else if (args.command) {
+                  const cmd =
+                    typeof args.command === "string"
+                      ? args.command.slice(0, 80)
+                      : "";
+                  detail = cmd ? ` \`${cmd}\`` : "";
+                }
+              } catch {
+                // ignore
+              }
+            }
+
+            output.push(`● ${desc}${detail}`);
+          }
+        }
+        break;
+      }
+
+      case "tool.execution_complete": {
+        const result = event.data?.result;
+        if (result && result.trim().length > 0) {
+          const resultLines = result.split("\n");
+          for (const rl of resultLines) {
+            output.push(`│ ${rl}`);
+          }
+          output.push(`└ done`);
+        }
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  return output.join("\n");
+}
+
+async function buildCleanLogContent(
+  sessionId: string,
+  userMessages: Array<{ sentAt: string }>,
+  fallbackRawLog: string | null
+): Promise<string | null> {
+  const eventsPaths = await findAllCliEventsJsonl(sessionId, userMessages);
+  if (eventsPaths.length > 0) {
+    try {
+      const parts: string[] = [];
+      for (const ep of eventsPaths) {
+        const eventsContent = await readFile(ep, "utf8");
+        const built = buildLogFromEvents(eventsContent);
+        if (built.trim().length > 0) {
+          parts.push(built);
+        }
+      }
+      if (parts.length > 0) {
+        return parts.join("\n\n");
+      }
+    } catch {
+      // fall through to raw log
+    }
+  }
+  return fallbackRawLog;
+}
+
 async function buildSessionDetailPayload(
   sessionId: string
 ): Promise<SessionDetailResponse | null> {
@@ -988,7 +1246,13 @@ async function buildSessionDetailPayload(
     return null;
   }
 
-  const logContent = await readOptionalTextFile(session.logPath);
+  const rawLogContent = await readOptionalTextFile(session.logPath);
+  const fallbackLog = rawLogContent ? stripAnsi(rawLogContent).replace(/\r/g, "") : null;
+  const logContent = await buildCleanLogContent(
+    session.id,
+    session.userMessages || [],
+    fallbackLog
+  );
   const promptContent = await readOptionalTextFile(session.promptPath);
 
   return {
@@ -1187,6 +1451,20 @@ function summarizeSprint(
             story.steps[step.skill] = sessionState;
           }
         }
+      }
+
+      // Implicit step inference: later steps imply earlier steps are completed
+      if (
+        story.steps["bmad-code-review"] === "completed" ||
+        story.steps["bmad-code-review"] === "running"
+      ) {
+        story.steps["bmad-dev-story"] = "completed";
+      }
+      if (
+        story.steps["bmad-dev-story"] === "completed" ||
+        story.steps["bmad-dev-story"] === "running"
+      ) {
+        story.steps["bmad-create-story"] = "completed";
       }
     }
   }
@@ -2634,9 +2912,60 @@ function attachApi(server: ViteDevServer): void {
 
           const processForSession = runningSessionProcesses.get(sessionId);
           if (!processForSession?.stdin || processForSession.stdin.destroyed) {
-            res.writeHead(409, { "Content-Type": "application/json" });
+            // Session process is not running — restart the session with the
+            // new message as a follow-up prompt.
+            const followUpPromptPath = session.promptPath.replace(
+              /\.md$/,
+              `-followup-${Date.now()}.md`
+            );
+            const originalPrompt = await readOptionalTextFile(
+              session.promptPath
+            );
+            const followUpContent = [
+              originalPrompt
+                ? `Previous prompt context:\n${originalPrompt}\n\n---\n`
+                : "",
+              `Follow-up instruction:\n${message}`,
+            ].join("");
+            await mkdir(path.dirname(followUpPromptPath), { recursive: true });
+            await writeFile(followUpPromptPath, followUpContent, "utf8");
+
+            const userMessage = {
+              id: `msg-${Date.now()}`,
+              text: message,
+              sentAt: new Date().toISOString(),
+            };
+            session.userMessages = session.userMessages || [];
+            session.userMessages.push(userMessage);
+
+            // Reset session for re-run
+            session.promptPath = followUpPromptPath;
+            session.command = buildAgentCommand(
+              session.model,
+              followUpPromptPath
+            );
+            session.status = "planned";
+            session.exitCode = null;
+            session.error = null;
+            session.endedAt = null;
+            await persistRuntimeState(runtimeState);
+
+            try {
+              await startRuntimeSession(runtimeState, session);
+            } catch (restartError) {
+              session.status = "failed";
+              session.error = `Failed to restart session: ${String(restartError)}`;
+              session.endedAt = new Date().toISOString();
+              await persistRuntimeState(runtimeState);
+              await persistSessionAnalytics(session);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: session.error }));
+              return;
+            }
+
+            res.writeHead(202, { "Content-Type": "application/json" });
             res.end(
-              JSON.stringify({ error: "session is not accepting input" })
+              JSON.stringify({ status: "restarted", message: userMessage })
             );
             return;
           }
