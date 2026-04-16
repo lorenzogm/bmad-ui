@@ -14,6 +14,8 @@ import {
   useAnalyticsData,
 } from "./analytics-utils"
 
+const COST_PER_REQUEST_USD = 0.04
+
 function AnalyticsDashboardPage() {
   const { data, loading, error } = useAnalyticsData()
 
@@ -67,12 +69,8 @@ function AnalyticsDashboardPage() {
           <StatCard label="Epics Tracked" value={String(data.epics.length)} />
           <StatCard
             label="Estimated Cost"
-            sub={
-              data.costing.estimatedCostUsd.fromPremiumRequests !== null
-                ? `${formatUsd(data.costing.estimatedCostUsd.fromPremiumRequests)} from requests`
-                : undefined
-            }
-            value={formatUsd(data.costing.estimatedCostUsd.totalWithKnownRates)}
+            sub={`${formatNumber(data.project.requests, 2)} requests × $0.04`}
+            value={formatUsd(data.project.requests * COST_PER_REQUEST_USD)}
           />
         </div>
       </section>
