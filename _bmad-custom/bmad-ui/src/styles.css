@@ -502,9 +502,25 @@ button:hover:not(:disabled) {
 }
 
 .cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.3rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  font-size: 0.92rem;
   background: var(--highlight);
   color: #03101d;
-  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease, box-shadow 160ms ease;
+}
+
+.cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(46, 196, 182, 0.3);
+  text-decoration: none;
 }
 
 .ghost {
@@ -893,6 +909,204 @@ pre.chat-bubble-content {
   border: 1px solid rgba(130, 161, 188, 0.12);
 }
 
+/* ── Log entries (collapsible session log) ──────────────── */
+
+.log-entry {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* ── Tool group (collapsed batch) ────────────────────────── */
+
+.log-entry-group > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  background: rgba(46, 196, 182, 0.05);
+  border: 1px solid rgba(46, 196, 182, 0.12);
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.log-entry-group > summary:hover {
+  background: rgba(46, 196, 182, 0.1);
+  color: var(--text);
+}
+
+.log-entry-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.log-entry-group > summary::before {
+  content: "▸";
+  font-size: 0.68rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.log-entry-group[open] > summary::before {
+  content: "▾";
+}
+
+.log-group-label {
+  color: var(--highlight);
+  font-weight: 600;
+}
+
+.log-group-count {
+  font-size: 0.66rem;
+  color: var(--muted);
+  background: rgba(151, 177, 205, 0.1);
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+  flex-shrink: 0;
+}
+
+.log-group-items {
+  padding: 0.3rem 0 0.2rem 1rem;
+  border-left: 2px solid rgba(46, 196, 182, 0.12);
+  margin-left: 0.6rem;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+/* ── Individual tool item inside group ───────────────────── */
+
+.log-tool-item {
+  font-size: 0.74rem;
+  color: var(--muted);
+  padding: 0.1rem 0.3rem;
+}
+
+.log-tool-item-expandable > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.74rem;
+  color: var(--muted);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  transition: color 0.12s, background 0.12s;
+}
+
+.log-tool-item-expandable > summary:hover {
+  color: var(--text);
+  background: rgba(151, 177, 205, 0.05);
+}
+
+.log-tool-item-expandable > summary::-webkit-details-marker {
+  display: none;
+}
+
+.log-tool-item-expandable > summary::before {
+  content: "▸ ";
+  font-size: 0.6rem;
+}
+
+.log-tool-item-expandable[open] > summary::before {
+  content: "▾ ";
+}
+
+/* ── Single tool (not grouped) ───────────────────────────── */
+
+.log-entry-tool-single > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.log-entry-tool-single > summary:hover {
+  background: rgba(46, 196, 182, 0.06);
+  color: var(--text);
+}
+
+.log-entry-tool-single > summary::-webkit-details-marker {
+  display: none;
+}
+
+.log-entry-tool-single > summary::before {
+  content: "▸ ";
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.log-entry-tool-single[open] > summary::before {
+  content: "▾ ";
+}
+
+.log-entry-tool-icon {
+  color: var(--highlight);
+}
+
+.log-entry-tool-inline {
+  padding: 0.2rem 0.4rem;
+  color: var(--muted);
+}
+
+.log-entry-tool-body {
+  margin: 0;
+  padding: 0.3rem 0.6rem 0.4rem 1.6rem;
+  font-size: 0.74rem;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-left: 2px solid rgba(46, 196, 182, 0.15);
+  margin-left: 0.7rem;
+}
+
+.log-entry-text {
+  padding: 0.25rem 0.4rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.log-entry-text-collapsible > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.log-entry-text-collapsible > summary:hover {
+  background: rgba(151, 177, 205, 0.06);
+}
+
+.log-entry-text-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+.log-entry-text-collapsible > summary::before {
+  content: "▸ ";
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.log-entry-text-collapsible[open] > summary::before {
+  content: "▾ ";
+}
+
+.log-entry-text-body {
+  margin: 0;
+  padding: 0.3rem 0.6rem 0.4rem 1.2rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-left: 2px solid rgba(151, 177, 205, 0.12);
+  margin-left: 0.5rem;
+}
+
 .chat-empty-state {
   display: flex;
   flex-direction: column;
@@ -1090,6 +1304,7 @@ td {
   text-align: left;
   padding: 0.55rem 0.4rem;
   border-bottom: 1px solid rgba(143, 170, 195, 0.22);
+  vertical-align: middle;
 }
 
 th {
@@ -1732,4 +1947,146 @@ a:hover {
 
 .workflow-phase .workflow-step:last-child {
   border-bottom: none;
+}
+
+/* Phase description inside expanded phase */
+.workflow-phase-description {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 0.5rem 0.75rem 0.5rem 2.75rem;
+  margin: 0;
+  border-bottom: 1px solid rgba(151, 177, 205, 0.08);
+}
+
+/* Step description beneath step name */
+.workflow-step-desc {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  margin-top: 0.2rem;
+  opacity: 0.85;
+}
+
+/* Improvement workflow section */
+.improvement-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0.5rem;
+}
+
+.improvement-step {
+  padding: 0.75rem 1rem 0.75rem 1rem;
+  border-bottom: 1px solid rgba(151, 177, 205, 0.08);
+}
+
+.improvement-step:last-of-type {
+  border-bottom: none;
+}
+
+.improvement-step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.improvement-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--highlight);
+  color: #0a131d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.improvement-step-code {
+  font-size: 0.72rem;
+  color: var(--highlight);
+  background: rgba(46, 196, 182, 0.12);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+.improvement-step-skill {
+  font-size: 0.72rem;
+  color: var(--muted);
+  background: rgba(151, 177, 205, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+.improvement-step-desc {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0.35rem 0 0 2rem;
+}
+
+.improvement-tip {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  padding: 0.75rem 1rem;
+  margin: 0;
+  background: rgba(46, 196, 182, 0.06);
+  border-radius: 0 0 0.5rem 0.5rem;
+  border-top: 1px solid rgba(46, 196, 182, 0.15);
+}
+
+/* Improvement workflow page */
+.improvement-row-next {
+  background: rgba(46, 196, 182, 0.06);
+}
+
+.improvement-step-number-done {
+  background: var(--status-done);
+}
+
+.improvement-cell-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.improvement-cell-desc {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.improvement-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.improvement-how-it-works {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.improvement-how-it-works p {
+  margin: 0 0 0.75rem;
+}
+
+.improvement-flow-list {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.improvement-flow-list li {
+  margin-bottom: 0.5rem;
+}
+
+.improvement-flow-list strong {
+  color: var(--text);
 }

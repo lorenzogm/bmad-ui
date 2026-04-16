@@ -476,6 +476,7 @@ export function AgentSessionsSection(props: {
 type WorkflowStep = {
   id: string
   name: string
+  description: string
   isOptional: boolean
   isCompleted: boolean
   skill: string
@@ -487,6 +488,7 @@ type WorkflowPhase = {
   name: string
   description: string
   isOptional: boolean
+  isSequential: boolean
   steps: WorkflowStep[]
 }
 
@@ -498,6 +500,7 @@ type WorkflowStatus = {
 function makeStep(
   id: string,
   name: string,
+  description: string,
   skill: string,
   isOptional: boolean,
   artifactFiles: string[],
@@ -506,6 +509,7 @@ function makeStep(
   return {
     id,
     name,
+    description,
     isOptional,
     isCompleted: matcher(artifactFiles),
     skill,
@@ -523,15 +527,24 @@ function detectWorkflowStatus(
       id: "analysis",
       number: 1,
       name: "Analysis",
-      description: "Optional research and ideation before planning",
+      description:
+        "Optional research and ideation phase. Gather domain knowledge, explore the market, and shape your product idea before committing to a plan.",
       isOptional: true,
+      isSequential: false,
       steps: [
-        makeStep("brainstorming", "Brainstorming", "bmad-brainstorming", true, planningFiles, (f) =>
-          f.some((x) => x.includes("brainstorm"))
+        makeStep(
+          "brainstorming",
+          "Brainstorming",
+          "Facilitated creative ideation session — generate and refine ideas using diverse techniques.",
+          "bmad-brainstorming",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("brainstorm"))
         ),
         makeStep(
           "market-research",
           "Market Research",
+          "Analyze the competitive landscape, customer needs, and market trends to validate opportunity.",
           "bmad-market-research",
           true,
           planningFiles,
@@ -540,6 +553,7 @@ function detectWorkflowStatus(
         makeStep(
           "domain-research",
           "Domain Research",
+          "Deep dive into industry domain, subject-matter expertise, and terminology.",
           "bmad-domain-research",
           true,
           planningFiles,
@@ -548,16 +562,29 @@ function detectWorkflowStatus(
         makeStep(
           "technical-research",
           "Technical Research",
+          "Evaluate technical feasibility, architecture options, and implementation approaches.",
           "bmad-technical-research",
           true,
           planningFiles,
           (f) => f.some((x) => x.includes("technical-research"))
         ),
-        makeStep("product-brief", "Product Brief", "bmad-product-brief", true, planningFiles, (f) =>
-          f.some((x) => x.includes("brief"))
+        makeStep(
+          "product-brief",
+          "Product Brief",
+          "Guided experience to nail down your product concept — a gentler approach when you're confident in your idea.",
+          "bmad-product-brief",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("brief"))
         ),
-        makeStep("prfaq", "PRFAQ", "bmad-prfaq", true, planningFiles, (f) =>
-          f.some((x) => x.includes("prfaq"))
+        makeStep(
+          "prfaq",
+          "PRFAQ",
+          "Working Backwards challenge — stress-test your product concept through a PR/FAQ gauntlet to ensure feasibility.",
+          "bmad-prfaq",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("prfaq"))
         ),
       ],
     },
@@ -565,19 +592,28 @@ function detectWorkflowStatus(
       id: "planning",
       number: 2,
       name: "Planning",
-      description: "Create product requirements",
+      description:
+        "Define what you're building and why. Create the Product Requirements Document (PRD) that anchors all downstream decisions.",
       isOptional: false,
+      isSequential: false,
       steps: [
         makeStep(
           "prd",
           "Product Requirements (PRD)",
+          "Expert-led facilitation to produce your Product Requirements Document — the single source of truth for scope and goals.",
           "bmad-create-prd",
           false,
           planningFiles,
           (f) => f.some((x) => x.toLowerCase() === "prd.md")
         ),
-        makeStep("ux", "UX Design", "bmad-create-ux-design", true, planningFiles, (f) =>
-          f.some((x) => x.toLowerCase().includes("ux"))
+        makeStep(
+          "ux",
+          "UX Design",
+          "Plan UX patterns, user flows, and design specifications. Recommended if a UI is a primary piece of the project.",
+          "bmad-create-ux-design",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.toLowerCase().includes("ux"))
         ),
       ],
     },
@@ -585,12 +621,15 @@ function detectWorkflowStatus(
       id: "solutioning",
       number: 3,
       name: "Solutioning",
-      description: "Design architecture and epics",
+      description:
+        "Design the technical architecture, break requirements into epics and stories, and validate everything is aligned before building.",
       isOptional: false,
+      isSequential: false,
       steps: [
         makeStep(
           "architecture",
           "Architecture",
+          "Document technical design decisions — stack, data models, APIs, and infrastructure — so AI agents stay consistent.",
           "bmad-create-architecture",
           false,
           planningFiles,
@@ -599,6 +638,7 @@ function detectWorkflowStatus(
         makeStep(
           "epics",
           "Epics & Stories",
+          "Break the PRD into ordered epics with user stories, acceptance criteria, and dependency mapping.",
           "bmad-create-epics-and-stories",
           false,
           planningFiles,
@@ -607,6 +647,7 @@ function detectWorkflowStatus(
         makeStep(
           "readiness",
           "Implementation Readiness",
+          "Gate check — validate that PRD, UX, Architecture, and Epics are complete and aligned before starting implementation.",
           "bmad-check-implementation-readiness",
           false,
           planningFiles,
@@ -618,13 +659,41 @@ function detectWorkflowStatus(
       id: "implementation",
       number: 4,
       name: "Implementation",
-      description: "Build epic by epic, story by story",
+      description:
+        "Build the product epic by epic, story by story. Each story goes through create → develop → code review → done.",
       isOptional: false,
+      isSequential: false,
       steps: [
-        makeStep("sprint", "Sprint Planning", "bmad-sprint-planning", false, allFiles, (f) =>
-          f.some((x) => x.toLowerCase().includes("sprint-status"))
+        makeStep(
+          "sprint",
+          "Sprint Planning",
+          "Generate the sprint plan that implementation agents follow — defines story order and dependencies.",
+          "bmad-sprint-planning",
+          false,
+          allFiles,
+          (f) => f.some((x) => x.toLowerCase().includes("sprint-status"))
         ),
       ],
+    },
+    {
+      id: "improvement",
+      number: 5,
+      name: "Improvement",
+      description:
+        "When your project has evolved beyond its original plan — new features shipped, scope changed — use this workflow to bring docs back in sync and plan the next round of improvements.",
+      isOptional: true,
+      isSequential: true,
+      steps: IMPROVEMENT_STEPS.map((s) =>
+        makeStep(
+          s.skill,
+          s.name,
+          s.description,
+          s.skill,
+          false,
+          [],
+          () => false
+        )
+      ),
     },
   ]
 
@@ -709,6 +778,10 @@ function BMADWorkflowSection(props: {
   return (
     <section className="panel reveal delay-1">
       <h2>BMAD Workflow</h2>
+      <p className="subtitle" style={{ marginBottom: "1rem" }}>
+        The BMAD Method guides your project from idea to shipped product through five phases. Each
+        phase produces artifacts that feed the next, keeping AI agents aligned and humans in control.
+      </p>
 
       <div className="workflow-phases">
         {phases.map((phase) => {
@@ -768,7 +841,8 @@ function BMADWorkflowSection(props: {
               </button>
               {isOpen && (
                 <div className="workflow-steps">
-                  {phase.steps.map((step) => {
+                  <p className="workflow-phase-description">{phase.description}</p>
+                  {phase.steps.map((step, stepIndex) => {
                     const isRunning = step.skill === effectiveActiveSkill
                     const shouldShowEpics = phase.id === "implementation" && step.id === "sprint"
                     const hasSprintWarning = shouldShowEpics && epicConsistency.hasMismatch
@@ -789,10 +863,19 @@ function BMADWorkflowSection(props: {
                     const sprintWarningMessage =
                       epicConsistency.warning ?? SPRINT_WARNING_FALLBACK_MESSAGE
 
+                    // For sequential phases, only the first not-started step is actionable
+                    const isSequentialNext =
+                      phase.isSequential &&
+                      !step.isCompleted &&
+                      stepIndex ===
+                        phase.steps.findIndex((s) => !s.isCompleted)
+                    const isActionable =
+                      nextActionStep?.id === step.id || hasSprintWarning || isSequentialNext
+
                     return (
                       <div
                         key={step.id}
-                        className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${nextActionStep?.id === step.id ? " workflow-step-next" : ""}${isRunning ? " workflow-step-running" : ""}`}
+                        className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${isActionable ? " workflow-step-next" : ""}${isRunning ? " workflow-step-running" : ""}`}
                       >
                         <div className="workflow-step-body">
                           <span className="workflow-step-name">{step.name}</span>
@@ -807,8 +890,9 @@ function BMADWorkflowSection(props: {
                               ⚠
                             </span>
                           ) : null}
+                          <span className="workflow-step-desc">{step.description}</span>
                         </div>
-                        {(nextActionStep?.id === step.id || hasSprintWarning) && !isRunning && (
+                        {isActionable && !isRunning && (
                           <button
                             className="icon-button icon-button-play"
                             onClick={(e) => {
@@ -925,6 +1009,49 @@ export function EpicTableSection(props: {
 export function isEpicFullyFinished(epic: OverviewEpic) {
   return epic.status === "done" && epic.lifecycleSteps["bmad-retrospective"] === "completed"
 }
+
+export const IMPROVEMENT_STEPS = [
+  {
+    number: 1,
+    name: "Correct Course",
+    skill: "bmad-correct-course",
+    code: "CC",
+    description:
+      "Assess what has changed since the last planning cycle. Compares your current codebase and features against the existing PRD, architecture, and epics to identify drift. Produces a structured change proposal listing which documents need updating and how.",
+  },
+  {
+    number: 2,
+    name: "Edit PRD",
+    skill: "bmad-edit-prd",
+    code: "EP",
+    description:
+      "Update the Product Requirements Document with new features, scope changes, and revised goals identified during Correct Course. Keeps the PRD as the single source of truth for what the product does and why.",
+  },
+  {
+    number: 3,
+    name: "Update Architecture",
+    skill: "bmad-create-architecture",
+    code: "CA",
+    description:
+      "Revise technical design decisions if new functionality introduced architectural changes — new data models, API patterns, state management, or infrastructure. Skip if Correct Course confirms architecture is still accurate.",
+  },
+  {
+    number: 4,
+    name: "Create Epics & Stories",
+    skill: "bmad-create-epics-and-stories",
+    code: "CE",
+    description:
+      "Add a new epic to the backlog with properly scoped user stories, acceptance criteria, and dependency mapping. This is where improvement ideas become actionable implementation work.",
+  },
+  {
+    number: 5,
+    name: "Check Implementation Readiness",
+    skill: "bmad-check-implementation-readiness",
+    code: "IR",
+    description:
+      "Gate check — validate that the updated PRD, architecture, and new epic are complete, consistent, and aligned before starting implementation. Catches mismatches early.",
+  },
+] as const
 
 export function HomePage() {
   const [data, setData] = useState<OverviewResponse | null>(null)

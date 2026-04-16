@@ -9,11 +9,22 @@ const SECONDS_PER_DAY = 86_400
 const MILLISECONDS_PER_SECOND = 1000
 const USER_MESSAGE_PREFIX = "[user] "
 const ORCHESTRATOR_PREFIX = "[orchestrator]"
+const TOOL_MARKER = "● "
+const TOOL_CONTENT_PREFIX = "  │"
+const TOOL_END_PREFIX = "  └"
+const AGENT_TEXT_COLLAPSE_THRESHOLD = 4
 
-type ChatBubble = {
+type ToolItem = {
+  label: string
+  details: string | null
+}
+
+type LogEntry = {
   id: string
-  role: "agent" | "user" | "system"
-  content: string
+  kind: "tool-group" | "text" | "user" | "system"
+  summary: string
+  details: string | null
+  tools?: ToolItem[]
 }
 
 function formatDate(value: string | null): string {
@@ -60,79 +71,284 @@ function formatDuration(startedAt: string | null, endedAt: string | null): strin
   return parts.join(" ")
 }
 
-function parseLogIntoBubbles(logContent: string | null): ChatBubble[] {
+type RawEntry = {
+  kind: "tool" | "text" | "user" | "system"
+  summary: string
+  details: string | null
+}
+
+function classifyToolGroup(tools: ToolItem[]): string {
+  let reads = 0
+  let writes = 0
+  let shells = 0
+  let edits = 0
+  let gits = 0
+  let searches = 0
+
+  for (const t of tools) {
+    const lower = t.label.toLowerCase()
+    if (lower.startsWith("read ") || lower.startsWith("list directory")) {
+      reads += 1
+    } else if (lower.startsWith("create ")) {
+      writes += 1
+    } else if (lower.startsWith("edit ")) {
+      edits += 1
+    } else if (lower.includes("(shell)")) {
+      if (lower.includes("git ") || lower.includes("commit") || lower.includes("push")) {
+        gits += 1
+      } else {
+        shells += 1
+      }
+    } else if (lower.startsWith("search") || lower.startsWith("find")) {
+      searches += 1
+    } else {
+      reads += 1
+    }
+  }
+
+  const total = tools.length
+  if (gits > 0 && gits >= total / 2) {
+    return "Git operations"
+  }
+  if (writes > 0 && writes >= total / 2) {
+    return `Creating ${writes} file${writes > 1 ? "s" : ""}`
+  }
+  if (edits > 0 && edits >= total / 2) {
+    return `Editing ${edits} file${edits > 1 ? "s" : ""}`
+  }
+  if (writes + edits > 0 && writes + edits >= total / 2) {
+    return `Writing ${writes + edits} file${writes + edits > 1 ? "s" : ""}`
+  }
+  if (shells > 0 && shells >= total / 2) {
+    return `Running ${shells} command${shells > 1 ? "s" : ""}`
+  }
+  if (reads + searches > 0 && reads + searches >= total / 2) {
+    return "Reading context"
+  }
+  return `${total} operation${total > 1 ? "s" : ""}`
+}
+
+function groupEntries(raw: RawEntry[]): LogEntry[] {
+  const entries: LogEntry[] = []
+  let toolBuffer: ToolItem[] = []
+  let entryIndex = 0
+
+  const flushTools = () => {
+    if (toolBuffer.length === 0) {
+      return
+    }
+    if (toolBuffer.length === 1) {
+      const t = toolBuffer[0]
+      entries.push({
+        id: `tool-${entryIndex}`,
+        kind: "tool-group",
+        summary: t.label,
+        details: t.details,
+        tools: undefined,
+      })
+    } else {
+      const label = classifyToolGroup(toolBuffer)
+      entries.push({
+        id: `toolg-${entryIndex}`,
+        kind: "tool-group",
+        summary: label,
+        details: null,
+        tools: toolBuffer,
+      })
+    }
+    entryIndex += 1
+    toolBuffer = []
+  }
+
+  for (const r of raw) {
+    if (r.kind === "tool") {
+      toolBuffer.push({ label: r.summary, details: r.details })
+    } else {
+      flushTools()
+      entries.push({ id: `${r.kind}-${entryIndex}`, kind: r.kind, summary: r.summary, details: r.details })
+      entryIndex += 1
+    }
+  }
+
+  flushTools()
+  return entries
+}
+
+function parseLogIntoEntries(logContent: string | null): LogEntry[] {
   if (!logContent) {
     return []
   }
 
-  const bubbles: ChatBubble[] = []
+  const raw: RawEntry[] = []
   const lines = logContent.split("\n")
-  let agentBuffer: string[] = []
-  let bubbleIndex = 0
+  let textBuffer: string[] = []
+  let toolSummary: string | null = null
+  let toolDetailLines: string[] = []
+  let toolResult: string | null = null
 
-  const flushAgent = () => {
-    const text = agentBuffer.join("\n").trim()
+  const flushText = () => {
+    const text = textBuffer.join("\n").trim()
     if (text.length > 0) {
-      bubbles.push({ id: `agent-${bubbleIndex}`, role: "agent", content: text })
-      bubbleIndex += 1
+      const textLines = text.split("\n")
+      if (textLines.length > AGENT_TEXT_COLLAPSE_THRESHOLD) {
+        raw.push({
+          kind: "text",
+          summary: textLines[0],
+          details: textLines.slice(1).join("\n"),
+        })
+      } else {
+        raw.push({ kind: "text", summary: text, details: null })
+      }
     }
-    agentBuffer = []
+    textBuffer = []
+  }
+
+  const flushTool = () => {
+    if (toolSummary !== null) {
+      const displaySummary = toolResult ? `${toolSummary} — ${toolResult}` : toolSummary
+      const detailsText = toolDetailLines.join("\n").trim()
+      raw.push({
+        kind: "tool",
+        summary: displaySummary,
+        details: detailsText.length > 0 ? detailsText : null,
+      })
+    }
+    toolSummary = null
+    toolDetailLines = []
+    toolResult = null
   }
 
   for (const line of lines) {
     if (line.startsWith(USER_MESSAGE_PREFIX)) {
-      flushAgent()
+      flushText()
+      flushTool()
       const text = line.slice(USER_MESSAGE_PREFIX.length).trim()
       if (text.length > 0) {
-        bubbles.push({ id: `user-${bubbleIndex}`, role: "user", content: text })
-        bubbleIndex += 1
+        raw.push({ kind: "user", summary: text, details: null })
       }
     } else if (line.startsWith(ORCHESTRATOR_PREFIX)) {
-      flushAgent()
+      flushText()
+      flushTool()
       const text = line.slice(ORCHESTRATOR_PREFIX.length).trim()
       if (text.length > 0) {
-        bubbles.push({ id: `sys-${bubbleIndex}`, role: "system", content: text })
-        bubbleIndex += 1
+        raw.push({ kind: "system", summary: text, details: null })
       }
+    } else if (line.startsWith(TOOL_MARKER)) {
+      flushText()
+      flushTool()
+      toolSummary = line.slice(TOOL_MARKER.length)
+    } else if (toolSummary !== null && line.startsWith(TOOL_END_PREFIX)) {
+      const content = line.slice(TOOL_END_PREFIX.length).trim()
+      toolResult = content
+      toolDetailLines.push(content)
+    } else if (toolSummary !== null && line.startsWith(TOOL_CONTENT_PREFIX)) {
+      const content = line.slice(TOOL_CONTENT_PREFIX.length)
+      toolDetailLines.push(content.startsWith(" ") ? content.slice(1) : content)
+    } else if (toolSummary !== null && line.trim() === "") {
+      flushTool()
     } else {
-      agentBuffer.push(line)
+      flushTool()
+      textBuffer.push(line)
     }
   }
 
-  flushAgent()
-  return bubbles
+  flushText()
+  flushTool()
+  return groupEntries(raw)
 }
 
-function ChatBubbleView(props: { bubble: ChatBubble }) {
-  const { bubble } = props
+function ToolItemView(props: { item: ToolItem }) {
+  const { item } = props
 
-  if (bubble.role === "system") {
+  if (!item.details) {
     return (
-      <div className="chat-bubble chat-bubble-system">
-        <span className="chat-bubble-system-text">{bubble.content}</span>
-      </div>
-    )
-  }
-
-  if (bubble.role === "user") {
-    return (
-      <div className="chat-bubble chat-bubble-user">
-        <div className="chat-bubble-avatar chat-bubble-avatar-user">U</div>
-        <div className="chat-bubble-body">
-          <p className="chat-bubble-role">You</p>
-          <div className="chat-bubble-content">{bubble.content}</div>
-        </div>
+      <div className="log-tool-item">
+        <span className="log-entry-tool-icon">●</span> {item.label}
       </div>
     )
   }
 
   return (
-    <div className="chat-bubble chat-bubble-agent">
-      <div className="chat-bubble-avatar chat-bubble-avatar-agent">A</div>
-      <div className="chat-bubble-body">
-        <p className="chat-bubble-role">Copilot Agent</p>
-        <pre className="chat-bubble-content">{bubble.content}</pre>
+    <details className="log-tool-item log-tool-item-expandable">
+      <summary>
+        <span className="log-entry-tool-icon">●</span> {item.label}
+      </summary>
+      <pre className="log-entry-tool-body">{item.details}</pre>
+    </details>
+  )
+}
+
+function LogEntryView(props: { entry: LogEntry }) {
+  const { entry } = props
+
+  if (entry.kind === "system") {
+    return (
+      <div className="chat-bubble chat-bubble-system">
+        <span className="chat-bubble-system-text">{entry.summary}</span>
       </div>
+    )
+  }
+
+  if (entry.kind === "user") {
+    return (
+      <div className="chat-bubble chat-bubble-user">
+        <div className="chat-bubble-avatar chat-bubble-avatar-user">U</div>
+        <div className="chat-bubble-body">
+          <p className="chat-bubble-role">You</p>
+          <div className="chat-bubble-content">{entry.summary}</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (entry.kind === "tool-group") {
+    if (entry.tools) {
+      return (
+        <details className="log-entry log-entry-group">
+          <summary>
+            <span className="log-group-label">{entry.summary}</span>
+            <span className="log-group-count">{entry.tools.length}</span>
+          </summary>
+          <div className="log-group-items">
+            {entry.tools.map((item, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: stable tool list
+              <ToolItemView item={item} key={i} />
+            ))}
+          </div>
+        </details>
+      )
+    }
+
+    if (!entry.details) {
+      return (
+        <div className="log-entry log-entry-tool-inline">
+          <span className="log-entry-tool-icon">●</span> {entry.summary}
+        </div>
+      )
+    }
+
+    return (
+      <details className="log-entry log-entry-tool-single">
+        <summary>
+          <span className="log-entry-tool-icon">●</span> {entry.summary}
+        </summary>
+        <pre className="log-entry-tool-body">{entry.details}</pre>
+      </details>
+    )
+  }
+
+  if (entry.details) {
+    return (
+      <details className="log-entry log-entry-text-collapsible">
+        <summary>{entry.summary}</summary>
+        <pre className="log-entry-text-body">{entry.details}</pre>
+      </details>
+    )
+  }
+
+  return (
+    <div className="log-entry log-entry-text">
+      {entry.summary}
     </div>
   )
 }
@@ -151,7 +367,7 @@ function SessionDetailPage() {
   const chatEndRef = useRef<HTMLDivElement | null>(null)
   const streamContent = data?.logContent || ""
   const userMessageCount = data?.session.userMessages?.length || 0
-  const bubbles = parseLogIntoBubbles(data?.logContent ?? null)
+  const entries = parseLogIntoEntries(data?.logContent ?? null)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on content change
   useEffect(() => {
@@ -389,14 +605,14 @@ function SessionDetailPage() {
 
       {/* ── Messages area ───────────────────────────────── */}
       <div className="chat-messages-area">
-        {bubbles.length === 0 && !data.isRunning ? (
+        {entries.length === 0 && !data.isRunning ? (
           <div className="chat-empty-state">
             <p>No log output available for this session.</p>
             {!data.logExists ? <p className="muted">Log file not found at: {session.logPath}</p> : null}
           </div>
         ) : null}
 
-        {bubbles.length === 0 && data.isRunning ? (
+        {entries.length === 0 && data.isRunning ? (
           <div className="chat-empty-state">
             <p>Waiting for agent output…</p>
             <div className="chat-typing-indicator">
@@ -405,11 +621,11 @@ function SessionDetailPage() {
           </div>
         ) : null}
 
-        {bubbles.map((bubble) => (
-          <ChatBubbleView bubble={bubble} key={bubble.id} />
+        {entries.map((entry) => (
+          <LogEntryView entry={entry} key={entry.id} />
         ))}
 
-        {data.isRunning && bubbles.length > 0 ? (
+        {data.isRunning && entries.length > 0 ? (
           <div className="chat-typing-indicator">
             <span /><span /><span />
           </div>
