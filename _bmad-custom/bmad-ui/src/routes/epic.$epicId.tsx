@@ -1,5 +1,5 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { storyStepLabel } from "../app"
 import type {
   EpicDetailResponse,
@@ -132,6 +132,10 @@ function EpicDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [pendingSkill, setPendingSkill] = useState<string | null>(null)
   const [overviewData, setOverviewData] = useState<OverviewResponse | null>(null)
+  const [isPlanning, setIsPlanning] = useState(false)
+  const [isOrchestrating, setIsOrchestrating] = useState(false)
+  const [bulkError, setBulkError] = useState<string | null>(null)
+  const initiatedRef = useRef(new Set<string>())
 
   const handleRunSkill = useCallback(async (skill: WorkflowSkill, storyId?: string) => {
     setPendingSkill(storyId ? `${skill}:${storyId}` : skill)
@@ -310,6 +314,164 @@ function EpicDetailPage() {
     [stories]
   )
 
+  const storiesNeedingPlan = useMemo(() => {
+    const fromPlanned = data?.plannedStories ?? []
+    const fromExisting = stories
+      .filter((s) => s.steps["bmad-create-story"] === "not-started")
+      .map((s) => s.id)
+      .filter((id) => !fromPlanned.includes(id))
+    return [...fromPlanned, ...fromExisting]
+  }, [data?.plannedStories, stories])
+
+  const showDevelopAllButton = useMemo(
+    () =>
+      stories.some(
+        (s) => s.steps["bmad-create-story"] === "completed" && s.status !== "done"
+      ),
+    [stories]
+  )
+
+  const handlePlanAllStories = useCallback(async () => {
+    if (!data) return
+    setIsPlanning(true)
+    setBulkError(null)
+
+    const storiesToPlan = [
+      ...(data.plannedStories ?? []),
+      ...stories
+        .filter((s) => s.steps["bmad-create-story"] === "not-started")
+        .map((s) => s.id)
+        .filter((id) => !(data.plannedStories ?? []).includes(id)),
+    ]
+
+    if (storiesToPlan.length === 0) {
+      setIsPlanning(false)
+      return
+    }
+
+    const results = await Promise.allSettled(
+      storiesToPlan.map((storyId) =>
+        fetch("/api/workflow/run-skill", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skill: "bmad-create-story", storyId }),
+        })
+      )
+    )
+
+    const errors: string[] = []
+    for (const result of results) {
+      if (result.status === "rejected") {
+        errors.push(String(result.reason))
+      } else if (!result.value.ok && result.value.status !== HTTP_CONFLICT) {
+        errors.push(`request failed: ${result.value.status}`)
+      }
+    }
+
+    if (errors.length > 0) {
+      setBulkError(`Some story creations failed: ${errors.join("; ")}`)
+    }
+
+    setIsPlanning(false)
+  }, [data, stories])
+
+  const handleDevelopAllStories = useCallback(() => {
+    initiatedRef.current.clear()
+    setIsOrchestrating(true)
+    setBulkError(null)
+  }, [])
+
+  // Orchestration driver: fires dev-story → code-review → retrospective as stories progress
+  useEffect(() => {
+    if (!isOrchestrating || !data) return
+
+    const deps = data.storyDependencies ?? {}
+    const currentStoryStatusMap = new Map<string, string>()
+    for (const s of stories) {
+      currentStoryStatusMap.set(s.id, s.status)
+    }
+
+    for (const story of stories) {
+      const createState = story.steps["bmad-create-story"] ?? "not-started"
+      const devState = story.steps["bmad-dev-story"] ?? "not-started"
+      const reviewState = story.steps["bmad-code-review"] ?? "not-started"
+      const blockers = getBlockingStories(story.id, deps, currentStoryStatusMap)
+      const isBlocked = blockers.length > 0
+
+      if (createState === "completed" && devState === "not-started" && !isBlocked) {
+        const key = `bmad-dev-story:${story.id}`
+        if (!initiatedRef.current.has(key)) {
+          initiatedRef.current.add(key)
+          fetch("/api/workflow/run-skill", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ skill: "bmad-dev-story", storyId: story.id }),
+          })
+            .then((r) => {
+              if (r.status === HTTP_CONFLICT) {
+                initiatedRef.current.delete(key)
+              } else if (!r.ok) {
+                setBulkError(`Failed to start dev for ${story.id}: ${r.status}`)
+              }
+            })
+            .catch((err) => {
+              initiatedRef.current.delete(key)
+              setBulkError(`Failed to start dev for ${story.id}: ${String(err)}`)
+            })
+        }
+      }
+
+      if (devState === "completed" && reviewState === "not-started") {
+        const key = `bmad-code-review:${story.id}`
+        if (!initiatedRef.current.has(key)) {
+          initiatedRef.current.add(key)
+          fetch("/api/workflow/run-skill", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ skill: "bmad-code-review", storyId: story.id }),
+          })
+            .then((r) => {
+              if (r.status === HTTP_CONFLICT) {
+                initiatedRef.current.delete(key)
+              } else if (!r.ok) {
+                setBulkError(`Failed to start review for ${story.id}: ${r.status}`)
+              }
+            })
+            .catch((err) => {
+              initiatedRef.current.delete(key)
+              setBulkError(`Failed to start review for ${story.id}: ${String(err)}`)
+            })
+        }
+      }
+    }
+
+    if (allStoriesDone && retrospectiveState === "not-started") {
+      const key = "bmad-retrospective"
+      if (!initiatedRef.current.has(key)) {
+        initiatedRef.current.add(key)
+        fetch("/api/workflow/run-skill", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skill: "bmad-retrospective" }),
+        })
+          .then((r) => {
+            if (!r.ok) {
+              initiatedRef.current.delete(key)
+              setBulkError(`Failed to start retrospective: ${r.status}`)
+            }
+          })
+          .catch((err) => {
+            initiatedRef.current.delete(key)
+            setBulkError(`Failed to start retrospective: ${String(err)}`)
+          })
+      }
+    }
+
+    if (retrospectiveState === "completed") {
+      setIsOrchestrating(false)
+    }
+  }, [isOrchestrating, stories, allStoriesDone, retrospectiveState, data])
+
   const doneCount = stories.filter((s) => s.status === "done").length
   const inProgressCount = stories.filter((s) =>
     s.status === "in-progress" || s.status === "review" || s.status === "ready-for-dev"
@@ -366,6 +528,47 @@ function EpicDetailPage() {
             <div className="epic-progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
         ) : null}
+        {(storiesNeedingPlan.length > 0 || showDevelopAllButton) ? (
+          <div
+            style={{
+              display: "flex",
+              gap: "0.75rem",
+              marginTop: "1.25rem",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            {storiesNeedingPlan.length > 0 ? (
+              <button
+                className="cta"
+                disabled={isPlanning}
+                onClick={() => void handlePlanAllStories()}
+                type="button"
+              >
+                {isPlanning
+                  ? `Planning… (${storiesNeedingPlan.length} stories)`
+                  : `Plan all stories (${storiesNeedingPlan.length})`}
+              </button>
+            ) : null}
+            {showDevelopAllButton ? (
+              <button
+                className={`cta${isOrchestrating ? "" : " ghost"}`}
+                disabled={isOrchestrating}
+                onClick={handleDevelopAllStories}
+                style={isOrchestrating ? { opacity: 0.7 } : undefined}
+                type="button"
+              >
+                {isOrchestrating ? "Developing all stories…" : "Develop all stories"}
+              </button>
+            ) : null}
+            {isOrchestrating ? (
+              <span className="subtitle" style={{ fontSize: "0.8rem" }}>
+                Auto-running dev → review → retrospective
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+        {bulkError ? <p className="error-banner" style={{ marginTop: "0.75rem" }}>{bulkError}</p> : null}
       </section>
 
       <section className="panel reveal delay-1">
