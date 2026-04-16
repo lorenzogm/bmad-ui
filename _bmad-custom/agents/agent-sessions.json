@@ -1396,6 +1396,57 @@
         "tokensCached": 498700,
         "totalTokens": 602500
       }
+    },
+    "workflow-bmad-create-story-1776375817906": {
+      "sessionId": "workflow-bmad-create-story-1776375817906",
+      "storyId": "4-5-validate-end-to-end-pipeline-and-vercel-deployment",
+      "epicId": "epic-4",
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:43:37.908Z",
+      "endedAt": "2026-04-16T21:45:36.643Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 497300,
+        "tokensOut": 5200,
+        "tokensCached": 432200,
+        "totalTokens": 502500
+      }
+    },
+    "workflow-bmad-correct-course-1776374095776": {
+      "sessionId": "workflow-bmad-correct-course-1776374095776",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-correct-course",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:14:55.778Z",
+      "endedAt": "2026-04-16T21:47:00.578Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 9700000,
+        "tokensOut": 43100,
+        "tokensCached": 9500000,
+        "totalTokens": 9743100
+      }
+    },
+    "workflow-bmad-dev-story-1776376475933": {
+      "sessionId": "workflow-bmad-dev-story-1776376475933",
+      "storyId": "4-5-validate-end-to-end-pipeline-and-vercel-deployment",
+      "epicId": "epic-4",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-16T21:54:35.936Z",
+      "endedAt": "2026-04-16T22:00:40.977Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1500000,
+        "tokensOut": 15700,
+        "tokensCached": 1400000,
+        "totalTokens": 1515700
+      }
     }
   }
 }

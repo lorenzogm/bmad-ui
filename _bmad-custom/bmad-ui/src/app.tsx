@@ -473,7 +473,7 @@ export function AgentSessionsSection(props: {
   )
 }
 
-type WorkflowStep = {
+export type WorkflowStep = {
   id: string
   name: string
   description: string
@@ -482,7 +482,7 @@ type WorkflowStep = {
   skill: string
 }
 
-type WorkflowPhase = {
+export type WorkflowPhase = {
   id: string
   number: number
   name: string
@@ -492,7 +492,7 @@ type WorkflowPhase = {
   steps: WorkflowStep[]
 }
 
-type WorkflowStatus = {
+export type WorkflowStatus = {
   phases: WorkflowPhase[]
   nextActionStep: WorkflowStep | null
 }
@@ -520,7 +520,7 @@ function hasCompletedSkillSession(sessions: RuntimeSession[], skill: string): bo
   return sessions.some((s) => s.skill === skill && s.status === "completed" && s.exitCode === 0)
 }
 
-function detectWorkflowStatus(
+export function detectWorkflowStatus(
   planningFiles: string[],
   implementationFiles: string[],
   runtimeSessions: RuntimeSession[] = []
@@ -823,6 +823,7 @@ function BMADWorkflowSection(props: {
 
           return (
             <div
+              id={phase.id}
               key={phase.id}
               className={`workflow-phase${isOpen ? " workflow-phase-open" : ""}${hasNextAction ? " workflow-phase-active" : ""}`}
             >
@@ -908,7 +909,6 @@ function BMADWorkflowSection(props: {
                               ⚠
                             </span>
                           ) : null}
-                          <span className="workflow-step-desc">{step.description}</span>
                         </div>
                         {isActionable && !isRunning && (
                           <button

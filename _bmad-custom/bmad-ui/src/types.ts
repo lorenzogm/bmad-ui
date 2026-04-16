@@ -182,6 +182,7 @@ export type SessionDetailResponse = {
   session: RuntimeSession
   logContent: string | null
   promptContent: string | null
+  summary: string | null
   logExists: boolean
   promptExists: boolean
   isRunning: boolean

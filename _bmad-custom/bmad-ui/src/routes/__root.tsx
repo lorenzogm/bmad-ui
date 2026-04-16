@@ -1,14 +1,10 @@
-import { useQuery } from "@tanstack/react-query"
 import { createRootRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
-import type { AnalyticsResponse, SessionAnalytics } from "../types"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
 const DEFAULT_SKILL = "bmad-quick-dev"
 const DEFAULT_MODEL = "claude-sonnet-4.6"
-const SESSIONS_POLL_INTERVAL_MS = 10_000
-const SESSION_SKILL_PREFIX = "bmad-"
 
 const AVAILABLE_MODELS = [
   { id: "claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
@@ -60,8 +56,15 @@ const AVAILABLE_SKILLS = [
 ] as const
 
 const NAV_LINKS = [
-  { label: "Dashboard", to: "/" },
   { label: "Sessions", to: "/sessions" },
+] as const
+
+const WORKFLOW_SUBMENU = [
+  { label: "Overview", phaseId: null },
+  { label: "Analysis", phaseId: "analysis" },
+  { label: "Planning", phaseId: "planning" },
+  { label: "Solutioning", phaseId: "solutioning" },
+  { label: "Implementation", phaseId: "implementation" },
 ] as const
 
 const ANALYTICS_SUBMENU = [
@@ -218,25 +221,8 @@ function RootLayout() {
   const location = useLocation()
   const currentPath = location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/"
   const isAnalyticsSection = currentPath.startsWith("/analytics")
+  const isWorkflowSection = currentPath === "/" || currentPath.startsWith("/workflow")
   const [chatOpen, setChatOpen] = useState(false)
-
-  const { data: runningSessions = [] } = useQuery<SessionAnalytics[]>({
-    queryKey: ["running-sessions"],
-    queryFn: async () => {
-      const response = await fetch("/api/analytics")
-      if (!response.ok) return []
-      const payload = (await response.json()) as AnalyticsResponse
-      if (!Array.isArray(payload.sessions)) return []
-      return payload.sessions
-        .filter((s) => s.status === "running")
-        .sort((a, b) => {
-          const ta = a.startedAt ? new Date(a.startedAt).getTime() : 0
-          const tb = b.startedAt ? new Date(b.startedAt).getTime() : 0
-          return (Number.isNaN(tb) ? 0 : tb) - (Number.isNaN(ta) ? 0 : ta)
-        })
-    },
-    refetchInterval: SESSIONS_POLL_INTERVAL_MS,
-  })
 
   return (
     <div className="app-layout">
@@ -245,6 +231,45 @@ function RootLayout() {
           <h1 className="sidebar-title">BMAD UI</h1>
         </div>
         <nav aria-label="Main navigation" className="sidebar-nav">
+          <Link
+            aria-current={currentPath === "/workflow" || currentPath === "/" ? "page" : undefined}
+            aria-expanded={isWorkflowSection}
+            className={`sidebar-link ${isWorkflowSection ? "is-section-active" : ""}`}
+            to="/workflow"
+          >
+            Workflow
+          </Link>
+
+          {isWorkflowSection && (
+            <div className="sidebar-submenu">
+              {WORKFLOW_SUBMENU.map((link) => {
+                const linkPath = link.phaseId
+                  ? `/workflow/${link.phaseId}`
+                  : "/workflow"
+                return link.phaseId ? (
+                  <Link
+                    aria-current={currentPath === linkPath ? "page" : undefined}
+                    className="sidebar-sublink"
+                    key={link.label}
+                    params={{ phaseId: link.phaseId }}
+                    to="/workflow/$phaseId"
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <Link
+                    aria-current={currentPath === linkPath ? "page" : undefined}
+                    className="sidebar-sublink"
+                    key={link.label}
+                    to="/workflow"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+
           {NAV_LINKS.map((link) => (
             <Link
               aria-current={currentPath === link.to ? "page" : undefined}
@@ -255,29 +280,6 @@ function RootLayout() {
               {link.label}
             </Link>
           ))}
-
-          {runningSessions.length > 0 && (
-            <div className="sidebar-sessions-section">
-              <span className="sidebar-sessions-label">Running</span>
-              <div className="sidebar-sessions-list">
-                {runningSessions.map((session) => (
-                  <Link
-                    className={`sidebar-session-item ${currentPath === `/session/${session.sessionId}` ? "is-active" : ""}`}
-                    key={session.sessionId}
-                    params={{ sessionId: session.sessionId }}
-                    to="/session/$sessionId"
-                  >
-                    <span className="step-badge step-running">●</span>
-                    <span className="sidebar-session-skill">
-                      {session.skill.startsWith(SESSION_SKILL_PREFIX)
-                        ? session.skill.slice(SESSION_SKILL_PREFIX.length)
-                        : session.skill}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
 
           <Link
             aria-current={currentPath === "/analytics" ? "page" : undefined}

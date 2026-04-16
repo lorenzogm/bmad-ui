@@ -462,7 +462,7 @@ function EpicDetailPage() {
           fetch("/api/workflow/run-skill", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ skill: "bmad-code-review", storyId: story.id }),
+            body: JSON.stringify({ skill: "bmad-code-review", storyId: story.id, autoResolve: true }),
           })
             .then((r) => {
               if (r.status === HTTP_CONFLICT) {
@@ -486,7 +486,7 @@ function EpicDetailPage() {
         fetch("/api/workflow/run-skill", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ skill: "bmad-retrospective" }),
+          body: JSON.stringify({ skill: "bmad-retrospective", autoResolve: true }),
         })
           .then((r) => {
             if (!r.ok) {

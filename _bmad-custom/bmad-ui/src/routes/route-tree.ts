@@ -15,6 +15,9 @@ import { prepareStoryRoute } from "./prepare-story.$storyId"
 import { sessionDetailRoute } from "./session.$sessionId"
 import { sessionsRoute } from "./sessions"
 import { storyDetailRoute } from "./story.$storyId"
+import { workflowLayoutRoute } from "./workflow"
+import { workflowIndexRoute } from "./workflow-index"
+import { workflowPhaseRoute } from "./workflow.$phaseId"
 
 export const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -24,6 +27,7 @@ export const routeTree = rootRoute.addChildren([
   prepareStoryRoute,
   storyDetailRoute,
   sessionDetailRoute,
+  workflowLayoutRoute.addChildren([workflowIndexRoute, workflowPhaseRoute]),
   analyticsLayoutRoute.addChildren([
     analyticsDashboardRoute,
     analyticsEpicsRoute,

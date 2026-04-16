@@ -664,15 +664,31 @@ function SessionDetailPage() {
           </div>
         ) : null}
 
-        {entries.map((entry) => (
-          <LogEntryView entry={entry} key={entry.id} />
-        ))}
+        {entries.length > 0 ? (
+          <details className="chat-log-collapse" open={data.isRunning}>
+            <summary className="chat-log-collapse-summary">
+              Full conversation ({entries.length} entries)
+            </summary>
+            <div className="chat-log-collapse-body">
+              {entries.map((entry) => (
+                <LogEntryView entry={entry} key={entry.id} />
+              ))}
 
-        {data.isRunning && entries.length > 0 ? (
-          <div className="chat-typing-indicator">
-            <span />
-            <span />
-            <span />
+              {data.isRunning && entries.length > 0 ? (
+                <div className="chat-typing-indicator">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              ) : null}
+            </div>
+          </details>
+        ) : null}
+
+        {data.summary && !data.isRunning ? (
+          <div className="chat-session-summary">
+            <p className="eyebrow">Summary</p>
+            <pre className="chat-session-summary-text">{data.summary}</pre>
           </div>
         ) : null}
 

@@ -87,6 +87,7 @@ type SessionDetailResponse = {
   session: RuntimeSession
   logContent: string | null
   promptContent: string | null
+  summary: string | null
   logExists: boolean
   promptExists: boolean
   isRunning: boolean
@@ -284,6 +285,34 @@ const ANALYTICS_TOKENS_LINE_REGEX =
   /^Tokens\s+\u2191\s*([\d.]+)([kmb]?)\s*\u2022\s*\u2193\s*([\d.]+)([kmb]?)\s*\u2022\s*([\d.]+)([kmb]?)\s*\(cached\)/m
 const ANALYTICS_OLD_STYLE_SESSION_REGEX = /^(\d+)-(\d+)-(.+)$/
 const ANALYTICS_EPIC_SESSION_REGEX = /^epic-(\d+)-(.+)$/
+
+function buildAutoResolveInstructions(skill: string): string | null {
+  if (skill === "bmad-code-review") {
+    return [
+      "AUTOMATED ORCHESTRATION MODE — do NOT halt or wait for user input at any checkpoint.",
+      "- For decision-needed findings: use your best technical judgment to resolve each one as a patch (apply the fix) or defer (if pre-existing). Never leave them unresolved.",
+      "- For patch findings: batch-apply ALL fixes automatically (equivalent to option 0). Do not ask the user to choose.",
+      "- After applying fixes, run the build (`npm run build` or `tsc --noEmit`) and fix any new errors before finishing.",
+      "- Mark all resolved findings as checked off in the story file.",
+      "- Update the story status to done only if every finding was resolved. Otherwise keep it in-progress.",
+      "- Complete the entire review-and-fix cycle within this single session.",
+    ].join("\n")
+  }
+
+  if (skill === "bmad-retrospective") {
+    return [
+      "AUTOMATED ORCHESTRATION MODE — do NOT halt or wait for user input at any checkpoint.",
+      "- Set {{non_interactive}} = true for the entire workflow.",
+      "- Auto-detect the epic number from sprint-status.yaml (highest epic with all stories done). Do not ask for confirmation.",
+      "- If the epic is incomplete, proceed with a partial retrospective automatically.",
+      "- Generate the full retrospective report and write it to the implementation artifacts folder.",
+      "- Do not ask the user any questions — make all decisions autonomously.",
+      "- Complete every step of the retrospective workflow without stopping.",
+    ].join("\n")
+  }
+
+  return null
+}
 
 function buildAgentCommand(model: string, promptFilePath: string): string {
   const template =
@@ -1079,29 +1108,20 @@ function buildLogFromEvents(eventsContent: string): string {
   const output: string[] = []
 
   for (const line of lines) {
-    let event: {
-      type: string
-      data?: {
-        content?: string
-        toolRequests?: Array<{
-          name?: string
-          arguments?: string
-        }>
-        toolCallId?: string
-        toolName?: string
-        result?: string
-        success?: boolean
-      }
-    }
+    let event: Record<string, unknown>
     try {
-      event = JSON.parse(line)
+      event = JSON.parse(line) as Record<string, unknown>
     } catch {
       continue
     }
 
-    switch (event.type) {
+    const eventType = event.type as string | undefined
+    const eventData = (event.data ?? {}) as Record<string, unknown>
+
+    switch (eventType) {
       case "user.message": {
-        const content = event.data?.content?.trim()
+        const content =
+          typeof eventData.content === "string" ? eventData.content.trim() : ""
         if (content) {
           output.push(`[user] ${content}`)
         }
@@ -1109,49 +1129,69 @@ function buildLogFromEvents(eventsContent: string): string {
       }
 
       case "assistant.message": {
-        const content = event.data?.content?.trim()
+        const content =
+          typeof eventData.content === "string" ? eventData.content.trim() : ""
         if (content) {
           output.push(content)
         }
 
-        const toolRequests = event.data?.toolRequests
-        if (toolRequests && toolRequests.length > 0) {
-          for (const req of toolRequests) {
-            const name = req.name || "unknown"
-            const desc = describeToolCall(name)
-            let detail = ""
+        const toolRequests = Array.isArray(eventData.toolRequests) ? eventData.toolRequests : []
+        for (const req of toolRequests) {
+          const name = (req as Record<string, unknown>).name || "unknown"
+          const desc = describeToolCall(String(name))
+          let detail = ""
 
-            if (req.arguments) {
-              try {
-                const args = JSON.parse(req.arguments)
-                if (args.filePath) {
-                  detail = ` ${path.basename(args.filePath)}`
-                } else if (args.query) {
-                  const q = typeof args.query === "string" ? args.query.slice(0, 60) : ""
-                  detail = q ? ` "${q}"` : ""
-                } else if (args.command) {
-                  const cmd = typeof args.command === "string" ? args.command.slice(0, 80) : ""
-                  detail = cmd ? ` \`${cmd}\`` : ""
-                }
-              } catch {
-                // ignore
-              }
-            }
+          const rawArgs = (req as Record<string, unknown>).arguments
+          const args: Record<string, unknown> =
+            typeof rawArgs === "string"
+              ? (() => {
+                  try {
+                    return JSON.parse(rawArgs) as Record<string, unknown>
+                  } catch {
+                    return {}
+                  }
+                })()
+              : typeof rawArgs === "object" && rawArgs !== null
+                ? (rawArgs as Record<string, unknown>)
+                : {}
 
-            output.push(`● ${desc}${detail}`)
+          if (typeof args.filePath === "string") {
+            detail = ` ${path.basename(args.filePath)}`
+          } else if (typeof args.query === "string") {
+            const q = args.query.slice(0, 60)
+            detail = q ? ` "${q}"` : ""
+          } else if (typeof args.command === "string") {
+            const cmd = args.command.slice(0, 80)
+            detail = cmd ? ` \`${cmd}\`` : ""
           }
+
+          output.push(`● ${desc}${detail}`)
         }
         break
       }
 
       case "tool.execution_complete": {
-        const result = event.data?.result
-        if (result && result.trim().length > 0) {
-          const resultLines = result.split("\n")
+        // result can be a string or an object with content/detailedContent
+        const rawResult = eventData.result
+        let resultText = ""
+        if (typeof rawResult === "string") {
+          resultText = rawResult.trim()
+        } else if (typeof rawResult === "object" && rawResult !== null) {
+          const resultObj = rawResult as Record<string, unknown>
+          const content =
+            typeof resultObj.content === "string" ? resultObj.content : ""
+          const detailed =
+            typeof resultObj.detailedContent === "string"
+              ? resultObj.detailedContent
+              : ""
+          resultText = (detailed || content).trim()
+        }
+        if (resultText.length > 0) {
+          const resultLines = resultText.split("\n")
           for (const rl of resultLines) {
-            output.push(`│ ${rl}`)
+            output.push(`  │ ${rl}`)
           }
-          output.push(`└ done`)
+          output.push(`  └ done`)
         }
         break
       }
@@ -1208,6 +1248,7 @@ async function buildSessionDetailPayload(sessionId: string): Promise<SessionDeta
     session,
     logContent,
     promptContent,
+    summary: logContent ? extractLastAssistantBlock(logContent) : null,
     logExists: Boolean(session.logPath && existsSync(session.logPath)),
     promptExists: Boolean(session.promptPath && existsSync(session.promptPath)),
     isRunning: session.status === "running" || runningSessionProcesses.has(session.id),
@@ -1854,6 +1895,56 @@ function extractGeneratedSummary(logContent: string): string | null {
   }
 
   return null
+}
+
+function extractLastAssistantBlock(logContent: string): string | null {
+  const clean = stripAnsi(logContent).replace(/\r/g, "").trim()
+  if (!clean) {
+    return null
+  }
+
+  const lines = clean.split("\n")
+
+  // Skip trailing non-text lines (orchestrator, tools, user)
+  let end = lines.length - 1
+  while (end >= 0) {
+    const line = lines[end]
+    if (
+      line.startsWith("[user] ") ||
+      line.startsWith("[orchestrator]") ||
+      line.startsWith("● ") ||
+      line.startsWith("  │") ||
+      line.startsWith("  └") ||
+      line.trim().length === 0
+    ) {
+      end -= 1
+    } else {
+      break
+    }
+  }
+
+  if (end < 0) {
+    return null
+  }
+
+  // Collect text lines backwards until we hit a non-text line
+  const textLines: string[] = []
+  for (let i = end; i >= 0; i -= 1) {
+    const line = lines[i]
+    if (
+      line.startsWith("[user] ") ||
+      line.startsWith("[orchestrator]") ||
+      line.startsWith("● ") ||
+      line.startsWith("  │") ||
+      line.startsWith("  └")
+    ) {
+      break
+    }
+    textLines.unshift(line)
+  }
+
+  const text = textLines.join("\n").trim()
+  return text.length > 0 ? text : null
 }
 
 async function getCompletedSessionSummary(
@@ -3365,6 +3456,54 @@ function attachApi(server: ViteDevServer): void {
         return
       }
 
+      if (requestUrl.pathname === "/api/sessions/regenerate-logs" && req.method === "POST") {
+        try {
+          const runtimeState = await readRuntimeStateFile()
+          const sessions = runtimeState?.sessions ?? []
+          let regenerated = 0
+          let skipped = 0
+
+          for (const session of sessions) {
+            const eventsPaths = await findAllCliEventsJsonl(
+              session.id,
+              session.userMessages || []
+            )
+            if (eventsPaths.length === 0) {
+              skipped += 1
+              continue
+            }
+
+            const parts: string[] = []
+            for (const ep of eventsPaths) {
+              try {
+                const eventsContent = await readFile(ep, "utf8")
+                const built = buildLogFromEvents(eventsContent)
+                if (built.trim().length > 0) {
+                  parts.push(built)
+                }
+              } catch {
+                // skip unreadable event files
+              }
+            }
+
+            if (parts.length > 0 && session.logPath) {
+              await mkdir(path.dirname(session.logPath), { recursive: true })
+              await writeFile(session.logPath, parts.join("\n\n"), "utf8")
+              regenerated += 1
+            } else {
+              skipped += 1
+            }
+          }
+
+          res.writeHead(200, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ regenerated, skipped, total: sessions.length }))
+        } catch (regenError) {
+          res.writeHead(500, { "Content-Type": "application/json" })
+          res.end(JSON.stringify({ error: String(regenError) }))
+        }
+        return
+      }
+
       if (requestUrl.pathname === "/api/artifacts/files" && req.method === "GET") {
         const dir = requestUrl.searchParams.get("dir") ?? "planning"
         const dirPath = path.join(
@@ -3393,11 +3532,13 @@ function attachApi(server: ViteDevServer): void {
             storyId?: string
             epicId?: string
             prompt?: string
+            autoResolve?: boolean
           }>(req)
           const skill = body.skill?.trim()
           const storyId = body.storyId?.trim() || null
           const epicId = body.epicId?.trim() || null
           const rawPrompt = body.prompt?.trim() || null
+          const autoResolve = body.autoResolve === true
           if (!skill) {
             res.writeHead(400, { "Content-Type": "application/json" })
             res.end(JSON.stringify({ error: "skill is required" }))
@@ -3470,12 +3611,17 @@ function attachApi(server: ViteDevServer): void {
 
           const skillModel = SKILL_MODEL_OVERRIDES[skill] ?? DEFAULT_WORKFLOW_MODEL
 
+          const autoResolveInstructions = autoResolve
+            ? buildAutoResolveInstructions(skill)
+            : null
+
           const prompt = customPrompt
             ? customPrompt
             : [
                 storyId ? `/${skill} ${storyId}` : epicId ? `/${skill} ${epicId}` : `/${skill}`,
                 `Model: ${skillModel}`,
                 ...(storyId ? [`Story: ${storyId}`] : []),
+                ...(autoResolveInstructions ? ["", autoResolveInstructions] : []),
               ].join("\n")
 
           await writeFile(promptPath, `${prompt}\n`, "utf8")
