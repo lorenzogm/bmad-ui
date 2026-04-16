@@ -224,21 +224,17 @@ function buildBaseChartOption(): echarts.EChartsOption {
 }
 
 export function buildRequestsOverTimeOption(sessions: SessionAnalytics[]): echarts.EChartsOption {
-  const dayMap = new Map<string, { requests: number; tokens: number }>()
+  const dayMap = new Map<string, number>()
 
   for (const s of sessions) {
     if (!s.startedAt) continue
     const day = s.startedAt.slice(0, 10) // YYYY-MM-DD
-    const existing = dayMap.get(day) ?? { requests: 0, tokens: 0 }
-    existing.requests += s.usage.requests
-    existing.tokens += s.usage.totalTokens
-    dayMap.set(day, existing)
+    dayMap.set(day, (dayMap.get(day) ?? 0) + s.usage.requests)
   }
 
   const sorted = [...dayMap.entries()].sort(([a], [b]) => a.localeCompare(b))
   const dates = sorted.map(([d]) => d)
-  const requests = sorted.map(([, v]) => v.requests)
-  const tokens = sorted.map(([, v]) => v.tokens)
+  const requests = sorted.map(([, v]) => v)
 
   return {
     ...buildBaseChartOption(),
@@ -246,34 +242,20 @@ export function buildRequestsOverTimeOption(sessions: SessionAnalytics[]): echar
       ...buildBaseChartOption().tooltip,
       trigger: "axis",
     },
-    legend: {
-      data: ["Requests", "Tokens"],
-      textStyle: { color: CHART_MUTED_COLOR },
-    },
     xAxis: {
       type: "category",
       data: dates,
       axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
       axisLabel: { color: CHART_MUTED_COLOR },
     },
-    yAxis: [
-      {
-        type: "value",
-        name: "Requests",
-        nameTextStyle: { color: CHART_MUTED_COLOR },
-        axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
-        axisLabel: { color: CHART_MUTED_COLOR },
-        splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
-      },
-      {
-        type: "value",
-        name: "Tokens",
-        nameTextStyle: { color: CHART_MUTED_COLOR },
-        axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
-        axisLabel: { color: CHART_MUTED_COLOR },
-        splitLine: { show: false },
-      },
-    ],
+    yAxis: {
+      type: "value",
+      name: "Requests",
+      nameTextStyle: { color: CHART_MUTED_COLOR },
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+      splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+    },
     series: [
       {
         name: "Requests",
@@ -282,15 +264,6 @@ export function buildRequestsOverTimeOption(sessions: SessionAnalytics[]): echar
         data: requests,
         itemStyle: { color: CHART_COLOR_02 },
         areaStyle: { color: "rgba(46, 196, 182, 0.15)" },
-      },
-      {
-        name: "Tokens",
-        type: "line",
-        smooth: true,
-        yAxisIndex: 1,
-        data: tokens,
-        itemStyle: { color: CHART_COLOR_04 },
-        areaStyle: { color: "rgba(6, 182, 212, 0.12)" },
       },
     ],
   }
@@ -408,6 +381,90 @@ export function buildSessionsBySkillOption(sessions: SessionAnalytics[]): echart
           formatter: "{b}\n{d}%",
         },
         data: pieData,
+      },
+    ],
+  }
+}
+
+const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+const HOURS_IN_DAY = 24
+const HEATMAP_MIN_OPACITY = 0
+
+export function buildActivityHeatmapOption(sessions: SessionAnalytics[]): echarts.EChartsOption {
+  // Build a 7×24 matrix: [dayOfWeek, hour, count]
+  const matrix: number[][] = []
+  const countGrid = Array.from({ length: 7 }, () => Array.from({ length: HOURS_IN_DAY }, () => 0))
+
+  for (const s of sessions) {
+    if (!s.startedAt) continue
+    const date = new Date(s.startedAt)
+    if (Number.isNaN(date.getTime())) continue
+    const dow = date.getDay() // 0=Sun
+    const hour = date.getHours()
+    countGrid[dow][hour] += s.usage.requests || 1
+  }
+
+  let maxCount = 0
+  for (let dow = 0; dow < 7; dow++) {
+    for (let hour = 0; hour < HOURS_IN_DAY; hour++) {
+      const count = countGrid[dow][hour]
+      matrix.push([hour, dow, count])
+      if (count > maxCount) maxCount = count
+    }
+  }
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      formatter: (params: unknown) => {
+        const p = params as { value: number[] }
+        const hour = p.value[0]
+        const day = DAYS_OF_WEEK[p.value[1]]
+        const count = p.value[2]
+        return `${day} ${String(hour).padStart(2, "0")}:00 — ${count} requests`
+      },
+    },
+    grid: {
+      left: "8%",
+      right: "12%",
+      bottom: "10%",
+      top: "6%",
+      containLabel: true,
+    },
+    xAxis: {
+      type: "category",
+      data: Array.from({ length: HOURS_IN_DAY }, (_, i) => String(i).padStart(2, "0")),
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+      splitArea: { show: true, areaStyle: { color: ["transparent", "rgba(151,177,205,0.04)"] } },
+    },
+    yAxis: {
+      type: "category",
+      data: DAYS_OF_WEEK,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+    },
+    visualMap: {
+      min: HEATMAP_MIN_OPACITY,
+      max: maxCount || 1,
+      calculable: true,
+      orient: "vertical" as const,
+      right: "2%",
+      top: "center",
+      inRange: {
+        color: ["#0a131d", CHART_COLOR_09, CHART_COLOR_02, CHART_COLOR_01],
+      },
+      textStyle: { color: CHART_MUTED_COLOR },
+    },
+    series: [
+      {
+        type: "heatmap",
+        data: matrix,
+        label: { show: false },
+        emphasis: {
+          itemStyle: { shadowBlur: 10, shadowColor: "rgba(0, 0, 0, 0.5)" },
+        },
       },
     ],
   }

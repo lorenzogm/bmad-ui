@@ -2,12 +2,14 @@ import { createRoute } from "@tanstack/react-router"
 import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
+  buildActivityHeatmapOption,
   buildRequestsByEpicOption,
   buildRequestsOverTimeOption,
   buildSessionsBySkillOption,
   buildTokensByModelOption,
   EChart,
   formatNumber,
+  formatUsd,
   StatCard,
   useAnalyticsData,
 } from "./analytics-utils"
@@ -63,12 +65,21 @@ function AnalyticsDashboardPage() {
           />
           <StatCard label="Stories Tracked" value={String(data.stories.length)} />
           <StatCard label="Epics Tracked" value={String(data.epics.length)} />
+          <StatCard
+            label="Estimated Cost"
+            sub={
+              data.costing.estimatedCostUsd.fromPremiumRequests !== null
+                ? `${formatUsd(data.costing.estimatedCostUsd.fromPremiumRequests)} from requests`
+                : undefined
+            }
+            value={formatUsd(data.costing.estimatedCostUsd.totalWithKnownRates)}
+          />
         </div>
       </section>
 
       {hasSessions && (
         <section className="panel reveal delay-1">
-          <h3>Requests &amp; Tokens Over Time</h3>
+          <h3>Requests Over Time</h3>
           <EChart option={buildRequestsOverTimeOption(data.sessions)} />
         </section>
       )}
@@ -88,6 +99,13 @@ function AnalyticsDashboardPage() {
           </section>
         )}
       </div>
+
+      {hasSessions && (
+        <section className="panel reveal delay-3">
+          <h3>Activity Heatmap</h3>
+          <EChart option={buildActivityHeatmapOption(data.sessions)} />
+        </section>
+      )}
 
       {hasEpics && (
         <section className="panel reveal delay-3">
