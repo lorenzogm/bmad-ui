@@ -9,5 +9,4 @@ terraform {
 
 provider "vercel" {
   api_token = var.VERCEL_TOKEN
-  team      = var.VERCEL_ORG_ID != "" ? var.VERCEL_ORG_ID : null
 }

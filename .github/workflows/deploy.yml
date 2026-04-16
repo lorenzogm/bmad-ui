@@ -217,11 +217,7 @@ jobs:
               *)           ENV_SHORT="${ENVIRONMENT:0:3}" ;;
             esac
             PROJECT_NAME="bmad-ui-${ENV_SHORT}"
-            TEAM_PARAM=""
-            if [ -n "${TF_VAR_VERCEL_ORG_ID}" ]; then
-              TEAM_PARAM="?teamId=${TF_VAR_VERCEL_ORG_ID}"
-            fi
-            PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${TF_VAR_VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}${TEAM_PARAM}" | jq -r '.id // empty')
+            PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${TF_VAR_VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}" | jq -r '.id // empty')
             if [ -n "$PROJECT_ID" ]; then
               terraform import -var-file="config.${ENVIRONMENT}.json" vercel_project.main "$PROJECT_ID"
 
@@ -350,9 +346,7 @@ jobs:
               *)          ENV_SHORT="dev" ;;
             esac
             PROJECT_NAME="bmad-ui-${ENV_SHORT}"
-            TEAM_PARAM=""
-            if [ -n "${VERCEL_ORG_ID}" ]; then TEAM_PARAM="?teamId=${VERCEL_ORG_ID}"; fi
-            PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}${TEAM_PARAM}" | jq -r '.id // empty')
+            PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}" | jq -r '.id // empty')
           fi
           if [ -z "$PROJECT_ID" ]; then
             echo "::error::Unable to resolve Vercel project ID for preview deployment"
@@ -461,9 +455,7 @@ jobs:
               *)          ENV_SHORT="dev" ;;
             esac
             PROJECT_NAME="bmad-ui-${ENV_SHORT}"
-            TEAM_PARAM=""
-            if [ -n "${VERCEL_ORG_ID}" ]; then TEAM_PARAM="?teamId=${VERCEL_ORG_ID}"; fi
-            PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}${TEAM_PARAM}" | jq -r '.id // empty')
+            PROJECT_ID=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" "https://api.vercel.com/v9/projects/${PROJECT_NAME}" | jq -r '.id // empty')
           fi
           if [ -z "$PROJECT_ID" ]; then
             echo "::error::Unable to resolve Vercel project ID for production deployment"

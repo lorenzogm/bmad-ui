@@ -7,7 +7,6 @@ locals {
 }
 
 resource "vercel_project" "main" {
-  team_id                    = var.VERCEL_ORG_ID != "" ? var.VERCEL_ORG_ID : null
   name                       = "${var.vercel.project.name}-${local.environment_short_code}"
   output_directory           = var.vercel.project.output_directory
   build_command              = var.vercel.project.build_command
