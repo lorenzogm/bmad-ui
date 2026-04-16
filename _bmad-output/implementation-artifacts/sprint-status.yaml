@@ -66,7 +66,7 @@ development_status:
   4-2-enforce-protected-branch-quality-gates: done
   4-3-implement-deployment-workflow-triggers: done
   4-4-add-workflow-observability-and-failure-diagnosis: done
-  4-5-validate-end-to-end-pipeline-and-vercel-deployment: ready-for-dev
+  4-5-validate-end-to-end-pipeline-and-vercel-deployment: in-progress
   epic-4-retrospective: backlog
 
 

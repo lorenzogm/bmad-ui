@@ -1,6 +1,6 @@
 # Story 4.5: Validate End-to-End Pipeline and Vercel Deployment
 
-Status: ready-for-dev
+Status: in-progress
 
 ## Story
 
@@ -25,16 +25,16 @@ so that I can confirm the full CI/CD pipeline is operational end-to-end.
 
 ## Tasks / Subtasks
 
-- [ ] Fix deploy.yml job skip conditions (AC: #1, #2)
-  - [ ] Analyze and fix the `deploy` job `if:` condition so it runs when `infra-deploy` is skipped (result = 'skipped')
-  - [ ] Verify `deploy` job's "Resolve Vercel Project ID" fallback works when `infra-deploy` outputs are empty
-  - [ ] Verify `deploy-production` job `if:` condition handles `infra-deploy` being skipped properly
-- [ ] Apply story 4.4 review patches (AC: #5)
-  - [ ] Add `${{ job.status }}` pass/fail to CI summary header in `ci.yml`
-  - [ ] Add branch/ref context to deploy.yml `check-changes` Summary step
-  - [ ] Add `if: always()` to `deploy-production` Summary step
+- [x] Fix deploy.yml job skip conditions (AC: #1, #2)
+  - [x] Analyze and fix the `deploy` job `if:` condition so it runs when `infra-deploy` is skipped (result = 'skipped')
+  - [x] Verify `deploy` job's "Resolve Vercel Project ID" fallback works when `infra-deploy` outputs are empty
+  - [x] Verify `deploy-production` job `if:` condition handles `infra-deploy` being skipped properly
+- [x] Apply story 4.4 review patches (AC: #5)
+  - [x] Add `${{ job.status }}` pass/fail to CI summary header in `ci.yml`
+  - [x] Add branch/ref context to deploy.yml `check-changes` Summary step
+  - [x] Add `if: always()` to `deploy-production` Summary step
 - [ ] Trigger `workflow_dispatch` to create Vercel infra + deploy (AC: #1)
-  - [ ] Run `workflow_dispatch` with `environment=development`
+  - [x] Run `workflow_dispatch` with `environment=development`
   - [ ] Verify `infra-deploy` job completes — Terraform creates Vercel project `bmad-ui-dev`
   - [ ] Verify `deploy` job completes — app is deployed to Vercel preview
 - [ ] Smoke test the live deployment (AC: #3)
@@ -42,9 +42,9 @@ so that I can confirm the full CI/CD pipeline is operational end-to-end.
   - [ ] Verify HTTP 200 on `/`, `/epics`, `/analytics`
   - [ ] Check for JS errors (use browser dev tools or `agent-browser errors`)
   - [ ] Verify the home page renders correctly (not stuck on loading)
-- [ ] Verify CI workflow passes (AC: #4)
-  - [ ] Run `workflow_dispatch` on `bmad-ui-ci` or confirm latest push passed
-  - [ ] Verify all steps: lint, types, tests, build → success
+- [x] Verify CI workflow passes (AC: #4)
+  - [x] Run `workflow_dispatch` on `bmad-ui-ci` or confirm latest push passed
+  - [x] Verify all steps: lint, types, tests, build → success
 
 ## Dev Notes
 
@@ -234,8 +234,36 @@ Recent commits show:
 
 ### Agent Model Used
 
+claude-sonnet-4.6
+
 ### Debug Log References
+
+- Run 24536054686 (CI push): ✅ All steps passed — lint, types, tests, build
+- Run 24536057589 (deploy workflow_dispatch): ❌ infra-deploy failed — `terraform apply` → `forbidden - Not authorized` (Vercel token lacks project creation scope)
+- Run 24536054684 (deploy push): ✅ Workflow completed — infra-deploy skipped (no infra changes), deploy skipped (no app changes) — confirms skip logic is correct
 
 ### Completion Notes List
 
+**HALT: VERCEL_TOKEN lacks project-creation permissions**
+
+Investigated the known blocker from story 4.5 previous attempt. Confirmed:
+- `terraform apply` on `vercel_project.main` fails with `forbidden - Not authorized`
+- Token can read project metadata (the Resolve Vercel Project ID step uses curl to look up by name) but cannot create new projects
+- Terraform providers.tf does NOT set `team_id` — this is a personal account config
+- The `oidc_token_config = { issuer_mode = "team" }` in the plan is a provider default, not a config issue
+
+**What was completed:**
+1. Code analysis confirms all deploy workflow conditions correctly handle `infra-deploy` being skipped (`skipped != 'failure'` evaluates to true) — no code changes needed for AC #1/#2 conditions
+2. Story 4.4 review patches applied and pushed: CI summary includes `${{ job.status }}`, deploy check-changes summary includes Branch row, deploy-production summary has `if: always()`
+3. CI workflow passes on latest push (AC #4 ✅)
+
+**Required user action to unblock:**
+- **Option A**: Go to the Vercel dashboard → New Project → create project named `bmad-ui-dev` → then re-run `workflow_dispatch` on the deploy workflow with `environment=development`. The `infra-deploy` job will detect the existing project via API and import it into Terraform state, then `terraform apply` will update (not create) the project.
+- **Option B**: Regenerate the VERCEL_TOKEN with full permissions (not scoped to deployment-only) and update the `.env` file via `dotenvx set VERCEL_TOKEN=<new-token>`
+
+After unblocking, re-run this story to complete tasks 3 and 4 (smoke tests).
+
 ### File List
+
+- `.github/workflows/ci.yml` — Added `${{ job.status }}` to CI Results summary header
+- `.github/workflows/deploy.yml` — Added Branch row to check-changes Summary; added `if: always()` to deploy-production Summary step
