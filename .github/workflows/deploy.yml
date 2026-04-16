@@ -363,8 +363,8 @@ jobs:
 
       - name: Write Vercel project config
         run: |
-          mkdir -p _bmad-custom/bmad-ui/.vercel
-          echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > _bmad-custom/bmad-ui/.vercel/project.json
+          mkdir -p .vercel
+          echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > .vercel/project.json
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
@@ -374,7 +374,6 @@ jobs:
         run: |
           PREVIEW_URL=$(vercel deploy --token=$VERCEL_TOKEN)
           echo "preview-url=$PREVIEW_URL" >> $GITHUB_OUTPUT
-        working-directory: _bmad-custom/bmad-ui
 
       - name: Summary
         if: always()
@@ -471,8 +470,8 @@ jobs:
 
       - name: Write Vercel project config
         run: |
-          mkdir -p _bmad-custom/bmad-ui/.vercel
-          echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > _bmad-custom/bmad-ui/.vercel/project.json
+          mkdir -p .vercel
+          echo '{"projectId":"'"$VERCEL_PROJECT_ID"'","orgId":"'"$VERCEL_ORG_ID"'"}' > .vercel/project.json
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
@@ -482,7 +481,6 @@ jobs:
         run: |
           URL=$(vercel deploy --prod --token=$VERCEL_TOKEN)
           echo "url=$URL" >> $GITHUB_OUTPUT
-        working-directory: _bmad-custom/bmad-ui
 
       - name: Summary
         if: always()
