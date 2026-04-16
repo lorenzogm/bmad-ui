@@ -13,10 +13,12 @@ import { improvementWorkflowRoute } from "./improvement-workflow"
 import { indexRoute } from "./index"
 import { prepareStoryRoute } from "./prepare-story.$storyId"
 import { sessionDetailRoute } from "./session.$sessionId"
+import { sessionsRoute } from "./sessions"
 import { storyDetailRoute } from "./story.$storyId"
 
 export const routeTree = rootRoute.addChildren([
   indexRoute,
+  sessionsRoute,
   epicDetailRoute,
   improvementWorkflowRoute,
   prepareStoryRoute,

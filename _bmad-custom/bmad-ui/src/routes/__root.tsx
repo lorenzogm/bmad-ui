@@ -51,7 +51,7 @@ const AVAILABLE_SKILLS = [
 
 const NAV_LINKS = [
   { label: "Dashboard", to: "/" },
-  { label: "Sessions", to: "/analytics/sessions" },
+  { label: "Sessions", to: "/sessions" },
 ] as const
 
 const ANALYTICS_SUBMENU = [
