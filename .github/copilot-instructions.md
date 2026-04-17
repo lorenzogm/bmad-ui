@@ -80,7 +80,7 @@ var(--status-backlog)  /* #6b7280 */
 
 ```bash
 cd _bmad-custom/bmad-ui
-npm run build    # TypeScript check + Vite build
+pnpm check    # lint + types + tests + build (run before every commit)
 ```
 
 ## BMAD Git Finalization Policy
@@ -95,6 +95,7 @@ For any BMAD workflow execution (create-story, dev-story, code-review, sprint pl
 
 Required end-of-work checks:
 
+- `cd _bmad-custom/bmad-ui && pnpm check` (lint + types + tests + build — must pass before committing)
 - `git status --short`
 - `git add -A` (or targeted add for scoped files)
 - `git commit -m "<clear scoped message>"`
