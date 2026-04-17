@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { type JSX, useState } from "react"
-import { apiUrl } from "../lib/mode"
+import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type { AnalyticsResponse, OverviewResponse } from "../types"
 import { rootRoute } from "./__root"
 import { formatNumber, formatUsd } from "./analytics-utils"
@@ -421,20 +421,23 @@ function LinksSection() {
                 )}
               </div>
             </a>
-            <button
-              type="button"
-              className="icon-button icon-button-delete absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => deleteLink.mutate(i)}
-              title="Remove link"
-            >
-              <span className="icon-glyph">×</span>
-            </button>
+            {IS_LOCAL_MODE && (
+              <button
+                type="button"
+                className="icon-button icon-button-delete absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => deleteLink.mutate(i)}
+                title="Remove link"
+              >
+                <span className="icon-glyph">×</span>
+              </button>
+            )}
           </div>
         ))}
         {/* Add link button */}
-        <button
-          type="button"
-          className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer"
+        {IS_LOCAL_MODE && (
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer"
           style={{
             background: "rgba(2, 10, 16, 0.33)",
             border: "1px dashed rgba(151, 177, 205, 0.22)",
@@ -456,8 +459,9 @@ function LinksSection() {
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          <span className="text-sm">Add link</span>
-        </button>
+            <span className="text-sm">Add link</span>
+          </button>
+        )}
       </div>
       {showForm && (
         <form
@@ -650,27 +654,29 @@ function NotesSection() {
           <p className="eyebrow">Notes</p>
           <h2>Post-it Board</h2>
         </div>
-        <button
-          type="button"
-          className="ghost text-sm px-3 py-1.5 flex items-center gap-1.5"
-          onClick={() => setShowForm(true)}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {IS_LOCAL_MODE && (
+          <button
+            type="button"
+            className="ghost text-sm px-3 py-1.5 flex items-center gap-1.5"
+            onClick={() => setShowForm(true)}
           >
-            <title>Add</title>
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Add note
-        </button>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <title>Add</title>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add note
+          </button>
+        )}
       </div>
       {showForm && (
         <form
@@ -801,7 +807,7 @@ function NotesSection() {
                     </p>
                   </>
                 )}
-                {!isEditing && (
+                {!isEditing && IS_LOCAL_MODE && (
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                     <button
                       type="button"
