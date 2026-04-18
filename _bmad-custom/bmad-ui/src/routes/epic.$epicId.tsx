@@ -608,6 +608,13 @@ function EpicDetailPage() {
   const progressPercent =
     stories.length > 0 ? Math.round((doneCount / stories.length) * PERCENT_MULTIPLIER) : 0
 
+  const computedEpicStatus =
+    stories.length > 0 && doneCount === stories.length
+      ? "done"
+      : inProgressCount > 0
+        ? "in-progress"
+        : (data?.epic.status ?? "backlog")
+
   if (loading) {
     return <main className="screen loading">Loading epic detail...</main>
   }
@@ -628,7 +635,7 @@ function EpicDetailPage() {
           <Link className="epic-back-link" to="/">
             ← Home
           </Link>
-          <span className={`step-badge step-${data.epic.status}`}>{data.epic.status}</span>
+          <span className={`step-badge step-${computedEpicStatus}`}>{computedEpicStatus}</span>
         </div>
         <p className="eyebrow">Epic {data.epic.number}</p>
         <h1 className="epic-title">{data.epic.name || data.epic.id}</h1>
