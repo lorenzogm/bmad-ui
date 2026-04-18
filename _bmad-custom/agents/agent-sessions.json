@@ -1464,6 +1464,91 @@
         "tokensCached": 794600,
         "totalTokens": 918700
       }
+    },
+    "workflow-bmad-help-1776514924073": {
+      "sessionId": "workflow-bmad-help-1776514924073",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-help",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-18T12:22:04.076Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-quick-dev-1776514988180": {
+      "sessionId": "workflow-bmad-quick-dev-1776514988180",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-quick-dev",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-18T12:23:08.182Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-create-epics-and-stories-1776515179744": {
+      "sessionId": "workflow-bmad-create-epics-and-stories-1776515179744",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-epics-and-stories",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-18T12:26:19.747Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-help-1776516088219": {
+      "sessionId": "workflow-bmad-help-1776516088219",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-help",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T12:41:28.222Z",
+      "endedAt": "2026-04-18T12:42:04.864Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 202600,
+        "tokensOut": 1600,
+        "tokensCached": 172700,
+        "totalTokens": 204200
+      }
+    },
+    "workflow-bmad-quick-dev-1776516976724": {
+      "sessionId": "workflow-bmad-quick-dev-1776516976724",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-quick-dev",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-18T12:56:16.726Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
     }
   }
 }
