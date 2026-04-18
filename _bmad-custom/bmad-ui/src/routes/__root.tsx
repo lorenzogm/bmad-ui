@@ -61,6 +61,7 @@ const AVAILABLE_SKILLS = [
 const SESSIONS_SIDEBAR_LIMIT = 10
 const SESSIONS_REFETCH_INTERVAL_MS = 3_000
 const RUNNING_STATUS = "running"
+const WORKFLOW_SESSION_PREFIX = "workflow-"
 
 const WORKFLOW_SUBMENU = [
   { label: "Overview", phaseId: null },
@@ -244,7 +245,7 @@ function RootLayout() {
   })
 
   const recentSessions = (sessionsData ?? [])
-    .filter((s) => s.status === RUNNING_STATUS)
+    .filter((s) => s.status === RUNNING_STATUS && s.sessionId.startsWith(WORKFLOW_SESSION_PREFIX))
     .slice(0, SESSIONS_SIDEBAR_LIMIT)
 
   return (

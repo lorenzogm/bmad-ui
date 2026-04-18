@@ -31,11 +31,6 @@ export type SessionActionState = {
   action: SessionActionKind
 } | null
 
-type SessionUsageSummary = {
-  requests: number
-  totalTokens: number
-}
-
 export function storyStepLabel(state: string): string {
   if (state === "running") return "in-progress"
   if (state === "not-started") return "to do"
@@ -122,50 +117,30 @@ function toShortStoryId(storyId: string | null): string {
   return `${ticket.epic}-${ticket.story}`
 }
 
-function formatUsageCount(value: number | undefined): string {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return "-"
-  }
-  return value.toLocaleString()
-}
-
 type NormalizedSession =
   | { source: "runtime"; data: RuntimeSession }
   | { source: "copilot"; data: AgentSession }
 
-function SessionsTable(props: {
-  sessions: NormalizedSession[]
-  usageBySessionId: Map<string, SessionUsageSummary>
-  sessionActionPending: SessionActionState
-  onStartSession: (sessionId: string) => void
-  onAbortSession: (sessionId: string) => void
-}) {
-  const { sessions, usageBySessionId, sessionActionPending, onAbortSession, onStartSession } = props
+function SessionsTable(props: { sessions: NormalizedSession[] }) {
+  const { sessions } = props
   return (
     <div className="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Story</th>
-            <th>Agent</th>
+            <th>Skill / Name</th>
+            <th>Name</th>
             <th>Model</th>
+            <th>Story</th>
             <th>Status</th>
             <th>Started</th>
             <th>Duration</th>
-            <th>Requests</th>
-            <th>Tokens</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {sessions.map((row) => {
             if (row.source === "runtime") {
               const session = row.data
-              const usage = usageBySessionId.get(session.id)
-              const hasPendingAction = sessionActionPending !== null
-              const isRowActionPending = sessionActionPending?.sessionId === session.id
-              const canStart = session.status === "planned"
-              const canAbort = session.status === "planned" || session.status === "running"
               const displayStatus = resolveDisplayStatus(
                 session.status,
                 session.startedAt,
@@ -174,52 +149,21 @@ function SessionsTable(props: {
 
               return (
                 <tr key={session.id}>
-                  <td>{toShortStoryId(session.storyId)}</td>
+                  <td>
+                    <span className="step-badge step-done">{session.skill ?? "—"}</span>
+                  </td>
                   <td>
                     <Link params={{ sessionId: session.id }} to="/session/$sessionId">
-                      {session.skill}
+                      {session.id.slice(0, 8)}…
                     </Link>
                   </td>
                   <td>{session.model}</td>
+                  <td>{toShortStoryId(session.storyId)}</td>
                   <td>
                     <span className={`step-badge step-${displayStatus}`}>{displayStatus}</span>
                   </td>
                   <td>{formatDate(session.startedAt)}</td>
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
-                  <td>{formatUsageCount(usage?.requests)}</td>
-                  <td>{formatUsageCount(usage?.totalTokens)}</td>
-                  <td>
-                    {/* biome-ignore lint/a11y/useSemanticElements: action group inside table cell */}
-                    <div className="session-actions" role="group">
-                      <button
-                        aria-label="Start session"
-                        className="icon-button icon-button-play"
-                        disabled={!IS_LOCAL_MODE || hasPendingAction || !canStart}
-                        onClick={() => onStartSession(session.id)}
-                        title={IS_LOCAL_MODE ? "Start session" : PROD_DISABLED_TITLE}
-                        type="button"
-                      >
-                        <span aria-hidden="true" className="icon-glyph">
-                          ▶
-                        </span>
-                      </button>
-                      <button
-                        aria-label="Abort session"
-                        className="icon-button icon-button-delete"
-                        disabled={!IS_LOCAL_MODE || hasPendingAction || !canAbort}
-                        onClick={() => onAbortSession(session.id)}
-                        title={IS_LOCAL_MODE ? "Abort session" : PROD_DISABLED_TITLE}
-                        type="button"
-                      >
-                        <span aria-hidden="true" className="icon-glyph">
-                          ✕
-                        </span>
-                      </button>
-                      {isRowActionPending ? (
-                        <span className="stage-state-pill">working...</span>
-                      ) : null}
-                    </div>
-                  </td>
                 </tr>
               )
             }
@@ -232,23 +176,23 @@ function SessionsTable(props: {
             )
             return (
               <tr key={session.session_id ?? session.start_date}>
-                <td>{toShortStoryId(session.storyId ?? null)}</td>
-                <td>{session.agent}</td>
+                <td>
+                  <span className="step-badge step-done">{session.agent ?? "—"}</span>
+                </td>
+                <td>{session.session_id ? `${session.session_id.slice(0, 8)}…` : "—"}</td>
                 <td>{session.model}</td>
+                <td>{toShortStoryId(session.storyId ?? null)}</td>
                 <td>
                   <span className={`step-badge step-${displayStatus}`}>{displayStatus}</span>
                 </td>
                 <td>{formatDate(session.start_date)}</td>
                 <td>{formatDuration(session.start_date, session.end_date)}</td>
-                <td>{formatUsageCount(session.premium_requests)}</td>
-                <td>{formatUsageCount(session.tokens?.total)}</td>
-                <td>-</td>
               </tr>
             )
           })}
           {sessions.length === 0 ? (
             <tr>
-              <td colSpan={9}>No sessions for selected filters</td>
+              <td colSpan={7}>No sessions for selected filters</td>
             </tr>
           ) : null}
         </tbody>
@@ -260,11 +204,8 @@ function SessionsTable(props: {
 export function AgentSessionsSection(props: {
   runGroups: AgentRunGroup[]
   agentSessions: AgentSession[]
-  sessionActionPending: SessionActionState
-  onStartSession: (sessionId: string) => void
-  onAbortSession: (sessionId: string) => void
 }) {
-  const { runGroups, agentSessions, sessionActionPending, onAbortSession, onStartSession } = props
+  const { runGroups, agentSessions } = props
   const [page, setPage] = useState(0)
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([ALL_SESSION_STATUS_FILTER])
 
@@ -284,21 +225,6 @@ export function AgentSessionsSection(props: {
     })
     return merged
   }, [runGroups, agentSessions])
-
-  const usageBySessionId = useMemo(() => {
-    const map = new Map<string, SessionUsageSummary>()
-    for (const session of agentSessions) {
-      const sessionId = session.session_id
-      if (!sessionId) {
-        continue
-      }
-      map.set(sessionId, {
-        requests: session.premium_requests,
-        totalTokens: session.tokens?.total ?? 0,
-      })
-    }
-    return map
-  }, [agentSessions])
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -482,13 +408,7 @@ export function AgentSessionsSection(props: {
             <span className="eyebrow">Total: {filteredSessions.length} sessions</span>
             <span className="eyebrow">Per page: {SESSION_TABLE_PAGE_SIZE}</span>
           </div>
-          <SessionsTable
-            onAbortSession={onAbortSession}
-            onStartSession={onStartSession}
-            sessionActionPending={sessionActionPending}
-            sessions={paginatedSessions}
-            usageBySessionId={usageBySessionId}
-          />
+          <SessionsTable sessions={paginatedSessions} />
         </>
       ) : (
         <p className="subtitle">No sessions recorded yet.</p>
