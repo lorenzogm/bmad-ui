@@ -61,13 +61,13 @@ development_status:
   3-3-secret-rotation-and-audit-safe-handling: done
   epic-3-retrospective: done
 
-  epic-4: in-progress
+  epic-4: done
   4-1-create-ci-validation-workflow: done
   4-2-enforce-protected-branch-quality-gates: done
   4-3-implement-deployment-workflow-triggers: done
   4-4-add-workflow-observability-and-failure-diagnosis: done
-  4-5-validate-end-to-end-pipeline-and-vercel-deployment: in-progress
-  epic-4-retrospective: backlog
+  4-5-validate-end-to-end-pipeline-and-vercel-deployment: done
+  epic-4-retrospective: done
 
 
   epic-5: in-progress
