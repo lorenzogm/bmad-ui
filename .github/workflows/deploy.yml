@@ -369,23 +369,23 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      - name: Deploy to Vercel Preview
+      - name: Deploy to Vercel
         id: preview-deploy
         run: |
-          PREVIEW_URL=$(vercel deploy --token=$VERCEL_TOKEN)
+          PREVIEW_URL=$(vercel deploy --prod --token=$VERCEL_TOKEN)
           echo "preview-url=$PREVIEW_URL" >> $GITHUB_OUTPUT
 
       - name: Summary
         if: always()
         run: |
-          echo "## Preview Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "## Deployment" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           PREVIEW_URL="${{ steps.preview-deploy.outputs.preview-url }}"
           if [ -n "$PREVIEW_URL" ]; then
-            echo "✅ Preview deployed: $PREVIEW_URL" >> $GITHUB_STEP_SUMMARY
-            echo "::notice::Preview URL: $PREVIEW_URL"
+            echo "✅ Deployed: $PREVIEW_URL" >> $GITHUB_STEP_SUMMARY
+            echo "::notice::Deployed URL: $PREVIEW_URL"
           else
-            echo "❌ Preview deployment did not produce a URL" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Deployment did not produce a URL" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
