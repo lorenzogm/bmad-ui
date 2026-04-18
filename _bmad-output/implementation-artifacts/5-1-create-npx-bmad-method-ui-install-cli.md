@@ -1,6 +1,6 @@
 # Story 5.1: Create `npx bmad-method-ui install` CLI
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -24,32 +24,32 @@ so that bmad-ui is added to my project's `_bmad-custom/bmad-ui` folder instantly
 
 ## Tasks / Subtasks
 
-- [ ] Create the npm CLI package at repo root (`package.json`, `bin/install.mjs`) (AC: #1, #2, #3)
-  - [ ] Create `package.json` at repo root with `name: "bmad-method-ui"`, `version: "0.1.0"`, `bin: { "bmad-method-ui": "bin/install.mjs" }`, `files: ["bin/", "_bmad-custom/bmad-ui/"]`
-  - [ ] Create `bin/install.mjs` as an ES Module CLI script with shebang `#!/usr/bin/env node`
-  - [ ] Implement `install` subcommand: copy `_bmad-custom/bmad-ui/` to `<cwd>/_bmad-custom/bmad-ui/`
-  - [ ] Print next-steps message after successful copy
+- [x] Create the npm CLI package at repo root (`package.json`, `bin/install.mjs`) (AC: #1, #2, #3)
+  - [x] Create `package.json` at repo root with `name: "bmad-method-ui"`, `version: "0.1.0"`, `bin: { "bmad-method-ui": "bin/install.mjs" }`, `files: ["bin/", "_bmad-custom/bmad-ui/"]`
+  - [x] Create `bin/install.mjs` as an ES Module CLI script with shebang `#!/usr/bin/env node`
+  - [x] Implement `install` subcommand: copy `_bmad-custom/bmad-ui/` to `<cwd>/_bmad-custom/bmad-ui/`
+  - [x] Print next-steps message after successful copy
 
-- [ ] Implement overwrite guard (AC: #4)
-  - [ ] Check if `<cwd>/_bmad-custom/bmad-ui` already exists before copying
-  - [ ] Prompt user for confirmation using readline (Node.js built-in — no external prompt library)
-  - [ ] Default to No on empty input; abort with message if user declines
+- [x] Implement overwrite guard (AC: #4)
+  - [x] Check if `<cwd>/_bmad-custom/bmad-ui` already exists before copying
+  - [x] Prompt user for confirmation using readline (Node.js built-in — no external prompt library)
+  - [x] Default to No on empty input; abort with message if user declines
 
-- [ ] Verify self-containment (AC: #5)
-  - [ ] Confirm `_bmad-custom/bmad-ui/package.json` has `"private": true` and no workspace dependencies (`workspace:*` must not appear)
-  - [ ] Confirm `_bmad-custom/bmad-ui/` has no `..` imports escaping the folder
+- [x] Verify self-containment (AC: #5)
+  - [x] Confirm `_bmad-custom/bmad-ui/package.json` has `"private": true` and no workspace dependencies (`workspace:*` must not appear)
+  - [x] Confirm `_bmad-custom/bmad-ui/` has no `..` imports escaping the folder
 
-- [ ] Configure `files` in root `package.json` to exclude development artifacts (AC: #3, #5)
-  - [ ] Exclude: `_bmad/`, `_bmad-output/`, `_bmad-custom/agents/`, `infra/`, `scripts/`, `.github/`, `docs/`
-  - [ ] Include only: `bin/`, `_bmad-custom/bmad-ui/`
+- [x] Configure `files` in root `package.json` to exclude development artifacts (AC: #3, #5)
+  - [x] Exclude: `_bmad/`, `_bmad-output/`, `_bmad-custom/agents/`, `infra/`, `scripts/`, `.github/`, `docs/`
+  - [x] Include only: `bin/`, `_bmad-custom/bmad-ui/`
 
-- [ ] Add `.npmignore` or rely on `files` field to keep the published package lean
-  - [ ] Verify with `npm pack --dry-run` that only `bin/` and `_bmad-custom/bmad-ui/` appear
+- [x] Add `.npmignore` or rely on `files` field to keep the published package lean
+  - [x] Verify with `npm pack --dry-run` that only `bin/` and `_bmad-custom/bmad-ui/` appear
 
-- [ ] Test the CLI locally end-to-end
-  - [ ] Run `node bin/install.mjs install` from a temp directory pointing to the repo
-  - [ ] Confirm files land in `_bmad-custom/bmad-ui/` of temp dir
-  - [ ] Confirm overwrite guard prompts correctly when run a second time
+- [x] Test the CLI locally end-to-end
+  - [x] Run `node bin/install.mjs install` from a temp directory pointing to the repo
+  - [x] Confirm files land in `_bmad-custom/bmad-ui/` of temp dir
+  - [x] Confirm overwrite guard prompts correctly when run a second time
 
 ## Dev Notes
 
@@ -212,4 +212,20 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Created `package.json` at repo root: `name: "bmad-method-ui"`, `version: "0.1.0"`, `type: "module"`, `engines: { node: ">=18" }`, `bin: { "bmad-method-ui": "bin/install.mjs" }`, `files: ["bin/", "_bmad-custom/bmad-ui/"]`
+- Created `bin/install.mjs`: ES Module CLI, uses only Node.js built-ins (`node:fs`, `node:path`, `node:readline`). Implements `install` subcommand with overwrite guard (readline prompt, default N), `cpSync` with `node_modules` filter, and next-steps output.
+- Added `node_modules` filter to `cpSync` to prevent symlink-loop errors when overwriting an existing install. Aligns with npm published behavior (npm auto-excludes `node_modules`).
+- Self-containment verified: `_bmad-custom/bmad-ui/package.json` has `"private": true`, no `workspace:*` refs; all `../` imports in `src/` are intra-src (routes → lib, types) and do not escape the app folder.
+- `npm pack --dry-run` confirmed: only `bin/install.mjs` + `_bmad-custom/bmad-ui/**` included; `_bmad/`, `_bmad-output/`, `infra/`, `scripts/` (root), `.github/`, `docs/` all excluded.
+- Local end-to-end tests passed: fresh install, overwrite declined (N/empty), overwrite accepted (y).
+
 ### File List
+
+- `package.json` (repo root) — CREATED
+- `bin/install.mjs` — CREATED
+- `_bmad-output/implementation-artifacts/5-1-create-npx-bmad-method-ui-install-cli.md` — UPDATED (story tracking)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — UPDATED (status → review)
+
+## Change Log
+
+- 2026-04-18: Implemented npm CLI package (`package.json` + `bin/install.mjs`) for `npx bmad-method-ui install`. Includes overwrite guard, self-containment verification, npm pack validation, and local end-to-end tests.
