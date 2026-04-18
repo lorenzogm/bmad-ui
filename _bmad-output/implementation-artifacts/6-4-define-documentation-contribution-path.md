@@ -1,6 +1,6 @@
 # Story 6.4: Define Documentation Contribution Path
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,18 +18,18 @@ so that onboarding gaps can be fixed quickly.
 
 ## Tasks / Subtasks
 
-- [ ] Add "Documentation Contributions" section to `.github/CONTRIBUTING.md` (AC: #1, #2, #3)
-  - [ ] Define what counts as a docs-only change (files under `docs/`, `README.md`, `.github/CONTRIBUTING.md`, `.github/*.md`)
-  - [ ] Provide a lightweight step-by-step path: fork → branch `docs/…` → edit → PR
-  - [ ] List explicit, lightweight review criteria for docs PRs (no build/lint required; spelling, accuracy, link validity)
-  - [ ] Add a one-liner maintainers can paste when pointing contributors to the process
-- [ ] Fix outdated quality-check commands in CONTRIBUTING.md (AC: #2)
-  - [ ] Replace `pnpm run check:types` and `pnpm run check:tests` in "Making Changes" with `pnpm run check` (the canonical command per project standards)
-  - [ ] Update the PR template checklist line `npm run build` → `pnpm run check`
-- [ ] Update `.github/PULL_REQUEST_TEMPLATE.md` to reflect docs-only PRs (AC: #2)
-  - [ ] Add a `Documentation update` type checkbox (already has the slot — just add the item)
-  - [ ] Add a docs-only fast-path note: "For documentation-only changes, Testing section can be marked N/A"
-- [ ] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #1)
+- [x] Add "Documentation Contributions" section to `.github/CONTRIBUTING.md` (AC: #1, #2, #3)
+  - [x] Define what counts as a docs-only change (files under `docs/`, `README.md`, `.github/CONTRIBUTING.md`, `.github/*.md`)
+  - [x] Provide a lightweight step-by-step path: fork → branch `docs/…` → edit → PR
+  - [x] List explicit, lightweight review criteria for docs PRs (no build/lint required; spelling, accuracy, link validity)
+  - [x] Add a one-liner maintainers can paste when pointing contributors to the process
+- [x] Fix outdated quality-check commands in CONTRIBUTING.md (AC: #2)
+  - [x] Replace `pnpm run check:types` and `pnpm run check:tests` in "Making Changes" with `pnpm run check` (the canonical command per project standards)
+  - [x] Update the PR template checklist line `npm run build` → `pnpm run check`
+- [x] Update `.github/PULL_REQUEST_TEMPLATE.md` to reflect docs-only PRs (AC: #2)
+  - [x] Add a `Documentation update` type checkbox (already has the slot — just add the item)
+  - [x] Add a docs-only fast-path note: "For documentation-only changes, Testing section can be marked N/A"
+- [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #1)
 
 ## Dev Notes
 
@@ -166,4 +166,17 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Added "Documentation Contributions" section to `.github/CONTRIBUTING.md` after "Submitting a Pull Request": defines docs-only scope, lightweight step-by-step path, review criteria, and maintainer one-liner.
+- Fixed outdated commands in CONTRIBUTING.md "Making Changes": replaced `pnpm run check:types` + `pnpm run check:tests` with single `pnpm run check`.
+- Updated `.github/PULL_REQUEST_TEMPLATE.md`: consolidated three checklist items into one canonical `pnpm run check` line; added `N/A — documentation-only change` checkbox to Testing section.
+- `pnpm run check` passed cleanly — no regressions.
+
 ### File List
+
+- `.github/CONTRIBUTING.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
+- `_bmad-output/implementation-artifacts/6-4-define-documentation-contribution-path.md`
+
+## Change Log
+
+- 2026-04-18: Added Documentation Contributions section to CONTRIBUTING.md, fixed outdated pnpm commands, updated PR template with docs-only fast-path.

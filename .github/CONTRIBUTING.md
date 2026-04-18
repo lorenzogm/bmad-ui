@@ -47,8 +47,7 @@ Always branch from `main`: `git checkout -b feature/your-feature`
 3. Run all checks before committing:
    ```bash
    cd _bmad-custom/bmad-ui
-   pnpm run check:types   # TypeScript type check
-   pnpm run check:tests   # Vitest test suite
+   pnpm run check   # lint + types + tests + build
    ```
 4. Commit with clear, descriptive messages
 
@@ -60,6 +59,44 @@ Always branch from `main`: `git checkout -b feature/your-feature`
 4. Ensure all CI checks pass (TypeScript, Biome lint, build, tests)
 5. Address any review feedback promptly
 6. Do not force-push after a review has started
+
+## Documentation Contributions
+
+Documentation improvements are the fastest path to improving the contributor experience. If you notice an error, gap, or unclear step in any doc, please fix it.
+
+### What Counts as a Docs-Only Change
+
+A docs-only PR modifies only:
+- `README.md`
+- `docs/*.md`
+- `.github/CONTRIBUTING.md`
+- `.github/*.md` (other markdown in `.github/`)
+
+No source code, config, or workflow files should be changed in a docs-only PR.
+
+### How to Submit a Docs Improvement
+
+1. Fork the repository and create a branch: `git checkout -b docs/fix-setup-steps`
+2. Edit the relevant file(s) in `docs/` or `README.md`
+3. Open a PR against `main` with the title prefix `docs:` (e.g., `docs: fix pnpm install step`)
+4. Mark **Documentation update** in the PR Type of Change checklist
+5. Mark the Testing section as **N/A** — no test runs required for docs-only PRs
+
+### Review Criteria for Docs PRs
+
+Docs PRs are reviewed for:
+- **Accuracy**: Commands, paths, and steps are correct
+- **Clarity**: Instructions are unambiguous for the target audience
+- **Link validity**: All internal links resolve to real sections or files
+- **Spelling/grammar**: No obvious errors
+
+No Biome lint, TypeScript, or build checks are required for docs-only changes.
+
+### Pointing Contributors to This Process
+
+Maintainers can use this one-liner when directing contributors:
+
+> See [Documentation Contributions](CONTRIBUTING.md#documentation-contributions) in the contributing guide for how to submit a docs improvement.
 
 ## Code Quality
 
