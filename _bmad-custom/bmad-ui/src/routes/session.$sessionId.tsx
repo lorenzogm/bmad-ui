@@ -1,4 +1,4 @@
-import { createRoute, Link, useParams } from "@tanstack/react-router"
+import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-router"
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react"
 import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type { SessionDetailResponse } from "../types"
@@ -516,7 +516,7 @@ function SessionDetailPage() {
     return (
       <main className="screen loading">
         <p>{error || "Session not found"}</p>
-        <Link to="/">Back to dashboard</Link>
+        <Link to="/sessions">Back to sessions</Link>
       </main>
     )
   }
@@ -528,15 +528,9 @@ function SessionDetailPage() {
       {/* ── Top bar ─────────────────────────────────────── */}
       <header className="chat-topbar">
         <div className="chat-topbar-left">
-          <Link
-            className="chat-back-link"
-            params={
-              session.storyId ? { epicId: `epic-${session.storyId.split("-")[0]}` } : undefined
-            }
-            to={session.storyId ? "/epic/$epicId" : "/"}
-          >
+          <button type="button" className="chat-back-link" onClick={handleBack}>
             ← Back
-          </Link>
+          </button>
           <span className="chat-topbar-skill">{session.skill}</span>
           {session.storyId ? <span className="chat-topbar-story">{session.storyId}</span> : null}
           <span className={`step-badge step-${session.status}`}>{session.status}</span>

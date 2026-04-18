@@ -823,6 +823,7 @@ Users experience a polished, responsive bmad-ui with improved empty states, load
 - Story 8.2 -> NFR3, NFR21
 - Story 8.3 -> NFR20, NFR21
 - Story 8.4 -> NFR3, NFR22
+- Story 8.5 -> FR28, NFR21
 
 ### Story 8.1: Improve Empty States and Loading Feedback
 
@@ -903,3 +904,54 @@ So that the app is comfortable to use for extended monitoring sessions.
 **Given** the session table and epic list,
 **When** viewed,
 **Then** rows have consistent row height and readable line spacing aligned with the design system
+
+### Story 8.5: Session Detail Back Navigation
+
+As a user,
+I want the Back button in a session detail page to return me to where I came from,
+So that my navigation flow feels natural and I don't lose my place.
+
+**Acceptance Criteria:**
+
+**Given** the session detail page,
+**When** the user clicks the Back button,
+**Then** the browser navigates to the previous page in history
+
+**Given** the session detail page opened with no prior history (e.g., direct URL),
+**When** the user clicks the Back button,
+**Then** the user is navigated to /sessions as the default fallback
+
+**Status:** Done
+
+### Story 8.5: Sidebar Running Sessions Panel
+
+As a user monitoring active BMAD agent workflows,
+I want the sidebar Sessions section to show only currently running sessions,
+So that I can instantly see what's happening without scanning through completed sessions.
+
+**Acceptance Criteria:**
+
+**Given** the sidebar Sessions section,
+**When** one or more sessions have `status === "running"`,
+**Then** only those running sessions are listed in the sidebar submenu, each with a status indicator dot
+
+**Given** the sidebar Sessions section,
+**When** no sessions are currently running,
+**Then** a subtle "No active sessions" label is shown in the submenu (instead of nothing)
+
+**Given** a running session listed in the sidebar,
+**When** the session transitions to `status === "completed"`,
+**Then** it is removed from the sidebar list on the next data refetch (within the existing refetch interval)
+
+**Given** the sidebar Sessions link,
+**When** clicked,
+**Then** it still navigates to the full sessions list page (all sessions, not just running ones)
+
+**Given** the running sessions list in the sidebar,
+**When** more than the sidebar display limit are running,
+**Then** only up to that limit are shown, ordered by most-recently-started first
+
+**Notes:**
+- Filter `sessionsData` by `status === "running"` before slicing with `SESSIONS_SIDEBAR_LIMIT`
+- Reuse the existing `.sidebar-session-status` dot with `data-status="running"` for the green pulse indicator
+- The "No active sessions" empty label should use `var(--muted)` and match the `.sidebar-sublink` size/padding
