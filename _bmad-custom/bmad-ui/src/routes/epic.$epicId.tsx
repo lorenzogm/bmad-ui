@@ -155,6 +155,7 @@ function EpicDetailPage() {
   })
   const [bulkError, setBulkError] = useState<string | null>(null)
   const initiatedRef = useRef(new Set<string>())
+  const [orchestrationPending, setOrchestrationPending] = useState(new Set<string>())
 
   const handleRunSkill = useCallback(async (skill: WorkflowSkill, storyId?: string) => {
     if (!IS_LOCAL_MODE) {
@@ -271,6 +272,22 @@ function EpicDetailPage() {
               }),
               storyDependencies: overview.storyDependencies ?? prev.storyDependencies,
             }
+          })
+
+          setOrchestrationPending((prev) => {
+            if (prev.size === 0) return prev
+            let changed = false
+            const next = new Set(prev)
+            for (const [storyId, update] of storyUpdates) {
+              for (const skill of ["bmad-dev-story", "bmad-code-review"] as const) {
+                const key = `${skill}:${storyId}`
+                if (next.has(key) && update.steps[skill] !== "not-started") {
+                  next.delete(key)
+                  changed = true
+                }
+              }
+            }
+            return changed ? next : prev
           })
         } catch (parseError) {
           if (mounted) {
@@ -405,6 +422,7 @@ function EpicDetailPage() {
   const handleDevelopAllStories = useCallback(() => {
     if (!IS_LOCAL_MODE) return
     initiatedRef.current.clear()
+    setOrchestrationPending(new Set())
     setIsOrchestrating(true)
     try {
       localStorage.setItem(orchestratingKey, "true")
@@ -416,6 +434,7 @@ function EpicDetailPage() {
 
   const handleStopOrchestration = useCallback(() => {
     setIsOrchestrating(false)
+    setOrchestrationPending(new Set())
     try {
       localStorage.removeItem(orchestratingKey)
     } catch {
@@ -454,21 +473,41 @@ function EpicDetailPage() {
         const key = `bmad-dev-story:${story.id}`
         if (!initiatedRef.current.has(key)) {
           initiatedRef.current.add(key)
+          const sid = story.id
+          setOrchestrationPending((prev) => new Set(prev).add(key))
           fetch("/api/workflow/run-skill", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ skill: "bmad-dev-story", storyId: story.id }),
+            body: JSON.stringify({
+              skill: "bmad-dev-story",
+              storyId: sid,
+            }),
           })
             .then((r) => {
               if (r.status === HTTP_CONFLICT) {
                 initiatedRef.current.delete(key)
+                setOrchestrationPending((prev) => {
+                  const next = new Set(prev)
+                  next.delete(key)
+                  return next
+                })
               } else if (!r.ok) {
-                setBulkError(`Failed to start dev for ${story.id}: ${r.status}`)
+                setOrchestrationPending((prev) => {
+                  const next = new Set(prev)
+                  next.delete(key)
+                  return next
+                })
+                setBulkError(`Failed to start dev for ${sid}: ${r.status}`)
               }
             })
             .catch((err) => {
               initiatedRef.current.delete(key)
-              setBulkError(`Failed to start dev for ${story.id}: ${String(err)}`)
+              setOrchestrationPending((prev) => {
+                const next = new Set(prev)
+                next.delete(key)
+                return next
+              })
+              setBulkError(`Failed to start dev for ${sid}: ${String(err)}`)
             })
         }
       }
@@ -477,25 +516,42 @@ function EpicDetailPage() {
         const key = `bmad-code-review:${story.id}`
         if (!initiatedRef.current.has(key)) {
           initiatedRef.current.add(key)
+          const sid = story.id
+          setOrchestrationPending((prev) => new Set(prev).add(key))
           fetch("/api/workflow/run-skill", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               skill: "bmad-code-review",
-              storyId: story.id,
+              storyId: sid,
               autoResolve: true,
             }),
           })
             .then((r) => {
               if (r.status === HTTP_CONFLICT) {
                 initiatedRef.current.delete(key)
+                setOrchestrationPending((prev) => {
+                  const next = new Set(prev)
+                  next.delete(key)
+                  return next
+                })
               } else if (!r.ok) {
-                setBulkError(`Failed to start review for ${story.id}: ${r.status}`)
+                setOrchestrationPending((prev) => {
+                  const next = new Set(prev)
+                  next.delete(key)
+                  return next
+                })
+                setBulkError(`Failed to start review for ${sid}: ${r.status}`)
               }
             })
             .catch((err) => {
               initiatedRef.current.delete(key)
-              setBulkError(`Failed to start review for ${story.id}: ${String(err)}`)
+              setOrchestrationPending((prev) => {
+                const next = new Set(prev)
+                next.delete(key)
+                return next
+              })
+              setBulkError(`Failed to start review for ${sid}: ${String(err)}`)
             })
         }
       }
@@ -508,7 +564,10 @@ function EpicDetailPage() {
         fetch("/api/workflow/run-skill", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ skill: "bmad-retrospective", autoResolve: true }),
+          body: JSON.stringify({
+            skill: "bmad-retrospective",
+            autoResolve: true,
+          }),
         })
           .then((r) => {
             if (!r.ok) {
@@ -525,6 +584,7 @@ function EpicDetailPage() {
 
     if (retrospectiveState === "completed") {
       setIsOrchestrating(false)
+      setOrchestrationPending(new Set())
       try {
         localStorage.removeItem(orchestratingKey)
       } catch {
@@ -687,11 +747,13 @@ function EpicDetailPage() {
                   (s) =>
                     s.storyId === story.id && s.skill === "bmad-dev-story" && s.status === "running"
                 )
-                const devState = isDevAgentRunning
-                  ? "running"
-                  : rawDevState === "running" && !isDevAgentRunning
-                    ? "not-started"
-                    : rawDevState
+                const isDevPending = orchestrationPending.has(`bmad-dev-story:${story.id}`)
+                const devState =
+                  isDevAgentRunning || isDevPending
+                    ? "running"
+                    : rawDevState === "running" && !isDevAgentRunning
+                      ? "not-started"
+                      : rawDevState
 
                 // bmad-code-review state with running session check
                 const rawReviewState = story.steps["bmad-code-review"] ?? "not-started"
@@ -701,11 +763,13 @@ function EpicDetailPage() {
                     s.skill === "bmad-code-review" &&
                     s.status === "running"
                 )
-                const reviewState = isReviewAgentRunning
-                  ? "running"
-                  : rawReviewState === "running" && !isReviewAgentRunning
-                    ? "not-started"
-                    : rawReviewState
+                const isReviewPending = orchestrationPending.has(`bmad-code-review:${story.id}`)
+                const reviewState =
+                  isReviewAgentRunning || isReviewPending
+                    ? "running"
+                    : rawReviewState === "running" && !isReviewAgentRunning
+                      ? "not-started"
+                      : rawReviewState
 
                 const latestCreateSession = findLatestSession(
                   runtimeSessions,
