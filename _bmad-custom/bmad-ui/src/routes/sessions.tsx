@@ -28,6 +28,21 @@ function formatDate(iso: string | null): string {
   })
 }
 
+function formatDuration(startedAt: string | null, endedAt: string | null): string {
+  if (!startedAt) return "—"
+  const start = new Date(startedAt).getTime()
+  const end = endedAt ? new Date(endedAt).getTime() : Date.now()
+  if (Number.isNaN(start) || Number.isNaN(end)) return "—"
+  const totalSeconds = Math.floor((end - start) / 1000)
+  if (totalSeconds < 60) return `${totalSeconds}s`
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  if (minutes < 60) return `${minutes}m ${seconds}s`
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  return `${hours}h ${remainingMinutes}m`
+}
+
 function SessionsPage() {
   const [statusFilter, setStatusFilter] = useState<string>(() => {
     try {
@@ -118,33 +133,36 @@ function SessionsPage() {
           <table>
             <thead>
               <tr>
-                <th>Session ID</th>
-                <th>Skill</th>
+                <th>Skill / Name</th>
+                <th>Name</th>
                 <th>Model</th>
                 <th>Story</th>
                 <th>Status</th>
                 <th>Started</th>
-                <th>Ended</th>
+                <th>Duration</th>
               </tr>
             </thead>
             <tbody>
               {filteredSessions.map((session) => (
                 <tr key={session.sessionId}>
                   <td>
+                    <span className="skill-chip">{session.skill ?? "—"}</span>
+                  </td>
+                  <td>
                     <Link
                       className="mono session-id"
                       params={{ sessionId: session.sessionId }}
-                      style={{ color: "var(--highlight)", textDecoration: "none" }}
+                      style={{
+                        color: "var(--highlight)",
+                        textDecoration: "none",
+                      }}
                       title={session.sessionId}
                       to="/session/$sessionId"
                     >
-                      {session.sessionId.length > 24
-                        ? `${session.sessionId.slice(0, 24)}…`
+                      {session.sessionId.length > 20
+                        ? `${session.sessionId.slice(0, 20)}…`
                         : session.sessionId}
                     </Link>
-                  </td>
-                  <td>
-                    <span className="skill-chip">{session.skill}</span>
                   </td>
                   <td>
                     <span className="mono muted">{session.model}</span>
@@ -156,7 +174,7 @@ function SessionsPage() {
                     <span className={`step-badge step-${session.status}`}>{session.status}</span>
                   </td>
                   <td className="muted">{formatDate(session.startedAt)}</td>
-                  <td className="muted">{formatDate(session.endedAt)}</td>
+                  <td className="muted">{formatDuration(session.startedAt, session.endedAt)}</td>
                 </tr>
               ))}
               {filteredSessions.length === 0 && (
