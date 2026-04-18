@@ -80,7 +80,7 @@ development_status:
   epic-6: in-progress
   6-1-publish-fast-local-setup-guide: done
   6-2-publish-deployment-setup-guide: done
-  6-3-create-troubleshooting-matrix-for-common-failures: ready-for-dev
+  6-3-create-troubleshooting-matrix-for-common-failures: review
   6-4-define-documentation-contribution-path: ready-for-dev
   6-5-capture-early-adoption-signals: ready-for-dev
   epic-6-retrospective: optional

@@ -85,3 +85,7 @@ pnpm run build
 ### Dev server port conflict
 
 - Default port is `5173`. If occupied, Vite will try `5174`, `5175`, etc. — check the terminal output for the actual URL.
+
+### CI, secrets, and deployment issues
+
+For CI validation failures, secrets configuration, and deployment pipeline issues, see [docs/troubleshooting.md](troubleshooting.md).

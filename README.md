@@ -125,3 +125,5 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 ## Support
 
 For questions or issues, please open an issue on GitHub or refer to the [BMAD documentation](https://github.com/lorenzogm/bmad-ui).
+
+**Troubleshooting common failures?** See [docs/troubleshooting.md](docs/troubleshooting.md) for a matrix of local runtime, CI validation, secrets, and deployment failures with symptoms, causes, resolution steps, and evidence to collect.

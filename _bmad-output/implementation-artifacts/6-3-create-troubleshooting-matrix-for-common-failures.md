@@ -1,6 +1,6 @@
 # Story 6.3: Create Troubleshooting Matrix for Common Failures
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,16 +18,16 @@ so that I can diagnose and resolve issues quickly.
 
 ## Tasks / Subtasks
 
-- [ ] Create `docs/troubleshooting.md` with the full troubleshooting matrix (AC: #1, #2, #3)
-  - [ ] Section 1: Local Runtime Failures (pnpm not found, port conflict, Biome, TypeScript aliases)
-  - [ ] Section 2: CI Validation Failures (lint, type check, test, build step failures)
-  - [ ] Section 3: Secrets Failures (DOTENV_PRIVATE_KEY missing, .env.keys not found, decryption error)
-  - [ ] Section 4: Deployment Failures (Vercel token invalid, project ID not found, Terraform state issues)
-  - [ ] Section 5: Escalation Evidence Collection (what to gather before opening an issue)
-- [ ] Link `docs/troubleshooting.md` from `README.md` Support section (AC: #1)
-  - [ ] Add or update the support/troubleshooting link in README.md
-- [ ] Verify `docs/development-guide-bmad-ui.md` Troubleshooting section links to new file for CI/deployment topics (AC: #1)
-- [ ] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions
+- [x] Create `docs/troubleshooting.md` with the full troubleshooting matrix (AC: #1, #2, #3)
+  - [x] Section 1: Local Runtime Failures (pnpm not found, port conflict, Biome, TypeScript aliases)
+  - [x] Section 2: CI Validation Failures (lint, type check, test, build step failures)
+  - [x] Section 3: Secrets Failures (DOTENV_PRIVATE_KEY missing, .env.keys not found, decryption error)
+  - [x] Section 4: Deployment Failures (Vercel token invalid, project ID not found, Terraform state issues)
+  - [x] Section 5: Escalation Evidence Collection (what to gather before opening an issue)
+- [x] Link `docs/troubleshooting.md` from `README.md` Support section (AC: #1)
+  - [x] Add or update the support/troubleshooting link in README.md
+- [x] Verify `docs/development-guide-bmad-ui.md` Troubleshooting section links to new file for CI/deployment topics (AC: #1)
+- [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions
 
 ## Dev Notes
 
@@ -163,4 +163,15 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Documentation-only story: created `docs/troubleshooting.md` with 5 sections covering all failure categories
+- Updated `README.md` Support section with direct link to troubleshooting guide
+- Updated `docs/development-guide-bmad-ui.md` Troubleshooting section to link to new file for CI/deployment topics
+- `pnpm run check` passed with exit code 0 — no regressions
+
 ### File List
+
+- `docs/troubleshooting.md` — new file (troubleshooting matrix)
+- `README.md` — updated Support section with troubleshooting link
+- `docs/development-guide-bmad-ui.md` — added link to troubleshooting.md for CI/deployment topics
+- `_bmad-output/implementation-artifacts/6-3-create-troubleshooting-matrix-for-common-failures.md` — story status → review
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — story status → review
