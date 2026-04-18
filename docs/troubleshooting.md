@@ -181,7 +181,7 @@ Contributors running the app locally **do not need any secrets** — the app run
 **Likely cause:** The `DOTENV_PRIVATE_KEY` secret has not been added to GitHub repository secrets
 **Resolution:**
 1. Go to GitHub → Repository → Settings → Secrets and variables → Actions
-2. Add `DOTENV_PRIVATE_KEY` with the value from your `.env.keys` file (line starting with `DOTENV_PRIVATE_KEY_PRODUCTION=`)
+2. Add `DOTENV_PRIVATE_KEY` with the value from your `.env.keys` file (line starting with `DOTENV_PRIVATE_KEY=`)
 **Evidence to collect (if unresolved):**
 - GitHub Actions step logs from the "Load secrets from encrypted .env" step
 - The exact error message (redact any key values)

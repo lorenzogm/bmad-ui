@@ -1,6 +1,6 @@
 # Story 6.3: Create Troubleshooting Matrix for Common Failures
 
-Status: review
+Status: done
 
 ## Story
 
@@ -28,6 +28,10 @@ so that I can diagnose and resolve issues quickly.
   - [x] Add or update the support/troubleshooting link in README.md
 - [x] Verify `docs/development-guide-bmad-ui.md` Troubleshooting section links to new file for CI/deployment topics (AC: #1)
 - [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions
+
+### Review Findings
+
+- [x] [Review][Patch] Correct dotenvx private-key variable name in secrets resolution steps [docs/troubleshooting.md:184]
 
 ## Dev Notes
 
