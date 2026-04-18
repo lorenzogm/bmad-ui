@@ -16,10 +16,17 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     name: Publish
+    env:
+      DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          package_json_file: _bmad-custom/bmad-ui/package.json
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,11 +34,27 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Load secrets from encrypted .env
+        run: |
+          pnpm dlx @dotenvx/dotenvx run -- sh -c '
+            echo "::add-mask::$NPM_ACCESS_TOKEN"
+            write_env_var() {
+              local key="$1"
+              local value="$2"
+              local delimiter
+              delimiter="$(openssl rand -hex 16)"
+              {
+                echo "${key}<<${delimiter}"
+                printf "%s\n" "$value"
+                echo "${delimiter}"
+              } >> "$GITHUB_ENV"
+            }
+            write_env_var "NODE_AUTH_TOKEN" "$NPM_ACCESS_TOKEN"
+          '
+
       - name: Bump version (if provided)
         if: ${{ github.event.inputs.version != '' }}
         run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
 
       - name: Publish
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
