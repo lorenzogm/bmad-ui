@@ -1,5 +1,5 @@
 # generated: 2026-04-15T16:46:25Z
-# last_updated: 2026-04-16T23:00:00Z
+# last_updated: 2026-04-18T13:00:00Z
 # project: bmad-ui
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-16T23:00:00Z
+last_updated: 2026-04-18T13:00:00Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -70,9 +70,9 @@ development_status:
   epic-4-retrospective: backlog
 
 
-  epic-5: backlog
+  epic-5: in-progress
   5-1-create-npx-bmad-method-ui-install-cli: backlog
-  5-2-enforce-code-quality-tooling-baseline: backlog
+  5-2-enforce-code-quality-tooling-baseline: ready-for-dev
   5-3-provide-vs-code-first-developer-workflow: backlog
   epic-5-retrospective: optional
 
