@@ -335,7 +335,6 @@ function WorkflowPhaseDetailPage() {
                 <tr>
                   <th>Epic</th>
                   <th>Name</th>
-                  <th>Planning</th>
                   <th>Status</th>
                   <th>Retrospective</th>
                   <th>Stories</th>
@@ -351,13 +350,6 @@ function WorkflowPhaseDetailPage() {
                     </td>
                     <td>{epicLabels.get(epic.id) ?? "-"}</td>
                     <td>
-                      <span
-                        className={`step-badge step-${epic.lifecycleSteps["bmad-sprint-planning"]}`}
-                      >
-                        {storyStepLabel(epic.lifecycleSteps["bmad-sprint-planning"])}
-                      </span>
-                    </td>
-                    <td>
                       <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
                     </td>
                     <td>
@@ -372,7 +364,7 @@ function WorkflowPhaseDetailPage() {
                 ))}
                 {sortedEpics.length === 0 ? (
                   <tr>
-                    <td colSpan={6}>No epics found in sprint status</td>
+                    <td colSpan={5}>No epics found in sprint status</td>
                   </tr>
                 ) : null}
               </tbody>

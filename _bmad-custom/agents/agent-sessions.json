@@ -1539,32 +1539,32 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T12:56:16.726Z",
-      "endedAt": null,
+      "endedAt": "2026-04-18T12:59:50.656Z",
       "usage": {
-        "requests": 0,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
+        "requests": 1,
+        "tokensIn": 1600000,
+        "tokensOut": 10800,
+        "tokensCached": 1500000,
+        "totalTokens": 1610800
       }
     },
     "workflow-bmad-create-story-1776517160097": {
       "sessionId": "workflow-bmad-create-story-1776517160097",
-      "storyId": "5-3-provide-vs-code-first-developer-workflow",
+      "storyId": "5-1-create-npx-bmad-method-ui-install-cli",
       "epicId": "epic-5",
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "running",
-      "startedAt": "2026-04-18T12:59:20.099Z",
-      "endedAt": null,
+      "status": "completed",
+      "startedAt": "2026-04-18T12:59:20.098Z",
+      "endedAt": "2026-04-18T13:02:25.625Z",
       "usage": {
-        "requests": 0,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
+        "requests": 1,
+        "tokensIn": 960500,
+        "tokensOut": 9400,
+        "tokensCached": 881200,
+        "totalTokens": 969900
       }
     }
   }

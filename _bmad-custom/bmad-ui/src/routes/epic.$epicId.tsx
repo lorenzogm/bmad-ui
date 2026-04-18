@@ -653,19 +653,44 @@ function EpicDetailPage() {
             <tbody>
               {filteredStories.map((story) => {
                 const runtimeSessions = overviewData?.runtimeState?.sessions ?? []
-                const createState = story.steps["bmad-create-story"] ?? "not-started"
+
+                // bmad-create-story state with running session check
+                const rawCreateState = story.steps["bmad-create-story"] ?? "not-started"
+                const isCreateAgentRunning = runtimeSessions.some(
+                  (s) =>
+                    s.storyId === story.id &&
+                    s.skill === "bmad-create-story" &&
+                    s.status === "running"
+                )
+                const createState = isCreateAgentRunning
+                  ? "running"
+                  : rawCreateState === "running" && !isCreateAgentRunning
+                    ? "not-started"
+                    : rawCreateState
+
+                // bmad-dev-story state with running session check
                 const rawDevState = story.steps["bmad-dev-story"] ?? "not-started"
                 const isDevAgentRunning = runtimeSessions.some(
-                  (s) => s.storyId === story.id && s.skill === "bmad-dev-story"
+                  (s) =>
+                    s.storyId === story.id && s.skill === "bmad-dev-story" && s.status === "running"
                 )
-                const devState =
-                  rawDevState === "running" && !isDevAgentRunning ? "not-started" : rawDevState
+                const devState = isDevAgentRunning
+                  ? "running"
+                  : rawDevState === "running" && !isDevAgentRunning
+                    ? "not-started"
+                    : rawDevState
+
+                // bmad-code-review state with running session check
                 const rawReviewState = story.steps["bmad-code-review"] ?? "not-started"
                 const isReviewAgentRunning = runtimeSessions.some(
-                  (s) => s.storyId === story.id && s.skill === "bmad-code-review"
+                  (s) =>
+                    s.storyId === story.id &&
+                    s.skill === "bmad-code-review" &&
+                    s.status === "running"
                 )
-                const reviewState =
-                  rawReviewState === "running" && !isReviewAgentRunning
+                const reviewState = isReviewAgentRunning
+                  ? "running"
+                  : rawReviewState === "running" && !isReviewAgentRunning
                     ? "not-started"
                     : rawReviewState
 
