@@ -1,6 +1,6 @@
 # Story 6.5: Capture Early Adoption Signals
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -25,6 +25,10 @@ so that I can evaluate traction and prioritize improvements.
   - [x] Provide a minimal weekly review template with fields for each signal category
   - [x] Document how to map signal trends to backlog planning actions (mapping table or guidance)
 - [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation only — this should be a no-op)
+
+### Review Findings
+
+- [x] ✅ Clean review — all layers passed. No decision-needed, patch, or deferred findings.
 
 ## Dev Notes
 
@@ -163,9 +167,10 @@ claude-sonnet-4.6
 ### File List
 
 - `docs/adoption-signals.md` — new file
-- `_bmad-output/implementation-artifacts/6-5-capture-early-adoption-signals.md` — story updated (status → review)
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` — story status → review
+- `_bmad-output/implementation-artifacts/6-5-capture-early-adoption-signals.md` — story updated (status → done)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — story status → done
 
 ## Change Log
 
 - 2026-04-18: Created `docs/adoption-signals.md` — adoption signal tracking guide with inventory, weekly template, and backlog mapping.
+- 2026-04-18: Code review complete — clean review, no findings, story moved to done.
