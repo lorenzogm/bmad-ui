@@ -299,6 +299,51 @@ async function markZombieSessionsAsFailed(
 	return mutated;
 }
 
+async function markZombieAnalyticsSessionsFailed(
+	sessions: SessionAnalyticsData[],
+): Promise<boolean> {
+	if (buildMode) {
+		return false;
+	}
+
+	let mutated = false;
+
+	for (const session of sessions) {
+		if (session.status !== "running") {
+			continue;
+		}
+
+		if (runningSessionProcesses.has(session.sessionId)) {
+			continue;
+		}
+
+		const logEmpty =
+			!session.logPath ||
+			!existsSync(session.logPath) ||
+			statSync(session.logPath).size === 0;
+
+		const update: Partial<SessionAnalyticsData> & { sessionId: string } = {
+			sessionId: session.sessionId,
+		};
+
+		if (logEmpty) {
+			update.status = "failed";
+			update.error = "Agent process produced no output (0-byte log)";
+			update.endedAt = session.endedAt || new Date().toISOString();
+			update.exitCode = session.exitCode ?? -1;
+		} else {
+			update.status = "completed";
+			update.endedAt = session.endedAt || new Date().toISOString();
+			update.exitCode = session.exitCode ?? 0;
+		}
+
+		await upsertAnalyticsSession(update);
+		mutated = true;
+	}
+
+	return mutated;
+}
+
 const PS_LINE_REGEX = /^(\d+)\s+([^\s]+)\s+(.+)$/;
 const SPRINT_STORY_STATUS_REGEX =
 	/^([0-9]+-[0-9]+-[a-z0-9-]+):\s*(backlog|ready-for-dev|in-progress|review|done)$/;
@@ -508,16 +553,13 @@ function createRuntimeSession(params: {
 	};
 }
 
-async function startRuntimeSession(
-	runtimeState: RuntimeState,
-	session: RuntimeSession,
-): Promise<void> {
+async function startRuntimeSession(session: RuntimeSession): Promise<void> {
 	session.status = "running";
 	session.startedAt = new Date().toISOString();
 	session.endedAt = null;
 	session.exitCode = null;
 	session.error = null;
-	await persistRuntimeState(runtimeState);
+	await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 
 	// Auto-update sprint-status.yaml when a dev-story session starts
 	if (session.skill === "bmad-dev-story" && session.storyId) {
@@ -565,7 +607,7 @@ async function startRuntimeSession(
 		if (!isCancelled && code !== 0 && !session.error) {
 			session.error = `Agent command exited with code ${code}`;
 		}
-		await persistRuntimeState(runtimeState);
+		await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 		await persistSessionAnalytics(session);
 		// Only reset the single-process handle if this session owns it
 		if (runningProcess === stageProcess) {
@@ -811,7 +853,7 @@ async function startRuntimeSession(
 				flag: "a",
 			});
 		}
-		await persistRuntimeState(runtimeState);
+		await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 		await persistSessionAnalytics(session);
 		if (runningProcess === stageProcess) {
 			resetRunningProcessState();
@@ -822,9 +864,10 @@ async function startRuntimeSession(
 
 async function buildOverviewPayload() {
 	ensureRunningProcessStateIsFresh();
-	const runtimeState = await readRuntimeStateFile();
-	await markZombieSessionsAsFailed(runtimeState);
-	const sprintOverview = await loadSprintOverview(runtimeState);
+	const store = await readAnalyticsStore();
+	const analyticsSessions = Object.values(store.sessions);
+	await markZombieAnalyticsSessionsFailed(analyticsSessions);
+	const sprintOverview = await loadSprintOverview(analyticsSessions);
 	const externalProcesses = await getExternalCliProcesses();
 	const epicsContent = existsSync(epicsFile)
 		? await readFile(epicsFile, "utf8")
@@ -856,28 +899,41 @@ async function buildOverviewPayload() {
 			readAgentSessionsFile(),
 		]);
 
-	// Derive activeWorkflowSkill from persisted runtime sessions — the in-memory
+	// Derive activeWorkflowSkill from analytics sessions — the in-memory
 	// variable is the canonical source while a session is starting; once the
 	// session is persisted as "running" we use that, and clear the in-memory
 	// value so there is no stale data after the process exits.
-	const runningSession = runtimeState?.sessions.find(
-		(s) => s.status === "running",
-	);
+	const runningSession = analyticsSessions.find((s) => s.status === "running");
 	if (runningSession) {
 		activeWorkflowSkill = runningSession.skill;
 	} else if (activeWorkflowSkill && !runningSessionProcesses.size) {
 		activeWorkflowSkill = null;
 	}
 
+	const runtimeSessions = analyticsSessions.map(analyticsToRuntimeSession);
+	const pseudoRuntimeState: RuntimeState = {
+		status: "idle",
+		startedAt: "",
+		updatedAt: "",
+		currentStage: "",
+		dryRun: false,
+		execute: true,
+		nonInteractive: true,
+		targetStory: null,
+		parallelCandidate: null,
+		sessions: runtimeSessions,
+		notes: [],
+	};
+
 	return {
 		steps: STORY_WORKFLOW_STEPS,
-		epicSteps: summarizeEpicSteps(runtimeState),
+		epicSteps: summarizeEpicSteps(analyticsSessions),
 		sprintOverview,
-		runtimeState,
+		runtimeState: pseudoRuntimeState,
 		agentRunner: {
 			isRunning: runningProcess !== null,
 			canSendInput: runningProcessCanAcceptInput,
-			isNonInteractive: runtimeState?.nonInteractive ?? true,
+			isNonInteractive: true,
 		},
 		externalProcesses,
 		dependencyTree,
@@ -902,7 +958,7 @@ function slugifyStoryLabel(value: string): string {
 
 function summarizeSprintFromEpics(
 	epicsContent: string,
-	runtimeState: RuntimeState | null,
+	sessions: SessionAnalyticsData[],
 ): SprintOverview {
 	const stories: Array<{
 		id: string;
@@ -964,10 +1020,10 @@ function summarizeSprintFromEpics(
 		mentionedEpicNumbers.add(epicNumber);
 	}
 
-	if (runtimeState?.sessions) {
+	if (sessions.length > 0) {
 		for (const story of stories) {
 			for (const step of STORY_WORKFLOW_STEPS) {
-				const history = runtimeState.sessions
+				const history = sessions
 					.filter(
 						(session) =>
 							session.storyId === story.id && session.skill === step.skill,
@@ -1115,7 +1171,7 @@ function summarizeSprintFromEpics(
 }
 
 async function loadSprintOverview(
-	runtimeState: RuntimeState | null,
+	sessions: SessionAnalyticsData[],
 ): Promise<SprintOverview> {
 	let epicNames = new Map<number, string>();
 	if (existsSync(epicsFile)) {
@@ -1138,7 +1194,7 @@ async function loadSprintOverview(
 	let overview: SprintOverview;
 	if (existsSync(sprintStatusFile)) {
 		const sprintContent = await readFile(sprintStatusFile, "utf8");
-		overview = summarizeSprint(sprintContent, runtimeState);
+		overview = summarizeSprint(sprintContent, sessions);
 	} else {
 		let epicsContent = "";
 		if (existsSync(epicsFile)) {
@@ -1148,7 +1204,7 @@ async function loadSprintOverview(
 				epicsContent = "";
 			}
 		}
-		overview = summarizeSprintFromEpics(epicsContent, runtimeState);
+		overview = summarizeSprintFromEpics(epicsContent, sessions);
 	}
 
 	for (const epic of overview.epics) {
@@ -1404,47 +1460,13 @@ async function buildCleanLogContent(
 async function buildSessionDetailPayload(
 	sessionId: string,
 ): Promise<SessionDetailResponse | null> {
-	const runtimeState = await readRuntimeStateFile();
-	await markZombieSessionsAsFailed(runtimeState);
-	const session =
-		runtimeState?.sessions.find((candidate) => candidate.id === sessionId) ||
-		null;
-
-	if (!session) {
-		// Fall back to analytics store for sessions tracked by the sync-sessions daemon
-		// (e.g. VS Code Copilot sessions) that are not in runtime-state.json
-		const store = await readAnalyticsStore();
-		const analyticsEntry = store.sessions[sessionId] || null;
-		if (!analyticsEntry) {
-			return null;
-		}
-		const analyticsSession: RuntimeSession = {
-			id: analyticsEntry.sessionId,
-			skill: analyticsEntry.skill,
-			model: analyticsEntry.model,
-			storyId: analyticsEntry.storyId,
-			status: analyticsEntry.status,
-			startedAt: analyticsEntry.startedAt,
-			endedAt: analyticsEntry.endedAt,
-			command: "",
-			promptPath: "",
-			logPath: "",
-			worktreePath: null,
-			exitCode: null,
-			error: null,
-			userMessages: [],
-		};
-		return {
-			session: analyticsSession,
-			logContent: null,
-			promptContent: null,
-			summary: null,
-			logExists: false,
-			promptExists: false,
-			isRunning: false,
-			canSendInput: false,
-		};
+	const store = await readAnalyticsStore();
+	await markZombieAnalyticsSessionsFailed(Object.values(store.sessions));
+	const analyticsEntry = store.sessions[sessionId] || null;
+	if (!analyticsEntry) {
+		return null;
 	}
+	const session = analyticsToRuntimeSession(analyticsEntry);
 
 	const rawLogContent = await readOptionalTextFile(session.logPath);
 	const fallbackLog = rawLogContent
@@ -1561,7 +1583,7 @@ function deriveStoryStepStateFromStatus(
 
 function summarizeSprint(
 	content: string,
-	runtimeState: RuntimeState | null,
+	sessions: SessionAnalyticsData[],
 ): SprintOverview {
 	const lines = content.split("\n");
 	const stories: Array<{
@@ -1639,10 +1661,10 @@ function summarizeSprint(
 		storiesByStatus[story.status] += 1;
 	}
 
-	if (runtimeState?.sessions) {
+	if (sessions.length > 0) {
 		for (const story of stories) {
 			for (const step of STORY_WORKFLOW_STEPS) {
-				const history = runtimeState.sessions
+				const history = sessions
 					.filter(
 						(session) =>
 							session.storyId === story.id && session.skill === step.skill,
@@ -1814,13 +1836,13 @@ function summarizeSprint(
 	};
 }
 
-function summarizeEpicSteps(runtimeState: RuntimeState | null): Array<{
+function summarizeEpicSteps(sessions: SessionAnalyticsData[]): Array<{
 	skill: EpicWorkflowStepSkill;
 	label: string;
 	state: WorkflowStepState;
 }> {
 	return EPIC_WORKFLOW_STEPS.map((step) => {
-		const latest = (runtimeState?.sessions || [])
+		const latest = sessions
 			.filter((session) => session.skill === step.skill)
 			.filter((session) => session.status !== "planned")
 			.sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0];
@@ -2217,7 +2239,7 @@ function extractLastAssistantBlock(logContent: string): string | null {
 }
 
 async function getCompletedSessionSummary(
-	sessions: RuntimeSession[],
+	sessions: SessionAnalyticsData[],
 	storyId: string,
 	skill: StoryWorkflowStepSkill,
 ): Promise<string | null> {
@@ -2353,6 +2375,14 @@ type SessionAnalyticsData = {
 	startedAt: string;
 	endedAt: string | null;
 	usage: TokenUsageData;
+	// Operational fields — present for BMAD-launched sessions, absent for VS Code sessions
+	logPath?: string | null;
+	promptPath?: string | null;
+	command?: string | null;
+	worktreePath?: string | null;
+	exitCode?: number | null;
+	error?: string | null;
+	userMessages?: Array<{ id: string; text: string; sentAt: string }>;
 };
 
 type AnalyticsRatesUsdData = {
@@ -2780,6 +2810,66 @@ async function persistAnalyticsStore(store: AnalyticsStore): Promise<void> {
 	);
 }
 
+async function upsertAnalyticsSession(
+	update: Partial<SessionAnalyticsData> & { sessionId: string },
+): Promise<void> {
+	const store = await readAnalyticsStore();
+	const existing = store.sessions[update.sessionId] ?? {
+		sessionId: update.sessionId,
+		storyId: null,
+		epicId: null,
+		skill: "unknown",
+		model: "unknown",
+		status: "planned",
+		startedAt: new Date().toISOString(),
+		endedAt: null,
+		usage: zeroUsage(),
+	};
+	store.sessions[update.sessionId] = { ...existing, ...update };
+	await persistAnalyticsStore(store);
+}
+
+function analyticsToRuntimeSession(s: SessionAnalyticsData): RuntimeSession {
+	return {
+		id: s.sessionId,
+		skill: s.skill,
+		model: s.model,
+		storyId: s.storyId,
+		status: s.status,
+		startedAt: s.startedAt,
+		endedAt: s.endedAt ?? null,
+		command: s.command ?? "",
+		promptPath: s.promptPath ?? "",
+		logPath: s.logPath ?? "",
+		worktreePath: s.worktreePath ?? null,
+		exitCode: s.exitCode ?? null,
+		error: s.error ?? null,
+		userMessages: s.userMessages ?? [],
+	};
+}
+
+function sessionToAnalyticsUpdate(
+	session: RuntimeSession,
+): Partial<SessionAnalyticsData> & { sessionId: string } {
+	return {
+		sessionId: session.id,
+		skill: session.skill,
+		model: session.model,
+		storyId: session.storyId,
+		epicId: getEpicIdFromStoryId(session.storyId),
+		status: session.status,
+		startedAt: session.startedAt,
+		endedAt: session.endedAt,
+		logPath: session.logPath,
+		promptPath: session.promptPath,
+		command: session.command,
+		worktreePath: session.worktreePath,
+		exitCode: session.exitCode,
+		error: session.error,
+		userMessages: session.userMessages,
+	};
+}
+
 async function persistSessionAnalytics(session: RuntimeSession): Promise<void> {
 	const { logPath } = session;
 	if (!logPath) {
@@ -2791,19 +2881,10 @@ async function persistSessionAnalytics(session: RuntimeSession): Promise<void> {
 	try {
 		const logContent = await readFile(logPath, "utf8");
 		const usage = parseTokenUsageFromLog(logContent);
-		const store = await readAnalyticsStore();
-		store.sessions[session.id] = {
-			sessionId: session.id,
-			storyId: session.storyId,
-			epicId: getEpicIdFromStoryId(session.storyId),
-			skill: session.skill,
-			model: session.model,
-			status: session.status,
-			startedAt: session.startedAt,
-			endedAt: session.endedAt,
+		await upsertAnalyticsSession({
+			...sessionToAnalyticsUpdate(session),
 			usage,
-		};
-		await persistAnalyticsStore(store);
+		});
 	} catch {
 		// ignore — analytics persistence is best-effort
 	}
@@ -2854,6 +2935,13 @@ async function backfillAnalyticsStore(): Promise<void> {
 				startedAt: session.startedAt,
 				endedAt: session.endedAt,
 				usage,
+				logPath: session.logPath,
+				promptPath: session.promptPath,
+				command: session.command,
+				worktreePath: session.worktreePath,
+				exitCode: session.exitCode,
+				error: session.error,
+				userMessages: session.userMessages,
 			};
 			dirty = true;
 		} catch {
@@ -3035,13 +3123,7 @@ function deduplicateSessions(
  */
 function validateRunningStatus(
 	sessions: SessionAnalyticsData[],
-	runtimeState: RuntimeState | null,
 ): SessionAnalyticsData[] {
-	const activeRuntimeIds = new Set(
-		(runtimeState?.sessions ?? [])
-			.filter((s) => s.status === "running")
-			.map((s) => s.id),
-	);
 	const activeProcessIds = new Set(runningSessionProcesses.keys());
 
 	const now = Date.now();
@@ -3049,11 +3131,8 @@ function validateRunningStatus(
 	return sessions.map((s) => {
 		if (s.status !== "running") return s;
 
-		// If it's tracked as a live runtime process, it's genuinely running
-		if (
-			activeRuntimeIds.has(s.sessionId) ||
-			activeProcessIds.has(s.sessionId)
-		) {
+		// If it's tracked as a live process, it's genuinely running
+		if (activeProcessIds.has(s.sessionId)) {
 			return s;
 		}
 
@@ -3076,13 +3155,12 @@ async function buildAnalyticsPayload() {
 	await backfillAnalyticsStore();
 
 	const store = await readAnalyticsStore();
-	const runtimeState = await readRuntimeStateFile();
 
 	// 1. Deduplicate workflow + UUID pairs
 	const deduplicated = deduplicateSessions(Object.values(store.sessions));
 
 	// 2. Validate "running" status against actual process state
-	const validated = validateRunningStatus(deduplicated, runtimeState);
+	const validated = validateRunningStatus(deduplicated);
 
 	const sessionAnalytics = validated.sort(
 		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
@@ -3399,12 +3477,10 @@ function attachApi(server: ViteDevServer): void {
 						return;
 					}
 
-					const runtimeState = await loadOrCreateRuntimeState();
-					const session = runtimeState.sessions.find(
-						(candidate) => candidate.id === sessionId,
-					);
+					const inputStore = await readAnalyticsStore();
+					const inputAnalyticsSession = inputStore.sessions[sessionId];
 
-					if (!session) {
+					if (!inputAnalyticsSession) {
 						res.writeHead(404, { "Content-Type": "application/json" });
 						res.end(
 							JSON.stringify({ error: `session not found: ${sessionId}` }),
@@ -3412,11 +3488,13 @@ function attachApi(server: ViteDevServer): void {
 						return;
 					}
 
+					const session = analyticsToRuntimeSession(inputAnalyticsSession);
+
 					const processForSession = runningSessionProcesses.get(sessionId);
 					if (!processForSession?.stdin || processForSession.stdin.destroyed) {
 						// Session process is not running — restart the session with the
 						// new message as a follow-up prompt.
-						const followUpPromptPath = session.promptPath.replace(
+						const followUpPromptPath = (session.promptPath || "").replace(
 							/\.md$/,
 							`-followup-${Date.now()}.md`,
 						);
@@ -3429,7 +3507,9 @@ function attachApi(server: ViteDevServer): void {
 								: "",
 							`Follow-up instruction:\n${message}`,
 						].join("");
-						await mkdir(path.dirname(followUpPromptPath), { recursive: true });
+						await mkdir(path.dirname(followUpPromptPath || runtimeLogsDir), {
+							recursive: true,
+						});
 						await writeFile(followUpPromptPath, followUpContent, "utf8");
 
 						const userMessage = {
@@ -3450,16 +3530,15 @@ function attachApi(server: ViteDevServer): void {
 						session.exitCode = null;
 						session.error = null;
 						session.endedAt = null;
-						await persistRuntimeState(runtimeState);
+						await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 
 						try {
-							await startRuntimeSession(runtimeState, session);
+							await startRuntimeSession(session);
 						} catch (restartError) {
 							session.status = "failed";
 							session.error = `Failed to restart session: ${String(restartError)}`;
 							session.endedAt = new Date().toISOString();
-							await persistRuntimeState(runtimeState);
-							await persistSessionAnalytics(session);
+							await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 							res.writeHead(500, { "Content-Type": "application/json" });
 							res.end(JSON.stringify({ error: session.error }));
 							return;
@@ -3480,7 +3559,7 @@ function attachApi(server: ViteDevServer): void {
 
 					session.userMessages = session.userMessages || [];
 					session.userMessages.push(userMessage);
-					await persistRuntimeState(runtimeState);
+					await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 
 					await writeFile(session.logPath, `\n[user] ${message}\n`, {
 						encoding: "utf8",
@@ -3507,18 +3586,18 @@ function attachApi(server: ViteDevServer): void {
 					ensureRunningProcessStateIsFresh();
 
 					const sessionId = decodeURIComponent(sessionStartMatch[1]);
-					const runtimeState = await loadOrCreateRuntimeState();
-					const session = runtimeState.sessions.find(
-						(candidate) => candidate.id === sessionId,
-					);
+					const startStore = await readAnalyticsStore();
+					const startAnalyticsSession = startStore.sessions[sessionId];
 
-					if (!session) {
+					if (!startAnalyticsSession) {
 						res.writeHead(404, { "Content-Type": "application/json" });
 						res.end(
 							JSON.stringify({ error: `session not found: ${sessionId}` }),
 						);
 						return;
 					}
+
+					const session = analyticsToRuntimeSession(startAnalyticsSession);
 
 					// Block if there is already a running session whose story conflicts
 					// with the requested session's story. Two stories conflict when one
@@ -3529,8 +3608,10 @@ function attachApi(server: ViteDevServer): void {
 
 						// Collect story IDs that are currently running
 						const runningStoryIds = new Set<string>();
-						for (const runSess of runtimeState.sessions) {
-							if (runningSessionProcesses.has(runSess.id) && runSess.storyId) {
+						for (const [runId, runSess] of Object.entries(
+							startStore.sessions,
+						)) {
+							if (runningSessionProcesses.has(runId) && runSess.storyId) {
 								runningStoryIds.add(runSess.storyId);
 							}
 						}
@@ -3559,14 +3640,6 @@ function attachApi(server: ViteDevServer): void {
 						}
 					}
 
-					if (!session) {
-						res.writeHead(404, { "Content-Type": "application/json" });
-						res.end(
-							JSON.stringify({ error: `session not found: ${sessionId}` }),
-						);
-						return;
-					}
-
 					if (session.status !== "planned") {
 						res.writeHead(409, { "Content-Type": "application/json" });
 						res.end(
@@ -3578,13 +3651,12 @@ function attachApi(server: ViteDevServer): void {
 					}
 
 					try {
-						await startRuntimeSession(runtimeState, session);
+						await startRuntimeSession(session);
 					} catch (worktreeError) {
 						session.status = "failed";
 						session.error = `Failed to start session: ${String(worktreeError)}`;
 						session.endedAt = new Date().toISOString();
-						await persistRuntimeState(runtimeState);
-						await persistSessionAnalytics(session);
+						await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 						res.writeHead(500, { "Content-Type": "application/json" });
 						res.end(JSON.stringify({ error: session.error }));
 						return;
@@ -3606,18 +3678,18 @@ function attachApi(server: ViteDevServer): void {
 			if (sessionAbortMatch && req.method === "POST") {
 				try {
 					const sessionId = decodeURIComponent(sessionAbortMatch[1]);
-					const runtimeState = await loadOrCreateRuntimeState();
-					const session = runtimeState.sessions.find(
-						(candidate) => candidate.id === sessionId,
-					);
+					const abortStore = await readAnalyticsStore();
+					const abortAnalyticsSession = abortStore.sessions[sessionId];
 
-					if (!session) {
+					if (!abortAnalyticsSession) {
 						res.writeHead(404, { "Content-Type": "application/json" });
 						res.end(
 							JSON.stringify({ error: `session not found: ${sessionId}` }),
 						);
 						return;
 					}
+
+					const session = analyticsToRuntimeSession(abortAnalyticsSession);
 
 					const processForSession = runningSessionProcesses.get(sessionId);
 					if (processForSession) {
@@ -3632,7 +3704,7 @@ function attachApi(server: ViteDevServer): void {
 					session.error = "Cancelled by user";
 					session.endedAt = new Date().toISOString();
 					session.exitCode = session.exitCode ?? -1;
-					await persistRuntimeState(runtimeState);
+					await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 					await persistSessionAnalytics(session);
 
 					res.writeHead(200, { "Content-Type": "application/json" });
@@ -3790,7 +3862,6 @@ function attachApi(server: ViteDevServer): void {
 					await writeFile(logPath, "", "utf8");
 
 					const command = buildAgentCommand(model, promptPath);
-					const runtimeState = await loadOrCreateRuntimeState();
 					const session = createRuntimeSession({
 						id: sessionId,
 						skill: skillName,
@@ -3801,10 +3872,21 @@ function attachApi(server: ViteDevServer): void {
 						logPath,
 					});
 
-					runtimeState.status = "running";
-					runtimeState.currentStage = skillName;
-					runtimeState.sessions.push(session);
-					await persistRuntimeState(runtimeState);
+					await upsertAnalyticsSession({
+						sessionId: session.id,
+						storyId: session.storyId,
+						epicId: getEpicIdFromStoryId(session.storyId),
+						skill: session.skill,
+						model: session.model,
+						status: "planned",
+						startedAt: session.startedAt,
+						endedAt: null,
+						usage: zeroUsage(),
+						logPath: session.logPath,
+						promptPath: session.promptPath,
+						command: session.command,
+						worktreePath: session.worktreePath,
+					});
 
 					res.writeHead(202, { "Content-Type": "application/json" });
 					res.end(
@@ -3890,13 +3972,10 @@ function attachApi(server: ViteDevServer): void {
 			);
 			if (storyDetailMatch && req.method === "GET") {
 				const storyId = decodeURIComponent(storyDetailMatch[1]);
-				const runtimeState = existsSync(runtimeStatePath)
-					? (JSON.parse(
-							await readFile(runtimeStatePath, "utf8"),
-						) as RuntimeState)
-					: null;
+				const storyDetailStore = await readAnalyticsStore();
+				const storyDetailSessions = Object.values(storyDetailStore.sessions);
 
-				const overview = await loadSprintOverview(runtimeState);
+				const overview = await loadSprintOverview(storyDetailSessions);
 				const story = overview.stories.find((item) => item.id === storyId);
 
 				if (!story) {
@@ -3906,10 +3985,11 @@ function attachApi(server: ViteDevServer): void {
 				}
 
 				const markdown = await findStoryMarkdown(storyId);
-				const sessions = (runtimeState?.sessions || [])
+				const sessions = storyDetailSessions
 					.filter((session) => session.storyId === storyId)
 					.filter((session) => session.status !== "planned")
-					.sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1));
+					.sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))
+					.map(analyticsToRuntimeSession);
 				const externalProcesses = await getExternalCliProcesses();
 
 				const payload = {
@@ -3926,7 +4006,7 @@ function attachApi(server: ViteDevServer): void {
 								step.skill,
 							);
 							const generatedSummary = await getCompletedSessionSummary(
-								runtimeState?.sessions || [],
+								storyDetailSessions,
 								story.id,
 								step.skill,
 							);
@@ -3998,13 +4078,10 @@ function attachApi(server: ViteDevServer): void {
 					return;
 				}
 
-				const runtimeState = existsSync(runtimeStatePath)
-					? (JSON.parse(
-							await readFile(runtimeStatePath, "utf8"),
-						) as RuntimeState)
-					: null;
+				const epicDetailStore = await readAnalyticsStore();
+				const epicDetailSessions = Object.values(epicDetailStore.sessions);
 
-				const overview = await loadSprintOverview(runtimeState);
+				const overview = await loadSprintOverview(epicDetailSessions);
 				const epic = overview.epics.find((item) => item.number === epicNumber);
 
 				if (!epic) {
@@ -4062,14 +4139,16 @@ function attachApi(server: ViteDevServer): void {
 				req.method === "POST"
 			) {
 				try {
-					const runtimeState = await readRuntimeStateFile();
-					const sessions = runtimeState?.sessions ?? [];
+					const regenStore = await readAnalyticsStore();
+					const sessions = Object.values(regenStore.sessions).filter(
+						(s) => s.logPath,
+					);
 					let regenerated = 0;
 					let skipped = 0;
 
 					for (const session of sessions) {
 						const eventsPaths = await findAllCliEventsJsonl(
-							session.id,
+							session.sessionId,
 							session.userMessages || [],
 						);
 						if (eventsPaths.length === 0) {
@@ -4246,10 +4325,12 @@ function attachApi(server: ViteDevServer): void {
 					// Prevent duplicate sessions: if the same skill is already running
 					// for the same story, return 409 Conflict.
 					if (storyId && runningSessionProcesses.size > 0) {
-						const runtimeStateForCheck = await loadOrCreateRuntimeState();
-						const duplicateSession = runtimeStateForCheck.sessions.find(
-							(s) =>
-								runningSessionProcesses.has(s.id) &&
+						const storeForDupCheck = await readAnalyticsStore();
+						const duplicateSession = Object.entries(
+							storeForDupCheck.sessions,
+						).find(
+							([id, s]) =>
+								runningSessionProcesses.has(id) &&
 								s.storyId === storyId &&
 								s.skill === skill,
 						);
@@ -4272,13 +4353,15 @@ function attachApi(server: ViteDevServer): void {
 						"bmad-code-review",
 					]);
 					if (exclusiveSkills.has(skill) && runningSessionProcesses.size > 0) {
-						const runtimeStateForCheck = await loadOrCreateRuntimeState();
+						const storeForConflictCheck = await readAnalyticsStore();
 						const deps = loadStoryDependencies();
 
 						// Collect story IDs that are currently running
 						const runningStoryIds = new Set<string>();
-						for (const runSess of runtimeStateForCheck.sessions) {
-							if (runningSessionProcesses.has(runSess.id) && runSess.storyId) {
+						for (const [runId, runSess] of Object.entries(
+							storeForConflictCheck.sessions,
+						)) {
+							if (runningSessionProcesses.has(runId) && runSess.storyId) {
 								runningStoryIds.add(runSess.storyId);
 							}
 						}
@@ -4346,7 +4429,6 @@ function attachApi(server: ViteDevServer): void {
 					await writeFile(logPath, "", "utf8");
 
 					const command = buildAgentCommand(skillModel, promptPath);
-					const runtimeState = await loadOrCreateRuntimeState();
 					const session = createRuntimeSession({
 						id: sessionId,
 						skill,
@@ -4357,11 +4439,23 @@ function attachApi(server: ViteDevServer): void {
 						logPath,
 					});
 
-					runtimeState.status = "running";
-					runtimeState.currentStage = skill;
-					runtimeState.sessions.push(session);
+					await upsertAnalyticsSession({
+						sessionId: session.id,
+						storyId: session.storyId,
+						epicId: getEpicIdFromStoryId(session.storyId),
+						skill: session.skill,
+						model: session.model,
+						status: "planned",
+						startedAt: session.startedAt,
+						endedAt: null,
+						usage: zeroUsage(),
+						logPath: session.logPath,
+						promptPath: session.promptPath,
+						command: session.command,
+						worktreePath: session.worktreePath,
+					});
 
-					await startRuntimeSession(runtimeState, session);
+					await startRuntimeSession(session);
 					activeWorkflowSkill = skill;
 
 					res.writeHead(202, { "Content-Type": "application/json" });
@@ -4678,6 +4772,7 @@ function attachApi(server: ViteDevServer): void {
 }
 
 export {
+	analyticsToRuntimeSession,
 	artifactsRoot,
 	attachApi,
 	buildAnalyticsPayload,
@@ -4691,9 +4786,13 @@ export {
 	getEpicMetadataFromMarkdown,
 	getStoryContentFromEpics,
 	linksFile,
+	loadOrCreateRuntimeState,
 	loadSprintOverview,
+	markZombieSessionsAsFailed,
 	parseSimpleYamlList,
+	readAnalyticsStore,
 	readRuntimeStateFile,
 	STORY_WORKFLOW_STEPS,
 	setBuildMode,
+	upsertAnalyticsSession,
 };
