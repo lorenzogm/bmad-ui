@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { createRoute } from "@tanstack/react-router"
+import { createRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { apiUrl } from "../lib/mode"
 import type { AnalyticsResponse, SessionAnalytics } from "../types"
@@ -146,6 +146,14 @@ function SessionsPage() {
                 <tr key={session.sessionId}>
                   <td>
                     <span className="skill-chip">{session.skill ?? "—"}</span>
+                    <Link
+                      className={`session-link-icon${session.status === "running" ? " session-link-running" : ""}${session.status === "failed" ? " session-link-failed" : ""}`}
+                      params={{ sessionId: session.sessionId }}
+                      title={`View session: ${session.sessionId}`}
+                      to="/session/$sessionId"
+                    >
+                      ◉
+                    </Link>
                   </td>
                   <td>
                     <span className="mono muted">{session.model}</span>
