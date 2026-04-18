@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-18T18:03:20Z
+last_updated: 2026-04-18T20:03:00Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
