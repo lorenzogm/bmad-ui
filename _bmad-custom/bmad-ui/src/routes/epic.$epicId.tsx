@@ -70,6 +70,19 @@ function storyStatusLabel(status: StoryStatus): string {
   return STORY_STATUS_LABELS[status] ?? status
 }
 
+/** Map story status to a badge class so every "In Progress" label gets the same orange style. */
+const STORY_STATUS_BADGE_CLASS: Record<StoryStatus, string> = {
+  backlog: "not-started",
+  "ready-for-dev": "in-progress",
+  "in-progress": "in-progress",
+  review: "in-progress",
+  done: "done",
+}
+
+function storyStatusBadgeClass(status: StoryStatus): string {
+  return STORY_STATUS_BADGE_CLASS[status] ?? status
+}
+
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
 
 function parseStoryTicket(storyId: string): { epic: number; story: number } {
@@ -842,7 +855,9 @@ function EpicDetailPage() {
                       </div>
                     </td>
                     <td>
-                      <span className={`step-badge step-${story.status}`}>
+                      <span
+                        className={`step-badge step-${storyStatusBadgeClass(story.status as StoryStatus)}`}
+                      >
                         {storyStatusLabel(story.status as StoryStatus)}
                       </span>
                     </td>

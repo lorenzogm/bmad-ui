@@ -126,7 +126,7 @@ function HomePage() {
                 {
                   label: "In Progress",
                   count: epicsByStatus["in-progress"] ?? 0,
-                  color: "var(--status-progress)",
+                  color: "var(--status-ready)",
                 },
                 {
                   label: "Backlog",
@@ -159,7 +159,7 @@ function HomePage() {
                 {
                   label: "In Progress",
                   count: storiesByStatus["in-progress"] ?? 0,
-                  color: "var(--status-progress)",
+                  color: "var(--status-ready)",
                 },
                 {
                   label: "Review",
