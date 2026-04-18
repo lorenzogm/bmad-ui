@@ -66,7 +66,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "aa312964-0f81-47fc-b4ac-941e9641054b",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "start_date": "2026-04-15T14:24:46.107Z",
+      "end_date": "2026-04-15T14:32:25.819Z"
     },
     "dffbc7d9-d986-467d-b72f-fb74aa9001d0": {
       "sessionId": "dffbc7d9-d986-467d-b72f-fb74aa9001d0",
@@ -83,7 +98,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "dffbc7d9-d986-467d-b72f-fb74aa9001d0",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 15,
+      "premium_multiplier": 1,
+      "premium_cost_units": 15,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 15,
+      "start_date": "2026-04-15T13:20:52.602Z",
+      "end_date": "2026-04-15T14:06:53.892Z"
     },
     "96891488-0eb0-406c-9ce1-daf967b7b75a": {
       "sessionId": "96891488-0eb0-406c-9ce1-daf967b7b75a",
@@ -100,14 +130,29 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "96891488-0eb0-406c-9ce1-daf967b7b75a",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 5,
+      "premium_multiplier": 1,
+      "premium_cost_units": 5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 5,
+      "start_date": "2026-04-15T13:12:39.257Z",
+      "end_date": "2026-04-15T13:19:50.902Z"
     },
     "c56ebb5f-094c-447e-afbe-5aa3a538fe14": {
       "sessionId": "c56ebb5f-094c-447e-afbe-5aa3a538fe14",
       "storyId": null,
       "epicId": null,
       "skill": "general",
-      "model": "claude-sonnet-4.6",
+      "model": "claude-haiku-4.5",
       "status": "completed",
       "startedAt": "2026-04-15T12:06:36.028Z",
       "endedAt": "2026-04-15T13:15:21.338Z",
@@ -117,7 +162,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "c56ebb5f-094c-447e-afbe-5aa3a538fe14",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 8,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 8,
+      "start_date": "2026-04-15T12:06:36.016Z",
+      "end_date": "2026-04-15T13:20:27.336Z"
     },
     "workflow-bmad-sprint-planning-1776265920497": {
       "sessionId": "workflow-bmad-sprint-planning-1776265920497",
@@ -209,7 +269,7 @@
       "storyId": null,
       "epicId": null,
       "skill": "general",
-      "model": "claude-sonnet-4.6",
+      "model": "claude-haiku-4.5",
       "status": "completed",
       "startedAt": "2026-04-15T17:44:17.971Z",
       "endedAt": null,
@@ -221,8 +281,22 @@
         "totalTokens": 0
       },
       "endDate": "2026-04-16T15:42:01.417Z",
-      "agent": "bmad-dev-story",
-      "notes": "Story 3.3: secret rotation runbook + CI log masking"
+      "agent": "bmad-create-story",
+      "notes": "Story 3.3: secret rotation runbook + CI log masking",
+      "session_id": "8acb16dd-c4d5-4987-9922-f58cce896200",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "turns": 4,
+      "start_date": "2026-04-15T17:34:43.854Z",
+      "end_date": "2026-04-15T17:49:33.510Z"
     },
     "ff91a6b4-4bc8-40fd-91cc-b9589c8ab801": {
       "sessionId": "ff91a6b4-4bc8-40fd-91cc-b9589c8ab801",
@@ -239,14 +313,29 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "ff91a6b4-4bc8-40fd-91cc-b9589c8ab801",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 1,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 4,
+      "start_date": "2026-04-15T17:35:57.113Z",
+      "end_date": "2026-04-15T17:49:39.721Z"
     },
     "6e443c0a-c49a-4884-bced-89c3ddb1c94d": {
       "sessionId": "6e443c0a-c49a-4884-bced-89c3ddb1c94d",
       "storyId": null,
       "epicId": null,
       "skill": "general",
-      "model": "claude-sonnet-4.6",
+      "model": "claude-haiku-4.5",
       "status": "completed",
       "startedAt": "2026-04-15T16:12:39.680Z",
       "endedAt": "2026-04-15T16:23:59.480Z",
@@ -256,7 +345,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "6e443c0a-c49a-4884-bced-89c3ddb1c94d",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-sprint-planning",
+      "turns": 4,
+      "start_date": "2026-04-15T15:12:03.554Z",
+      "end_date": "2026-04-15T16:25:12.520Z"
     },
     "workflow-bmad-create-story-1776275521666": {
       "sessionId": "workflow-bmad-create-story-1776275521666",
@@ -566,7 +670,7 @@
     },
     "0e9fafac-ef62-49e8-98f9-3ce6c4d517ab": {
       "sessionId": "0e9fafac-ef62-49e8-98f9-3ce6c4d517ab",
-      "storyId": "1-3-define-issue-labels-for-triage",
+      "storyId": null,
       "epicId": "epic-1",
       "skill": "bmad-code-review",
       "model": "gpt-5.3-codex",
@@ -579,7 +683,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "0e9fafac-ef62-49e8-98f9-3ce6c4d517ab",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 2,
+      "premium_cost_units": 8,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 4,
+      "start_date": "2026-04-15T22:07:41.563Z",
+      "end_date": "2026-04-15T22:14:36.604Z"
     },
     "workflow-bmad-code-review-1776290859793": {
       "sessionId": "workflow-bmad-code-review-1776290859793",
@@ -613,7 +732,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "fc0068c0-56a1-42bc-8cd2-f42670135cb6",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 1,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 4,
+      "start_date": "2026-04-15T22:13:56.488Z",
+      "end_date": "2026-04-15T22:33:36.404Z"
     },
     "workflow-bmad-dev-story-1776291234494": {
       "sessionId": "workflow-bmad-dev-story-1776291234494",
@@ -749,7 +883,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "8f69ab30-ba6d-4b57-924a-61c7eb65d40f",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "start_date": "2026-04-15T22:37:47.351Z",
+      "end_date": "2026-04-15T22:42:05.424Z"
     },
     "workflow-bmad-dev-story-1776293047485": {
       "sessionId": "workflow-bmad-dev-story-1776293047485",
@@ -804,7 +953,7 @@
     },
     "80bde2d3-b914-470c-84c7-b6ee19ede2d9": {
       "sessionId": "80bde2d3-b914-470c-84c7-b6ee19ede2d9",
-      "storyId": "3-1-establish-root-level-dotenvx-secret-workflow",
+      "storyId": null,
       "epicId": "epic-3",
       "skill": "bmad-code-review",
       "model": "gpt-5.3-codex",
@@ -817,7 +966,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "80bde2d3-b914-470c-84c7-b6ee19ede2d9",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 2,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 3,
+      "start_date": "2026-04-15T23:11:43.531Z",
+      "end_date": "2026-04-16T06:42:31.065Z"
     },
     "workflow-bmad-code-review-1776294701930": {
       "sessionId": "workflow-bmad-code-review-1776294701930",
@@ -1042,7 +1206,7 @@
     },
     "7fe9522f-1c95-4fa8-80c0-5595ccb3d94a": {
       "sessionId": "7fe9522f-1c95-4fa8-80c0-5595ccb3d94a",
-      "storyId": "4-1-create-ci-validation-workflow",
+      "storyId": null,
       "epicId": "epic-4",
       "skill": "bmad-code-review",
       "model": "gpt-5.3-codex",
@@ -1055,7 +1219,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "7fe9522f-1c95-4fa8-80c0-5595ccb3d94a",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 2,
+      "start_date": "2026-04-16T17:44:38.663Z",
+      "end_date": "2026-04-16T17:48:37.039Z"
     },
     "workflow-bmad-code-review-1776361474809": {
       "sessionId": "workflow-bmad-code-review-1776361474809",
@@ -1110,7 +1289,7 @@
     },
     "8731a1fe-611c-4b58-ae27-6e902484e63d": {
       "sessionId": "8731a1fe-611c-4b58-ae27-6e902484e63d",
-      "storyId": "4-2-enforce-protected-branch-quality-gates",
+      "storyId": null,
       "epicId": "epic-4",
       "skill": "bmad-dev-story",
       "model": "claude-sonnet-4.6",
@@ -1123,7 +1302,22 @@
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
-      }
+      },
+      "session_id": "8731a1fe-611c-4b58-ae27-6e902484e63d",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "start_date": "2026-04-16T18:55:21.595Z",
+      "end_date": "2026-04-16T19:03:19.112Z"
     },
     "workflow-bmad-code-review-1776366164898": {
       "sessionId": "workflow-bmad-code-review-1776366164898",
@@ -1586,13 +1780,13 @@
     },
     "workflow-bmad-create-story-1776517995028": {
       "sessionId": "workflow-bmad-create-story-1776517995028",
-      "storyId": "5-1-create-npx-bmad-method-ui-install-cli",
+      "storyId": "5-2-enforce-code-quality-tooling-baseline",
       "epicId": "epic-5",
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
       "status": "completed",
-      "startedAt": "2026-04-18T13:13:15.030Z",
-      "endedAt": "2026-04-18T13:16:11.547Z",
+      "startedAt": "2026-04-18T13:13:15.038Z",
+      "endedAt": "2026-04-18T13:16:59.410Z",
       "usage": {
         "requests": 1,
         "tokensIn": 1400000,
@@ -1600,6 +1794,2326 @@
         "tokensCached": 1300000,
         "totalTokens": 1408800
       }
+    },
+    "072b4de8-2366-49f5-92c6-2865e4800817": {
+      "session_id": "072b4de8-2366-49f5-92c6-2865e4800817",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-sprint-planning",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T14:41:49.369Z",
+      "end_date": "2026-04-15T14:44:11.733Z"
+    },
+    "089080fe-4755-46c3-95cb-73f382e3f56a": {
+      "session_id": "089080fe-4755-46c3-95cb-73f382e3f56a",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T22:21:41.835Z",
+      "end_date": "2026-04-15T22:23:53.738Z"
+    },
+    "08bc08a2-6bf8-4a15-bc7b-637f92da3ca9": {
+      "session_id": "08bc08a2-6bf8-4a15-bc7b-637f92da3ca9",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:03:09.117Z",
+      "end_date": null
+    },
+    "08c47c57-840d-45b1-b3bc-4ed77229555b": {
+      "session_id": "08c47c57-840d-45b1-b3bc-4ed77229555b",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T20:25:29.312Z",
+      "end_date": "2026-04-15T20:28:14.027Z"
+    },
+    "09db70e7-b166-417c-9f4e-26e6fa664a87": {
+      "session_id": "09db70e7-b166-417c-9f4e-26e6fa664a87",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 2,
+      "premium_cost_units": 8,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-review-edge-case-hunter",
+      "turns": 4,
+      "status": "completed",
+      "start_date": "2026-04-15T22:01:39.768Z",
+      "end_date": "2026-04-15T22:12:08.336Z"
+    },
+    "0ac963e5-f704-4298-8033-24e162f6c402": {
+      "session_id": "0ac963e5-f704-4298-8033-24e162f6c402",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T19:16:33.635Z",
+      "end_date": "2026-04-16T19:19:06.232Z"
+    },
+    "0d253828-7f38-433a-ba7b-aa3dc4ea7481": {
+      "session_id": "0d253828-7f38-433a-ba7b-aa3dc4ea7481",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 2,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T15:55:24.838Z",
+      "end_date": "2026-04-16T15:58:55.349Z"
+    },
+    "0df8fbf6-1677-4102-9892-0465f5c0f0bc": {
+      "session_id": "0df8fbf6-1677-4102-9892-0465f5c0f0bc",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T21:13:38.595Z",
+      "end_date": "2026-04-16T21:17:35.335Z"
+    },
+    "0efc5a21-af1e-44da-86ca-66149e869a51": {
+      "session_id": "0efc5a21-af1e-44da-86ca-66149e869a51",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-edit-prd",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T19:36:43.022Z",
+      "end_date": "2026-04-16T19:37:12.291Z"
+    },
+    "0f33a2f8-71f7-4d0b-b830-755ac045f632": {
+      "session_id": "0f33a2f8-71f7-4d0b-b830-755ac045f632",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 2,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T15:21:18.833Z",
+      "end_date": "2026-04-16T15:32:37.533Z"
+    },
+    "0fe90cc2-752d-48ec-879b-52455a8170c1": {
+      "session_id": "0fe90cc2-752d-48ec-879b-52455a8170c1",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "unknown",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T14:40:59.152Z",
+      "end_date": "2026-04-16T14:41:08.073Z"
+    },
+    "10942d91-1566-4403-a64e-5b098e7dc37f": {
+      "session_id": "10942d91-1566-4403-a64e-5b098e7dc37f",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T21:38:08.008Z",
+      "end_date": "2026-04-15T21:45:16.691Z"
+    },
+    "12b76103-2117-4728-ad63-67b8adc534d7": {
+      "session_id": "12b76103-2117-4728-ad63-67b8adc534d7",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T21:40:02.575Z",
+      "end_date": "2026-04-15T21:43:11.282Z"
+    },
+    "17ef6b03-c3f9-4cca-a6e4-5a3965d07723": {
+      "session_id": "17ef6b03-c3f9-4cca-a6e4-5a3965d07723",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T12:26:21.280Z",
+      "end_date": null
+    },
+    "18583c03-8438-4021-bb2b-02fcb945f1be": {
+      "session_id": "18583c03-8438-4021-bb2b-02fcb945f1be",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T21:47:50.164Z",
+      "end_date": "2026-04-15T21:49:18.902Z"
+    },
+    "1a91578e-e5c3-4c98-8a21-265d7288799f": {
+      "session_id": "1a91578e-e5c3-4c98-8a21-265d7288799f",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-opus-4.5",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 3,
+      "premium_cost_units": 12,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 4,
+      "status": "running",
+      "start_date": "2026-04-18T13:00:49.971Z",
+      "end_date": null
+    },
+    "1b5dc142-34fa-44ec-b1b8-7d0342927d17": {
+      "session_id": "1b5dc142-34fa-44ec-b1b8-7d0342927d17",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T22:37:59.283Z",
+      "end_date": "2026-04-15T22:42:10.424Z"
+    },
+    "1d25079e-bd13-4387-9117-01b8a5aade61": {
+      "session_id": "1d25079e-bd13-4387-9117-01b8a5aade61",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-correct-course",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T18:56:43.097Z",
+      "end_date": "2026-04-16T18:57:44.118Z"
+    },
+    "1fce5a31-d36d-42e2-b3df-ea89a5f43f81": {
+      "session_id": "1fce5a31-d36d-42e2-b3df-ea89a5f43f81",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T21:03:29.473Z",
+      "end_date": "2026-04-16T21:06:54.029Z"
+    },
+    "24a17439-60c2-412d-ad47-e7caef351c39": {
+      "session_id": "24a17439-60c2-412d-ad47-e7caef351c39",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 8,
+      "premium_multiplier": 1,
+      "premium_cost_units": 8,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 8,
+      "status": "completed",
+      "start_date": "2026-04-15T22:45:14.763Z",
+      "end_date": "2026-04-15T23:09:26.059Z"
+    },
+    "25fc64e8-7668-4a36-83c0-9807b6729346": {
+      "session_id": "25fc64e8-7668-4a36-83c0-9807b6729346",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T17:52:05.437Z",
+      "end_date": "2026-04-15T17:56:59.723Z"
+    },
+    "2ac79d3a-c66e-4881-9a51-3a9981c92b3f": {
+      "session_id": "2ac79d3a-c66e-4881-9a51-3a9981c92b3f",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-sprint-planning",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T17:30:51.967Z",
+      "end_date": "2026-04-15T17:33:07.496Z"
+    },
+    "2b2b5977-68f1-4407-a494-332b055fefee": {
+      "session_id": "2b2b5977-68f1-4407-a494-332b055fefee",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-opus-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 3,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:02:31.329Z",
+      "end_date": null
+    },
+    "2b406a7d-f347-47b8-8089-5adccde202c0": {
+      "session_id": "2b406a7d-f347-47b8-8089-5adccde202c0",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T20:59:52.579Z",
+      "end_date": "2026-04-16T21:02:16.014Z"
+    },
+    "2d6d9f4d-d615-4999-988a-c50c6626c4c2": {
+      "session_id": "2d6d9f4d-d615-4999-988a-c50c6626c4c2",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.75,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T18:02:41.074Z",
+      "end_date": "2026-04-15T18:19:35.072Z"
+    },
+    "2ea1289f-a98a-456d-aca1-a3931b255e5b": {
+      "session_id": "2ea1289f-a98a-456d-aca1-a3931b255e5b",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T15:59:31.853Z",
+      "end_date": "2026-04-16T16:04:01.074Z"
+    },
+    "2eb5e08f-c650-4671-a246-83e46bf327ad": {
+      "session_id": "2eb5e08f-c650-4671-a246-83e46bf327ad",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T21:46:50.794Z",
+      "end_date": "2026-04-15T21:49:01.273Z"
+    },
+    "2f3aa3d5-469e-40ec-a246-028b097d3469": {
+      "session_id": "2f3aa3d5-469e-40ec-a246-028b097d3469",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T23:03:21.068Z",
+      "end_date": "2026-04-15T23:10:00.772Z"
+    },
+    "2f8f0c24-e6ca-41d0-b0bb-e9c243fb0f4e": {
+      "session_id": "2f8f0c24-e6ca-41d0-b0bb-e9c243fb0f4e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-sprint-planning",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T19:58:55.510Z",
+      "end_date": "2026-04-16T20:02:15.180Z"
+    },
+    "2fe9e380-6b7d-469f-94b0-333a31986ea9": {
+      "session_id": "2fe9e380-6b7d-469f-94b0-333a31986ea9",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 5,
+      "premium_multiplier": 2,
+      "premium_cost_units": 10,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-review-edge-case-hunter",
+      "turns": 5,
+      "status": "completed",
+      "start_date": "2026-04-15T22:37:07.249Z",
+      "end_date": "2026-04-15T23:02:18.904Z"
+    },
+    "312abefe-2007-4846-8321-c0fae995fc64": {
+      "session_id": "312abefe-2007-4846-8321-c0fae995fc64",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-edit-prd",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T19:37:59.317Z",
+      "end_date": "2026-04-16T19:38:59.448Z"
+    },
+    "35e6275a-1bad-4a07-a518-d780d097ff4b": {
+      "session_id": "35e6275a-1bad-4a07-a518-d780d097ff4b",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:13:18.519Z",
+      "end_date": null
+    },
+    "3a9c52e2-4bcb-41d3-94dd-b760e469f55b": {
+      "session_id": "3a9c52e2-4bcb-41d3-94dd-b760e469f55b",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T20:30:05.682Z",
+      "end_date": "2026-04-15T20:30:49.027Z"
+    },
+    "3c725981-f99a-46e2-8909-bc9345afeabe": {
+      "session_id": "3c725981-f99a-46e2-8909-bc9345afeabe",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 6,
+      "premium_multiplier": 1,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 6,
+      "status": "completed",
+      "start_date": "2026-04-15T22:02:34.755Z",
+      "end_date": "2026-04-15T22:36:06.367Z"
+    },
+    "3f7d7006-a97a-4110-a3bd-c04094e8ca4f": {
+      "session_id": "3f7d7006-a97a-4110-a3bd-c04094e8ca4f",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:07:44.732Z",
+      "end_date": null
+    },
+    "3f8ccbb2-2d28-46e3-8232-fa8ef28bc22e": {
+      "session_id": "3f8ccbb2-2d28-46e3-8232-fa8ef28bc22e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T22:46:25.855Z",
+      "end_date": "2026-04-15T22:48:06.618Z"
+    },
+    "429e136f-3ec9-4125-aad9-326f5206a8be": {
+      "session_id": "429e136f-3ec9-4125-aad9-326f5206a8be",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T21:14:57.318Z",
+      "end_date": "2026-04-16T21:47:00.228Z"
+    },
+    "4334b1aa-c65d-435b-8577-db71ba1b631d": {
+      "session_id": "4334b1aa-c65d-435b-8577-db71ba1b631d",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T12:59:21.544Z",
+      "end_date": null
+    },
+    "465c129d-b74c-48a1-8240-885030dc6ca6": {
+      "session_id": "465c129d-b74c-48a1-8240-885030dc6ca6",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-opus-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 3,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:04:20.164Z",
+      "end_date": null
+    },
+    "479d9ca7-ad99-46ce-bcf3-08c7eb638016": {
+      "session_id": "479d9ca7-ad99-46ce-bcf3-08c7eb638016",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T20:53:45.647Z",
+      "end_date": "2026-04-16T20:58:31.425Z"
+    },
+    "47d3982e-50b0-4a73-bf4d-81f80164be7e": {
+      "session_id": "47d3982e-50b0-4a73-bf4d-81f80164be7e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T21:23:44.182Z",
+      "end_date": "2026-04-16T21:28:55.914Z"
+    },
+    "50454e00-6e60-45df-921b-2d3c833aacb3": {
+      "session_id": "50454e00-6e60-45df-921b-2d3c833aacb3",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T19:06:47.434Z",
+      "end_date": "2026-04-16T19:11:44.068Z"
+    },
+    "5247d9c2-b009-4ac1-88ee-858d16fe34a9": {
+      "session_id": "5247d9c2-b009-4ac1-88ee-858d16fe34a9",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T19:32:59.828Z",
+      "end_date": "2026-04-16T19:36:18.405Z"
+    },
+    "531fde8f-523d-4ce8-9e39-2742e78020c0": {
+      "session_id": "531fde8f-523d-4ce8-9e39-2742e78020c0",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T21:58:14.760Z",
+      "end_date": "2026-04-15T22:05:42.826Z"
+    },
+    "53b1874d-d932-43d4-a029-3cb94485263d": {
+      "session_id": "53b1874d-d932-43d4-a029-3cb94485263d",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T18:26:02.658Z",
+      "end_date": "2026-04-15T18:34:21.732Z"
+    },
+    "53ba6e73-ba60-4dd0-b301-fdce13956678": {
+      "session_id": "53ba6e73-ba60-4dd0-b301-fdce13956678",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-epics-and-stories",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T12:55:11.682Z",
+      "end_date": null
+    },
+    "562c637f-45f8-4500-97e2-763984e4e2f5": {
+      "session_id": "562c637f-45f8-4500-97e2-763984e4e2f5",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-review-edge-case-hunter",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T23:07:46.574Z",
+      "end_date": "2026-04-16T23:10:48.314Z"
+    },
+    "574953c1-3108-4b6d-854d-e0d8ef441105": {
+      "session_id": "574953c1-3108-4b6d-854d-e0d8ef441105",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T21:53:47.279Z",
+      "end_date": "2026-04-15T22:01:24.220Z"
+    },
+    "57eb6a6e-6f11-4103-9bcb-f7c004019c3f": {
+      "session_id": "57eb6a6e-6f11-4103-9bcb-f7c004019c3f",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 4,
+      "status": "completed",
+      "start_date": "2026-04-15T19:13:49.743Z",
+      "end_date": "2026-04-15T19:19:15.079Z"
+    },
+    "58023652-4c27-446b-87bb-4fa679669ea7": {
+      "session_id": "58023652-4c27-446b-87bb-4fa679669ea7",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-review-edge-case-hunter",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T11:45:18.803Z",
+      "end_date": "2026-04-16T11:53:40.715Z"
+    },
+    "5be0c98b-4b13-458e-9902-27482817fcb0": {
+      "session_id": "5be0c98b-4b13-458e-9902-27482817fcb0",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T22:37:58.369Z",
+      "end_date": "2026-04-15T22:43:43.039Z"
+    },
+    "5bf06187-1ce9-45da-883f-833e65699f55": {
+      "session_id": "5bf06187-1ce9-45da-883f-833e65699f55",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-sprint-planning",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T16:44:54.170Z",
+      "end_date": "2026-04-15T16:48:23.188Z"
+    },
+    "5e96aef4-ae39-4441-a541-ef7a6ee19334": {
+      "session_id": "5e96aef4-ae39-4441-a541-ef7a6ee19334",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T20:03:18.954Z",
+      "end_date": "2026-04-16T20:14:22.230Z"
+    },
+    "5ed06ffa-1042-4d6b-9f39-66b68525b56c": {
+      "session_id": "5ed06ffa-1042-4d6b-9f39-66b68525b56c",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T16:52:45.356Z",
+      "end_date": "2026-04-16T16:55:31.407Z"
+    },
+    "615a62ed-15c7-4820-accf-99dba843fa72": {
+      "session_id": "615a62ed-15c7-4820-accf-99dba843fa72",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T22:03:54.206Z",
+      "end_date": "2026-04-16T22:20:21.123Z"
+    },
+    "61715d83-5ea3-4fde-870c-4bfb32c6c580": {
+      "session_id": "61715d83-5ea3-4fde-870c-4bfb32c6c580",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T14:44:10.731Z",
+      "end_date": "2026-04-15T14:44:49.538Z"
+    },
+    "62b38573-16b0-46a2-88d7-b5eefb26f89a": {
+      "session_id": "62b38573-16b0-46a2-88d7-b5eefb26f89a",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T17:35:09.906Z",
+      "end_date": "2026-04-16T17:36:42.852Z"
+    },
+    "62bf2ee6-d5f6-4f6e-b658-b25a37fc684f": {
+      "session_id": "62bf2ee6-d5f6-4f6e-b658-b25a37fc684f",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T21:43:40.841Z",
+      "end_date": "2026-04-16T21:45:36.360Z"
+    },
+    "6430f1b5-8a63-488a-89cd-539c376b0f9a": {
+      "session_id": "6430f1b5-8a63-488a-89cd-539c376b0f9a",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T20:42:10.164Z",
+      "end_date": "2026-04-16T20:45:23.516Z"
+    },
+    "67796bdf-f4ea-4fa2-826c-93915a7982c7": {
+      "session_id": "67796bdf-f4ea-4fa2-826c-93915a7982c7",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T20:26:23.066Z",
+      "end_date": "2026-04-16T20:27:35.565Z"
+    },
+    "6bbcbd3c-1f7d-4630-b24a-6fef6c926b38": {
+      "session_id": "6bbcbd3c-1f7d-4630-b24a-6fef6c926b38",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T18:29:06.749Z",
+      "end_date": "2026-04-15T18:32:05.594Z"
+    },
+    "6bd8b3c6-559e-45aa-80d8-4b6ed1a66feb": {
+      "session_id": "6bd8b3c6-559e-45aa-80d8-4b6ed1a66feb",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "unknown",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T15:02:16.564Z",
+      "end_date": "2026-04-16T15:02:29.658Z"
+    },
+    "6be95500-e40f-4f83-a028-e725765e7972": {
+      "session_id": "6be95500-e40f-4f83-a028-e725765e7972",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-sprint-planning",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T14:21:38.140Z",
+      "end_date": "2026-04-15T14:25:36.253Z"
+    },
+    "6d41e885-b7af-478b-a9ff-73390252a510": {
+      "session_id": "6d41e885-b7af-478b-a9ff-73390252a510",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 2,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T15:34:16.865Z",
+      "end_date": "2026-04-16T15:36:26.172Z"
+    },
+    "72abf871-b9b9-418f-8e26-7b2b3d23979e": {
+      "session_id": "72abf871-b9b9-418f-8e26-7b2b3d23979e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T18:43:32.603Z",
+      "end_date": "2026-04-15T18:47:54.174Z"
+    },
+    "733c96ef-0aa6-4c3c-a8aa-750909da7270": {
+      "session_id": "733c96ef-0aa6-4c3c-a8aa-750909da7270",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 1,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 4,
+      "status": "completed",
+      "start_date": "2026-04-15T19:58:21.181Z",
+      "end_date": "2026-04-15T20:05:05.957Z"
+    },
+    "75aeaf0d-8ca4-447a-8329-8b3b02692984": {
+      "session_id": "75aeaf0d-8ca4-447a-8329-8b3b02692984",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T22:44:09.017Z",
+      "end_date": "2026-04-15T23:11:44.459Z"
+    },
+    "7789c9a7-82dc-4fb3-ab5d-0631662051a9": {
+      "session_id": "7789c9a7-82dc-4fb3-ab5d-0631662051a9",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T19:02:46.449Z",
+      "end_date": "2026-04-16T19:05:16.327Z"
+    },
+    "7c52d0fa-6022-4fc8-8084-93b94635abc1": {
+      "session_id": "7c52d0fa-6022-4fc8-8084-93b94635abc1",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T22:00:34.888Z",
+      "end_date": "2026-04-15T22:02:08.664Z"
+    },
+    "7c83bb54-0da3-4117-bda2-8856d617d9b0": {
+      "session_id": "7c83bb54-0da3-4117-bda2-8856d617d9b0",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.75,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T21:33:38.789Z",
+      "end_date": "2026-04-15T21:40:01.731Z"
+    },
+    "80a89f17-8ea7-4230-8668-1de1fecb0fb4": {
+      "session_id": "80a89f17-8ea7-4230-8668-1de1fecb0fb4",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 5,
+      "premium_multiplier": 1,
+      "premium_cost_units": 5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 5,
+      "status": "completed",
+      "start_date": "2026-04-15T21:20:33.945Z",
+      "end_date": "2026-04-15T21:37:34.367Z"
+    },
+    "8898848d-fee0-4100-9938-b3173d1b8a59": {
+      "session_id": "8898848d-fee0-4100-9938-b3173d1b8a59",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T18:14:59.153Z",
+      "end_date": "2026-04-15T18:46:35.406Z"
+    },
+    "897f8c68-43c1-4699-9753-379d2649ead3": {
+      "session_id": "897f8c68-43c1-4699-9753-379d2649ead3",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T22:01:54.788Z",
+      "end_date": "2026-04-15T22:09:59.619Z"
+    },
+    "8a2877c9-7396-4a5a-a352-51d5d4038058": {
+      "session_id": "8a2877c9-7396-4a5a-a352-51d5d4038058",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:13:18.585Z",
+      "end_date": null
+    },
+    "8ce670f9-6084-49d8-a562-92e89caf6d45": {
+      "session_id": "8ce670f9-6084-49d8-a562-92e89caf6d45",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T20:23:32.520Z",
+      "end_date": "2026-04-16T20:25:47.756Z"
+    },
+    "8e1469ea-d228-4a2b-965e-d5f3ca3c51ea": {
+      "session_id": "8e1469ea-d228-4a2b-965e-d5f3ca3c51ea",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "running",
+      "start_date": "2026-04-18T12:56:18.431Z",
+      "end_date": null
+    },
+    "8e9039b0-e379-4369-8280-5c645dbfcbb1": {
+      "session_id": "8e9039b0-e379-4369-8280-5c645dbfcbb1",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-opus-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 3,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:14:16.248Z",
+      "end_date": null
+    },
+    "936f266d-8f15-4c9a-b651-c6bdba177665": {
+      "session_id": "936f266d-8f15-4c9a-b651-c6bdba177665",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T22:15:25.123Z",
+      "end_date": "2026-04-15T22:19:58.196Z"
+    },
+    "94b6021e-b20c-41de-92fc-8ac9fec2bcbf": {
+      "session_id": "94b6021e-b20c-41de-92fc-8ac9fec2bcbf",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T20:28:24.662Z",
+      "end_date": "2026-04-15T20:29:29.670Z"
+    },
+    "972be42f-7fdb-4893-a39a-024de14af76c": {
+      "session_id": "972be42f-7fdb-4893-a39a-024de14af76c",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-edit-prd",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T19:41:37.525Z",
+      "end_date": "2026-04-16T19:42:51.499Z"
+    },
+    "99493e43-8991-4ea3-827e-8f94bbbfbe1c": {
+      "session_id": "99493e43-8991-4ea3-827e-8f94bbbfbe1c",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T21:25:44.167Z",
+      "end_date": "2026-04-16T21:27:28.379Z"
+    },
+    "9a68a50d-f14e-40c1-8c47-4e421c662d25": {
+      "session_id": "9a68a50d-f14e-40c1-8c47-4e421c662d25",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T18:38:09.057Z",
+      "end_date": "2026-04-15T18:39:59.637Z"
+    },
+    "9bbedf71-31a5-4b57-b1c4-c033fbf0acf5": {
+      "session_id": "9bbedf71-31a5-4b57-b1c4-c033fbf0acf5",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T18:37:09.457Z",
+      "end_date": "2026-04-15T18:40:38.831Z"
+    },
+    "9e10ecf8-1c2e-4efd-8edd-645daaca007e": {
+      "session_id": "9e10ecf8-1c2e-4efd-8edd-645daaca007e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-opus-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 3,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-quick-dev",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:01:51.337Z",
+      "end_date": null
+    },
+    "9fe8f5a3-fae1-47b4-adfe-7264f17b6a90": {
+      "session_id": "9fe8f5a3-fae1-47b4-adfe-7264f17b6a90",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "status": "completed",
+      "start_date": "2026-04-15T21:49:28.718Z",
+      "end_date": "2026-04-15T21:59:33.293Z"
+    },
+    "a73dbe50-1b20-404a-9318-fa54f8f125ac": {
+      "session_id": "a73dbe50-1b20-404a-9318-fa54f8f125ac",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 6,
+      "premium_multiplier": 1,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 6,
+      "status": "completed",
+      "start_date": "2026-04-15T19:29:55.140Z",
+      "end_date": "2026-04-15T21:24:27.442Z"
+    },
+    "a7f45ea4-1a2f-4a78-badf-493e02a18db4": {
+      "session_id": "a7f45ea4-1a2f-4a78-badf-493e02a18db4",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T12:59:21.544Z",
+      "end_date": null
+    },
+    "a83e3fb9-3f89-40d0-8aff-cf68d5bf912e": {
+      "session_id": "a83e3fb9-3f89-40d0-8aff-cf68d5bf912e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T20:31:34.749Z",
+      "end_date": "2026-04-15T20:38:04.505Z"
+    },
+    "b3c470db-5e49-4d9b-9d3f-20cab8897428": {
+      "session_id": "b3c470db-5e49-4d9b-9d3f-20cab8897428",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-help",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T19:43:35.660Z",
+      "end_date": "2026-04-16T19:44:56.603Z"
+    },
+    "b4705806-1e0b-4e2a-9611-ecd4ea3238ac": {
+      "session_id": "b4705806-1e0b-4e2a-9611-ecd4ea3238ac",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T12:23:12.356Z",
+      "end_date": null
+    },
+    "b7d55a7b-a107-4e15-bc8f-cb6493be831a": {
+      "session_id": "b7d55a7b-a107-4e15-bc8f-cb6493be831a",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T20:10:01.293Z",
+      "end_date": "2026-04-16T20:14:25.829Z"
+    },
+    "bbedb466-b26b-4631-abe6-6ef91cd27fae": {
+      "session_id": "bbedb466-b26b-4631-abe6-6ef91cd27fae",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T17:31:58.653Z",
+      "end_date": "2026-04-16T17:36:45.757Z"
+    },
+    "be1ca3b4-beba-4cdf-a0e0-84e98829e65d": {
+      "session_id": "be1ca3b4-beba-4cdf-a0e0-84e98829e65d",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T18:42:35.120Z",
+      "end_date": "2026-04-15T18:45:12.434Z"
+    },
+    "be8a0f69-32d9-4602-8b89-13dccfb4ab18": {
+      "session_id": "be8a0f69-32d9-4602-8b89-13dccfb4ab18",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "agent-customization",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T19:18:01.962Z",
+      "end_date": "2026-04-15T19:22:43.411Z"
+    },
+    "c78b0e78-4b42-477a-b156-7da762b0b802": {
+      "session_id": "c78b0e78-4b42-477a-b156-7da762b0b802",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T15:36:57.886Z",
+      "end_date": "2026-04-16T15:42:16.955Z"
+    },
+    "ca41aa91-3b2a-4df3-bd0f-56263bdbb09b": {
+      "session_id": "ca41aa91-3b2a-4df3-bd0f-56263bdbb09b",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T16:53:03.826Z",
+      "end_date": "2026-04-16T16:56:21.612Z"
+    },
+    "ca6c2349-dea4-44af-9ec9-1c8f1f0e5db0": {
+      "session_id": "ca6c2349-dea4-44af-9ec9-1c8f1f0e5db0",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-18T12:22:07.853Z",
+      "end_date": "2026-04-18T12:26:58.785Z"
+    },
+    "caaecdb7-935e-401d-aec8-f5ae8caf86cd": {
+      "session_id": "caaecdb7-935e-401d-aec8-f5ae8caf86cd",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T10:29:12.070Z",
+      "end_date": "2026-04-16T10:32:12.827Z"
+    },
+    "d1ee2dfe-b4e0-4627-803c-450ad1b31508": {
+      "session_id": "d1ee2dfe-b4e0-4627-803c-450ad1b31508",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-18T12:41:29.596Z",
+      "end_date": "2026-04-18T12:42:04.580Z"
+    },
+    "d5d3bc6c-face-4977-8819-55a3ed71a699": {
+      "session_id": "d5d3bc6c-face-4977-8819-55a3ed71a699",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T17:10:21.439Z",
+      "end_date": "2026-04-16T17:12:54.699Z"
+    },
+    "d9882de6-bf5e-4e83-9f48-9d2ccae34f4a": {
+      "session_id": "d9882de6-bf5e-4e83-9f48-9d2ccae34f4a",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T18:41:08.607Z",
+      "end_date": "2026-04-15T18:44:02.779Z"
+    },
+    "da4117c7-be14-4d4b-8173-176c1a19278e": {
+      "session_id": "da4117c7-be14-4d4b-8173-176c1a19278e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T20:21:06.046Z",
+      "end_date": "2026-04-16T20:22:40.171Z"
+    },
+    "de680c67-7198-48b6-8f69-56ef4192ad05": {
+      "session_id": "de680c67-7198-48b6-8f69-56ef4192ad05",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T21:13:29.429Z",
+      "end_date": "2026-04-16T21:15:31.045Z"
+    },
+    "e245bf70-c9d0-45c8-90d4-51005826ed0b": {
+      "session_id": "e245bf70-c9d0-45c8-90d4-51005826ed0b",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T21:54:37.592Z",
+      "end_date": "2026-04-16T22:00:40.705Z"
+    },
+    "e329eb03-2ef9-4f12-864f-6f61bf37f7c9": {
+      "session_id": "e329eb03-2ef9-4f12-864f-6f61bf37f7c9",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T16:52:09.186Z",
+      "end_date": "2026-04-16T16:56:02.532Z"
+    },
+    "e50f10d9-d76e-4783-805b-3b562f2d395a": {
+      "session_id": "e50f10d9-d76e-4783-805b-3b562f2d395a",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 7,
+      "premium_multiplier": 1,
+      "premium_cost_units": 7,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 7,
+      "status": "completed",
+      "start_date": "2026-04-15T19:33:18.991Z",
+      "end_date": "2026-04-15T21:24:55.867Z"
+    },
+    "e9ce3ead-2d4a-4131-95e1-ba8f0dc2f4e2": {
+      "session_id": "e9ce3ead-2d4a-4131-95e1-ba8f0dc2f4e2",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T22:00:06.558Z",
+      "end_date": "2026-04-15T22:02:45.196Z"
+    },
+    "f11cb1cf-a71b-42c8-a3d9-aaa5b48afaae": {
+      "session_id": "f11cb1cf-a71b-42c8-a3d9-aaa5b48afaae",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 2,
+      "premium_cost_units": 8,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 4,
+      "status": "completed",
+      "start_date": "2026-04-15T22:30:44.016Z",
+      "end_date": "2026-04-15T22:45:05.712Z"
+    },
+    "f12ac43c-6280-4af1-82e9-866b8e5f6548": {
+      "session_id": "f12ac43c-6280-4af1-82e9-866b8e5f6548",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T16:42:42.537Z",
+      "end_date": "2026-04-16T16:45:13.310Z"
+    },
+    "f18b4911-11a4-4e6f-a71d-295dc73df240": {
+      "session_id": "f18b4911-11a4-4e6f-a71d-295dc73df240",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T21:16:06.785Z",
+      "end_date": "2026-04-16T21:17:17.820Z"
+    },
+    "f882d650-886e-4f73-b688-6282fd2669cc": {
+      "session_id": "f882d650-886e-4f73-b688-6282fd2669cc",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "gpt-5.3-codex",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-16T15:47:23.129Z",
+      "end_date": "2026-04-16T15:54:31.364Z"
+    },
+    "fac6c8f7-b622-44a2-bc95-1fdb01ec197d": {
+      "session_id": "fac6c8f7-b622-44a2-bc95-1fdb01ec197d",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "unknown",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-16T14:58:47.127Z",
+      "end_date": "2026-04-16T14:59:01.752Z"
+    },
+    "fb6068bb-27bf-4254-b570-c9f598ab2c1e": {
+      "session_id": "fb6068bb-27bf-4254-b570-c9f598ab2c1e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 1,
+      "premium_multiplier": 1,
+      "premium_cost_units": 1,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "general",
+      "turns": 1,
+      "status": "completed",
+      "start_date": "2026-04-15T20:34:03.668Z",
+      "end_date": "2026-04-15T20:36:15.045Z"
+    },
+    "fcb45d29-4b58-492c-86dd-9dbbb7ec7850": {
+      "session_id": "fcb45d29-4b58-492c-86dd-9dbbb7ec7850",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T12:59:21.544Z",
+      "end_date": null
+    },
+    "ff7edad5-069a-48ae-8dc8-889020344e9e": {
+      "session_id": "ff7edad5-069a-48ae-8dc8-889020344e9e",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-sonnet-4.6",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "status": "running",
+      "start_date": "2026-04-18T13:13:18.570Z",
+      "end_date": null
+    },
+    "ffec112e-20b5-4209-b1f8-e475719b2a9f": {
+      "session_id": "ffec112e-20b5-4209-b1f8-e475719b2a9f",
+      "storyId": null,
+      "tool": "copilot-cli",
+      "model": "claude-haiku-4.5",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 0.25,
+      "premium_cost_units": 0.5,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-sprint-planning",
+      "turns": 2,
+      "status": "completed",
+      "start_date": "2026-04-15T14:32:36.481Z",
+      "end_date": "2026-04-15T14:36:38.980Z"
     }
   }
 }
