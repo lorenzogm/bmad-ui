@@ -1,6 +1,6 @@
 # Story 6.1: Publish Fast Local Setup Guide
 
-Status: review
+Status: done
 
 ## Story
 
