@@ -1,6 +1,6 @@
 # Story 5.3: Provide VS Code-First Developer Workflow
 
-Status: review
+Status: done
 
 ## Story
 
