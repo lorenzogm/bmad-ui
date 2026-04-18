@@ -115,7 +115,7 @@ After completing:
 - `README.md` is at the **repository root** — this is what GitHub shows on the project homepage
 - `docs/development-guide-bmad-ui.md` is the deeper reference; README links to it
 - `_bmad-custom/bmad-ui/` is where all app source and scripts live — the working directory for all `pnpm` commands
-- There is no `package.json` at the repository root — running `pnpm install` from root fails
+- There IS a `package.json` at the repository root, but it is for the `bmad-method-ui` npm installer CLI (no dev scripts, no `pnpm-lock.yaml` at root) — running `pnpm dev` or `pnpm run check` from root fails with "Missing script"
 
 ### References
 
