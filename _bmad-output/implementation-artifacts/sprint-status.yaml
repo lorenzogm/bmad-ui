@@ -82,7 +82,7 @@ development_status:
   6-2-publish-deployment-setup-guide: done
   6-3-create-troubleshooting-matrix-for-common-failures: done
   6-4-define-documentation-contribution-path: done
-  6-5-capture-early-adoption-signals: ready-for-dev
+  6-5-capture-early-adoption-signals: review
   epic-6-retrospective: optional
 
   epic-7: backlog

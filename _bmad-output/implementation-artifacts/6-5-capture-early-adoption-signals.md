@@ -1,6 +1,6 @@
 # Story 6.5: Capture Early Adoption Signals
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,11 +20,11 @@ so that I can evaluate traction and prioritize improvements.
 
 ## Tasks / Subtasks
 
-- [ ] Create `docs/adoption-signals.md` (AC: #1, #2, #3)
-  - [ ] Define the signal inventory: what to monitor and where (GitHub Insights, stars, forks, issues, discussions, first-time contributors)
-  - [ ] Provide a minimal weekly review template with fields for each signal category
-  - [ ] Document how to map signal trends to backlog planning actions (mapping table or guidance)
-- [ ] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation only — this should be a no-op)
+- [x] Create `docs/adoption-signals.md` (AC: #1, #2, #3)
+  - [x] Define the signal inventory: what to monitor and where (GitHub Insights, stars, forks, issues, discussions, first-time contributors)
+  - [x] Provide a minimal weekly review template with fields for each signal category
+  - [x] Document how to map signal trends to backlog planning actions (mapping table or guidance)
+- [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation only — this should be a no-op)
 
 ## Dev Notes
 
@@ -157,4 +157,15 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Created `docs/adoption-signals.md` with signal inventory table (7 signals), copy-paste weekly review template, and signal-to-backlog mapping table.
+- Documentation-only story: no source code changes. `pnpm check` passed cleanly (lint, types, tests, build).
+
 ### File List
+
+- `docs/adoption-signals.md` — new file
+- `_bmad-output/implementation-artifacts/6-5-capture-early-adoption-signals.md` — story updated (status → review)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — story status → review
+
+## Change Log
+
+- 2026-04-18: Created `docs/adoption-signals.md` — adoption signal tracking guide with inventory, weekly template, and backlog mapping.
