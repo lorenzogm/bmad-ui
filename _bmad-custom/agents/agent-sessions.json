@@ -1552,13 +1552,13 @@
     },
     "workflow-bmad-create-story-1776517160097": {
       "sessionId": "workflow-bmad-create-story-1776517160097",
-      "storyId": "5-1-create-npx-bmad-method-ui-install-cli",
+      "storyId": "5-3-provide-vs-code-first-developer-workflow",
       "epicId": "epic-5",
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
       "status": "completed",
-      "startedAt": "2026-04-18T12:59:20.098Z",
-      "endedAt": "2026-04-18T13:02:25.625Z",
+      "startedAt": "2026-04-18T12:59:20.099Z",
+      "endedAt": "2026-04-18T13:03:33.218Z",
       "usage": {
         "requests": 1,
         "tokensIn": 960500,

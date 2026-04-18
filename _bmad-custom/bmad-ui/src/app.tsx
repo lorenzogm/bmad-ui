@@ -1034,7 +1034,7 @@ export function EpicTableSection(props: {
         <table>
           <thead>
             <tr>
-              <th>Epic</th>
+              <th>#</th>
               <th>Name</th>
               <th>Status</th>
               <th>Retrospective</th>
@@ -1042,14 +1042,20 @@ export function EpicTableSection(props: {
             </tr>
           </thead>
           <tbody>
-            {filteredEpics.map((epic) => (
+            {filteredEpics.map((epic, index) => (
               <tr key={epic.id}>
                 <td>
+                  <span
+                    className={`improvement-step-number${epic.status === "done" ? " improvement-step-number-done" : ""}`}
+                  >
+                    {index + 1}
+                  </span>
+                </td>
+                <td>
                   <Link params={{ epicId: epic.id }} to="/epic/$epicId">
-                    {epic.id}
+                    {epicLabels.get(epic.id) ?? epic.id}
                   </Link>
                 </td>
-                <td>{epicLabels.get(epic.id) ?? "-"}</td>
                 <td>
                   <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
                 </td>
