@@ -1,6 +1,6 @@
 # Story 5.2: Enforce Code Quality Tooling Baseline
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -24,28 +24,28 @@ so that contributors follow consistent formatting and typing rules.
 
 ## Tasks / Subtasks
 
-- [ ] Verify Biome configuration is complete and correct (AC: #1)
-  - [ ] Run `pnpm check:lint` — confirm zero violations on current codebase
-  - [ ] Confirm `biome.json` enforces: `useNumberNamespace`, `useIsNan`, `useImportType`, `noBarrelFile`, `noUnusedVariables`, `noUnusedImports`
-  - [ ] Confirm formatter settings: 2-space indent, 100 line width, double quotes, trailing commas es5
+- [x] Verify Biome configuration is complete and correct (AC: #1)
+  - [x] Run `pnpm check:lint` — confirm zero violations on current codebase
+  - [x] Confirm `biome.json` enforces: `useNumberNamespace`, `useIsNan`, `useImportType`, `noBarrelFile`, `noUnusedVariables`, `noUnusedImports`
+  - [x] Confirm formatter settings: 2-space indent, 100 line width, double quotes, trailing commas es5
 
-- [ ] Verify TypeScript configuration is correct (AC: #2)
-  - [ ] Run `pnpm check:types` — confirm zero errors
-  - [ ] Confirm `tsconfig.json`: `strict: true`, `noUnusedLocals: true`, `noUnusedParameters: true`, `noFallthroughCasesInSwitch: true`, `paths: { "@/*": ["./src/*"] }`
-  - [ ] Confirm `include` covers `src`, `vite.config.ts`, `src/vite-env.d.ts`
+- [x] Verify TypeScript configuration is correct (AC: #2)
+  - [x] Run `pnpm check:types` — confirm zero errors
+  - [x] Confirm `tsconfig.json`: `strict: true`, `noUnusedLocals: true`, `noUnusedParameters: true`, `noFallthroughCasesInSwitch: true`, `paths: { "@/*": ["./src/*"] }`
+  - [x] Confirm `include` covers `src`, `vite.config.ts`, `src/vite-env.d.ts`
 
-- [ ] Verify CI quality gate is functional (AC: #3)
-  - [ ] Confirm `.github/workflows/ci.yml` runs lint → type-check → tests → build steps in order for PRs and pushes to main
-  - [ ] Confirm Summary step uses `if: always()` and emits pass/fail status + branch/commit context
-  - [ ] No changes required if already correct
+- [x] Verify CI quality gate is functional (AC: #3)
+  - [x] Confirm `.github/workflows/ci.yml` runs lint → type-check → tests → build steps in order for PRs and pushes to main
+  - [x] Confirm Summary step uses `if: always()` and emits pass/fail status + branch/commit context
+  - [x] No changes required if already correct
 
-- [ ] Verify `pnpm check` composite script (AC: #4)
-  - [ ] Run `pnpm check` locally — confirm all four steps run and the script exits non-zero if any step fails
-  - [ ] Confirm script order in `package.json`: `check:lint && check:types && check:tests && build`
+- [x] Verify `pnpm check` composite script (AC: #4)
+  - [x] Run `pnpm check` locally — confirm all four steps run and the script exits non-zero if any step fails
+  - [x] Confirm script order in `package.json`: `check:lint && check:types && check:tests && build`
 
-- [ ] Update README with quality commands (AC: #5)
-  - [ ] Add a "Development" or "Quality Checks" section to `_bmad-custom/bmad-ui/README.md`
-  - [ ] Document: `pnpm check` (all checks), `pnpm check:lint`, `pnpm check:types`, `pnpm check:tests`, `pnpm build`
+- [x] Update README with quality commands (AC: #5)
+  - [x] Add a "Development" or "Quality Checks" section to `_bmad-custom/bmad-ui/README.md`
+  - [x] Document: `pnpm check` (all checks), `pnpm check:lint`, `pnpm check:types`, `pnpm check:tests`, `pnpm build`
 
 ## Dev Notes
 
@@ -187,4 +187,16 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Verified `biome.json` has all required rules: `useNumberNamespace`, `useIsNan`, `useImportType`, `noBarrelFile`, `noUnusedVariables`, `noUnusedImports`; formatter at 2-space indent, 100 line width, double quotes, es5 trailing commas. `pnpm check:lint` exits 0 with zero violations.
+- Verified `tsconfig.json` has `strict: true`, `noUnusedLocals: true`, `noUnusedParameters: true`, `noFallthroughCasesInSwitch: true`, `paths: { "@/*": ["./src/*"] }`, `module: "ESNext"`, `moduleResolution: "bundler"`, `noEmit: true`, `include: ["src", "vite.config.ts", "src/vite-env.d.ts"]`. `pnpm check:types` exits 0.
+- Verified `.github/workflows/ci.yml` runs Lint → Type check → Tests → Build in order, triggers on push/PR to main and workflow_dispatch, Summary step uses `if: always()` with branch/commit context. No changes required.
+- Verified `pnpm check` script runs `check:lint && check:types && check:tests && build` in order. `pnpm check` exits 0.
+- Added "Development" section to `_bmad-custom/bmad-ui/README.md` documenting `pnpm check`, `pnpm check:lint`, `pnpm check:types`, `pnpm check:tests`, `pnpm build`.
+
 ### File List
+
+- `_bmad-custom/bmad-ui/README.md` — added Development section with quality commands
+
+## Change Log
+
+- 2026-04-18: Story 5-2 implemented. All tooling verified (Biome, TypeScript, CI, pnpm check). Added Development section to README with quality commands.

@@ -22,3 +22,22 @@ cd _bmad-custom/bmad-ui && npm run dev
 ```
 
 Open the printed local URL in your browser.
+
+## Development
+
+```bash
+# Install dependencies
+cd _bmad-custom/bmad-ui
+pnpm install
+
+# Run all quality checks (lint + types + tests + build)
+pnpm check
+
+# Individual checks
+pnpm check:lint    # Biome linter + formatter
+pnpm check:types   # TypeScript type-check only
+pnpm check:tests   # Vitest (passes with no tests)
+pnpm build         # Production build
+```
+
+Run `pnpm check` before every commit. CI enforces the same set of checks.
