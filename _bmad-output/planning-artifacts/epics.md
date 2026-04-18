@@ -1007,7 +1007,11 @@ So that each session in agent-sessions.json contains the data needed to determin
 - `subagent_tokens` (number) — sum of `totalTokens` from `subagent.completed` events
 - `error_count` (number) — count of `session.error` events
 - `duration_minutes` (number) — wall-clock time from session start to last event
-- `outcome` (string) — one of: `"pushed"` (git push found), `"committed"` (git commit but no push), `"aborted"` (abort event), `"error"` (session.error found), `"no-output"` (none of the above)
+- `outcome` (string) — one of: `"pushed"` (git push found), `"committed"` (git commit but no push), `"delivered"` (non-committing skill completed normally), `"aborted"` (abort event), `"error"` (session.error found), `"no-output"` (none of the above)
+
+**Given** a session using a non-committing skill (e.g. `bmad-code-review`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-retrospective`, `bmad-validate-prd`),
+**When** the session completes without abort or error and has at least one agent turn,
+**Then** the outcome is `"delivered"` — these skills never produce git commits by design; their output IS the review/plan/analysis itself
 
 **Given** the sync daemon running in watch mode,
 **When** a session was already synced as `status: "completed"` with all outcome fields populated,
@@ -1023,7 +1027,8 @@ So that each session in agent-sessions.json contains the data needed to determin
 
 **Notes:**
 - The `human_turns` filter must strip `<skill-context>`, `<reminder>`, `<context>`, and `<current_datetime>` XML blocks and only count messages with >10 chars of real human content remaining
-- `outcome` derivation order: `"aborted"` > `"error"` > `"pushed"` > `"committed"` > `"no-output"` (first matching wins)
+- `outcome` derivation order: `"aborted"` > `"error"` > `"pushed"` > `"committed"` > `"delivered"` (non-committing skills only) > `"no-output"` (first matching wins)
+- Non-committing skills set: `bmad-code-review`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-retrospective`, `bmad-validate-prd`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-check-implementation-readiness`, `bmad-checkpoint-preview`
 - Extends the existing `parseCLISession()` function in `scripts/sync-sessions.mjs`
 
 ### Story 9.2: Analytics API — Session Quality Aggregation Endpoint
@@ -1042,15 +1047,15 @@ So that the frontend can render effectiveness charts without client-side data cr
 - `bySkillModel` — for each skill×model combo: same shape, plus `oneShotRate` (0–1)
 - `overall` — same shape across all sessions
 
-**Given** a session with `outcome === "pushed"` or `outcome === "committed"` AND `human_turns === 1`,
+**Given** a session with `outcome` in `["pushed", "committed", "delivered"]` AND `human_turns === 1`,
 **When** aggregated,
 **Then** it counts as `oneShot`
 
-**Given** a session with `outcome === "pushed"` or `outcome === "committed"` AND `human_turns > 1`,
+**Given** a session with `outcome` in `["pushed", "committed", "delivered"]` AND `human_turns > 1`,
 **When** aggregated,
 **Then** it counts as `corrected`
 
-**Given** a session with `outcome === "pushed"` or `outcome === "committed"`,
+**Given** a session with `outcome` in `["pushed", "committed", "delivered"]`,
 **When** aggregated,
 **Then** it counts as `delivered`
 
@@ -1061,7 +1066,7 @@ So that the frontend can render effectiveness charts without client-side data cr
 **Notes:**
 - Add the `quality` field to the existing `buildAnalyticsResponse()` function in `scripts/agent-server.ts`
 - Add TypeScript types for quality metrics to `src/types.ts`
-- `oneShot` definition: `human_turns === 1 && (outcome === "pushed" || outcome === "committed") && !aborted`
+- `oneShot` definition: `human_turns === 1 && outcome in ["pushed", "committed", "delivered"] && !aborted`
 
 ### Story 9.3: Session Quality Dashboard — Effectiveness Charts
 
