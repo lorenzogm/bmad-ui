@@ -25,28 +25,35 @@ BMAD UI is a React-based web application that provides real-time visibility into
 
 ## Quick Start
 
+> No secrets or environment variables required — the full app runs immediately after install.
+
 ### Prerequisites
 
-- Node.js 18+
-- pnpm 10.16+
-- **Maintainers only**: [dotenvx](https://dotenvx.com) installed locally for secret management — see [Secrets Workflow](docs/secrets-workflow.md)
+- Node.js 18+ (current LTS recommended)
+- pnpm 10.16+ — install with `npm install -g pnpm` or `corepack enable && corepack prepare pnpm@latest --activate`
 
-### Installation
+### Setup
 
 ```bash
+# Move into the app workspace
+cd _bmad-custom/bmad-ui
+
 # Install dependencies
 pnpm install
 
 # Start development server
 pnpm dev
-
-# Build for production
-pnpm build
-
-# Run quality checks
-pnpm run check:types
-pnpm run check:tests
 ```
+
+Open `http://localhost:5173` — you should see the BMAD UI dashboard.
+
+### Validate
+
+```bash
+pnpm run check   # lint + types + tests + build (run before every commit)
+```
+
+> **Setup issues?** See [Troubleshooting](docs/development-guide-bmad-ui.md#troubleshooting) in the development guide.
 
 ## Project Structure
 

@@ -1,6 +1,6 @@
 # Story 6.1: Publish Fast Local Setup Guide
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -135,4 +135,10 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Replaced README.md Quick Start with correct version: added `cd _bmad-custom/bmad-ui` as first command, added "No secrets required" callout, added `http://localhost:5173` verification step, replaced individual check commands with canonical `pnpm run check`, and added troubleshooting link.
+- Verified `docs/development-guide-bmad-ui.md` is accurate: no npm commands, has Node.js LTS + pnpm 10.16+ prerequisites, and Troubleshooting section covers all four required topics.
+- `pnpm run check` passed with exit code 0 (lint + types + tests + build).
+
 ### File List
+
+- `README.md` — edited Quick Start section
