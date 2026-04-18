@@ -1468,7 +1468,7 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T16:09:43.191Z",
       "endedAt": null,
       "usage": {
@@ -1492,18 +1492,18 @@
       "agent": "bmad-quick-dev",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 32,
-      "git_commits": 0,
-      "git_pushes": 0,
+      "agent_turns": 36,
+      "git_commits": 1,
+      "git_pushes": 1,
       "aborted": false,
       "context_compactions": 0,
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 7.7,
-      "outcome": "no-output",
+      "duration_minutes": 8.1,
+      "outcome": "pushed",
       "start_date": "2026-04-18T16:09:43.191Z",
-      "end_date": null
+      "end_date": "2026-04-18T16:17:47.900Z"
     },
     "35e6275a-1bad-4a07-a518-d780d097ff4b": {
       "sessionId": "35e6275a-1bad-4a07-a518-d780d097ff4b",
@@ -1554,7 +1554,7 @@
       "epicId": null,
       "skill": "bmad-review-edge-case-hunter",
       "model": "gpt-5.3-codex",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T16:05:08.490Z",
       "endedAt": null,
       "usage": {
@@ -1589,7 +1589,7 @@
       "duration_minutes": 8.3,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:05:08.490Z",
-      "end_date": null
+      "end_date": "2026-04-18T16:13:25.653Z"
     },
     "3a9c52e2-4bcb-41d3-94dd-b760e469f55b": {
       "sessionId": "3a9c52e2-4bcb-41d3-94dd-b760e469f55b",
@@ -1855,7 +1855,7 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T16:07:32.018Z",
       "endedAt": null,
       "usage": {
@@ -1890,7 +1890,7 @@
       "duration_minutes": 1,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:07:32.018Z",
-      "end_date": null
+      "end_date": "2026-04-18T16:08:34.076Z"
     },
     "465c129d-b74c-48a1-8240-885030dc6ca6": {
       "sessionId": "465c129d-b74c-48a1-8240-885030dc6ca6",
@@ -2113,7 +2113,7 @@
       "epicId": null,
       "skill": "bmad-review-edge-case-hunter",
       "model": "gpt-5.3-codex",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T16:05:07.852Z",
       "endedAt": null,
       "usage": {
@@ -2148,7 +2148,7 @@
       "duration_minutes": 3.9,
       "outcome": "delivered",
       "start_date": "2026-04-18T16:05:07.852Z",
-      "end_date": null
+      "end_date": "2026-04-18T16:09:02.766Z"
     },
     "531fde8f-523d-4ce8-9e39-2742e78020c0": {
       "sessionId": "531fde8f-523d-4ce8-9e39-2742e78020c0",
@@ -2457,7 +2457,7 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T16:05:42.269Z",
       "endedAt": null,
       "usage": {
@@ -2492,7 +2492,7 @@
       "duration_minutes": 3.6,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:05:42.269Z",
-      "end_date": null
+      "end_date": "2026-04-18T16:09:18.268Z"
     },
     "5be0c98b-4b13-458e-9902-27482817fcb0": {
       "sessionId": "5be0c98b-4b13-458e-9902-27482817fcb0",
@@ -3575,7 +3575,7 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T15:21:54.965Z",
       "endedAt": null,
       "usage": {
@@ -3610,7 +3610,7 @@
       "duration_minutes": 32.2,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:21:54.965Z",
-      "end_date": null
+      "end_date": "2026-04-18T15:54:07.627Z"
     },
     "8731a1fe-611c-4b58-ae27-6e902484e63d": {
       "sessionId": "8731a1fe-611c-4b58-ae27-6e902484e63d",
@@ -4005,7 +4005,7 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-opus-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T15:44:34.131Z",
       "endedAt": null,
       "usage": {
@@ -4040,7 +4040,7 @@
       "duration_minutes": 3.9,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:44:34.131Z",
-      "end_date": null
+      "end_date": "2026-04-18T15:48:27.416Z"
     },
     "8f69ab30-ba6d-4b57-924a-61c7eb65d40f": {
       "sessionId": "8f69ab30-ba6d-4b57-924a-61c7eb65d40f",
@@ -4994,7 +4994,7 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-opus-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T15:47:21.497Z",
       "endedAt": null,
       "usage": {
@@ -5029,7 +5029,7 @@
       "duration_minutes": 15.1,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:47:21.497Z",
-      "end_date": null
+      "end_date": "2026-04-18T16:02:29.877Z"
     },
     "c56ebb5f-094c-447e-afbe-5aa3a538fe14": {
       "sessionId": "c56ebb5f-094c-447e-afbe-5aa3a538fe14",
@@ -7679,6 +7679,341 @@
         "tokensCached": 240000,
         "totalTokens": 391100
       }
+    },
+    "workflow-bmad-retrospective-1776533314907": {
+      "sessionId": "workflow-bmad-retrospective-1776533314907",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-retrospective",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-18T17:28:34.908Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "2dfadc96-6256-49b1-8dd1-f18f6c823d2d": {
+      "sessionId": "2dfadc96-6256-49b1-8dd1-f18f6c823d2d",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-retrospective",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-18T17:28:38.485Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "2dfadc96-6256-49b1-8dd1-f18f6c823d2d",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 21,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 2.6,
+      "outcome": "delivered",
+      "start_date": "2026-04-18T17:28:38.485Z",
+      "end_date": null
+    },
+    "workflow-bmad-create-story-1776533432832": {
+      "sessionId": "workflow-bmad-create-story-1776533432832",
+      "storyId": "6-3-create-troubleshooting-matrix-for-common-failures",
+      "epicId": "epic-6",
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T17:30:32.833Z",
+      "endedAt": "2026-04-18T17:32:56.716Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 684500,
+        "tokensOut": 5300,
+        "tokensCached": 608300,
+        "totalTokens": 689800
+      }
+    },
+    "06ebc082-6770-44b4-b7f8-8b735c6f2be3": {
+      "sessionId": "06ebc082-6770-44b4-b7f8-8b735c6f2be3",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T17:30:34.689Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "06ebc082-6770-44b4-b7f8-8b735c6f2be3",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 14,
+      "git_commits": 1,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 1.8,
+      "outcome": "committed",
+      "start_date": "2026-04-18T17:30:34.689Z",
+      "end_date": "2026-04-18T17:32:22.239Z"
+    },
+    "46474d39-e3ea-40f2-81fc-2601b84260dd": {
+      "sessionId": "46474d39-e3ea-40f2-81fc-2601b84260dd",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T17:30:34.689Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "46474d39-e3ea-40f2-81fc-2601b84260dd",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 13,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 1.2,
+      "outcome": "no-output",
+      "start_date": "2026-04-18T17:30:34.689Z",
+      "end_date": "2026-04-18T17:32:22.239Z"
+    },
+    "531d45a4-8fd4-4cdc-ac79-f7277a914b1f": {
+      "sessionId": "531d45a4-8fd4-4cdc-ac79-f7277a914b1f",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T17:30:34.707Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "531d45a4-8fd4-4cdc-ac79-f7277a914b1f",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 13,
+      "git_commits": 1,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 1.8,
+      "outcome": "committed",
+      "start_date": "2026-04-18T17:30:34.707Z",
+      "end_date": "2026-04-18T17:32:22.239Z"
+    },
+    "76c04c13-9bfd-4f32-a0dd-9dcdb12ba816": {
+      "sessionId": "76c04c13-9bfd-4f32-a0dd-9dcdb12ba816",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T17:30:34.707Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "76c04c13-9bfd-4f32-a0dd-9dcdb12ba816",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 13,
+      "git_commits": 1,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 1.8,
+      "outcome": "committed",
+      "start_date": "2026-04-18T17:30:34.707Z",
+      "end_date": "2026-04-18T17:32:22.239Z"
+    },
+    "973c6271-7ffa-4374-baac-ec366f110bed": {
+      "sessionId": "973c6271-7ffa-4374-baac-ec366f110bed",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T17:30:34.706Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "973c6271-7ffa-4374-baac-ec366f110bed",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 14,
+      "git_commits": 2,
+      "git_pushes": 1,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 1.8,
+      "outcome": "pushed",
+      "start_date": "2026-04-18T17:30:34.706Z",
+      "end_date": "2026-04-18T17:32:22.239Z"
+    },
+    "bf669b8c-8240-4959-bf11-7296f56f3e53": {
+      "sessionId": "bf669b8c-8240-4959-bf11-7296f56f3e53",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-quick-dev",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-18T17:31:33.148Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "bf669b8c-8240-4959-bf11-7296f56f3e53",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 11,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 1.2,
+      "outcome": "no-output",
+      "start_date": "2026-04-18T17:31:33.148Z",
+      "end_date": "2026-04-18T17:32:52.294Z"
     }
   }
 }
