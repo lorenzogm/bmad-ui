@@ -303,20 +303,17 @@ function RootLayout() {
             <div className="sidebar-submenu">
               {recentSessions.map((session) => {
                 const linkPath = `/session/${session.sessionId}`
-                const label =
-                  session.sessionId.length > 22
-                    ? `${session.sessionId.slice(0, 22)}…`
-                    : session.sessionId
+                const isRunning = session.status === RUNNING_STATUS
                 return (
                   <Link
                     aria-current={currentPath === linkPath ? "page" : undefined}
-                    className="sidebar-sublink"
+                    className={`sidebar-sublink${isRunning ? " session-link-running" : ""}`}
                     key={session.sessionId}
                     params={{ sessionId: session.sessionId }}
                     to="/session/$sessionId"
                   >
                     <span className="sidebar-session-status" data-status={session.status} />
-                    {label}
+                    {session.skill}
                   </Link>
                 )
               })}
