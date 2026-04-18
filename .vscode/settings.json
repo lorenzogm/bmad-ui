@@ -1,0 +1,4 @@
+{
+  "github.copilot.chat.cli.showExternalSessions": true,
+  "github.copilot.chat.cli.sessionController.enabled": true
+}
