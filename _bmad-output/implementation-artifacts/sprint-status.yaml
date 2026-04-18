@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-18T19:30:38Z
+last_updated: 2026-04-18T20:03:20Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -81,7 +81,7 @@ development_status:
   6-1-publish-fast-local-setup-guide: ready-for-dev
   6-2-publish-deployment-setup-guide: backlog
   6-3-create-troubleshooting-matrix-for-common-failures: backlog
-  6-4-define-documentation-contribution-path: backlog
+  6-4-define-documentation-contribution-path: ready-for-dev
   6-5-capture-early-adoption-signals: backlog
   epic-6-retrospective: optional
 
