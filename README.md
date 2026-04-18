@@ -61,7 +61,7 @@ pnpm run check   # lint + types + tests + build (run before every commit)
 >
 > **Maintainers**: deploying to Vercel requires `DOTENV_PRIVATE_KEY` (and `TERRAFORM_STATE_ENCRYPT_KEY`) to be set as GitHub repository secrets. See [docs/deployment-guide.md](docs/deployment-guide.md) for the full deployment setup, secret prerequisites, preview vs. production paths, and new maintainer onboarding.
 
-
+## Project Structure
 
 ```
 _bmad-custom/bmad-ui/

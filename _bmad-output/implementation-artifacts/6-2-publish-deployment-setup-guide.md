@@ -1,6 +1,6 @@
 # Story 6.2: Publish Deployment Setup Guide
 
-Status: review
+Status: done
 
 ## Story
 
@@ -30,6 +30,10 @@ so that I can deploy bmad-ui reliably.
   - [x] Keep the callout "No secrets required for local dev" and add a sibling note clarifying maintainers need `DOTENV_PRIVATE_KEY` for deployment
 - [x] Verify `docs/secrets-workflow.md` links and references are consistent with the new deployment guide (read-only verification, fix only if broken)
 - [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation-only change — this should pass trivially)
+
+### Review Findings
+
+- [x] [Review][Patch] Restore missing `## Project Structure` heading in README [README.md:64]
 
 ## Dev Notes
 
