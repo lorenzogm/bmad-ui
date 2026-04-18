@@ -1,6 +1,8 @@
+import { useQuery } from "@tanstack/react-query"
 import { createRootRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
-import { IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
+import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
+import type { AnalyticsResponse, SessionAnalytics } from "../types"
 
 const TRAILING_SLASH_REGEX = /\/+$/
 const HTTP_CONFLICT = 409
@@ -56,7 +58,8 @@ const AVAILABLE_SKILLS = [
   "bmad-agent-ux-designer",
 ] as const
 
-const NAV_LINKS = [{ label: "Sessions", to: "/sessions" }] as const
+const SESSIONS_SIDEBAR_LIMIT = 5
+const SESSIONS_REFETCH_INTERVAL_MS = 10_000
 
 const WORKFLOW_SUBMENU = [
   { label: "Overview", phaseId: null },
@@ -221,7 +224,25 @@ function RootLayout() {
   const currentPath = location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/"
   const isAnalyticsSection = currentPath.startsWith("/analytics")
   const isWorkflowSection = currentPath.startsWith("/workflow")
+  const isSessionsSection =
+    currentPath.startsWith("/sessions") || currentPath.startsWith("/session/")
   const [chatOpen, setChatOpen] = useState(false)
+
+  const { data: sessionsData } = useQuery<SessionAnalytics[]>({
+    queryKey: ["sidebar-sessions"],
+    queryFn: async () => {
+      const response = await fetch(apiUrl("/api/analytics"))
+      if (!response.ok) return []
+      const payload = (await response.json()) as AnalyticsResponse
+      if (!Array.isArray(payload.sessions)) return []
+      return [...payload.sessions].sort(
+        (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
+      )
+    },
+    refetchInterval: SESSIONS_REFETCH_INTERVAL_MS,
+  })
+
+  const recentSessions = (sessionsData ?? []).slice(0, SESSIONS_SIDEBAR_LIMIT)
 
   return (
     <div className="app-layout">
@@ -267,16 +288,37 @@ function RootLayout() {
             })}
           </div>
 
-          {NAV_LINKS.map((link) => (
-            <Link
-              aria-current={currentPath === link.to ? "page" : undefined}
-              className="sidebar-link"
-              key={link.to}
-              to={link.to}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <Link
+            aria-current={currentPath === "/sessions" ? "page" : undefined}
+            className={`sidebar-link sidebar-link-section ${isSessionsSection ? "is-section-active" : ""}`}
+            to="/sessions"
+          >
+            Sessions
+          </Link>
+
+          {recentSessions.length > 0 ? (
+            <div className="sidebar-submenu">
+              {recentSessions.map((session) => {
+                const linkPath = `/session/${session.sessionId}`
+                const label =
+                  session.sessionId.length > 22
+                    ? `${session.sessionId.slice(0, 22)}…`
+                    : session.sessionId
+                return (
+                  <Link
+                    aria-current={currentPath === linkPath ? "page" : undefined}
+                    className="sidebar-sublink"
+                    key={session.sessionId}
+                    params={{ sessionId: session.sessionId }}
+                    to="/session/$sessionId"
+                  >
+                    <span className="sidebar-session-status" data-status={session.status} />
+                    {label}
+                  </Link>
+                )
+              })}
+            </div>
+          ) : null}
 
           <Link
             aria-current={currentPath === "/analytics" ? "page" : undefined}

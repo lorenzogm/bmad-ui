@@ -357,6 +357,7 @@ function LogEntryView(props: { entry: LogEntry }) {
 
 function SessionDetailPage() {
   const { sessionId } = useParams({ from: "/session/$sessionId" })
+  const navigate = useNavigate()
   const [data, setData] = useState<SessionDetailResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -426,6 +427,14 @@ function SessionDetailPage() {
       eventSource?.close()
     }
   }, [sessionId])
+
+  const handleBack = useCallback(() => {
+    if (window.history.length > 1) {
+      window.history.back()
+    } else {
+      navigate({ to: "/sessions" })
+    }
+  }, [navigate])
 
   const handleSend = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {

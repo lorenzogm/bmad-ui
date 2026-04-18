@@ -161,6 +161,15 @@ body {
   margin-left: -1px;
 }
 
+.sidebar-sublink:has(.sidebar-session-status) {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .sidebar-sublink:hover {
   color: var(--text);
   background: rgba(46, 196, 182, 0.06);
@@ -276,6 +285,27 @@ a.sidebar-session-item:hover {
   flex-shrink: 0;
   font-size: 0.62rem;
   padding: 0.1rem 0.3rem;
+}
+
+.sidebar-session-status {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-backlog);
+}
+
+.sidebar-session-status[data-status="running"] {
+  background: var(--status-progress);
+}
+
+.sidebar-session-status[data-status="completed"] {
+  background: var(--status-done);
+}
+
+.sidebar-session-status[data-status="failed"] {
+  background: #ef4444;
 }
 
 .new-chat-trigger {
