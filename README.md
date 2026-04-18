@@ -55,7 +55,13 @@ pnpm run check   # lint + types + tests + build (run before every commit)
 
 > **Setup issues?** See [Troubleshooting](docs/development-guide-bmad-ui.md#troubleshooting) in the development guide.
 
-## Project Structure
+## Deployment
+
+> No secrets required for local dev — the setup above is all contributors need.
+>
+> **Maintainers**: deploying to Vercel requires `DOTENV_PRIVATE_KEY` (and `TERRAFORM_STATE_ENCRYPT_KEY`) to be set as GitHub repository secrets. See [docs/deployment-guide.md](docs/deployment-guide.md) for the full deployment setup, secret prerequisites, preview vs. production paths, and new maintainer onboarding.
+
+
 
 ```
 _bmad-custom/bmad-ui/

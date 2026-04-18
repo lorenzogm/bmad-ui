@@ -1,6 +1,6 @@
 # Story 6.2: Publish Deployment Setup Guide
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,18 +18,18 @@ so that I can deploy bmad-ui reliably.
 
 ## Tasks / Subtasks
 
-- [ ] Rewrite `docs/deployment-guide.md` as the authoritative deployment reference (AC: #1, #2, #3)
-  - [ ] Cover prerequisites: Node.js 18+, pnpm 10.16+, Vercel CLI, dotenvx, Terraform (maintainer path)
-  - [ ] Document GitHub Secrets required: `DOTENV_PRIVATE_KEY` (must be set before any deployment succeeds)
-  - [ ] Document `.env` encrypted secrets inventory: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `TF_VAR_GH_PAT_TOKEN`, `TF_VAR_GITHUB_OWNER`, `TERRAFORM_STATE_ENCRYPT_KEY`
-  - [ ] Document the two deployment paths — preview (push to `main`) and production (`workflow_dispatch` with `environment: production`) — with trigger conditions and safeguards
-  - [ ] Explain the job sequence: `check-changes` → `infra-deploy` (conditional) → `deploy` → `deploy-production` (conditional)
-  - [ ] Document how to find deployment diagnostics in GitHub Actions: step summaries, `::error::` annotations, and the "Deploy Trigger Summary" job output
-  - [ ] Add "New Maintainer Onboarding" section: how to obtain `.env.keys`, set `DOTENV_PRIVATE_KEY` GitHub Secret, and verify decryption
-- [ ] Add a `## Deployment` link section to `README.md` Quick Start area pointing to `docs/deployment-guide.md` (AC: #1)
-  - [ ] Keep the callout "No secrets required for local dev" and add a sibling note clarifying maintainers need `DOTENV_PRIVATE_KEY` for deployment
-- [ ] Verify `docs/secrets-workflow.md` links and references are consistent with the new deployment guide (read-only verification, fix only if broken)
-- [ ] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation-only change — this should pass trivially)
+- [x] Rewrite `docs/deployment-guide.md` as the authoritative deployment reference (AC: #1, #2, #3)
+  - [x] Cover prerequisites: Node.js 18+, pnpm 10.16+, Vercel CLI, dotenvx, Terraform (maintainer path)
+  - [x] Document GitHub Secrets required: `DOTENV_PRIVATE_KEY` (must be set before any deployment succeeds)
+  - [x] Document `.env` encrypted secrets inventory: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `TF_VAR_GH_PAT_TOKEN`, `TF_VAR_GITHUB_OWNER`, `TERRAFORM_STATE_ENCRYPT_KEY`
+  - [x] Document the two deployment paths — preview (push to `main`) and production (`workflow_dispatch` with `environment: production`) — with trigger conditions and safeguards
+  - [x] Explain the job sequence: `check-changes` → `infra-deploy` (conditional) → `deploy` → `deploy-production` (conditional)
+  - [x] Document how to find deployment diagnostics in GitHub Actions: step summaries, `::error::` annotations, and the "Deploy Trigger Summary" job output
+  - [x] Add "New Maintainer Onboarding" section: how to obtain `.env.keys`, set `DOTENV_PRIVATE_KEY` GitHub Secret, and verify decryption
+- [x] Add a `## Deployment` link section to `README.md` Quick Start area pointing to `docs/deployment-guide.md` (AC: #1)
+  - [x] Keep the callout "No secrets required for local dev" and add a sibling note clarifying maintainers need `DOTENV_PRIVATE_KEY` for deployment
+- [x] Verify `docs/secrets-workflow.md` links and references are consistent with the new deployment guide (read-only verification, fix only if broken)
+- [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation-only change — this should pass trivially)
 
 ## Dev Notes
 
@@ -150,4 +150,14 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Documentation-only story. Fully rewrote `docs/deployment-guide.md` replacing the inaccurate auto-generated stub with accurate content sourced from `.github/workflows/deploy.yml`.
+- Added `## Deployment` section to `README.md` with a contributor vs. maintainer distinction and link to the deployment guide.
+- Verified `docs/secrets-workflow.md` links are all intact and accurate — no changes needed.
+- `pnpm check` passed with exit code 0.
+
 ### File List
+
+- `docs/deployment-guide.md` — full rewrite
+- `README.md` — added Deployment section
+- `_bmad-output/implementation-artifacts/6-2-publish-deployment-setup-guide.md` — story file updates
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — status updated to review
