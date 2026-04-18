@@ -1,16 +1,10 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish (e.g. 0.1.0). Leave empty to use package.json version.'
-        required: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   publish:
@@ -22,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
@@ -52,9 +48,91 @@ jobs:
             write_env_var "NODE_AUTH_TOKEN" "$NPM_ACCESS_TOKEN"
           '
 
-      - name: Bump version (if provided)
-        if: ${{ github.event.inputs.version != '' }}
-        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
+      - name: Determine version bump
+        id: version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current package.json version: $CURRENT_VERSION"
+
+          # Find the last published version on npm (fallback to 0.0.0 if not yet published)
+          PUBLISHED_VERSION=$(npm view bmad-method-ui version 2>/dev/null || echo "0.0.0")
+          echo "Last published npm version: $PUBLISHED_VERSION"
+
+          # Find the git tag for the last published version (v<version> or <version>)
+          LAST_TAG=$(git tag --list "v${PUBLISHED_VERSION}" "${PUBLISHED_VERSION}" | head -1)
+          if [ -z "$LAST_TAG" ]; then
+            echo "No git tag found for $PUBLISHED_VERSION — diffing full history"
+            COMMITS=$(git log --pretty=format:"%s" HEAD)
+          else
+            echo "Diffing commits since tag: $LAST_TAG"
+            COMMITS=$(git log --pretty=format:"%s" "${LAST_TAG}..HEAD")
+          fi
+
+          if [ -z "$COMMITS" ]; then
+            echo "No new commits since last publish. Nothing to do."
+            echo "bump=none" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Detect bump type from conventional commits
+          BUMP="patch"
+          while IFS= read -r msg; do
+            if echo "$msg" | grep -qiE "BREAKING[[:space:]]CHANGE|^[a-z]+(\([^)]+\))?!:"; then
+              BUMP="major"
+              break
+            elif echo "$msg" | grep -qiE "^feat(\([^)]+\))?:"; then
+              BUMP="minor"
+            fi
+          done <<< "$COMMITS"
+
+          echo "Detected bump: $BUMP"
+
+          # Compute new version
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$PUBLISHED_VERSION"
+          case "$BUMP" in
+            major) NEW_VERSION="$((MAJOR + 1)).0.0" ;;
+            minor) NEW_VERSION="${MAJOR}.$((MINOR + 1)).0" ;;
+            patch) NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
+          esac
+
+          echo "New version: $NEW_VERSION"
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Abort if no changes
+        if: steps.version.outputs.bump == 'none'
+        run: |
+          echo "No new commits since last publish — skipping."
+          exit 0
+
+      - name: Apply version bump
+        if: steps.version.outputs.bump != 'none'
+        run: |
+          npm version ${{ steps.version.outputs.new_version }} --no-git-tag-version
+          echo "package.json updated to ${{ steps.version.outputs.new_version }}"
+
+      - name: Commit version bump
+        if: steps.version.outputs.bump != 'none'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "chore(release): bump version to ${{ steps.version.outputs.new_version }} [${{ steps.version.outputs.bump }}]"
+          git tag "v${{ steps.version.outputs.new_version }}"
+          git push origin HEAD --tags
 
       - name: Publish
+        if: steps.version.outputs.bump != 'none'
         run: npm publish
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## npm Publish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Bump | ${{ steps.version.outputs.bump }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ steps.version.outputs.new_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+
