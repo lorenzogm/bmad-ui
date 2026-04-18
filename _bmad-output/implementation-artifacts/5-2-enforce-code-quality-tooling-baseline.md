@@ -50,21 +50,40 @@ so that contributors follow consistent formatting and typing rules.
 
 All three quality tools are **already installed and configured**. The story goal is to validate consistency, wire up CI annotations, and fix stale documentation.
 
+**`pnpm check` passes cleanly on current codebase** — confirmed locally before story creation.
+
 **Biome (`_bmad-custom/bmad-ui/biome.json`):**
 - Version: `@biomejs/biome@2.4.12`
 - Lint + format in one pass via `biome check src/`
 - Key rules enforced: `useNumberNamespace`, `useImportType`, `noBarrelFile`, `noUnusedVariables`, `noUnusedImports`, `noDangerouslySetInnerHtmlWithChildren`
-- Formatter: 2-space indent, 100-char line width, double quotes, no semicolons, ES5 trailing commas
+- Formatter: 2-space indent, 100-char line width, double quotes, no semicolons (`asNeeded`), ES5 trailing commas
+- CSS linting enabled with `tailwindDirectives: true` (Tailwind v4 compatibility)
+- Excluded from scanning: `node_modules`, `dist`, `.git`, `.vscode`, `.idea`, lock files
 
 **TypeScript (`_bmad-custom/bmad-ui/tsconfig.json`):**
-- Standalone config (no `extends`) — `strict: true`, `noUnusedLocals`, `noUnusedParameters`
+- Standalone config (no `extends`) — `strict: true`, `noUnusedLocals: true`, `noUnusedParameters: true`, `noFallthroughCasesInSwitch: true`
 - Path alias: `"@/*": ["./src/*"]`
+- `"noEmit": true` — typecheck only, no emitted JS
+- `"moduleResolution": "bundler"`, `"jsx": "react-jsx"`, `"target": "ES2022"`
 - Vite resolves it via `resolve.alias: { "@": "/src/" }` in `vite.config.ts`
+- `include`: `["src", "vite.config.ts", "src/vite-env.d.ts"]`
 
 **CI (`ci.yml`):**
 - Triggers: `pull_request` (opened, synchronize, reopened) + `push` to main + `workflow_dispatch`
-- Steps: install → `pnpm check:lint` → `pnpm check:types` → `pnpm check:tests` → `pnpm build` → summary
+- Steps: install (`--frozen-lockfile`) → `pnpm check:lint` → `pnpm check:types` → `pnpm check:tests` → `pnpm build` → summary
 - Working directory for all steps: `_bmad-custom/bmad-ui`
+- Summary step uses `if: always()` — appends status table to `$GITHUB_STEP_SUMMARY`
+
+**package.json scripts (do NOT change):**
+```json
+"check": "pnpm run check:lint && pnpm run check:types && pnpm run check:tests && pnpm run build",
+"build": "tsc --noEmit && vite build",
+"check:lint": "biome check src/",
+"check:types": "tsc --noEmit",
+"check:tests": "vitest run --passWithNoTests"
+```
+
+Note: `build` runs `tsc --noEmit` and `check` already runs `check:types`. TypeScript is checked twice in `pnpm check` — this is intentional belt-and-suspenders, do NOT remove.
 
 ### Critical: `biome ci` vs `biome check` in CI
 
@@ -100,9 +119,19 @@ Always run this before committing. CI runs the same checks individually for bett
 
 ### Project Structure Notes
 
-- `_bmad-custom/bmad-ui/` is fully self-contained — no monorepo root `package.json`
+- `_bmad-custom/bmad-ui/` is **fully self-contained** — no monorepo root `package.json`
 - The cancelled story `5-2-configure-monorepo-task-orchestration.md` explored a root-level monorepo with Turbo — this was **cancelled and is NOT the current architecture**
-- `_bmad-custom/bmad-ui/pnpm-workspace.yaml` only contains `onlyBuiltDependencies` — not a workspace root
+- `_bmad-custom/bmad-ui/pnpm-workspace.yaml` only contains `onlyBuiltDependencies` — NOT a workspace root
+- No `@repo/configs` package exists — `tsconfig.json` is standalone by design for Phase 1
+- `packages/` directory does not exist at repo root yet (only created if Story 5.1 CLI work proceeds)
+
+### Path Alias Consistency Note
+
+`tsconfig.json` uses `"@/*": ["./src/*"]` (TypeScript requires `/*` suffix for directory mapping).  
+`vite.config.ts` uses `"@": "/src/"` (Vite strips the prefix and appends the remainder).  
+These are intentionally different forms but semantically equivalent — do NOT change either.
+
+Import usage: `import { Foo } from "@/components/Foo"` — works correctly in both TypeScript and Vite.
 
 ### Files to Touch
 
