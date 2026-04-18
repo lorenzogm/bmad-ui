@@ -2698,12 +2698,147 @@ async function backfillAnalyticsStore(): Promise<void> {
   }
 }
 
+/**
+ * Maximum time difference (ms) between a workflow session and a CLI/VSCode
+ * session to consider them duplicates of the same actual work.
+ */
+const SESSION_DEDUP_WINDOW_MS = 5 * 60 * 1000
+
+/**
+ * If a session claims "running" but its last activity was longer than this
+ * ago and it has no live process, mark it as stale/completed.
+ */
+const STALE_SESSION_THRESHOLD_MS = 35 * 60 * 1000
+
+/**
+ * Deduplicate sessions: when the agent-server launches a workflow session
+ * (ID like `workflow-bmad-dev-story-<ts>`), the underlying Copilot CLI
+ * process also creates a session under its own UUID. The sync-sessions
+ * daemon picks up the UUID session separately, creating a duplicate.
+ *
+ * This function merges overlapping pairs: keeps the workflow entry (which
+ * has story info & proper status) and enriches it with token data from
+ * the UUID entry.
+ */
+function deduplicateSessions(
+  sessions: SessionAnalyticsData[]
+): SessionAnalyticsData[] {
+  const workflowSessions: SessionAnalyticsData[] = []
+  const uuidSessions: SessionAnalyticsData[] = []
+
+  for (const s of sessions) {
+    if (s.sessionId.startsWith("workflow-")) {
+      workflowSessions.push(s)
+    } else {
+      uuidSessions.push(s)
+    }
+  }
+
+  // For each UUID session, check if it's a duplicate of a workflow session
+  const mergedWorkflowIds = new Set<string>()
+  const duplicateUuidIds = new Set<string>()
+
+  for (const uuid of uuidSessions) {
+    const uuidStart = new Date(uuid.startedAt).getTime()
+    if (Number.isNaN(uuidStart)) continue
+
+    for (const wf of workflowSessions) {
+      const wfStart = new Date(wf.startedAt).getTime()
+      if (Number.isNaN(wfStart)) continue
+
+      const timeDiff = Math.abs(uuidStart - wfStart)
+      const sameSkill =
+        uuid.skill === wf.skill ||
+        uuid.skill === "general" ||
+        wf.skill === "general"
+
+      if (timeDiff <= SESSION_DEDUP_WINDOW_MS && sameSkill) {
+        // Merge: enrich workflow entry with UUID's token data if richer
+        if (
+          uuid.usage.totalTokens > wf.usage.totalTokens ||
+          uuid.usage.requests > wf.usage.requests
+        ) {
+          wf.usage = {
+            ...wf.usage,
+            tokensIn: Math.max(wf.usage.tokensIn, uuid.usage.tokensIn),
+            tokensOut: Math.max(wf.usage.tokensOut, uuid.usage.tokensOut),
+            tokensCached: Math.max(
+              wf.usage.tokensCached ?? 0,
+              uuid.usage.tokensCached ?? 0
+            ),
+            totalTokens: Math.max(wf.usage.totalTokens, uuid.usage.totalTokens),
+            requests: Math.max(wf.usage.requests, uuid.usage.requests),
+          }
+        }
+        // Workflow session is authoritative for status, story, dates
+        mergedWorkflowIds.add(wf.sessionId)
+        duplicateUuidIds.add(uuid.sessionId)
+        break
+      }
+    }
+  }
+
+  // Return workflow sessions + non-duplicate UUID sessions
+  return [
+    ...workflowSessions,
+    ...uuidSessions.filter((s) => !duplicateUuidIds.has(s.sessionId)),
+  ]
+}
+
+/**
+ * Validate "running" status: cross-check against actual runtime state.
+ * Sessions that claim "running" but have no live process and started
+ * long ago are marked "completed".
+ */
+function validateRunningStatus(
+  sessions: SessionAnalyticsData[],
+  runtimeState: RuntimeState | null
+): SessionAnalyticsData[] {
+  const activeRuntimeIds = new Set(
+    (runtimeState?.sessions ?? [])
+      .filter((s) => s.status === "running")
+      .map((s) => s.id)
+  )
+  const activeProcessIds = new Set(runningSessionProcesses.keys())
+
+  const now = Date.now()
+
+  return sessions.map((s) => {
+    if (s.status !== "running") return s
+
+    // If it's tracked as a live runtime process, it's genuinely running
+    if (activeRuntimeIds.has(s.sessionId) || activeProcessIds.has(s.sessionId)) {
+      return s
+    }
+
+    // Check if the session is stale (started long ago with no live process)
+    const startMs = new Date(s.startedAt).getTime()
+    if (!Number.isNaN(startMs) && now - startMs > STALE_SESSION_THRESHOLD_MS) {
+      return {
+        ...s,
+        status: "completed",
+        endedAt: s.endedAt || s.startedAt,
+      }
+    }
+
+    return s
+  })
+}
+
 async function buildAnalyticsPayload() {
   // Backfill any sessions/logs not yet in the store (idempotent)
   await backfillAnalyticsStore()
 
   const store = await readAnalyticsStore()
-  const sessionAnalytics = Object.values(store.sessions).sort(
+  const runtimeState = await readRuntimeStateFile()
+
+  // 1. Deduplicate workflow + UUID pairs
+  const deduplicated = deduplicateSessions(Object.values(store.sessions))
+
+  // 2. Validate "running" status against actual process state
+  const validated = validateRunningStatus(deduplicated, runtimeState)
+
+  const sessionAnalytics = validated.sort(
     (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
   )
 

@@ -399,6 +399,44 @@ function parseVSCodeSession(sessionId, logPath) {
 	};
 }
 
+// ─── Deduplication helpers ────────────────────────────────────────────────────
+
+/** Max time diff (ms) to consider a UUID session a duplicate of a workflow session. */
+const DEDUP_WINDOW_MS = 5 * 60 * 1000;
+
+/**
+ * Check if a parsed session (UUID-keyed) overlaps with any existing
+ * workflow-* session having the same skill and a close start time.
+ * If so, inherit the workflow session's completed status rather than
+ * showing a stale "running" duplicate.
+ */
+function findMatchingWorkflowSession(parsed, existing) {
+	const parsedStart = Date.parse(parsed.start_date);
+	if (Number.isNaN(parsedStart)) return null;
+
+	for (const [id, entry] of Object.entries(existing)) {
+		if (!id.startsWith("workflow-")) continue;
+
+		const wfStart = Date.parse(
+			entry.start_date ?? entry.startedAt ?? "",
+		);
+		if (Number.isNaN(wfStart)) continue;
+
+		const timeDiff = Math.abs(parsedStart - wfStart);
+		const wfSkill = entry.agent ?? entry.skill ?? "";
+		const parsedSkill = parsed.agent ?? "";
+		const sameSkill =
+			parsedSkill === wfSkill ||
+			parsedSkill === "general" ||
+			wfSkill === "general";
+
+		if (timeDiff <= DEDUP_WINDOW_MS && sameSkill) {
+			return { id, entry };
+		}
+	}
+	return null;
+}
+
 // ─── Core sync ────────────────────────────────────────────────────────────────
 
 function syncSessions() {
@@ -415,6 +453,23 @@ function syncSessions() {
 			parsed.status === "running"
 		) {
 			parsed = { ...parsed, status: "completed", end_date: prev.end_date };
+		}
+
+		// If this UUID session duplicates a workflow session, inherit its status.
+		// This prevents showing "running" on the UUID entry when the workflow
+		// session already completed.
+		if (!id.startsWith("workflow-") && parsed.status === "running") {
+			const match = findMatchingWorkflowSession(parsed, existing);
+			if (match) {
+				const wfStatus = match.entry.status ?? "completed";
+				if (wfStatus === "completed" || wfStatus === "failed" || wfStatus === "cancelled") {
+					parsed = {
+						...parsed,
+						status: wfStatus,
+						end_date: parsed.end_date || match.entry.end_date || match.entry.endedAt || parsed.start_date,
+					};
+				}
+			}
 		}
 
 		const next = { ...(prev ?? {}), ...parsed };
