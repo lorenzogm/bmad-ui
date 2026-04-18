@@ -1139,21 +1139,20 @@ function summarizeSprintFromEpics(
 	}
 
 	for (const epic of epicMap.values()) {
-		if (epic.storyCount > 0 && epic.byStoryStatus.done === epic.storyCount) {
-			epic.status = "done";
+		epic.status = deriveEpicStatusFromStories(
+			epic.status,
+			epic.storyCount,
+			epic.byStoryStatus,
+		);
+
+		if (epic.status === "done") {
 			epic.lifecycleSteps["bmad-sprint-status"] = "completed";
 			epic.lifecycleSteps["bmad-sprint-planning"] = "completed";
 			epic.lifecycleSteps["bmad-retrospective"] = "completed";
 			continue;
 		}
 
-		if (
-			epic.byStoryStatus["ready-for-dev"] > 0 ||
-			epic.byStoryStatus["in-progress"] > 0 ||
-			epic.byStoryStatus.review > 0 ||
-			epic.byStoryStatus.done > 0
-		) {
-			epic.status = "in-progress";
+		if (epic.status === "in-progress") {
 			epic.lifecycleSteps["bmad-sprint-status"] = "completed";
 		}
 	}
@@ -1581,6 +1580,28 @@ function deriveStoryStepStateFromStatus(
 	return "not-started";
 }
 
+function deriveEpicStatusFromStories(
+	currentStatus: EpicStatus,
+	storyCount: number,
+	byStoryStatus: Record<StoryStatus, number>,
+): EpicStatus {
+	if (storyCount === 0) {
+		return currentStatus;
+	}
+
+	if (byStoryStatus.done === storyCount) {
+		return "done";
+	}
+
+	const hasProgress =
+		byStoryStatus["ready-for-dev"] > 0 ||
+		byStoryStatus["in-progress"] > 0 ||
+		byStoryStatus.review > 0 ||
+		byStoryStatus.done > 0;
+
+	return hasProgress ? "in-progress" : "backlog";
+}
+
 function summarizeSprint(
 	content: string,
 	sessions: SessionAnalyticsData[],
@@ -1794,6 +1815,12 @@ function summarizeSprint(
 	}
 
 	for (const epic of epicMap.values()) {
+		epic.status = deriveEpicStatusFromStories(
+			epic.status,
+			epic.storyCount,
+			epic.byStoryStatus,
+		);
+
 		if (epic.status === "backlog") {
 			epic.lifecycleSteps["bmad-sprint-status"] = "not-started";
 			epic.lifecycleSteps["bmad-sprint-planning"] = "not-started";
@@ -2116,6 +2143,56 @@ function escapeRegExp(value: string): string {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function syncEpicStatusInSprintContent(
+	content: string,
+	epicNumber: number,
+): string {
+	const storyLinePattern = new RegExp(
+		`^${epicNumber}-\\d+-[a-z0-9-]+:\\s*(backlog|ready-for-dev|in-progress|review|done)$`,
+		"gm",
+	);
+	const byStoryStatus: Record<StoryStatus, number> = {
+		backlog: 0,
+		"ready-for-dev": 0,
+		"in-progress": 0,
+		review: 0,
+		done: 0,
+	};
+
+	let storyCount = 0;
+	for (const match of content.matchAll(storyLinePattern)) {
+		const storyStatus = match[1] as StoryStatus;
+		byStoryStatus[storyStatus] += 1;
+		storyCount += 1;
+	}
+
+	if (storyCount === 0) {
+		return content;
+	}
+
+	const epicLinePattern = new RegExp(
+		`^(\\s*epic-${epicNumber}:\\s*)(backlog|in-progress|done)$`,
+		"m",
+	);
+	const epicLineMatch = content.match(epicLinePattern);
+	if (!epicLineMatch?.[2]) {
+		return content;
+	}
+
+	const currentStatus = epicLineMatch[2] as EpicStatus;
+	const derivedStatus = deriveEpicStatusFromStories(
+		currentStatus,
+		storyCount,
+		byStoryStatus,
+	);
+
+	if (derivedStatus === currentStatus) {
+		return content;
+	}
+
+	return content.replace(epicLinePattern, `$1${derivedStatus}`);
+}
+
 async function updateSprintStoryStatus(
 	storyId: string,
 	newStatus: string,
@@ -2128,6 +2205,10 @@ async function updateSprintStoryStatus(
 	);
 	if (!linePattern.test(content)) return;
 	let next = content.replace(linePattern, `$1${newStatus}`);
+	const epicNumber = Number(storyId.split("-")[0]);
+	if (Number.isFinite(epicNumber)) {
+		next = syncEpicStatusInSprintContent(next, epicNumber);
+	}
 	next = next.replace(
 		LAST_UPDATED_COMMENT_REGEX,
 		`# last_updated: ${new Date().toISOString().slice(0, 10)}`,
@@ -3951,6 +4032,10 @@ function attachApi(server: ViteDevServer): void {
 				}
 
 				let nextContent = sprintContent.replace(linePattern, "$1review");
+				const epicNumber = Number(storyId.split("-")[0]);
+				if (Number.isFinite(epicNumber)) {
+					nextContent = syncEpicStatusInSprintContent(nextContent, epicNumber);
+				}
 				const today = new Date().toISOString().slice(0, 10);
 				nextContent = nextContent.replace(
 					LAST_UPDATED_COMMENT_REGEX,
