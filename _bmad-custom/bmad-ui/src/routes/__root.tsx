@@ -58,8 +58,9 @@ const AVAILABLE_SKILLS = [
   "bmad-agent-ux-designer",
 ] as const
 
-const SESSIONS_SIDEBAR_LIMIT = 5
-const SESSIONS_REFETCH_INTERVAL_MS = 10_000
+const SESSIONS_SIDEBAR_LIMIT = 10
+const SESSIONS_REFETCH_INTERVAL_MS = 3_000
+const RUNNING_STATUS = "running"
 
 const WORKFLOW_SUBMENU = [
   { label: "Overview", phaseId: null },
@@ -242,7 +243,9 @@ function RootLayout() {
     refetchInterval: SESSIONS_REFETCH_INTERVAL_MS,
   })
 
-  const recentSessions = (sessionsData ?? []).slice(0, SESSIONS_SIDEBAR_LIMIT)
+  const recentSessions = (sessionsData ?? [])
+    .filter((s) => s.status === RUNNING_STATUS)
+    .slice(0, SESSIONS_SIDEBAR_LIMIT)
 
   return (
     <div className="app-layout">
