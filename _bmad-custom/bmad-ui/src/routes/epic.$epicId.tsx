@@ -380,35 +380,24 @@ function EpicDetailPage() {
     setIsPlanning(true)
     setBulkError(null)
 
-    const storiesToPlan = [
-      ...(data.plannedStories ?? []),
-      ...stories
-        .filter((s) => s.steps["bmad-create-story"] === "not-started")
-        .map((s) => s.id)
-        .filter((id) => !(data.plannedStories ?? []).includes(id)),
-    ]
-
-    if (storiesToPlan.length === 0) {
+    if (storiesNeedingPlan.length === 0) {
       setIsPlanning(false)
       return
     }
 
-    const results = await Promise.allSettled(
-      storiesToPlan.map((storyId) =>
-        fetch("/api/workflow/run-skill", {
+    const errors: string[] = []
+    for (const storyId of storiesNeedingPlan) {
+      try {
+        const response = await fetch("/api/workflow/run-skill", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ skill: "bmad-create-story", storyId }),
         })
-      )
-    )
-
-    const errors: string[] = []
-    for (const result of results) {
-      if (result.status === "rejected") {
-        errors.push(String(result.reason))
-      } else if (!result.value.ok && result.value.status !== HTTP_CONFLICT) {
-        errors.push(`request failed: ${result.value.status}`)
+        if (!response.ok && response.status !== HTTP_CONFLICT) {
+          errors.push(`${storyId}: request failed (${response.status})`)
+        }
+      } catch (fetchError) {
+        errors.push(`${storyId}: ${String(fetchError)}`)
       }
     }
 
@@ -417,7 +406,7 @@ function EpicDetailPage() {
     }
 
     setIsPlanning(false)
-  }, [data, stories])
+  }, [data, storiesNeedingPlan])
 
   const handleDevelopAllStories = useCallback(() => {
     if (!IS_LOCAL_MODE) return
