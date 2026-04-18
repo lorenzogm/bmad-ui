@@ -5,6 +5,14 @@ import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type { AnalyticsResponse, SessionAnalytics } from "../types"
 
 const TRAILING_SLASH_REGEX = /\/+$/
+const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
+
+function toSidebarStoryLabel(storyId: string | null | undefined): string | null {
+  if (!storyId) return null
+  const match = storyId.match(STORY_TICKET_REGEX)
+  if (!match) return null
+  return `${match[1]}.${match[2]}`
+}
 const HTTP_CONFLICT = 409
 const DEFAULT_SKILL = "bmad-quick-dev"
 const DEFAULT_MODEL = "claude-sonnet-4.6"
@@ -314,6 +322,11 @@ function RootLayout() {
                     to="/session/$sessionId"
                   >
                     <span className="sidebar-session-status" data-status={session.status} />
+                    {toSidebarStoryLabel(session.storyId) != null && (
+                      <span className="sidebar-session-story">
+                        {toSidebarStoryLabel(session.storyId)}
+                      </span>
+                    )}
                     {session.skill}
                   </Link>
                 )

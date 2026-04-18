@@ -308,6 +308,17 @@ a.sidebar-session-item:hover {
   background: #ef4444;
 }
 
+.sidebar-session-story {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--highlight);
+  background: rgba(46, 196, 182, 0.12);
+  border-radius: 3px;
+  padding: 0 4px;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
 .new-chat-trigger {
   text-align: left;
   cursor: pointer;
