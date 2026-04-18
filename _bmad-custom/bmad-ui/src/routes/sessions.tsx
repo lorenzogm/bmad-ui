@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { createRoute, Link } from "@tanstack/react-router"
+import { createRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { apiUrl } from "../lib/mode"
 import type { AnalyticsResponse, SessionAnalytics } from "../types"
@@ -134,7 +134,6 @@ function SessionsPage() {
             <thead>
               <tr>
                 <th>Skill / Name</th>
-                <th>Name</th>
                 <th>Model</th>
                 <th>Story</th>
                 <th>Status</th>
@@ -147,22 +146,6 @@ function SessionsPage() {
                 <tr key={session.sessionId}>
                   <td>
                     <span className="skill-chip">{session.skill ?? "—"}</span>
-                  </td>
-                  <td>
-                    <Link
-                      className="mono session-id"
-                      params={{ sessionId: session.sessionId }}
-                      style={{
-                        color: "var(--highlight)",
-                        textDecoration: "none",
-                      }}
-                      title={session.sessionId}
-                      to="/session/$sessionId"
-                    >
-                      {session.sessionId.length > 20
-                        ? `${session.sessionId.slice(0, 20)}…`
-                        : session.sessionId}
-                    </Link>
                   </td>
                   <td>
                     <span className="mono muted">{session.model}</span>
@@ -179,7 +162,7 @@ function SessionsPage() {
               ))}
               {filteredSessions.length === 0 && (
                 <tr>
-                  <td className="empty-row" colSpan={7}>
+                  <td className="empty-row" colSpan={6}>
                     No sessions found
                   </td>
                 </tr>
