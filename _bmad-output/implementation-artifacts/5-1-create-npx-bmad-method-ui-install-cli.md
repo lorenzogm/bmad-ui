@@ -16,7 +16,7 @@ so that bmad-ui is added to my project's `_bmad-custom/bmad-ui` folder instantly
 
 2. **Given** the install completes, **When** the user follows the printed next steps, **Then** they can run `cd _bmad-custom/bmad-ui && npm install && npm run dev` to start the UI.
 
-3. **Given** the npm package is published, **When** a user runs `npx bmad-method-ui install`, **Then** it fetches the latest version of bmad-ui without requiring git clone or manual file copying.
+3. **Given** the npm package is published to the public npm registry, **When** a user runs `npx bmad-method-ui install`, **Then** it fetches the latest version of bmad-ui without requiring git clone or manual file copying.
 
 4. **Given** an existing `_bmad-custom/bmad-ui` directory, **When** install is run again, **Then** the CLI warns the user before overwriting and requires explicit confirmation (prompt: `_bmad-custom/bmad-ui already exists. Overwrite? (y/N)`; default N aborts).
 
@@ -45,6 +45,11 @@ so that bmad-ui is added to my project's `_bmad-custom/bmad-ui` folder instantly
 
 - [x] Add `.npmignore` or rely on `files` field to keep the published package lean
   - [x] Verify with `npm pack --dry-run` that only `bin/` and `_bmad-custom/bmad-ui/` appear
+
+- [x] Add GitHub Actions publish workflow (AC: #3)
+  - [x] Create `.github/workflows/publish.yml` triggered on release published and workflow_dispatch
+  - [x] Use `actions/setup-node@v4` with `registry-url: https://registry.npmjs.org`
+  - [x] Authenticate with `NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}`
 
 - [x] Test the CLI locally end-to-end
   - [x] Run `node bin/install.mjs install` from a temp directory pointing to the repo
@@ -212,7 +217,9 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
-- Created `package.json` at repo root: `name: "bmad-method-ui"`, `version: "0.1.0"`, `type: "module"`, `engines: { node: ">=18" }`, `bin: { "bmad-method-ui": "bin/install.mjs" }`, `files: ["bin/", "_bmad-custom/bmad-ui/"]`
+- Updated `package.json` at repo root: `name: "bmad-method-ui"` (public npm, unscoped). No `publishConfig` needed — defaults to `https://registry.npmjs.org`.
+- Updated `bin/install.mjs` usage message to `npx bmad-method-ui install`.
+- Created `.github/workflows/publish.yml`: triggers on `release: published` and `workflow_dispatch`. Uses `actions/setup-node@v4` with `registry-url: https://registry.npmjs.org`, authenticates via `secrets.NPM_TOKEN`.
 - Created `bin/install.mjs`: ES Module CLI, uses only Node.js built-ins (`node:fs`, `node:path`, `node:readline`). Implements `install` subcommand with overwrite guard (readline prompt, default N), `cpSync` with `node_modules` filter, and next-steps output.
 - Added `node_modules` filter to `cpSync` to prevent symlink-loop errors when overwriting an existing install. Aligns with npm published behavior (npm auto-excludes `node_modules`).
 - Self-containment verified: `_bmad-custom/bmad-ui/package.json` has `"private": true`, no `workspace:*` refs; all `../` imports in `src/` are intra-src (routes → lib, types) and do not escape the app folder.
@@ -221,11 +228,11 @@ claude-sonnet-4.6
 
 ### File List
 
-- `package.json` (repo root) — CREATED
-- `bin/install.mjs` — CREATED
-- `_bmad-output/implementation-artifacts/5-1-create-npx-bmad-method-ui-install-cli.md` — UPDATED (story tracking)
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` — UPDATED (status → review)
+- `package.json` (repo root) — UPDATED (reverted to unscoped `bmad-method-ui` for public npm)
+- `bin/install.mjs` — UPDATED (usage message `npx bmad-method-ui install`)
+- `.github/workflows/publish.yml` — CREATED (publish to public npm on release via `NPM_TOKEN` secret)
 
 ## Change Log
 
 - 2026-04-18: Implemented npm CLI package (`package.json` + `bin/install.mjs`) for `npx bmad-method-ui install`. Includes overwrite guard, self-containment verification, npm pack validation, and local end-to-end tests.
+- 2026-04-18: Added `.github/workflows/publish.yml` to publish to public npm registry on GitHub release. Uses `NPM_TOKEN` secret for auth.
