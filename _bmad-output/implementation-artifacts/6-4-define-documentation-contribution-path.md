@@ -1,6 +1,6 @@
 # Story 6.4: Define Documentation Contribution Path
 
-Status: review
+Status: done
 
 ## Story
 
@@ -26,10 +26,19 @@ so that onboarding gaps can be fixed quickly.
 - [x] Fix outdated quality-check commands in CONTRIBUTING.md (AC: #2)
   - [x] Replace `pnpm run check:types` and `pnpm run check:tests` in "Making Changes" with `pnpm run check` (the canonical command per project standards)
   - [x] Update the PR template checklist line `npm run build` → `pnpm run check`
-- [x] Update `.github/PULL_REQUEST_TEMPLATE.md` to reflect docs-only PRs (AC: #2)
+- [x] Update `.github/pull_request_template.md` to reflect docs-only PRs (AC: #2)
   - [x] Add a `Documentation update` type checkbox (already has the slot — just add the item)
   - [x] Add a docs-only fast-path note: "For documentation-only changes, Testing section can be marked N/A"
 - [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #1)
+
+### Review Findings
+
+- [x] [Review][Patch] Story commit omitted required PR template update; applied docs-only fast path in `.github/pull_request_template.md` [_bmad-output/implementation-artifacts/6-4-define-documentation-contribution-path.md:29]
+- [x] [Review][Patch] Docs-only checklist path remained code-centric; added docs-only `N/A` guidance for style/comments/warnings items [.github/pull_request_template.md:22]
+- [x] [Review][Patch] Contribution guide still had split quality commands in Local Setup; consolidated to canonical `pnpm run check` [.github/CONTRIBUTING.md:23]
+- [x] [Review][Patch] Docs-only scope pattern excluded nested docs paths; widened from `docs/*.md` to `docs/**/*.md` [.github/CONTRIBUTING.md:71]
+- [x] [Review][Patch] Maintainer one-liner linked to ambiguous `CONTRIBUTING.md`; updated to explicit `.github/CONTRIBUTING.md` anchor [.github/CONTRIBUTING.md:99]
+- [x] [Review][Patch] Story references used non-existent uppercase template path; normalized to tracked `.github/pull_request_template.md` [_bmad-output/implementation-artifacts/6-4-define-documentation-contribution-path.md:44]
 
 ## Dev Notes
 
@@ -41,7 +50,7 @@ so that onboarding gaps can be fixed quickly.
 - Review criteria for PRs are code-focused; docs contributors must infer what's expected
 - The "Submitting a Pull Request" section works for both code and docs but doesn't say so explicitly
 
-**`.github/PULL_REQUEST_TEMPLATE.md`** — code-centric:
+**`.github/pull_request_template.md`** — code-centric:
 - Type of Change has: Bug fix, New feature, Breaking change, Documentation update — the last checkbox exists ✅
 - Testing section asks for unit/integration tests — docs contributors don't need this
 - Checklist references `npm run build`, `biome check src/`, `pnpm run check:types` — needs updating to `pnpm run check`
@@ -61,7 +70,7 @@ Documentation improvements are the fastest path to improving the contributor exp
 
 A docs-only PR modifies only:
 - `README.md`
-- `docs/*.md`
+- `docs/**/*.md`
 - `.github/CONTRIBUTING.md`
 - `.github/*.md` (other markdown in `.github/`)
 
@@ -89,7 +98,7 @@ No Biome lint, TypeScript, or build checks are required for docs-only changes.
 
 Maintainers can use this one-liner when directing contributors:
 
-> See [Documentation Contributions](CONTRIBUTING.md#documentation-contributions) in the contributing guide for how to submit a docs improvement.
+> See [Documentation Contributions](.github/CONTRIBUTING.md#documentation-contributions) in the contributing guide for how to submit a docs improvement.
 ```
 
 ### Outdated Commands to Fix
@@ -122,7 +131,7 @@ Should be replaced with:
 ### Key Constraints
 
 - This is a **documentation-only** story — do NOT modify any source code in `src/`, configs, or CI workflows.
-- All changes are limited to: `.github/CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE.md`
+- All changes are limited to: `.github/CONTRIBUTING.md`, `.github/pull_request_template.md`
 - Do NOT rewrite CONTRIBUTING.md from scratch — make surgical additions/edits only
 - Preserve all existing sections and their content; add the new section in the logical location
 
@@ -131,7 +140,7 @@ Should be replaced with:
 | File | Action |
 |---|---|
 | `.github/CONTRIBUTING.md` | Edit — add Documentation Contributions section, fix outdated commands |
-| `.github/PULL_REQUEST_TEMPLATE.md` | Edit — consolidate checklist, add docs-only note |
+| `.github/pull_request_template.md` | Edit — consolidate checklist, add docs-only note |
 
 ### Verification
 
@@ -145,7 +154,7 @@ After completing:
 ### Project Structure Notes
 
 - `.github/CONTRIBUTING.md` — contribution guide; shown by GitHub on new PR creation
-- `.github/PULL_REQUEST_TEMPLATE.md` — pre-filled PR description template
+- `.github/pull_request_template.md` — pre-filled PR description template
 - `docs/` — developer reference docs (not changed in this story)
 - `README.md` — project homepage (not changed in this story)
 
@@ -153,7 +162,7 @@ After completing:
 
 - [Source: epics.md#Story-6.4] — User story, acceptance criteria, FR36 mapping
 - [Source: .github/CONTRIBUTING.md] — Current state (has outdated commands, missing docs section)
-- [Source: .github/PULL_REQUEST_TEMPLATE.md] — Current PR template (code-centric checklist)
+- [Source: .github/pull_request_template.md] — Current PR template (code-centric checklist)
 - [Source: _bmad-output/project-context.md] — `pnpm run check` is the canonical quality command
 
 ## Dev Agent Record
@@ -168,15 +177,17 @@ claude-sonnet-4.6
 
 - Added "Documentation Contributions" section to `.github/CONTRIBUTING.md` after "Submitting a Pull Request": defines docs-only scope, lightweight step-by-step path, review criteria, and maintainer one-liner.
 - Fixed outdated commands in CONTRIBUTING.md "Making Changes": replaced `pnpm run check:types` + `pnpm run check:tests` with single `pnpm run check`.
-- Updated `.github/PULL_REQUEST_TEMPLATE.md`: consolidated three checklist items into one canonical `pnpm run check` line; added `N/A — documentation-only change` checkbox to Testing section.
+- Updated `.github/pull_request_template.md`: consolidated three checklist items into one canonical `pnpm run check` line; added `N/A — documentation-only change` checkbox to Testing section.
+- Code review follow-up: aligned docs-only guidance in checklist items, fixed remaining Local Setup command drift, expanded docs-only file pattern to include nested docs paths, and normalized template filename casing.
 - `pnpm run check` passed cleanly — no regressions.
 
 ### File List
 
 - `.github/CONTRIBUTING.md`
-- `.github/PULL_REQUEST_TEMPLATE.md`
+- `.github/pull_request_template.md`
 - `_bmad-output/implementation-artifacts/6-4-define-documentation-contribution-path.md`
 
 ## Change Log
 
 - 2026-04-18: Added Documentation Contributions section to CONTRIBUTING.md, fixed outdated pnpm commands, updated PR template with docs-only fast-path.
+- 2026-04-18: Resolved code review findings for story 6.4 and marked story done.

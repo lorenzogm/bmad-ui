@@ -21,8 +21,7 @@ pnpm install
 pnpm dev
 
 # Run quality checks
-pnpm run check:types
-pnpm run check:tests
+pnpm run check
 ```
 
 ## Development Workflow
@@ -68,7 +67,7 @@ Documentation improvements are the fastest path to improving the contributor exp
 
 A docs-only PR modifies only:
 - `README.md`
-- `docs/*.md`
+- `docs/**/*.md`
 - `.github/CONTRIBUTING.md`
 - `.github/*.md` (other markdown in `.github/`)
 
@@ -96,7 +95,7 @@ No Biome lint, TypeScript, or build checks are required for docs-only changes.
 
 Maintainers can use this one-liner when directing contributors:
 
-> See [Documentation Contributions](CONTRIBUTING.md#documentation-contributions) in the contributing guide for how to submit a docs improvement.
+> See [Documentation Contributions](.github/CONTRIBUTING.md#documentation-contributions) in the contributing guide for how to submit a docs improvement.
 
 ## Code Quality
 

@@ -16,16 +16,15 @@
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] Manual testing completed
+- [ ] N/A — documentation-only change
 
 ## Checklist
-- [ ] My code follows the project's code style
+- [ ] My code follows the project's code style (or N/A for docs-only PRs)
 - [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have commented my code, particularly in hard-to-understand areas (or N/A for docs-only PRs)
 - [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have verified that the build succeeds: `npm run build`
-- [ ] I have verified that linting passes: `biome check src/`
-- [ ] I have verified that type checking passes: `npm run check:types`
+- [ ] My changes generate no new warnings (or N/A for docs-only PRs)
+- [ ] I have run `cd _bmad-custom/bmad-ui && pnpm run check` and all checks pass (or N/A for docs-only PRs)
 
 ## Screenshots (if applicable)
 <!-- Add screenshots for UI changes -->
