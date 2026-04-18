@@ -59,6 +59,11 @@ FR37: Maintainer can collect and review early adoption signals from public proje
 FR38: Maintainer can use Phase 1 outputs as baseline inputs for Phase 2 refactoring.
 FR39: Maintainer can preserve a clear boundary between Phase 1 delivery and post-MVP feature expansion.
 FR40: Maintainer can evolve the product toward advanced agentic capabilities without replacing foundational workflows.
+FR41: Maintainer can automatically capture session-level outcome metrics (one-shot success, delivery, abort, correction count) from Copilot CLI and VS Code debug logs without manual annotation.
+FR42: Maintainer can view per-skill and per-model effectiveness metrics to identify which combinations produce the best autonomous output.
+FR43: Maintainer can compare session quality across model+skill combinations to inform autonomous workflow configuration decisions.
+FR44: Maintainer can track session complexity indicators (context compactions, subagent spawns, tool distribution) to diagnose why sessions fail or require corrections.
+FR45: Maintainer can export or generate an autonomous workflow configuration recommending optimal model assignments per skill based on historical session data.
 
 ### NonFunctional Requirements
 
@@ -84,6 +89,9 @@ NFR19: Project structure and automation conventions support incremental adoption
 NFR20: Public documentation uses clear structure and readable formatting suitable for broad developer audiences.
 NFR21: Core UI views maintain keyboard-navigable interaction paths for primary workflows.
 NFR22: New UI additions in Phase 1 do not reduce existing accessibility quality baseline of the application.
+NFR23: Session sync daemon must process all historical sessions on startup within 30 seconds.
+NFR24: Session quality metrics must be derivable entirely from local log files without network calls or external API dependencies.
+NFR25: Analytics aggregation for model+skill effectiveness must handle at least 500 sessions without noticeable UI lag.
 
 ### Additional Requirements
 
@@ -154,6 +162,11 @@ _No UX Design document was found for Phase 1. Phase 1 is infrastructure-focused;
 | FR38 | Epic 7 | Use Phase 1 outputs as Phase 2 baseline inputs |
 | FR39 | Epic 7 | Preserve clear boundary between Phase 1 and post-MVP |
 | FR40 | Epic 7 | Evolve toward advanced agentic capabilities |
+| FR41 | Epic 9 | Auto-capture session outcome metrics from logs |
+| FR42 | Epic 9 | View per-skill/per-model effectiveness metrics |
+| FR43 | Epic 9 | Compare session quality across model+skill combos |
+| FR44 | Epic 9 | Track session complexity indicators |
+| FR45 | Epic 9 | Generate autonomous workflow configuration from data |
 
 ## Epic List
 
@@ -187,6 +200,10 @@ Users can access bmad-ui as a working visual companion to bmad orchestration wor
 
 ### Epic 8: UI Improvements & Polish
 Users experience a polished, responsive bmad-ui with improved empty states, loading skeletons, navigation clarity, and accessible status indicators — making the tool feel production-ready and easy to use daily.
+
+### Epic 9: Session Analytics & Autonomous Workflow Optimization
+Maintainer can observe rich session-level quality metrics (one-shot success, delivery rate, corrections, aborts, complexity indicators) aggregated by skill and model, enabling data-driven selection of optimal model+skill combinations for autonomous agent workflows.
+**FRs covered:** FR41, FR42, FR43, FR44, FR45
 
 ---
 
@@ -955,3 +972,201 @@ So that I can instantly see what's happening without scanning through completed 
 - Filter `sessionsData` by `status === "running"` before slicing with `SESSIONS_SIDEBAR_LIMIT`
 - Reuse the existing `.sidebar-session-status` dot with `data-status="running"` for the green pulse indicator
 - The "No active sessions" empty label should use `var(--muted)` and match the `.sidebar-sublink` size/padding
+
+---
+
+## Epic 9: Session Analytics & Autonomous Workflow Optimization
+
+Maintainer can observe rich session-level quality metrics (one-shot success, delivery rate, corrections, aborts, complexity indicators) aggregated by skill and model, enabling data-driven selection of optimal model+skill combinations for autonomous agent workflows.
+
+**Story to FR mapping:**
+- Story 9.1 -> FR41, FR44, NFR23, NFR24
+- Story 9.2 -> FR42, NFR25
+- Story 9.3 -> FR42, FR43
+- Story 9.4 -> FR43
+- Story 9.5 -> FR45
+
+### Story 9.1: Enrich Session Sync Daemon with Outcome & Complexity Metrics
+
+As a maintainer,
+I want the sync-sessions daemon to extract rich outcome and complexity metrics from Copilot CLI events.jsonl logs,
+So that each session in agent-sessions.json contains the data needed to determine session quality without manual annotation.
+
+**Acceptance Criteria:**
+
+**Given** a Copilot CLI session with events.jsonl containing user.message, tool.execution_start, abort, session.error, session.compaction_start, and subagent events,
+**When** the sync daemon processes the session,
+**Then** it extracts and persists the following additional fields to agent-sessions.json:
+- `human_turns` (number) — count of real user messages, excluding auto-injected `<skill-context>` and `<reminder>` wrapper content
+- `agent_turns` (number) — count of `assistant.turn_end` events
+- `git_commits` (number) — count of bash tool calls containing `git commit`
+- `git_pushes` (number) — count of bash tool calls containing `git push`
+- `aborted` (boolean) — whether an `abort` event occurred
+- `context_compactions` (number) — count of `session.compaction_start` events
+- `subagent_count` (number) — count of `subagent.started` events
+- `subagent_tokens` (number) — sum of `totalTokens` from `subagent.completed` events
+- `error_count` (number) — count of `session.error` events
+- `duration_minutes` (number) — wall-clock time from session start to last event
+- `outcome` (string) — one of: `"pushed"` (git push found), `"committed"` (git commit but no push), `"aborted"` (abort event), `"error"` (session.error found), `"no-output"` (none of the above)
+
+**Given** the sync daemon running in watch mode,
+**When** a session was already synced as `status: "completed"` with all outcome fields populated,
+**Then** it is skipped on subsequent polls to avoid re-parsing large files
+
+**Given** the sync daemon started with `--once`,
+**When** 130+ historical sessions exist,
+**Then** all sessions are processed and the daemon exits within 30 seconds (NFR23)
+
+**Given** the existing `agent-sessions.json` with sessions that have the old schema (no outcome fields),
+**When** the sync daemon runs,
+**Then** it enriches those sessions with the new fields via upsert without losing existing data
+
+**Notes:**
+- The `human_turns` filter must strip `<skill-context>`, `<reminder>`, `<context>`, and `<current_datetime>` XML blocks and only count messages with >10 chars of real human content remaining
+- `outcome` derivation order: `"aborted"` > `"error"` > `"pushed"` > `"committed"` > `"no-output"` (first matching wins)
+- Extends the existing `parseCLISession()` function in `scripts/sync-sessions.mjs`
+
+### Story 9.2: Analytics API — Session Quality Aggregation Endpoint
+
+As a maintainer,
+I want the API to serve pre-aggregated session quality metrics grouped by skill and model,
+So that the frontend can render effectiveness charts without client-side data crunching across hundreds of sessions.
+
+**Acceptance Criteria:**
+
+**Given** the API server reads agent-sessions.json,
+**When** a GET request hits `/api/analytics`,
+**Then** the response includes a new `quality` object with:
+- `bySkill` — for each skill: `{ sessions, delivered, oneShot, corrected, aborted, avgDurationMin, avgAgentTurns, avgHumanTurns }`
+- `byModel` — for each model: same shape as bySkill
+- `bySkillModel` — for each skill×model combo: same shape, plus `oneShotRate` (0–1)
+- `overall` — same shape across all sessions
+
+**Given** a session with `outcome === "pushed"` or `outcome === "committed"` AND `human_turns === 1`,
+**When** aggregated,
+**Then** it counts as `oneShot`
+
+**Given** a session with `outcome === "pushed"` or `outcome === "committed"` AND `human_turns > 1`,
+**When** aggregated,
+**Then** it counts as `corrected`
+
+**Given** a session with `outcome === "pushed"` or `outcome === "committed"`,
+**When** aggregated,
+**Then** it counts as `delivered`
+
+**Given** the analytics endpoint is called with 500+ sessions in agent-sessions.json,
+**When** the response is generated,
+**Then** it completes within 200ms (NFR25)
+
+**Notes:**
+- Add the `quality` field to the existing `buildAnalyticsResponse()` function in `scripts/agent-server.ts`
+- Add TypeScript types for quality metrics to `src/types.ts`
+- `oneShot` definition: `human_turns === 1 && (outcome === "pushed" || outcome === "committed") && !aborted`
+
+### Story 9.3: Session Quality Dashboard — Effectiveness Charts
+
+As a maintainer,
+I want a new analytics sub-page showing session quality charts broken down by skill and model,
+So that I can visually identify which workflows succeed autonomously and which require human intervention.
+
+**Acceptance Criteria:**
+
+**Given** the analytics quality data is available,
+**When** the user navigates to `/analytics/quality`,
+**Then** the page shows:
+1. A summary stat row: total sessions, overall delivery rate (%), overall one-shot rate (%), overall abort rate (%)
+2. A horizontal bar chart: one-shot rate per skill (sorted descending)
+3. A horizontal bar chart: one-shot rate per model (sorted descending)
+4. A stacked bar chart: sessions per skill broken into one-shot / corrected / aborted / no-output segments
+
+**Given** the charts,
+**When** rendered,
+**Then** they use the existing design system: `var(--status-done)` for one-shot, `var(--status-progress)` for corrected, `var(--highlight-2)` for aborted, `var(--status-backlog)` for no-output
+
+**Given** the analytics layout navigation,
+**When** the quality page exists,
+**Then** a "Quality" link appears in the analytics sub-navigation between "Models" and the last item
+
+**Given** no sessions have outcome data yet,
+**When** the quality page loads,
+**Then** a friendly empty state with guidance message is shown: "Run sync-sessions to populate session quality metrics"
+
+**Notes:**
+- New route file: `src/routes/analytics-quality.tsx`
+- Register in `src/routes/route-tree.ts` under the analyticsLayout children
+- Use ECharts (already a dependency) for all charts
+- Add chart builders to `analytics-utils.tsx`
+
+### Story 9.4: Skill × Model Effectiveness Matrix
+
+As a maintainer,
+I want a heatmap matrix showing one-shot success rate for every skill×model combination that has been used,
+So that I can identify the best model for each skill and make data-driven decisions for autonomous workflows.
+
+**Acceptance Criteria:**
+
+**Given** the quality analytics data with `bySkillModel` entries,
+**When** the effectiveness matrix is rendered,
+**Then** it shows a grid where rows are skills, columns are models, and each cell is color-coded by one-shot rate (green=high, red=low, gray=no data)
+
+**Given** a cell in the matrix,
+**When** hovered,
+**Then** a tooltip shows: skill name, model name, total sessions, one-shot count, one-shot rate, avg duration, avg human turns
+
+**Given** a skill×model combo with fewer than 3 sessions,
+**When** displayed in the matrix,
+**Then** the cell has a "low confidence" visual indicator (e.g., dashed border or reduced opacity) to signal insufficient sample size
+
+**Given** the matrix data,
+**When** a "Best Model" column exists at the end,
+**Then** it highlights the model with the highest one-shot rate for each skill (minimum 3 sessions), or "Insufficient data" if no model has ≥3 sessions
+
+**Notes:**
+- Render on the same `/analytics/quality` page below the bar charts, or as a dedicated section
+- Use ECharts heatmap or a custom HTML table with CSS variable backgrounds
+- Color scale: `var(--status-done)` at 100% → `var(--highlight-2)` at 0% with `var(--status-backlog)` for no data
+
+### Story 9.5: Autonomous Workflow Configuration Generator
+
+As a maintainer,
+I want to generate a recommended model-per-skill configuration file based on historical session effectiveness data,
+So that I can configure an autonomous workflow runner to use the best-performing model for each skill without manual guesswork.
+
+**Acceptance Criteria:**
+
+**Given** the quality analytics data with sufficient session history (≥3 sessions per skill×model combo),
+**When** the user clicks "Generate Config" on the quality dashboard,
+**Then** the system produces a YAML or JSON configuration with:
+- For each skill: recommended model (highest one-shot rate with ≥3 sessions), fallback model (second highest), confidence level (number of sessions backing the recommendation)
+- A `metadata` section with: generation timestamp, total sessions analyzed, data coverage (% of skills with confident recommendations)
+
+**Given** a skill with no model having ≥3 sessions,
+**When** the config is generated,
+**Then** that skill is listed with `model: "default"` and `confidence: "insufficient-data"`
+
+**Given** the generated configuration,
+**When** displayed in the UI,
+**Then** it is shown in a copyable code block with syntax highlighting, plus a "Download" button that saves as `autonomous-workflow-config.yaml`
+
+**Given** the effectiveness data changes over time as more sessions are recorded,
+**When** the user regenerates the config,
+**Then** the recommendations update based on the latest data
+
+**Notes:**
+- This is a read-only generation feature — it does not modify any workflow runner
+- The config format should be simple enough for a future orchestrator to consume:
+  ```yaml
+  skills:
+    bmad-create-story:
+      model: claude-sonnet-4.6
+      fallback: claude-haiku-4.5
+      one_shot_rate: 0.87
+      sessions: 15
+    bmad-dev-story:
+      model: claude-opus-4.6
+      fallback: claude-sonnet-4.6
+      one_shot_rate: 0.72
+      sessions: 10
+  ```
+- The `/api/analytics/quality-config` endpoint generates the YAML server-side
+- UI renders it via the `marked` library (already a dependency) in a code block

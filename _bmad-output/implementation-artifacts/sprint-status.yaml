@@ -98,3 +98,11 @@ development_status:
   8-3-status-badge-consistency-across-views: backlog
   8-4-responsive-layout-and-spacing-refinements: backlog
   epic-8-retrospective: optional
+
+  epic-9: backlog
+  9-1-enrich-sync-daemon-outcome-complexity-metrics: backlog
+  9-2-analytics-api-session-quality-aggregation: backlog
+  9-3-session-quality-dashboard-effectiveness-charts: backlog
+  9-4-skill-model-effectiveness-matrix: backlog
+  9-5-autonomous-workflow-config-generator: backlog
+  epic-9-retrospective: optional
