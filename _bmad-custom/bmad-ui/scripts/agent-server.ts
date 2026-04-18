@@ -3737,6 +3737,23 @@ function attachApi(server: ViteDevServer): void {
             return
           }
 
+          // Prevent duplicate sessions: if the same skill is already running
+          // for the same story, return 409 Conflict.
+          if (storyId && runningSessionProcesses.size > 0) {
+            const runtimeStateForCheck = await loadOrCreateRuntimeState()
+            const duplicateSession = runtimeStateForCheck.sessions.find(
+              (s) =>
+                runningSessionProcesses.has(s.id) &&
+                s.storyId === storyId &&
+                s.skill === skill
+            )
+            if (duplicateSession) {
+              res.writeHead(409, { "Content-Type": "application/json" })
+              res.end(JSON.stringify({ error: `${skill} is already running for story ${storyId}` }))
+              return
+            }
+          }
+
           // Skills that run preparation work (not code execution) can run in
           // parallel with a running dev-story. Only exclusive skills are blocked
           // when there is a story dependency conflict with a running session.
