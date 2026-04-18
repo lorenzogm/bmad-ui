@@ -4,8 +4,8 @@ import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 import process from "node:process"
-import { promisify } from "node:util"
 import { fileURLToPath } from "node:url"
+import { promisify } from "node:util"
 import type { ViteDevServer } from "vite"
 
 const __agentServerDirname =
@@ -563,7 +563,9 @@ async function startRuntimeSession(
 
       // Step 2: Fetch latest changes
       try {
-        await execFileAsync("git", ["fetch", "origin", "main"], { cwd: projectRoot })
+        await execFileAsync("git", ["fetch", "origin", "main"], {
+          cwd: projectRoot,
+        })
         await writeFile(session.logPath, `\n[orchestrator] fetched latest changes from origin\n`, {
           encoding: "utf8",
           flag: "a",
@@ -600,7 +602,9 @@ async function startRuntimeSession(
             cwd: projectRoot,
           })
           // If there are conflicts, try to resolve them
-          await execFileAsync("git", ["checkout", "--theirs", "."], { cwd: projectRoot })
+          await execFileAsync("git", ["checkout", "--theirs", "."], {
+            cwd: projectRoot,
+          })
           await execFileAsync("git", ["add", "-A"], { cwd: projectRoot })
           await execFileAsync(
             "git",
@@ -627,7 +631,9 @@ async function startRuntimeSession(
             }
           )
           try {
-            await execFileAsync("git", ["merge", "--abort"], { cwd: projectRoot })
+            await execFileAsync("git", ["merge", "--abort"], {
+              cwd: projectRoot,
+            })
             await writeFile(session.logPath, `\n[orchestrator] aborted merge attempt\n`, {
               encoding: "utf8",
               flag: "a",
@@ -648,7 +654,9 @@ async function startRuntimeSession(
       // Step 4: Push changes to remote if merge succeeded
       if (mergeSucceeded) {
         try {
-          await execFileAsync("git", ["push", "origin", "main"], { cwd: projectRoot })
+          await execFileAsync("git", ["push", "origin", "main"], {
+            cwd: projectRoot,
+          })
           await writeFile(session.logPath, `\n[orchestrator] ✓ pushed changes to origin/main\n`, {
             encoding: "utf8",
             flag: "a",
@@ -1175,8 +1183,7 @@ function buildLogFromEvents(eventsContent: string): string {
 
     switch (eventType) {
       case "user.message": {
-        const content =
-          typeof eventData.content === "string" ? eventData.content.trim() : ""
+        const content = typeof eventData.content === "string" ? eventData.content.trim() : ""
         if (content) {
           output.push(`[user] ${content}`)
         }
@@ -1184,8 +1191,7 @@ function buildLogFromEvents(eventsContent: string): string {
       }
 
       case "assistant.message": {
-        const content =
-          typeof eventData.content === "string" ? eventData.content.trim() : ""
+        const content = typeof eventData.content === "string" ? eventData.content.trim() : ""
         if (content) {
           output.push(content)
         }
@@ -1233,12 +1239,9 @@ function buildLogFromEvents(eventsContent: string): string {
           resultText = rawResult.trim()
         } else if (typeof rawResult === "object" && rawResult !== null) {
           const resultObj = rawResult as Record<string, unknown>
-          const content =
-            typeof resultObj.content === "string" ? resultObj.content : ""
+          const content = typeof resultObj.content === "string" ? resultObj.content : ""
           const detailed =
-            typeof resultObj.detailedContent === "string"
-              ? resultObj.detailedContent
-              : ""
+            typeof resultObj.detailedContent === "string" ? resultObj.detailedContent : ""
           resultText = (detailed || content).trim()
         }
         if (resultText.length > 0) {
@@ -1291,7 +1294,39 @@ async function buildSessionDetailPayload(sessionId: string): Promise<SessionDeta
   const session = runtimeState?.sessions.find((candidate) => candidate.id === sessionId) || null
 
   if (!session) {
-    return null
+    // Fall back to analytics store for sessions tracked by the sync-sessions daemon
+    // (e.g. VS Code Copilot sessions) that are not in runtime-state.json
+    const store = await readAnalyticsStore()
+    const analyticsEntry = store.sessions[sessionId] || null
+    if (!analyticsEntry) {
+      return null
+    }
+    const analyticsSession: RuntimeSession = {
+      id: analyticsEntry.sessionId,
+      skill: analyticsEntry.skill,
+      model: analyticsEntry.model,
+      storyId: analyticsEntry.storyId,
+      status: analyticsEntry.status,
+      startedAt: analyticsEntry.startedAt,
+      endedAt: analyticsEntry.endedAt,
+      command: "",
+      promptPath: "",
+      logPath: "",
+      worktreePath: null,
+      exitCode: null,
+      error: null,
+      userMessages: [],
+    }
+    return {
+      session: analyticsSession,
+      logContent: null,
+      promptContent: null,
+      summary: null,
+      logExists: false,
+      promptExists: false,
+      isRunning: false,
+      canSendInput: false,
+    }
   }
 
   const rawLogContent = await readOptionalTextFile(session.logPath)
@@ -2720,9 +2755,7 @@ const STALE_SESSION_THRESHOLD_MS = 35 * 60 * 1000
  * has story info & proper status) and enriches it with token data from
  * the UUID entry.
  */
-function deduplicateSessions(
-  sessions: SessionAnalyticsData[]
-): SessionAnalyticsData[] {
+function deduplicateSessions(sessions: SessionAnalyticsData[]): SessionAnalyticsData[] {
   const workflowSessions: SessionAnalyticsData[] = []
   const uuidSessions: SessionAnalyticsData[] = []
 
@@ -2748,9 +2781,7 @@ function deduplicateSessions(
 
       const timeDiff = Math.abs(uuidStart - wfStart)
       const sameSkill =
-        uuid.skill === wf.skill ||
-        uuid.skill === "general" ||
-        wf.skill === "general"
+        uuid.skill === wf.skill || uuid.skill === "general" || wf.skill === "general"
 
       if (timeDiff <= SESSION_DEDUP_WINDOW_MS && sameSkill) {
         // Merge: enrich workflow entry with UUID's token data if richer
@@ -2762,10 +2793,7 @@ function deduplicateSessions(
             ...wf.usage,
             tokensIn: Math.max(wf.usage.tokensIn, uuid.usage.tokensIn),
             tokensOut: Math.max(wf.usage.tokensOut, uuid.usage.tokensOut),
-            tokensCached: Math.max(
-              wf.usage.tokensCached ?? 0,
-              uuid.usage.tokensCached ?? 0
-            ),
+            tokensCached: Math.max(wf.usage.tokensCached ?? 0, uuid.usage.tokensCached ?? 0),
             totalTokens: Math.max(wf.usage.totalTokens, uuid.usage.totalTokens),
             requests: Math.max(wf.usage.requests, uuid.usage.requests),
           }
@@ -2779,10 +2807,7 @@ function deduplicateSessions(
   }
 
   // Return workflow sessions + non-duplicate UUID sessions
-  return [
-    ...workflowSessions,
-    ...uuidSessions.filter((s) => !duplicateUuidIds.has(s.sessionId)),
-  ]
+  return [...workflowSessions, ...uuidSessions.filter((s) => !duplicateUuidIds.has(s.sessionId))]
 }
 
 /**
@@ -2795,9 +2820,7 @@ function validateRunningStatus(
   runtimeState: RuntimeState | null
 ): SessionAnalyticsData[] {
   const activeRuntimeIds = new Set(
-    (runtimeState?.sessions ?? [])
-      .filter((s) => s.status === "running")
-      .map((s) => s.id)
+    (runtimeState?.sessions ?? []).filter((s) => s.status === "running").map((s) => s.id)
   )
   const activeProcessIds = new Set(runningSessionProcesses.keys())
 
@@ -2980,13 +3003,18 @@ function parseSimpleYamlList(raw: string, key: string): Array<Record<string, str
 
 function stripYamlQuotes(val: string): string {
   const trimmed = val.trim()
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
     return trimmed.slice(1, -1)
   }
   return trimmed
 }
 
-function serializeLinksYaml(links: Array<{ title: string; subtitle: string; url: string; icon: string }>): string {
+function serializeLinksYaml(
+  links: Array<{ title: string; subtitle: string; url: string; icon: string }>
+): string {
   if (links.length === 0) return "links: []\n"
   const lines = ["links:"]
   for (const link of links) {
@@ -3257,7 +3285,11 @@ function attachApi(server: ViteDevServer): void {
 
             if (hasConflict) {
               res.writeHead(409, { "Content-Type": "application/json" })
-              res.end(JSON.stringify({ error: "another orchestrator task is running" }))
+              res.end(
+                JSON.stringify({
+                  error: "another orchestrator task is running",
+                })
+              )
               return
             }
           }
@@ -3719,10 +3751,7 @@ function attachApi(server: ViteDevServer): void {
           let skipped = 0
 
           for (const session of sessions) {
-            const eventsPaths = await findAllCliEventsJsonl(
-              session.id,
-              session.userMessages || []
-            )
+            const eventsPaths = await findAllCliEventsJsonl(session.id, session.userMessages || [])
             if (eventsPaths.length === 0) {
               skipped += 1
               continue
@@ -3768,12 +3797,10 @@ function attachApi(server: ViteDevServer): void {
             res.end(JSON.stringify({ error: "valid stepId is required" }))
             return
           }
-          const skipFilePath = path.join(
-            artifactsRoot,
-            "planning-artifacts",
-            `${stepId}.skipped`
-          )
-          await mkdir(path.join(artifactsRoot, "planning-artifacts"), { recursive: true })
+          const skipFilePath = path.join(artifactsRoot, "planning-artifacts", `${stepId}.skipped`)
+          await mkdir(path.join(artifactsRoot, "planning-artifacts"), {
+            recursive: true,
+          })
           await writeFile(skipFilePath, "", "utf8")
           res.writeHead(200, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ status: "skipped", stepId }))
@@ -3793,11 +3820,7 @@ function attachApi(server: ViteDevServer): void {
             res.end(JSON.stringify({ error: "valid stepId is required" }))
             return
           }
-          const skipFilePath = path.join(
-            artifactsRoot,
-            "planning-artifacts",
-            `${stepId}.skipped`
-          )
+          const skipFilePath = path.join(artifactsRoot, "planning-artifacts", `${stepId}.skipped`)
           if (existsSync(skipFilePath)) {
             await unlink(skipFilePath)
           }
@@ -3853,7 +3876,11 @@ function attachApi(server: ViteDevServer): void {
 
           if (rawPrompt && (storyId || epicId)) {
             res.writeHead(400, { "Content-Type": "application/json" })
-            res.end(JSON.stringify({ error: "prompt cannot be combined with storyId or epicId" }))
+            res.end(
+              JSON.stringify({
+                error: "prompt cannot be combined with storyId or epicId",
+              })
+            )
             return
           }
 
@@ -3877,14 +3904,15 @@ function attachApi(server: ViteDevServer): void {
           if (storyId && runningSessionProcesses.size > 0) {
             const runtimeStateForCheck = await loadOrCreateRuntimeState()
             const duplicateSession = runtimeStateForCheck.sessions.find(
-              (s) =>
-                runningSessionProcesses.has(s.id) &&
-                s.storyId === storyId &&
-                s.skill === skill
+              (s) => runningSessionProcesses.has(s.id) && s.storyId === storyId && s.skill === skill
             )
             if (duplicateSession) {
               res.writeHead(409, { "Content-Type": "application/json" })
-              res.end(JSON.stringify({ error: `${skill} is already running for story ${storyId}` }))
+              res.end(
+                JSON.stringify({
+                  error: `${skill} is already running for story ${storyId}`,
+                })
+              )
               return
             }
           }
@@ -3920,7 +3948,11 @@ function attachApi(server: ViteDevServer): void {
 
             if (hasConflict || sameStoryRunning) {
               res.writeHead(409, { "Content-Type": "application/json" })
-              res.end(JSON.stringify({ error: "another orchestrator task is running" }))
+              res.end(
+                JSON.stringify({
+                  error: "another orchestrator task is running",
+                })
+              )
               return
             }
           }
@@ -3934,9 +3966,7 @@ function attachApi(server: ViteDevServer): void {
 
           const skillModel = SKILL_MODEL_OVERRIDES[skill] ?? DEFAULT_WORKFLOW_MODEL
 
-          const autoResolveInstructions = autoResolve
-            ? buildAutoResolveInstructions(skill)
-            : null
+          const autoResolveInstructions = autoResolve ? buildAutoResolveInstructions(skill) : null
 
           const prompt = customPrompt
             ? customPrompt
@@ -3981,7 +4011,12 @@ function attachApi(server: ViteDevServer): void {
       // --- Links CRUD ---
       if (requestUrl.pathname === "/api/links" && req.method === "GET") {
         try {
-          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          let links: Array<{
+            title: string
+            subtitle: string
+            url: string
+            icon: string
+          }> = []
           if (existsSync(linksFile)) {
             const raw = readFileSync(linksFile, "utf8")
             const parsed = parseSimpleYamlList(raw, "links")
@@ -3999,18 +4034,33 @@ function attachApi(server: ViteDevServer): void {
       if (requestUrl.pathname === "/api/links" && req.method === "POST") {
         try {
           const body = await readRequestBody(req)
-          const { title, subtitle, url, icon } = JSON.parse(body) as { title: string; subtitle: string; url: string; icon: string }
+          const { title, subtitle, url, icon } = JSON.parse(body) as {
+            title: string
+            subtitle: string
+            url: string
+            icon: string
+          }
           if (!title || !url) {
             res.writeHead(400, { "Content-Type": "application/json" })
             res.end(JSON.stringify({ error: "title and url are required" }))
             return
           }
-          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          let links: Array<{
+            title: string
+            subtitle: string
+            url: string
+            icon: string
+          }> = []
           if (existsSync(linksFile)) {
             const raw = readFileSync(linksFile, "utf8")
             links = parseSimpleYamlList(raw, "links") as typeof links
           }
-          links.push({ title, subtitle: subtitle || "", url, icon: icon || "link" })
+          links.push({
+            title,
+            subtitle: subtitle || "",
+            url,
+            icon: icon || "link",
+          })
           await writeFile(linksFile, serializeLinksYaml(links), "utf8")
           res.writeHead(201, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ links }))
@@ -4024,13 +4074,24 @@ function attachApi(server: ViteDevServer): void {
       if (requestUrl.pathname === "/api/links" && req.method === "PUT") {
         try {
           const body = await readRequestBody(req)
-          const { index, title, subtitle, url, icon } = JSON.parse(body) as { index: number; title?: string; subtitle?: string; url?: string; icon?: string }
+          const { index, title, subtitle, url, icon } = JSON.parse(body) as {
+            index: number
+            title?: string
+            subtitle?: string
+            url?: string
+            icon?: string
+          }
           if (index === undefined || index === null) {
             res.writeHead(400, { "Content-Type": "application/json" })
             res.end(JSON.stringify({ error: "index is required" }))
             return
           }
-          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          let links: Array<{
+            title: string
+            subtitle: string
+            url: string
+            icon: string
+          }> = []
           if (existsSync(linksFile)) {
             const raw = readFileSync(linksFile, "utf8")
             links = parseSimpleYamlList(raw, "links") as typeof links
@@ -4063,7 +4124,12 @@ function attachApi(server: ViteDevServer): void {
             return
           }
           const index = Number.parseInt(indexParam, 10)
-          let links: Array<{ title: string; subtitle: string; url: string; icon: string }> = []
+          let links: Array<{
+            title: string
+            subtitle: string
+            url: string
+            icon: string
+          }> = []
           if (existsSync(linksFile)) {
             const raw = readFileSync(linksFile, "utf8")
             links = parseSimpleYamlList(raw, "links") as typeof links
@@ -4087,7 +4153,12 @@ function attachApi(server: ViteDevServer): void {
       // --- Notes CRUD ---
       if (requestUrl.pathname === "/api/notes" && req.method === "GET") {
         try {
-          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          let notes: Array<{
+            id: string
+            text: string
+            color: string
+            createdAt: string
+          }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
             const parsed = JSON.parse(raw) as { notes: typeof notes }
@@ -4105,20 +4176,33 @@ function attachApi(server: ViteDevServer): void {
       if (requestUrl.pathname === "/api/notes" && req.method === "POST") {
         try {
           const body = await readRequestBody(req)
-          const { text, color } = JSON.parse(body) as { text: string; color?: string }
+          const { text, color } = JSON.parse(body) as {
+            text: string
+            color?: string
+          }
           if (!text) {
             res.writeHead(400, { "Content-Type": "application/json" })
             res.end(JSON.stringify({ error: "text is required" }))
             return
           }
-          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          let notes: Array<{
+            id: string
+            text: string
+            color: string
+            createdAt: string
+          }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
             const parsed = JSON.parse(raw) as { notes: typeof notes }
             notes = parsed.notes ?? []
           }
           const id = `note-${Date.now()}`
-          notes.push({ id, text, color: color || "teal", createdAt: new Date().toISOString() })
+          notes.push({
+            id,
+            text,
+            color: color || "teal",
+            createdAt: new Date().toISOString(),
+          })
           await writeFile(notesFile, JSON.stringify({ notes }, null, 2), "utf8")
           res.writeHead(201, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ notes }))
@@ -4132,13 +4216,22 @@ function attachApi(server: ViteDevServer): void {
       if (requestUrl.pathname === "/api/notes" && req.method === "PUT") {
         try {
           const body = await readRequestBody(req)
-          const { id, text, color } = JSON.parse(body) as { id: string; text?: string; color?: string }
+          const { id, text, color } = JSON.parse(body) as {
+            id: string
+            text?: string
+            color?: string
+          }
           if (!id) {
             res.writeHead(400, { "Content-Type": "application/json" })
             res.end(JSON.stringify({ error: "id is required" }))
             return
           }
-          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          let notes: Array<{
+            id: string
+            text: string
+            color: string
+            createdAt: string
+          }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
             const parsed = JSON.parse(raw) as { notes: typeof notes }
@@ -4170,7 +4263,12 @@ function attachApi(server: ViteDevServer): void {
             res.end(JSON.stringify({ error: "id query param required" }))
             return
           }
-          let notes: Array<{ id: string; text: string; color: string; createdAt: string }> = []
+          let notes: Array<{
+            id: string
+            text: string
+            color: string
+            createdAt: string
+          }> = []
           if (existsSync(notesFile)) {
             const raw = readFileSync(notesFile, "utf8")
             const parsed = JSON.parse(raw) as { notes: typeof notes }
@@ -4203,22 +4301,22 @@ function attachApi(server: ViteDevServer): void {
 }
 
 export {
+  artifactsRoot,
   attachApi,
-  setBuildMode,
-  buildOverviewPayload,
   buildAnalyticsPayload,
+  buildOverviewPayload,
   buildSessionDetailPayload,
-  loadSprintOverview,
-  readRuntimeStateFile,
+  deriveStoryStepStateFromStatus,
+  epicsFile,
+  fallbackSummary,
+  findStoryMarkdown,
+  getCompletedSessionSummary,
   getEpicMetadataFromMarkdown,
   getStoryContentFromEpics,
-  findStoryMarkdown,
-  deriveStoryStepStateFromStatus,
-  getCompletedSessionSummary,
-  fallbackSummary,
-  epicsFile,
   linksFile,
+  loadSprintOverview,
   parseSimpleYamlList,
-  artifactsRoot,
+  readRuntimeStateFile,
   STORY_WORKFLOW_STEPS,
+  setBuildMode,
 }
