@@ -8,6 +8,7 @@ const SECONDS_PER_MINUTE = 60
 const SECONDS_PER_HOUR = 3600
 const SECONDS_PER_DAY = 86_400
 const MILLISECONDS_PER_SECOND = 1000
+const STALE_SESSION_THRESHOLD_MS = 30 * 60 * 1000
 const SESSION_STATUS_FILTER_STORAGE_KEY = "bmad-ui-agent-sessions-status-filters-v1"
 const ALL_SESSION_STATUS_FILTER = "__all__"
 const SESSION_TABLE_PAGE_SIZE = 25
@@ -46,6 +47,18 @@ function formatDate(value: string | null): string {
     return "-"
   }
   return new Date(value).toLocaleString()
+}
+
+function resolveDisplayStatus(
+  status: string,
+  startedAt: string | null | undefined,
+  endedAt: string | null | undefined
+): string {
+  if (status !== "running" || endedAt) return status
+  if (!startedAt) return status
+  const startMs = Date.parse(startedAt)
+  if (Number.isNaN(startMs)) return status
+  return Date.now() - startMs > STALE_SESSION_THRESHOLD_MS ? "stale" : status
 }
 
 function formatDuration(startedAt: string | null, endedAt: string | null): string {
@@ -153,6 +166,11 @@ function SessionsTable(props: {
               const isRowActionPending = sessionActionPending?.sessionId === session.id
               const canStart = session.status === "planned"
               const canAbort = session.status === "planned" || session.status === "running"
+              const displayStatus = resolveDisplayStatus(
+                session.status,
+                session.startedAt,
+                session.endedAt
+              )
 
               return (
                 <tr key={session.id}>
@@ -164,7 +182,7 @@ function SessionsTable(props: {
                   </td>
                   <td>{session.model}</td>
                   <td>
-                    <span className={`step-badge step-${session.status}`}>{session.status}</span>
+                    <span className={`step-badge step-${displayStatus}`}>{displayStatus}</span>
                   </td>
                   <td>{formatDate(session.startedAt)}</td>
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
@@ -207,13 +225,18 @@ function SessionsTable(props: {
             }
 
             const session = row.data
+            const displayStatus = resolveDisplayStatus(
+              session.status,
+              session.start_date,
+              session.end_date
+            )
             return (
               <tr key={session.session_id ?? session.start_date}>
                 <td>{toShortStoryId(session.storyId ?? null)}</td>
                 <td>{session.agent}</td>
                 <td>{session.model}</td>
                 <td>
-                  <span className={`step-badge step-${session.status}`}>{session.status}</span>
+                  <span className={`step-badge step-${displayStatus}`}>{displayStatus}</span>
                 </td>
                 <td>{formatDate(session.start_date)}</td>
                 <td>{formatDuration(session.start_date, session.end_date)}</td>

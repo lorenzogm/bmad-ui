@@ -1471,9 +1471,9 @@
       "epicId": null,
       "skill": "bmad-help",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T12:22:04.076Z",
-      "endedAt": null,
+      "endedAt": "2026-04-18T14:26:50Z",
       "usage": {
         "requests": 0,
         "tokensIn": 0,
@@ -1488,9 +1488,9 @@
       "epicId": null,
       "skill": "bmad-quick-dev",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T12:23:08.182Z",
-      "endedAt": null,
+      "endedAt": "2026-04-18T14:26:52Z",
       "usage": {
         "requests": 0,
         "tokensIn": 0,
@@ -1505,9 +1505,9 @@
       "epicId": null,
       "skill": "bmad-create-epics-and-stories",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-18T12:26:19.747Z",
-      "endedAt": null,
+      "endedAt": "2026-04-18T14:26:55Z",
       "usage": {
         "requests": 0,
         "tokensIn": 0,
@@ -1541,6 +1541,23 @@
       "model": "claude-sonnet-4.6",
       "status": "running",
       "startedAt": "2026-04-18T12:56:16.726Z",
+      "endedAt": null,
+      "usage": {
+        "requests": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      }
+    },
+    "workflow-bmad-create-story-1776517160097": {
+      "sessionId": "workflow-bmad-create-story-1776517160097",
+      "storyId": "5-3-provide-vs-code-first-developer-workflow",
+      "epicId": "epic-5",
+      "skill": "bmad-create-story",
+      "model": "claude-sonnet-4.6",
+      "status": "running",
+      "startedAt": "2026-04-18T12:59:20.099Z",
       "endedAt": null,
       "usage": {
         "requests": 0,
