@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "eamodio.gitlens",
+    "GitHub.copilot",
+    "GitHub.copilot-chat"
+  ]
+}

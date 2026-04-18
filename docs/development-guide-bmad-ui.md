@@ -2,51 +2,86 @@
 
 > **No secrets required.** You can run, develop, and validate the entire app with zero environment variables. `pnpm dev`, `pnpm run check`, and `pnpm build` all work immediately after `pnpm install`. The `infra/` directory and deploy workflows are maintainer-only — contributors never need them.
 
+## VS Code Setup (Recommended)
+
+1. Open the repository root in VS Code
+2. When prompted, click **Install All** to install recommended extensions (`.vscode/extensions.json`)
+3. Ensure the Biome extension is active — it provides inline lint errors and format-on-save
+
+If not prompted, run: **Extensions: Show Recommended Extensions** from the Command Palette (`Cmd+Shift+P`).
+
 ## Prerequisites
 - Node.js (current LTS recommended)
-- npm or pnpm
+- pnpm 10.16+ — install with `npm install -g pnpm` or `corepack enable && corepack prepare pnpm@latest --activate`
 
 ## Location
-- Working directory: _bmad-custom/bmad-ui
+- Working directory: `_bmad-custom/bmad-ui`
 
 ## Install
 ```bash
 cd _bmad-custom/bmad-ui
-npm install
+pnpm install
 ```
 
-## Run Locally
+## Dev Loop
+
+### Start Dev Server
 ```bash
-npm run dev
+pnpm dev
 ```
 
-Per README, dashboard execution in full workspace context may also use:
+### Validate (lint + types + tests + build)
 ```bash
-pnpm --filter bmad-dashboard dev
+pnpm run check
+```
+
+Run this before every commit. All checks must pass.
+
+### Individual checks
+```bash
+pnpm run check:types   # TypeScript type check
+pnpm run check:tests   # run tests
+pnpm run check:lint    # Biome linting
 ```
 
 ## Build
 ```bash
-npm run build
-```
-
-## Type Check
-```bash
-npm run check:types
-```
-
-## Test
-```bash
-npm run check:tests
+pnpm run build
 ```
 
 ## Key Config Files
-- _bmad-custom/bmad-ui/vite.config.ts
-- _bmad-custom/bmad-ui/tsconfig.json
-- _bmad-custom/bmad-ui/package.json
+- `_bmad-custom/bmad-ui/vite.config.ts`
+- `_bmad-custom/bmad-ui/tsconfig.json`
+- `_bmad-custom/bmad-ui/package.json`
+- `.vscode/extensions.json` — recommended extensions
+- `.vscode/settings.json` — editor config (Biome formatter, TypeScript SDK)
 
 ## Typical Workflow
-1. Start dev server.
-2. Validate route/API interactions in dashboard views.
-3. Run type checks and test script before merge.
-4. Build to confirm production bundle integrity.
+1. Open repo root in VS Code, install recommended extensions.
+2. `cd _bmad-custom/bmad-ui && pnpm install`
+3. `pnpm dev` — start the dev server (default: http://localhost:5173)
+4. Make changes, save files (Biome auto-formats on save).
+5. `pnpm run check` — run full validation before committing.
+6. Commit and push.
+
+## Troubleshooting
+
+### Biome not formatting on save
+
+- Confirm the `biomejs.biome` extension is installed and active
+- Check the status bar at the bottom — it shows the active formatter for the open file
+- Run `pnpm run check:lint` in the terminal to see all Biome issues
+
+### TypeScript path aliases not resolving in editor
+
+- Ensure `.vscode/settings.json` contains `"typescript.tsdk": "_bmad-custom/bmad-ui/node_modules/typescript/lib"`
+- Reload the VS Code TypeScript server: **TypeScript: Restart TS Server** via Command Palette
+
+### `pnpm` command not found
+
+- Install pnpm: `npm install -g pnpm` or `corepack enable && corepack prepare pnpm@latest --activate`
+- Required version: pnpm 10.16+
+
+### Dev server port conflict
+
+- Default port is `5173`. If occupied, Vite will try `5174`, `5175`, etc. — check the terminal output for the actual URL.

@@ -1,4 +1,23 @@
 {
   "github.copilot.chat.cli.showExternalSessions": true,
-  "github.copilot.chat.cli.sessionController.enabled": true
+  "github.copilot.chat.cli.sessionController.enabled": true,
+
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "[typescript]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[typescriptreact]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[javascript]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[javascriptreact]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[json]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[jsonc]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[css]": { "editor.defaultFormatter": "biomejs.biome" },
+
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.tsdk": "_bmad-custom/bmad-ui/node_modules/typescript/lib",
+
+  "tailwindCSS.experimental.configFile": null,
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascriptreact"
+  }
 }

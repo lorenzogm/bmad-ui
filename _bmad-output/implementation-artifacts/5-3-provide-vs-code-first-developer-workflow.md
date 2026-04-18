@@ -1,6 +1,6 @@
 # Story 5.3: Provide VS Code-First Developer Workflow
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,20 +18,20 @@ so that I can become productive quickly in the preferred environment.
 
 ## Tasks / Subtasks
 
-- [ ] Add `.vscode/extensions.json` with recommended extensions (AC: #1, #2)
-  - [ ] Include Biome extension (`biomejs.biome`) for integrated lint/format
-  - [ ] Include GitLens, Tailwind CSS IntelliSense, and other project-relevant extensions
-- [ ] Update `.vscode/settings.json` with project-specific editor config (AC: #1, #2)
-  - [ ] Set Biome as default formatter for TS/TSX/JS/JSX/JSON/CSS files
-  - [ ] Enable format-on-save using Biome
-  - [ ] Configure TypeScript path aliases to resolve correctly in editor
-  - [ ] Disable conflicting built-in formatters (Prettier, etc.)
-- [ ] Update `docs/development-guide-bmad-ui.md` to be VS Code-first (AC: #1, #2, #3)
-  - [ ] Add VS Code setup section (install recommended extensions)
-  - [ ] Document the full dev loop: install → dev server → validate → commit
-  - [ ] Use `pnpm` commands consistently (not `npm`)
-  - [ ] Add troubleshooting section for common issues
-- [ ] Verify `.vscode/` changes do not break existing Copilot settings (AC: #2)
+- [x] Add `.vscode/extensions.json` with recommended extensions (AC: #1, #2)
+  - [x] Include Biome extension (`biomejs.biome`) for integrated lint/format
+  - [x] Include GitLens, Tailwind CSS IntelliSense, and other project-relevant extensions
+- [x] Update `.vscode/settings.json` with project-specific editor config (AC: #1, #2)
+  - [x] Set Biome as default formatter for TS/TSX/JS/JSX/JSON/CSS files
+  - [x] Enable format-on-save using Biome
+  - [x] Configure TypeScript path aliases to resolve correctly in editor
+  - [x] Disable conflicting built-in formatters (Prettier, etc.)
+- [x] Update `docs/development-guide-bmad-ui.md` to be VS Code-first (AC: #1, #2, #3)
+  - [x] Add VS Code setup section (install recommended extensions)
+  - [x] Document the full dev loop: install → dev server → validate → commit
+  - [x] Use `pnpm` commands consistently (not `npm`)
+  - [x] Add troubleshooting section for common issues
+- [x] Verify `.vscode/` changes do not break existing Copilot settings (AC: #2)
 
 ## Dev Notes
 
@@ -220,6 +220,22 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+_No blockers. Straightforward config + doc update._
+
 ### Completion Notes List
 
+- Created `.vscode/extensions.json` with 5 recommended extensions (Biome, Tailwind CSS IntelliSense, GitLens, Copilot, Copilot Chat)
+- Extended `.vscode/settings.json` with Biome as default formatter for all relevant file types, format-on-save, TypeScript SDK path, and Tailwind v4 config hints — preserving existing Copilot settings
+- Updated `docs/development-guide-bmad-ui.md`: replaced all `npm` commands with `pnpm`, added VS Code Setup section, restructured dev loop, added Troubleshooting section
+- `pnpm check` passes with exit code 0 (no regressions)
+
 ### File List
+
+- `.vscode/extensions.json` (created)
+- `.vscode/settings.json` (modified)
+- `docs/development-guide-bmad-ui.md` (modified)
+- `_bmad-output/implementation-artifacts/5-3-provide-vs-code-first-developer-workflow.md` (modified)
+
+### Change Log
+
+- 2026-04-18: Story 5.3 implemented — created `.vscode/extensions.json`, extended `.vscode/settings.json` with Biome formatter config, updated `docs/development-guide-bmad-ui.md` to be VS Code-first with pnpm commands and troubleshooting section.
