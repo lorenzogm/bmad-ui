@@ -1,5 +1,5 @@
 # generated: 2026-04-15T16:46:25Z
-# last_updated: 2026-04-18T18:03:20Z
+# last_updated: 2026-04-19T21:18:23Z
 
 # project: bmad-ui
 # project_key: NOKEY
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-19T21:13:00Z
+last_updated: 2026-04-19T21:18:23Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -67,9 +67,7 @@ development_status:
   4-2-enforce-protected-branch-quality-gates: done
   4-3-implement-deployment-workflow-triggers: done
   4-4-add-workflow-observability-and-failure-diagnosis: done
-  4-5-validate-end-to-end-pipeline-and-vercel-deployment: done
   epic-4-retrospective: done
-
 
   epic-5: done
   5-1-create-npx-bmad-method-ui-install-cli: done
@@ -93,16 +91,34 @@ development_status:
   epic-7-retrospective: optional
 
   epic-8: backlog
-  8-1-improve-empty-states-and-loading-feedback: backlog
-  8-2-navigation-and-active-route-clarity: backlog
-  8-3-status-badge-consistency-across-views: backlog
-  8-4-responsive-layout-and-spacing-refinements: backlog
+  8-1-deliver-core-workflow-visibility-views: backlog
+  8-2-integrate-backlog-artifacts-with-ui-workflows: backlog
+  8-3-validate-self-referential-delivery-loop: backlog
+  8-4-establish-phase-boundary-and-evolution-guardrails: backlog
   epic-8-retrospective: optional
 
-  epic-9: backlog
-  9-1-enrich-sync-daemon-outcome-complexity-metrics: backlog
-  9-2-analytics-api-session-quality-aggregation: backlog
-  9-3-session-quality-dashboard-effectiveness-charts: backlog
-  9-4-skill-model-effectiveness-matrix: backlog
-  9-5-autonomous-workflow-config-generator: backlog
+  epic-9: in-progress
+  9-1-improve-empty-states-and-loading-feedback: backlog
+  9-2-navigation-and-active-route-clarity: backlog
+  9-3-status-badge-consistency-across-views: backlog
+  9-4-responsive-layout-and-spacing-refinements: backlog
+  9-5-session-detail-back-navigation: done
+  9-6-sidebar-running-sessions-panel: backlog
   epic-9-retrospective: optional
+
+  epic-10: backlog
+  10-1-enrich-session-sync-daemon-with-outcome-and-complexity-metrics: backlog
+  10-2-analytics-api-session-quality-aggregation-endpoint: backlog
+  10-3-session-quality-dashboard-effectiveness-charts: backlog
+  10-4-skill-model-effectiveness-matrix: backlog
+  10-5-autonomous-workflow-configuration-generator: backlog
+  epic-10-retrospective: optional
+
+  epic-11: backlog
+  11-1-extract-runtime-domain: backlog
+  11-2-extract-sprint-and-overview-domain: backlog
+  11-3-extract-epic-and-story-domain: backlog
+  11-4-extract-logs-and-observability-domain: backlog
+  11-5-extract-analytics-domain: backlog
+  11-6-decompose-api-routes-by-domain-with-zod-validation: backlog
+  epic-11-retrospective: optional
