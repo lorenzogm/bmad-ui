@@ -45,6 +45,12 @@ so that I have a working E2E test foundation I can run locally with a single com
   - [x] Run `pnpm run check:e2e` and confirm tests pass headless
   - [x] Run existing `pnpm run check` and confirm it still passes (no regressions)
 
+### Review Findings
+
+- [x] [Review][Patch] Include explicit Home link click coverage in smoke navigation assertions [_bmad-custom/bmad-ui/tests/smoke.spec.ts:53]
+- [x] [Review][Patch] Validate home entry route behavior against workflow redirect expectation [_bmad-custom/bmad-ui/tests/smoke.spec.ts:23]
+- [x] [Review][Patch] Capture both `pageerror` and `console.error` events for JavaScript error checks [_bmad-custom/bmad-ui/tests/smoke.spec.ts:14]
+
 ## Dev Notes
 
 ### Architecture: E2E Test Location
