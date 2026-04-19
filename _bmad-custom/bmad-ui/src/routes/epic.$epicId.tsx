@@ -15,6 +15,7 @@ const HTTP_CONFLICT = 409
 const EPIC_NUMBER_REGEX = /^epic-(\d+)$/
 const PERCENT_MULTIPLIER = 100
 const ORCHESTRATING_STORAGE_PREFIX = "bmad-orchestrating:"
+const ORCHESTRATING_INITIATED_SUFFIX = ":initiated"
 
 type SkillName = "bmad-create-story" | "bmad-dev-story" | "bmad-code-review"
 type WorkflowSkill = SkillName | "bmad-retrospective"
@@ -158,6 +159,7 @@ function EpicDetailPage() {
   const [overviewData, setOverviewData] = useState<OverviewResponse | null>(null)
   const [isPlanning, setIsPlanning] = useState(false)
   const orchestratingKey = `${ORCHESTRATING_STORAGE_PREFIX}${epicId}`
+  const orchestratingInitiatedKey = `${orchestratingKey}${ORCHESTRATING_INITIATED_SUFFIX}`
   const [isOrchestrating, setIsOrchestrating] = useState(() => {
     try {
       return localStorage.getItem(orchestratingKey) === "true"
@@ -166,7 +168,16 @@ function EpicDetailPage() {
     }
   })
   const [bulkError, setBulkError] = useState<string | null>(null)
-  const initiatedRef = useRef(new Set<string>())
+  const initiatedRef = useRef(
+    (() => {
+      try {
+        const stored = localStorage.getItem(orchestratingInitiatedKey)
+        return stored ? new Set<string>(JSON.parse(stored) as string[]) : new Set<string>()
+      } catch {
+        return new Set<string>()
+      }
+    })()
+  )
   const [orchestrationPending, setOrchestrationPending] = useState(new Set<string>())
 
   const handleRunSkill = useCallback(async (skill: WorkflowSkill, storyId?: string) => {
@@ -438,21 +449,23 @@ function EpicDetailPage() {
     setIsOrchestrating(true)
     try {
       localStorage.setItem(orchestratingKey, "true")
+      localStorage.removeItem(orchestratingInitiatedKey)
     } catch {
       /* storage unavailable */
     }
     setBulkError(null)
-  }, [orchestratingKey])
+  }, [orchestratingKey, orchestratingInitiatedKey])
 
   const handleStopOrchestration = useCallback(() => {
     setIsOrchestrating(false)
     setOrchestrationPending(new Set())
     try {
       localStorage.removeItem(orchestratingKey)
+      localStorage.removeItem(orchestratingInitiatedKey)
     } catch {
       /* storage unavailable */
     }
-  }, [orchestratingKey])
+  }, [orchestratingKey, orchestratingInitiatedKey])
 
   // Orchestration driver: fires dev-story → code-review → retrospective as stories progress
   useEffect(() => {
@@ -485,6 +498,14 @@ function EpicDetailPage() {
         const key = `bmad-dev-story:${story.id}`
         if (!initiatedRef.current.has(key)) {
           initiatedRef.current.add(key)
+          try {
+            localStorage.setItem(
+              orchestratingInitiatedKey,
+              JSON.stringify([...initiatedRef.current])
+            )
+          } catch {
+            /* storage unavailable */
+          }
           const sid = story.id
           setOrchestrationPending((prev) => new Set(prev).add(key))
           fetch("/api/workflow/run-skill", {
@@ -498,6 +519,14 @@ function EpicDetailPage() {
             .then((r) => {
               if (r.status === HTTP_CONFLICT) {
                 initiatedRef.current.delete(key)
+                try {
+                  localStorage.setItem(
+                    orchestratingInitiatedKey,
+                    JSON.stringify([...initiatedRef.current])
+                  )
+                } catch {
+                  /* storage unavailable */
+                }
                 setOrchestrationPending((prev) => {
                   const next = new Set(prev)
                   next.delete(key)
@@ -514,6 +543,14 @@ function EpicDetailPage() {
             })
             .catch((err) => {
               initiatedRef.current.delete(key)
+              try {
+                localStorage.setItem(
+                  orchestratingInitiatedKey,
+                  JSON.stringify([...initiatedRef.current])
+                )
+              } catch {
+                /* storage unavailable */
+              }
               setOrchestrationPending((prev) => {
                 const next = new Set(prev)
                 next.delete(key)
@@ -528,6 +565,14 @@ function EpicDetailPage() {
         const key = `bmad-code-review:${story.id}`
         if (!initiatedRef.current.has(key)) {
           initiatedRef.current.add(key)
+          try {
+            localStorage.setItem(
+              orchestratingInitiatedKey,
+              JSON.stringify([...initiatedRef.current])
+            )
+          } catch {
+            /* storage unavailable */
+          }
           const sid = story.id
           setOrchestrationPending((prev) => new Set(prev).add(key))
           fetch("/api/workflow/run-skill", {
@@ -542,6 +587,14 @@ function EpicDetailPage() {
             .then((r) => {
               if (r.status === HTTP_CONFLICT) {
                 initiatedRef.current.delete(key)
+                try {
+                  localStorage.setItem(
+                    orchestratingInitiatedKey,
+                    JSON.stringify([...initiatedRef.current])
+                  )
+                } catch {
+                  /* storage unavailable */
+                }
                 setOrchestrationPending((prev) => {
                   const next = new Set(prev)
                   next.delete(key)
@@ -558,6 +611,14 @@ function EpicDetailPage() {
             })
             .catch((err) => {
               initiatedRef.current.delete(key)
+              try {
+                localStorage.setItem(
+                  orchestratingInitiatedKey,
+                  JSON.stringify([...initiatedRef.current])
+                )
+              } catch {
+                /* storage unavailable */
+              }
               setOrchestrationPending((prev) => {
                 const next = new Set(prev)
                 next.delete(key)
@@ -573,6 +634,11 @@ function EpicDetailPage() {
       const key = "bmad-retrospective"
       if (!initiatedRef.current.has(key)) {
         initiatedRef.current.add(key)
+        try {
+          localStorage.setItem(orchestratingInitiatedKey, JSON.stringify([...initiatedRef.current]))
+        } catch {
+          /* storage unavailable */
+        }
         fetch("/api/workflow/run-skill", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -584,11 +650,27 @@ function EpicDetailPage() {
           .then((r) => {
             if (!r.ok) {
               initiatedRef.current.delete(key)
+              try {
+                localStorage.setItem(
+                  orchestratingInitiatedKey,
+                  JSON.stringify([...initiatedRef.current])
+                )
+              } catch {
+                /* storage unavailable */
+              }
               setBulkError(`Failed to start retrospective: ${r.status}`)
             }
           })
           .catch((err) => {
             initiatedRef.current.delete(key)
+            try {
+              localStorage.setItem(
+                orchestratingInitiatedKey,
+                JSON.stringify([...initiatedRef.current])
+              )
+            } catch {
+              /* storage unavailable */
+            }
             setBulkError(`Failed to start retrospective: ${String(err)}`)
           })
       }
@@ -599,6 +681,7 @@ function EpicDetailPage() {
       setOrchestrationPending(new Set())
       try {
         localStorage.removeItem(orchestratingKey)
+        localStorage.removeItem(orchestratingInitiatedKey)
       } catch {
         /* storage unavailable */
       }
@@ -610,6 +693,7 @@ function EpicDetailPage() {
     retrospectiveState,
     data,
     orchestratingKey,
+    orchestratingInitiatedKey,
     overviewData,
   ])
 
