@@ -4,6 +4,7 @@ stepsCompleted:
   - step-02-design-epics
   - step-03-create-stories
   - step-04-final-validation
+  - step-e-epic7-testing-2026-04-19
 inputDocuments:
   - /Users/lorenzogm/lorenzogm/bmad-ui/_bmad-output/planning-artifacts/prd.md
   - /Users/lorenzogm/lorenzogm/bmad-ui/_bmad-output/planning-artifacts/architecture.md
@@ -64,6 +65,13 @@ FR42: Maintainer can view per-skill and per-model effectiveness metrics to ident
 FR43: Maintainer can compare session quality across model+skill combinations to inform autonomous workflow configuration decisions.
 FR44: Maintainer can track session complexity indicators (context compactions, subagent spawns, tool distribution) to diagnose why sessions fail or require corrections.
 FR45: Maintainer can export or generate an autonomous workflow configuration recommending optimal model assignments per skill based on historical session data.
+FR46: Maintainer can run Playwright E2E tests that verify all existing UI routes render without JavaScript errors.
+FR47: Maintainer can detect regressions in navigation, page rendering, and core user interactions through automated E2E tests executed on every change.
+FR48: Contributor can run the full E2E test suite locally before submitting changes using a single documented command.
+FR49: CI pipeline includes E2E test execution as a required quality gate before protected branch merge.
+FR50: Maintainer can add new E2E test scenarios incrementally as features are developed without modifying existing test infrastructure.
+FR51: E2E tests validate that data-dependent views (sessions, epics, analytics) render correctly with real project artifact data.
+FR52: Maintainer can identify JavaScript runtime errors and broken user interactions through automated headless browser testing.
 
 ### NonFunctional Requirements
 
@@ -92,6 +100,10 @@ NFR22: New UI additions in Phase 1 do not reduce existing accessibility quality 
 NFR23: Session sync daemon must process all historical sessions on startup within 30 seconds.
 NFR24: Session quality metrics must be derivable entirely from local log files without network calls or external API dependencies.
 NFR25: Analytics aggregation for model+skill effectiveness must handle at least 500 sessions without noticeable UI lag.
+NFR26: E2E test suite completes within 5 minutes on CI for the full Playwright test matrix.
+NFR27: All existing UI routes must have at least one E2E smoke test covering render-without-error verification.
+NFR28: E2E tests run headless in CI and optionally headed locally using a single command-line flag.
+NFR29: E2E test failures in CI block merge to protected branches with clear failure output identifying the broken route or interaction.
 
 ### Additional Requirements
 
@@ -149,29 +161,36 @@ _No UX Design document was found for Phase 1. Phase 1 is infrastructure-focused;
 | FR25 | Epic 5 | Define and enforce coding/formatting standards |
 | FR26 | Epic 5 | Install bmad-ui into any bmad project via npx |
 | FR27 | Epic 5 | Discover required setup steps from quickstart docs |
-| FR28 | Epic 7 | Access bmad-ui as visual companion to bmad workflows |
-| FR29 | Epic 7 | Observe workflow flow and analysis context |
-| FR30 | Epic 7 | Use bmad-ui with backlog artifacts from bmad |
-| FR31 | Epic 7 | Validate bmad-ui supports execution from epics/stories |
-| FR32 | Epic 7 | Interpret project/workflow state through UI |
+| FR28 | Epic 8 | Access bmad-ui as visual companion to bmad workflows |
+| FR29 | Epic 8 | Observe workflow flow and analysis context |
+| FR30 | Epic 8 | Use bmad-ui with backlog artifacts from bmad |
+| FR31 | Epic 8 | Validate bmad-ui supports execution from epics/stories |
+| FR32 | Epic 8 | Interpret project/workflow state through UI |
 | FR33 | Epic 6 | Complete local setup from repository documentation |
 | FR34 | Epic 6 | Complete deployment setup from documentation |
 | FR35 | Epic 6 | Diagnose common setup/pipeline failures from docs |
 | FR36 | Epic 6 | Submit documentation improvements |
 | FR37 | Epic 6 | Collect and review early adoption signals |
-| FR38 | Epic 7 | Use Phase 1 outputs as Phase 2 baseline inputs |
-| FR39 | Epic 7 | Preserve clear boundary between Phase 1 and post-MVP |
-| FR40 | Epic 7 | Evolve toward advanced agentic capabilities |
-| FR41 | Epic 9 | Auto-capture session outcome metrics from logs |
-| FR42 | Epic 9 | View per-skill/per-model effectiveness metrics |
-| FR43 | Epic 9 | Compare session quality across model+skill combos |
-| FR44 | Epic 9 | Track session complexity indicators |
-| FR45 | Epic 9 | Generate autonomous workflow configuration from data |
-| AR1 | Epic 10 | Three-boundary architecture enforcement via modularization |
-| AR2 | Epic 10 | Resolve adapter/API layer package location |
-| AR3 | Epic 10 | Normalize API logic in adapter layer |
-| AR6 | Epic 10 | Correct pattern violations at abstraction boundary |
-| FR38 | Epic 10 | Phase 2 refactoring baseline (agent-server decomposition) |
+| FR38 | Epic 8 | Use Phase 1 outputs as Phase 2 baseline inputs |
+| FR39 | Epic 8 | Preserve clear boundary between Phase 1 and post-MVP |
+| FR40 | Epic 8 | Evolve toward advanced agentic capabilities |
+| FR41 | Epic 10 | Auto-capture session outcome metrics from logs |
+| FR42 | Epic 10 | View per-skill/per-model effectiveness metrics |
+| FR43 | Epic 10 | Compare session quality across model+skill combos |
+| FR44 | Epic 10 | Track session complexity indicators |
+| FR45 | Epic 10 | Generate autonomous workflow configuration from data |
+| FR46 | Epic 7 | Playwright E2E tests verify all routes render without JS errors |
+| FR47 | Epic 7 | Detect regressions in navigation, rendering, interactions |
+| FR48 | Epic 7 | Contributor runs full E2E suite locally with one command |
+| FR49 | Epic 7 | CI includes E2E tests as merge gate |
+| FR50 | Epic 7 | Incremental test scenarios without infra changes |
+| FR51 | Epic 7 | Data-dependent views render correctly with real data |
+| FR52 | Epic 7 | Identify JS errors via headless browser testing |
+| AR1 | Epic 11 | Three-boundary architecture enforcement via modularization |
+| AR2 | Epic 11 | Resolve adapter/API layer package location |
+| AR3 | Epic 11 | Normalize API logic in adapter layer |
+| AR6 | Epic 11 | Correct pattern violations at abstraction boundary |
+| FR38 | Epic 11 | Phase 2 refactoring baseline (agent-server decomposition) |
 
 ## Epic List
 
@@ -199,24 +218,31 @@ Any bmad user can add bmad-ui to an existing bmad project with a single command 
 New users can complete local setup and deployment from repository documentation in under 15 minutes; support users can diagnose common failures from a troubleshooting guide; contributors can submit improvements; maintainer can observe early adoption signals.
 **FRs covered:** FR33, FR34, FR35, FR36, FR37
 
-### Epic 7: Core Product Operation & Phase Readiness Validation
+### Epic 7: End-to-End Testing & Regression Safety
+Maintainer and contributors can run Playwright E2E tests that verify all existing UI routes render without errors, detect regressions in navigation and interactions, and gate merges through automated CI checks — enabling safe iteration without breaking production functionality.
+**FRs covered:** FR46, FR47, FR48, FR49, FR50, FR51, FR52
+**NFRs addressed:** NFR26, NFR27, NFR28, NFR29
+
+### Epic 8: Core Product Operation & Phase Readiness Validation
 Users can access bmad-ui as a working visual companion to bmad orchestration workflows, observing flow and analysis context without reading raw logs. Maintainer can validate the self-referential execution loop, establishing the Phase 2 baseline.
 **FRs covered:** FR28, FR29, FR30, FR31, FR32, FR38, FR39, FR40
 
-### Epic 8: UI Improvements & Polish
+### Epic 9: UI Improvements & Polish
 Users experience a polished, responsive bmad-ui with improved empty states, loading skeletons, navigation clarity, and accessible status indicators — making the tool feel production-ready and easy to use daily.
 
-### Epic 9: Session Analytics & Autonomous Workflow Optimization
+### Epic 10: Session Analytics & Autonomous Workflow Optimization
 Maintainer can observe rich session-level quality metrics (one-shot success, delivery rate, corrections, aborts, complexity indicators) aggregated by skill and model, enabling data-driven selection of optimal model+skill combinations for autonomous agent workflows.
 **FRs covered:** FR41, FR42, FR43, FR44, FR45
 
-### Epic 10: Agent Server Modularization
+### Epic 11: Agent Server Modularization
 Maintainers and AI agents can work on the API/backend adapter layer as a set of focused, domain-collocated modules — each domain in its own folder with collocated types, constants, Zod schemas, and functions — instead of a single 4,883-line monolith, enabling faster iteration, safer concurrent modifications, and proper separation of concerns mandated by the architecture.
 **Architecture requirements covered:** AR1, AR2, AR3, AR6, AR7
 **FRs reinforced:** FR38, FR39
 **NFRs reinforced:** NFR13, NFR19
 
 ---
+
+## Epic 1: Repository Bootstrap & Governance Scaffold
 
 Maintainer can publish bmad-ui as a professional, governed public open-source repository with branch protections, labels, contribution guidelines, and project metadata all in place.
 
@@ -750,17 +776,150 @@ So that I can evaluate traction and prioritize improvements.
 
 ---
 
-## Epic 7: Core Product Operation and Phase Readiness Validation
+## Epic 7: End-to-End Testing & Regression Safety
+
+Maintainer and contributors can run Playwright E2E tests that verify all existing UI routes render without errors, detect regressions in navigation and interactions, and gate merges through automated CI checks — enabling safe iteration without breaking production functionality.
+
+**Story to FR mapping:**
+- Story 7.1 -> FR46, FR48, FR50
+- Story 7.2 -> FR46, FR47, FR52
+- Story 7.3 -> FR51, FR47
+- Story 7.4 -> FR49, FR47
+
+### Story 7.1: Set Up Playwright Infrastructure and First Smoke Tests
+
+As a maintainer,
+I want Playwright installed and configured with smoke tests for the home page and navigation,
+So that I have a working E2E test foundation I can run locally with a single command.
+
+**Acceptance Criteria:**
+
+**Given** the bmad-ui project has no E2E testing infrastructure,
+**When** Story 7.1 is implemented,
+**Then** Playwright is installed as a dev dependency with `@playwright/test`
+**And** a `playwright.config.ts` exists at the project root with headless mode by default and a headed flag (`--headed`)
+**And** a `tests/` directory exists with at least one test file
+**And** `pnpm exec playwright test` runs successfully from `_bmad-custom/bmad-ui`
+**And** a `check:e2e` script is added to package.json
+
+**Given** the dev server is running,
+**When** the first smoke test executes,
+**Then** it navigates to the home page (`/`) and verifies the page renders without JavaScript errors
+**And** it verifies the main navigation links (Home, Sessions, Workflow, Analytics) are present in the DOM
+**And** each navigation link can be clicked and the target route renders without errors
+
+**Given** a contributor wants to run E2E tests locally,
+**When** they execute `pnpm run check:e2e`,
+**Then** the dev server starts automatically (via Playwright webServer config), tests run headless, and results are reported to stdout
+**And** the test can optionally run headed with `pnpm run check:e2e -- --headed`
+
+### Story 7.2: Complete Route Smoke Coverage
+
+As a maintainer,
+I want every registered route to have a smoke test verifying it renders without errors,
+So that I can detect rendering regressions across the entire application after any change.
+
+**Acceptance Criteria:**
+
+**Given** Playwright infrastructure from Story 7.1 is in place,
+**When** Story 7.2 is implemented,
+**Then** smoke tests exist for ALL registered routes in the route tree:
+- `/` (home)
+- `/sessions`
+- `/sessions/:sessionId` (at least one valid session)
+- `/epics/:epicId` (at least one valid epic)
+- `/stories/:storyId` (at least one valid story)
+- `/prepare-story/:storyId` (at least one valid story)
+- `/improvement-workflow`
+- `/workflow` (index)
+- `/workflow/:phaseId` (at least one valid phase)
+- `/analytics` (dashboard)
+- `/analytics/epics`
+- `/analytics/epics/:epicId`
+- `/analytics/stories`
+- `/analytics/stories/:storyId`
+- `/analytics/sessions`
+- `/analytics/models`
+- `/analytics/models/:modelId`
+
+**Given** any route smoke test runs,
+**When** the page loads,
+**Then** the test verifies no JavaScript console errors occurred
+**And** the test verifies the page is not showing a blank screen or error boundary
+**And** the test verifies at least one meaningful content element is visible (heading, data table, or content panel)
+
+**Given** a new route is added to the route tree in the future,
+**When** it has no corresponding smoke test,
+**Then** a test utility or documented convention guides the developer to add one
+
+### Story 7.3: Data-Dependent View Validation
+
+As a maintainer,
+I want E2E tests that verify data-dependent views render correctly with real project artifact data,
+So that I can confirm sessions, epics, and analytics pages work with actual bmad-ui data files.
+
+**Acceptance Criteria:**
+
+**Given** the project has real artifact data (agents-sessions.json, epics.md, story spec files),
+**When** data-dependent E2E tests run,
+**Then** the Sessions page (`/sessions`) renders the sessions table with at least one row
+**And** clicking a session row navigates to the session detail page that renders without errors
+
+**Given** the project has epics.md with epic data,
+**When** the Epic detail test runs,
+**Then** the epic detail page shows the epic title, goal, and at least one story listed
+
+**Given** the analytics dashboard exists,
+**When** analytics E2E tests run,
+**Then** the analytics dashboard renders at least one chart or metric widget
+**And** the analytics epics page renders a list of epics with progress data
+**And** the analytics sessions page renders the sessions data table
+
+**Given** a data file is malformed or missing,
+**When** the affected page loads,
+**Then** the page displays a graceful empty state or error message rather than a blank screen or unhandled exception
+
+### Story 7.4: CI Integration and Merge Gating
+
+As a maintainer,
+I want E2E tests to run automatically in CI on every pull request and block merges on failure,
+So that regressions are caught before they reach the protected branch.
+
+**Acceptance Criteria:**
+
+**Given** a GitHub Actions CI workflow exists (from Epic 4),
+**When** Story 7.4 is implemented,
+**Then** a new CI job (or step within the existing workflow) runs `pnpm run check:e2e` after lint+types+unit tests pass
+**And** Playwright browsers are installed in CI via `pnpm exec playwright install --with-deps chromium`
+**And** the E2E job uses the Chromium browser only in CI (not the full browser matrix)
+
+**Given** the E2E tests pass in CI,
+**When** the PR check results are reported,
+**Then** the E2E status check shows green and the PR is mergeable
+
+**Given** any E2E test fails in CI,
+**When** the PR check results are reported,
+**Then** the E2E status check shows red and the PR is blocked from merging
+**And** the CI output clearly identifies which test file, test name, and route failed
+**And** Playwright HTML report or trace artifacts are uploaded for debugging
+
+**Given** the `check` script in package.json,
+**When** it is updated for Story 7.4,
+**Then** `pnpm run check` includes E2E tests in the pipeline: `check:lint && check:types && check:tests && check:e2e && build`
+
+---
+
+## Epic 8: Core Product Operation and Phase Readiness Validation
 
 Users can access bmad-ui as a working visual companion to bmad orchestration workflows, observing flow and analysis context without reading raw logs. Maintainer can validate the self-referential execution loop, establishing the Phase 2 baseline.
 
 **Story to FR mapping:**
-- Story 7.1 -> FR28, FR29, FR32
-- Story 7.2 -> FR30
-- Story 7.3 -> FR31, FR38
-- Story 7.4 -> FR39, FR40
+- Story 8.1 -> FR28, FR29, FR32
+- Story 8.2 -> FR30
+- Story 8.3 -> FR31, FR38
+- Story 8.4 -> FR39, FR40
 
-### Story 7.1: Deliver Core Workflow Visibility Views
+### Story 8.1: Deliver Core Workflow Visibility Views
 
 As a user,
 I want to view core workflow state and flow context in bmad-ui,
@@ -780,7 +939,7 @@ So that I can understand project execution without reading raw orchestration log
 **When** encountered,
 **Then** the UI shows graceful empty and error states instead of crashing
 
-### Story 7.2: Integrate Backlog Artifacts with UI Workflows
+### Story 8.2: Integrate Backlog Artifacts with UI Workflows
 
 As a user,
 I want bmad-ui to operate with backlog artifacts produced by bmad workflows,
@@ -800,7 +959,7 @@ So that planning outputs and execution views stay connected.
 **When** processed,
 **Then** errors are handled with actionable feedback
 
-### Story 7.3: Validate Self-Referential Delivery Loop
+### Story 8.3: Validate Self-Referential Delivery Loop
 
 As a maintainer,
 I want to verify that bmad-ui can support implementation execution from its own generated epics and stories,
@@ -820,7 +979,7 @@ So that Phase 1 proves operational readiness for Phase 2.
 **When** documented,
 **Then** blockers and follow-up actions are captured for Phase 2 planning
 
-### Story 7.4: Establish Phase Boundary and Evolution Guardrails
+### Story 8.4: Establish Phase Boundary and Evolution Guardrails
 
 As a maintainer,
 I want explicit boundaries between Phase 1 outcomes and post-MVP expansion,
@@ -842,18 +1001,19 @@ So that the project can evolve without destabilizing foundational workflows.
 
 ---
 
-## Epic 8: UI Improvements & Polish
+## Epic 9: UI Improvements & Polish
 
 Users experience a polished, responsive bmad-ui with improved empty states, loading skeletons, navigation clarity, and accessible status indicators — making the tool feel production-ready and easy to use daily.
 
 **Story to FR mapping:**
-- Story 8.1 -> NFR3, NFR21, NFR22
-- Story 8.2 -> NFR3, NFR21
-- Story 8.3 -> NFR20, NFR21
-- Story 8.4 -> NFR3, NFR22
-- Story 8.5 -> FR28, NFR21
+- Story 9.1 -> NFR3, NFR21, NFR22
+- Story 9.2 -> NFR3, NFR21
+- Story 9.3 -> NFR20, NFR21
+- Story 9.4 -> NFR3, NFR22
+- Story 9.5 -> FR28, NFR21
+- Story 9.6 -> FR28, NFR21
 
-### Story 8.1: Improve Empty States and Loading Feedback
+### Story 9.1: Improve Empty States and Loading Feedback
 
 As a user,
 I want clear loading skeletons and empty state messages,
@@ -873,7 +1033,7 @@ So that I never see a blank screen or raw spinner without context.
 **When** encountered,
 **Then** an error state with a retry action replaces the blank content area
 
-### Story 8.2: Navigation & Active Route Clarity
+### Story 9.2: Navigation & Active Route Clarity
 
 As a user,
 I want the active navigation item to be clearly highlighted,
@@ -893,7 +1053,7 @@ So that I always know which section of the app I'm in.
 **When** the route changes,
 **Then** the active state updates immediately without a stale highlight on the previous item
 
-### Story 8.3: Status Badge Consistency Across Views
+### Story 9.3: Status Badge Consistency Across Views
 
 As a user,
 I want consistent, accessible status badges on all entities (epics, stories, sessions),
@@ -913,7 +1073,7 @@ So that I can quickly scan status without decoding inconsistent label styles.
 **When** a badge is read aloud,
 **Then** the status label text is meaningful (e.g., "Done", "In Progress") not just an icon
 
-### Story 8.4: Responsive Layout and Spacing Refinements
+### Story 9.4: Responsive Layout and Spacing Refinements
 
 As a user,
 I want the layout to feel clean and well-proportioned on common screen sizes,
@@ -933,7 +1093,7 @@ So that the app is comfortable to use for extended monitoring sessions.
 **When** viewed,
 **Then** rows have consistent row height and readable line spacing aligned with the design system
 
-### Story 8.5: Session Detail Back Navigation
+### Story 9.5: Session Detail Back Navigation
 
 As a user,
 I want the Back button in a session detail page to return me to where I came from,
@@ -951,7 +1111,7 @@ So that my navigation flow feels natural and I don't lose my place.
 
 **Status:** Done
 
-### Story 8.5: Sidebar Running Sessions Panel
+### Story 9.6: Sidebar Running Sessions Panel
 
 As a user monitoring active BMAD agent workflows,
 I want the sidebar Sessions section to show only currently running sessions,
@@ -986,18 +1146,18 @@ So that I can instantly see what's happening without scanning through completed 
 
 ---
 
-## Epic 9: Session Analytics & Autonomous Workflow Optimization
+## Epic 10: Session Analytics & Autonomous Workflow Optimization
 
 Maintainer can observe rich session-level quality metrics (one-shot success, delivery rate, corrections, aborts, complexity indicators) aggregated by skill and model, enabling data-driven selection of optimal model+skill combinations for autonomous agent workflows.
 
 **Story to FR mapping:**
-- Story 9.1 -> FR41, FR44, NFR23, NFR24
-- Story 9.2 -> FR42, NFR25
-- Story 9.3 -> FR42, FR43
-- Story 9.4 -> FR43
-- Story 9.5 -> FR45
+- Story 10.1 -> FR41, FR44, NFR23, NFR24
+- Story 10.2 -> FR42, NFR25
+- Story 10.3 -> FR42, FR43
+- Story 10.4 -> FR43
+- Story 10.5 -> FR45
 
-### Story 9.1: Enrich Session Sync Daemon with Outcome & Complexity Metrics
+### Story 10.1: Enrich Session Sync Daemon with Outcome & Complexity Metrics
 
 As a maintainer,
 I want the sync-sessions daemon to extract rich outcome and complexity metrics from Copilot CLI events.jsonl logs,
@@ -1042,7 +1202,7 @@ So that each session in agent-sessions.json contains the data needed to determin
 - Non-committing skills set: `bmad-code-review`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-retrospective`, `bmad-validate-prd`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-check-implementation-readiness`, `bmad-checkpoint-preview`
 - Extends the existing `parseCLISession()` function in `scripts/sync-sessions.mjs`
 
-### Story 9.2: Analytics API — Session Quality Aggregation Endpoint
+### Story 10.2: Analytics API — Session Quality Aggregation Endpoint
 
 As a maintainer,
 I want the API to serve pre-aggregated session quality metrics grouped by skill and model,
@@ -1079,7 +1239,7 @@ So that the frontend can render effectiveness charts without client-side data cr
 - Add TypeScript types for quality metrics to `src/types.ts`
 - `oneShot` definition: `human_turns === 1 && outcome in ["pushed", "committed", "delivered"] && !aborted`
 
-### Story 9.3: Session Quality Dashboard — Effectiveness Charts
+### Story 10.3: Session Quality Dashboard — Effectiveness Charts
 
 As a maintainer,
 I want a new analytics sub-page showing session quality charts broken down by skill and model,
@@ -1113,7 +1273,7 @@ So that I can visually identify which workflows succeed autonomously and which r
 - Use ECharts (already a dependency) for all charts
 - Add chart builders to `analytics-utils.tsx`
 
-### Story 9.4: Skill × Model Effectiveness Matrix
+### Story 10.4: Skill × Model Effectiveness Matrix
 
 As a maintainer,
 I want a heatmap matrix showing one-shot success rate for every skill×model combination that has been used,
@@ -1142,7 +1302,7 @@ So that I can identify the best model for each skill and make data-driven decisi
 - Use ECharts heatmap or a custom HTML table with CSS variable backgrounds
 - Color scale: `var(--status-done)` at 100% → `var(--highlight-2)` at 0% with `var(--status-backlog)` for no data
 
-### Story 9.5: Autonomous Workflow Configuration Generator
+### Story 10.5: Autonomous Workflow Configuration Generator
 
 As a maintainer,
 I want to generate a recommended model-per-skill configuration file based on historical session effectiveness data,
@@ -1189,7 +1349,7 @@ So that I can configure an autonomous workflow runner to use the best-performing
 
 ---
 
-## Epic 10: Agent Server Modularization
+## Epic 11: Agent Server Modularization
 
 Maintainers and AI agents can work on the API/backend adapter layer as a set of focused, domain-collocated modules — each domain in its own folder with collocated types, constants, Zod schemas, and functions — instead of a single 4,883-line monolith, enabling faster iteration, safer concurrent modifications, and proper separation of concerns mandated by the architecture.
 
@@ -1248,14 +1408,14 @@ scripts/server/
 ```
 
 **Story to requirement mapping:**
-- Story 10.1 -> AR1, AR2, FR38 (establish domain boundary structure + add Zod)
-- Story 10.2 -> AR1, AR3 (isolate sprint domain)
-- Story 10.3 -> AR1, AR3 (isolate epic domain)
-- Story 10.4 -> AR1, AR3 (isolate logs domain)
-- Story 10.5 -> AR1, AR3 (isolate analytics domain)
-- Story 10.6 -> AR1, AR3, AR6, AR7 (decompose routes + extract links-notes domain)
+- Story 11.1 -> AR1, AR2, FR38 (establish domain boundary structure + add Zod)
+- Story 11.2 -> AR1, AR3 (isolate sprint domain)
+- Story 11.3 -> AR1, AR3 (isolate epic domain)
+- Story 11.4 -> AR1, AR3 (isolate logs domain)
+- Story 11.5 -> AR1, AR3 (isolate analytics domain)
+- Story 11.6 -> AR1, AR3, AR6, AR7 (decompose routes + extract links-notes domain)
 
-### Story 10.1: Extract Runtime Domain
+### Story 11.1: Extract Runtime Domain
 
 As a maintainer,
 I want the runtime state management and session lifecycle domain extracted into `scripts/server/runtime/` with collocated types, constants, and Zod schemas,
@@ -1286,7 +1446,7 @@ So that the orchestrator runtime contract — how sessions are created, started,
 **When** they import from agent-server.ts,
 **Then** all imports continue to work without changes — agent-server.ts re-exports from domain modules
 
-### Story 10.2: Extract Sprint & Overview Domain
+### Story 11.2: Extract Sprint & Overview Domain
 
 As a maintainer,
 I want sprint summarization and overview construction extracted into `scripts/server/sprint/` with collocated types,
@@ -1294,7 +1454,7 @@ So that the complex sprint aggregation logic — how workflow progress is comput
 
 **Acceptance Criteria:**
 
-**Given** the runtime domain from Story 10.1,
+**Given** the runtime domain from Story 11.1,
 **When** the sprint domain is extracted,
 **Then** a `scripts/server/sprint/` folder is created with:
 - `overview.ts` containing `SprintOverview` type and `buildOverviewPayload` function
@@ -1309,7 +1469,7 @@ So that the complex sprint aggregation logic — how workflow progress is comput
 **When** compared before and after,
 **Then** all behavior is identical — this is a pure refactoring with no functional changes
 
-### Story 10.3: Extract Epic & Story Domain
+### Story 11.3: Extract Epic & Story Domain
 
 As a maintainer,
 I want epic markdown parsing, story dependencies, and story content extraction into `scripts/server/epics/` with collocated types,
@@ -1317,7 +1477,7 @@ So that the planning artifact interpretation logic is isolated and testable inde
 
 **Acceptance Criteria:**
 
-**Given** the sprint domain from Story 10.2,
+**Given** the sprint domain from Story 11.2,
 **When** the epic domain is extracted,
 **Then** a `scripts/server/epics/` folder is created with:
 - `parser.ts` containing `ParsedEpicMarkdownRow` type, all `EPICS_*` regex constants, `epicsFile` path, and functions: `parseEpicMarkdownRows`, `getEpicMetadataFromMarkdown`, `getStoryContentFromEpics`, `findStoryMarkdown`, `slugifyStoryLabel`
@@ -1328,7 +1488,7 @@ So that the planning artifact interpretation logic is isolated and testable inde
 **When** `pnpm check` is run,
 **Then** all quality gates pass with zero regressions
 
-### Story 10.4: Extract Logs & Observability Domain
+### Story 11.4: Extract Logs & Observability Domain
 
 As a maintainer,
 I want log event processing and session detail construction extracted into `scripts/server/logs/` with collocated types,
@@ -1336,7 +1496,7 @@ So that the Copilot CLI log interpretation logic — the core of the observabili
 
 **Acceptance Criteria:**
 
-**Given** the runtime domain from Story 10.1,
+**Given** the runtime domain from Story 11.1,
 **When** the logs domain is extracted,
 **Then** a `scripts/server/logs/` folder is created with:
 - `events.ts` containing event log processing: `findAllCliEventsJsonl`, `buildLogFromEvents`, `describeToolCall`, `stripAnsi`, `escapeRegExp`, and associated regex constants (`PS_LINE_REGEX`)
@@ -1347,7 +1507,7 @@ So that the Copilot CLI log interpretation logic — the core of the observabili
 **When** `pnpm check` is run,
 **Then** all quality gates pass with zero regressions
 
-### Story 10.5: Extract Analytics Domain
+### Story 11.5: Extract Analytics Domain
 
 As a maintainer,
 I want all analytics computation, token usage parsing, costing models, and session deduplication extracted into `scripts/server/analytics/` with collocated types and Zod schemas,
@@ -1367,7 +1527,7 @@ So that the analytics engine — the data processing pipeline for session metric
 **When** `pnpm check` is run,
 **Then** all quality gates pass with zero regressions
 
-### Story 10.6: Decompose API Routes by Domain with Zod Validation
+### Story 11.6: Decompose API Routes by Domain with Zod Validation
 
 As a maintainer,
 I want the monolithic `attachApi` function decomposed into domain-grouped route handler modules with Zod request body validation, and the links-notes domain extracted,
@@ -1375,7 +1535,7 @@ So that adding or debugging any API endpoint no longer requires navigating a 1,5
 
 **Acceptance Criteria:**
 
-**Given** the domain modules from Stories 10.1–10.5,
+**Given** the domain modules from Stories 11.1–11.5,
 **When** the links-notes domain is extracted,
 **Then** a `scripts/server/links-notes/` folder is created with:
 - `links.ts` containing link types, `linksFile` path, `serializeLinksYaml`, `parseSimpleYamlList`, `stripYamlQuotes`, and YAML constants (`YAML_COMMENT_REGEX`, `LAST_UPDATED_COMMENT_REGEX`)

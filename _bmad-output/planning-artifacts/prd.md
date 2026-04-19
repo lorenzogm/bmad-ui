@@ -14,6 +14,9 @@ stepsCompleted:
   - step-10-nonfunctional
   - step-11-polish
   - step-12-complete
+  - step-e-01-discovery
+  - step-e-02-review
+  - step-e-03-edit
 classification:
   projectType: infrastructure_platform
   domain: developer_tool
@@ -35,6 +38,10 @@ documentCounts:
   projectDocs: 2
   infrastructureTemplates: 4
 workflowType: 'prd'
+lastEdited: '2026-04-19'
+editHistory:
+  - date: '2026-04-19'
+    changes: 'Added E2E testing requirements (FR46-FR52, NFR23-NFR26), updated Product Scope and Risk Mitigation for Playwright testing epic'
 ---
 
 # Product Requirements Document - bmad-ui Phase 1: Infrastructure Setup
@@ -106,6 +113,7 @@ All infrastructure components are configured, tested, and working end-to-end. Th
 - Portable installation CLI (`npx bmad-method-ui install`) published and documented
 - Basic README and setup documentation
 - Publish to GitHub as public repository
+- Playwright E2E test infrastructure with smoke tests covering all existing UI routes
 
 ### Growth - Phase 2
 
@@ -327,6 +335,7 @@ Must-Have Capabilities:
 - Minimal but complete setup/deploy/troubleshooting docs.
 - VS Code-first developer path.
 - Operational validation that app supports execution from backlog epics/stories.
+- E2E Playwright tests covering all UI routes for regression detection and safe iteration.
 
 ### Post-MVP Features
 
@@ -353,6 +362,10 @@ Market Risks:
 Resource Risks:
 - Risk: solo maintainer overload.
 - Mitigation: strict phase boundaries, minimal docs scope in Phase 1, defer non-critical improvements to Phase 2.
+
+Regression Risks:
+- Risk: UI changes break existing routes or interactions without detection.
+- Mitigation: Playwright E2E smoke tests on all routes run in CI as a merge gate; contributors run the same suite locally before submitting.
 
 ## Functional Requirements
 
@@ -420,6 +433,24 @@ Resource Risks:
 - FR39: Maintainer can preserve a clear boundary between Phase 1 delivery and post-MVP feature expansion.
 - FR40: Maintainer can evolve the product toward advanced agentic capabilities without replacing foundational workflows.
 
+### Session Analytics and Autonomous Workflow Optimization
+
+- FR41: Maintainer can automatically capture session-level outcome metrics (one-shot success, delivery, abort, correction count) from Copilot CLI and VS Code debug logs without manual annotation.
+- FR42: Maintainer can view per-skill and per-model effectiveness metrics to identify which combinations produce the best autonomous output.
+- FR43: Maintainer can compare session quality across model+skill combinations to inform autonomous workflow configuration decisions.
+- FR44: Maintainer can track session complexity indicators (context compactions, subagent spawns, tool distribution) to diagnose why sessions fail or require corrections.
+- FR45: Maintainer can export or generate an autonomous workflow configuration recommending optimal model assignments per skill based on historical session data.
+
+### End-to-End Testing and Regression Safety
+
+- FR46: Maintainer can run Playwright E2E tests that verify all existing UI routes render without JavaScript errors.
+- FR47: Maintainer can detect regressions in navigation, page rendering, and core user interactions through automated E2E tests executed on every change.
+- FR48: Contributor can run the full E2E test suite locally before submitting changes using a single documented command.
+- FR49: CI pipeline includes E2E test execution as a required quality gate before protected branch merge.
+- FR50: Maintainer can add new E2E test scenarios incrementally as features are developed without modifying existing test infrastructure.
+- FR51: E2E tests validate that data-dependent views (sessions, epics, analytics) render correctly with real project artifact data.
+- FR52: Maintainer can identify JavaScript runtime errors and broken user interactions through automated headless browser testing.
+
 ## Non-Functional Requirements
 
 ### Performance
@@ -461,3 +492,16 @@ Resource Risks:
 - NFR20: Public documentation uses clear structure and readable formatting suitable for broad developer audiences.
 - NFR21: Core UI views maintain keyboard-navigable interaction paths for primary workflows.
 - NFR22: New UI additions in Phase 1 do not reduce existing accessibility quality baseline of the application.
+
+### Session Analytics Performance
+
+- NFR23: Session sync daemon must process all historical sessions on startup within 30 seconds.
+- NFR24: Session quality metrics must be derivable entirely from local log files without network calls or external API dependencies.
+- NFR25: Analytics aggregation for model+skill effectiveness must handle at least 500 sessions without noticeable UI lag.
+
+### Testing and Regression Safety
+
+- NFR26: E2E test suite completes within 5 minutes on CI for the full Playwright test matrix.
+- NFR27: All existing UI routes must have at least one E2E smoke test covering render-without-error verification.
+- NFR28: E2E tests run headless in CI and optionally headed locally using a single command-line flag.
+- NFR29: E2E test failures in CI block merge to protected branches with clear failure output identifying the broken route or interaction.
