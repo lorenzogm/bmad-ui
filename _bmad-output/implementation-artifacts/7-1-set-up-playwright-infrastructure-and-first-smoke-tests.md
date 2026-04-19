@@ -1,6 +1,6 @@
 # Story 7.1: Set Up Playwright Infrastructure and First Smoke Tests
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -227,6 +227,7 @@ None — clean implementation, no issues.
 - Created `playwright.config.ts` with Chromium-only project, `webServer` auto-start, and `reuseExistingServer` flag
 - Created `tests/smoke.spec.ts` with 5 tests: home page load, nav links presence, and navigation click tests for Workflow/Sessions/Analytics
 - Added Vitest `test.exclude` config in `vite.config.ts` to prevent Vitest from picking up Playwright `*.spec.ts` files
+- Fixed strict mode violations in smoke.spec.ts: used `.first()` for nav link locators (Sessions link appeared in both main nav and analytics submenu) and replaced multi-selector `main, [role='main'], #root` with single `#root` selector
 - All 5 E2E tests pass; `pnpm run check` passes with no regressions
 
 ### File List
