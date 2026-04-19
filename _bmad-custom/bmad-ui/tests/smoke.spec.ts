@@ -17,8 +17,7 @@ test.describe("Home page smoke", () => {
   test("home page loads without JavaScript errors", async ({ page }) => {
     const errors = captureConsoleErrors(page)
     await page.goto("/")
-    // index route redirects to /workflow
-    await expect(page).toHaveURL(/\/workflow/)
+    await expect(page).toHaveURL("/")
     await expect(page.locator(".app-content")).toBeVisible()
     expect(errors).toHaveLength(0)
   })
