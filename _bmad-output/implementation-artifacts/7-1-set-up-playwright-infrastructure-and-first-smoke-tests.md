@@ -47,9 +47,10 @@ so that I have a working E2E test foundation I can run locally with a single com
 
 ### Review Findings
 
-- [x] [Review][Patch] Include explicit Home link click coverage in smoke navigation assertions [_bmad-custom/bmad-ui/tests/smoke.spec.ts:53]
-- [x] [Review][Patch] Validate home entry route behavior against workflow redirect expectation [_bmad-custom/bmad-ui/tests/smoke.spec.ts:23]
-- [x] [Review][Patch] Capture both `pageerror` and `console.error` events for JavaScript error checks [_bmad-custom/bmad-ui/tests/smoke.spec.ts:14]
+- [x] [Review][Patch] Capture both `pageerror` and `console.error` events for JavaScript error checks [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:13`]
+- [x] [Review][Patch] Scope navigation link locators to `aria-label="Main navigation"` to avoid duplicate-link ambiguity [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:39`]
+- [x] [Review][Patch] Use exact URL matching for route assertions to prevent partial-match false positives [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:50`]
+- [x] [Review][Patch] Cover home/brand link in click-navigation smoke flow for full AC parity [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:59`]
 
 ## Dev Notes
 
