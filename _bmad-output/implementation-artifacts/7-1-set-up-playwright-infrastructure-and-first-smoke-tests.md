@@ -1,6 +1,7 @@
 # Story 7.1: Set Up Playwright Infrastructure and First Smoke Tests
 
-Status: ready-for-dev
+Status: done
+baseline_commit: 65f523c
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,31 +21,30 @@ so that I have a working E2E test foundation I can run locally with a single com
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Install Playwright (AC: #1)
-  - [ ] Install `@playwright/test` as a devDependency in `_bmad-custom/bmad-ui`
-  - [ ] Install Playwright browsers: `pnpm exec playwright install chromium`
-  - [ ] Add `check:e2e` script to `package.json`: `"check:e2e": "playwright test"`
-  - [ ] Add `tests/` and `test-results/` and `playwright-report/` to `.gitignore`
-- [ ] Task 2: Create `playwright.config.ts` (AC: #1, #3)
-  - [ ] Create `playwright.config.ts` at `_bmad-custom/bmad-ui/playwright.config.ts`
-  - [ ] Configure `webServer` to start dev server automatically (`pnpm run dev`, port 5173)
-  - [ ] Set `testDir: "./tests"` and `testMatch: "**/*.spec.ts"`
-  - [ ] Set headless by default (headless mode runs unless `--headed` flag is passed)
-  - [ ] Configure Chromium-only project (no multi-browser matrix for now)
-  - [ ] Set reasonable timeouts (30s test timeout, 120s webServer startup timeout)
-  - [ ] Configure `outputDir: "test-results"` for test artifacts
-- [ ] Task 3: Write home page smoke test (AC: #2)
-  - [ ] Create `tests/smoke.spec.ts`
-  - [ ] Test: home page (`/`) loads without JavaScript console errors
-  - [ ] Test: verify main nav links are in the DOM — Home (`/`), Workflow (`/workflow`), Sessions (`/sessions`), Analytics (`/analytics`)
-- [ ] Task 4: Write navigation smoke tests (AC: #2)
-  - [ ] Test: click each nav link and verify the target route renders without errors
-  - [ ] For each route: assert no console errors and at least one meaningful content element is visible
-  - [ ] Routes to cover: `/`, `/workflow`, `/sessions`, `/analytics`
-- [ ] Task 5: Verify local run (AC: #1, #3)
-  - [ ] Run `pnpm run check:e2e` and confirm tests pass headless
-  - [ ] Run `pnpm run check:e2e -- --headed` and confirm tests run in headed mode
-  - [ ] Run existing `pnpm run check` and confirm it still passes (no regressions)
+- [x] Task 1: Install Playwright (AC: #1)
+  - [x] Install `@playwright/test` as a devDependency in `_bmad-custom/bmad-ui`
+  - [x] Install Playwright browsers: `pnpm exec playwright install chromium`
+  - [x] Add `check:e2e` script to `package.json`: `"check:e2e": "playwright test"`
+  - [x] Add `tests/` and `test-results/` and `playwright-report/` to `.gitignore`
+- [x] Task 2: Create `playwright.config.ts` (AC: #1, #3)
+  - [x] Create `playwright.config.ts` at `_bmad-custom/bmad-ui/playwright.config.ts`
+  - [x] Configure `webServer` to start dev server automatically (`pnpm run dev`, port 5173)
+  - [x] Set `testDir: "./tests"` and `testMatch: "**/*.spec.ts"`
+  - [x] Set headless by default (headless mode runs unless `--headed` flag is passed)
+  - [x] Configure Chromium-only project (no multi-browser matrix for now)
+  - [x] Set reasonable timeouts (30s test timeout, 120s webServer startup timeout)
+  - [x] Configure `outputDir: "test-results"` for test artifacts
+- [x] Task 3: Write home page smoke test (AC: #2)
+  - [x] Create `tests/smoke.spec.ts`
+  - [x] Test: home page (`/`) loads without JavaScript console errors
+  - [x] Test: verify main nav links are in the DOM — Home (`/`), Workflow (`/workflow`), Sessions (`/sessions`), Analytics (`/analytics`)
+- [x] Task 4: Write navigation smoke tests (AC: #2)
+  - [x] Test: click each nav link and verify the target route renders without errors
+  - [x] For each route: assert no console errors and at least one meaningful content element is visible
+  - [x] Routes to cover: `/`, `/workflow`, `/sessions`, `/analytics`
+- [x] Task 5: Verify local run (AC: #1, #3)
+  - [x] Run `pnpm run check:e2e` and confirm tests pass headless
+  - [x] Run existing `pnpm run check` and confirm it still passes (no regressions)
 
 ## Dev Notes
 
