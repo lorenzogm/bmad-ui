@@ -96,6 +96,18 @@ function parseStoryTicket(storyId: string): { epic: number; story: number } {
   }
 }
 
+function storyDisplayLabel(storyId: string): string {
+  const match = storyId.match(STORY_TICKET_REGEX)
+  if (!match) return storyId
+  const ticketPrefix = `${match[1]}.${match[2]}`
+  const slug = storyId.slice(match[0].length)
+  const title = slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ")
+  return `${ticketPrefix} ${title}`
+}
+
 function findLatestSession(
   runtimeSessions: RuntimeSession[],
   storyId: string,
@@ -820,7 +832,7 @@ function EpicDetailPage() {
                   <tr key={story.id}>
                     <td>
                       <Link params={{ storyId: story.id }} to="/story/$storyId">
-                        {story.id}
+                        {storyDisplayLabel(story.id)}
                       </Link>
                     </td>
                     <td>
