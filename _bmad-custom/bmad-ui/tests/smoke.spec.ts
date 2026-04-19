@@ -3,8 +3,6 @@ import { expect, test } from "@playwright/test"
 
 const HOME_LINK_LABEL = "BMAD UI"
 const HOME_ENTRY_PATH = "/"
-const HOME_REDIRECT_PATH_REGEX = /\/workflow/
-const HOME_REDIRECT_TIMEOUT_MS = 10_000
 const NAV_LINKS = [
   { label: "Workflow", href: "/workflow" },
   { label: "Sessions", href: "/sessions" },
@@ -18,11 +16,10 @@ function captureConsoleErrors(page: Page): string[] {
 }
 
 test.describe("Home page smoke", () => {
-  test("home entry route loads without JavaScript errors", async ({ page }) => {
+  test("home page loads without JavaScript errors", async ({ page }) => {
     const errors = captureConsoleErrors(page)
     await page.goto(HOME_ENTRY_PATH)
-    // index route redirects client-side to /workflow — use waitForURL for reliable polling
-    await page.waitForURL(HOME_REDIRECT_PATH_REGEX, { timeout: HOME_REDIRECT_TIMEOUT_MS })
+    await expect(page).toHaveURL(HOME_ENTRY_PATH)
     await expect(page.locator(".app-content")).toBeVisible()
     expect(errors).toHaveLength(0)
   })
@@ -49,8 +46,7 @@ test.describe("Navigation smoke", () => {
 
   test("clicking each nav link navigates to the correct route", async ({ page }) => {
     const errors = captureConsoleErrors(page)
-    // Navigate directly to /workflow to avoid index redirect timing
-    await page.goto("/workflow")
+    await page.goto(HOME_ENTRY_PATH)
     await expect(page.locator(".app-content")).toBeVisible()
     for (const link of NAV_LINKS) {
       await page.getByRole("link", { name: link.label }).first().click()
