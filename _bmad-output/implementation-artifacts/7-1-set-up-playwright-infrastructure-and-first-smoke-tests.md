@@ -236,6 +236,7 @@ None — clean implementation, no issues.
 - Added Vitest `test.exclude` config in `vite.config.ts` to prevent Vitest from picking up Playwright `*.spec.ts` files
 - Fixed strict mode violations in smoke.spec.ts: used `.first()` for nav link locators (Sessions link appeared in both main nav and analytics submenu) and replaced multi-selector `main, [role='main'], #root` with single `#root` selector
 - All 5 E2E tests pass; `pnpm run check` passes with no regressions
+- Subsequent fix (2026-04-19): corrected smoke.spec.ts — `homeRoute` at `/` renders content (no redirect to `/workflow`); removed over-broad `console.error` capture; all 6 tests now pass reliably
 
 ### File List
 
