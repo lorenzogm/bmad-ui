@@ -7,8 +7,8 @@
       "skill": "unknown",
       "model": "claude-sonnet-4.6",
       "status": "failed",
-      "startedAt": "2026-04-19T21:47:26.428Z",
-      "endedAt": "2026-04-19T21:47:18.435Z",
+      "startedAt": "2026-04-19T21:49:01.573Z",
+      "endedAt": "2026-04-19T21:49:01.571Z",
       "usage": {
         "requests": 0,
         "tokensIn": 0,
@@ -32,52 +32,7 @@
       "agent": "bmad-dev-story",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 28,
-      "git_commits": 0,
-      "git_pushes": 0,
-      "aborted": false,
-      "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 2.7,
-      "outcome": "no-output",
-      "start_date": "2026-04-19T21:44:39.418Z",
-      "end_date": null
-    },
-    "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c": {
-      "sessionId": "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c",
-      "storyId": null,
-      "epicId": null,
-      "skill": "unknown",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-19T21:47:26.432Z",
-      "endedAt": "2026-04-19T21:47:18.438Z",
-      "usage": {
-        "requests": 0,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 2,
-      "premium_multiplier": 1,
-      "premium_cost_units": 2,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 22,
+      "agent_turns": 36,
       "git_commits": 1,
       "git_pushes": 1,
       "aborted": false,
@@ -85,9 +40,9 @@
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 3,
+      "duration_minutes": 4.6,
       "outcome": "pushed",
-      "start_date": "2026-04-19T21:43:53.776Z",
+      "start_date": "2026-04-19T21:44:39.418Z",
       "end_date": null
     },
     "01525e55-7880-4902-8c07-7933ca0f2638": {
@@ -1947,7 +1902,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:44:58.101Z",
-      "endedAt": "2026-04-19T21:47:27.346Z",
+      "endedAt": "2026-04-19T21:49:02.740Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -1971,16 +1926,16 @@
       "agent": "bmad-dev-story",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 25,
-      "git_commits": 0,
-      "git_pushes": 0,
+      "agent_turns": 28,
+      "git_commits": 1,
+      "git_pushes": 1,
       "aborted": false,
       "context_compactions": 0,
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 2.5,
-      "outcome": "no-output",
+      "duration_minutes": 2.9,
+      "outcome": "pushed",
       "start_date": "2026-04-19T21:44:58.101Z",
       "end_date": null
     },
@@ -2078,7 +2033,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:18:23.738Z",
-      "endedAt": "2026-04-19T21:47:27.352Z",
+      "endedAt": "2026-04-19T21:49:02.747Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -2209,7 +2164,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:12:57.293Z",
-      "endedAt": "2026-04-19T21:47:27.359Z",
+      "endedAt": "2026-04-19T21:49:02.753Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -2469,7 +2424,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:43:23.625Z",
-      "endedAt": "2026-04-19T21:47:28.353Z",
+      "endedAt": "2026-04-19T21:49:02.759Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -2477,6 +2432,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "426c9be0-40a3-4529-b7b9-e32b22a6288f",
       "tool": "copilot-cli",
       "premium": true,
@@ -2502,9 +2459,7 @@
       "duration_minutes": 3.1,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:43:23.625Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "429e136f-3ec9-4125-aad9-326f5206a8be": {
       "sessionId": "429e136f-3ec9-4125-aad9-326f5206a8be",
@@ -2772,7 +2727,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:44:26.947Z",
-      "endedAt": "2026-04-19T21:47:28.357Z",
+      "endedAt": "2026-04-19T21:49:02.765Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -2780,6 +2735,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "47364fcb-29ec-454d-8d4e-2bb98fc9167e",
       "tool": "copilot-cli",
       "premium": true,
@@ -2794,20 +2751,18 @@
       "agent": "bmad-dev-story",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 21,
-      "git_commits": 0,
-      "git_pushes": 0,
+      "agent_turns": 23,
+      "git_commits": 1,
+      "git_pushes": 1,
       "aborted": false,
       "context_compactions": 0,
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 3,
-      "outcome": "no-output",
+      "duration_minutes": 3.2,
+      "outcome": "pushed",
       "start_date": "2026-04-19T21:44:26.947Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "479d9ca7-ad99-46ce-bcf3-08c7eb638016": {
       "sessionId": "479d9ca7-ad99-46ce-bcf3-08c7eb638016",
@@ -4279,7 +4234,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:45:24.909Z",
-      "endedAt": "2026-04-19T21:47:28.360Z",
+      "endedAt": "2026-04-19T21:49:02.771Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -4287,6 +4242,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "6f6e008d-d4fe-4975-a730-0687ed2f997a",
       "tool": "copilot-cli",
       "premium": true,
@@ -4301,7 +4258,7 @@
       "agent": "bmad-quick-dev",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 18,
+      "agent_turns": 29,
       "git_commits": 0,
       "git_pushes": 0,
       "aborted": false,
@@ -4309,12 +4266,10 @@
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 2.1,
+      "duration_minutes": 3.6,
       "outcome": "no-output",
       "start_date": "2026-04-19T21:45:24.909Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "72abf871-b9b9-418f-8e26-7b2b3d23979e": {
       "sessionId": "72abf871-b9b9-418f-8e26-7b2b3d23979e",
@@ -4496,7 +4451,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:45:08.435Z",
-      "endedAt": "2026-04-19T21:47:28.364Z",
+      "endedAt": "2026-04-19T21:49:02.776Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -4504,6 +4459,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "73a5ad80-7907-4584-b091-31b0e7f269c6",
       "tool": "copilot-cli",
       "premium": true,
@@ -4529,9 +4486,7 @@
       "duration_minutes": 2.1,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:45:08.435Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "75aeaf0d-8ca4-447a-8329-8b3b02692984": {
       "sessionId": "75aeaf0d-8ca4-447a-8329-8b3b02692984",
@@ -4670,7 +4625,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:42:23.248Z",
-      "endedAt": "2026-04-19T21:47:28.367Z",
+      "endedAt": "2026-04-19T21:49:02.782Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -4678,6 +4633,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "7738028f-dcfe-4f1c-bb68-654048f167c9",
       "tool": "copilot-cli",
       "premium": true,
@@ -4703,9 +4660,7 @@
       "duration_minutes": 3.6,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:42:23.248Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "7789c9a7-82dc-4fb3-ab5d-0631662051a9": {
       "sessionId": "7789c9a7-82dc-4fb3-ab5d-0631662051a9",
@@ -5100,9 +5055,9 @@
       "epicId": null,
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "failed",
+      "status": "completed",
       "startedAt": "2026-04-19T21:12:57.292Z",
-      "endedAt": "2026-04-19T21:47:28.371Z",
+      "endedAt": "2026-04-19T21:17:41.508Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -5135,9 +5090,7 @@
       "duration_minutes": 4.7,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:12:57.292Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": "2026-04-19T21:17:41.508Z"
     },
     "8731a1fe-611c-4b58-ae27-6e902484e63d": {
       "sessionId": "8731a1fe-611c-4b58-ae27-6e902484e63d",
@@ -5921,7 +5874,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:44:23.037Z",
-      "endedAt": "2026-04-19T21:47:28.379Z",
+      "endedAt": "2026-04-19T22:00:00.000Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -5943,16 +5896,16 @@
       "agent": "bmad-dev-story",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 25,
-      "git_commits": 0,
+      "agent_turns": 40,
+      "git_commits": 1,
       "git_pushes": 0,
       "aborted": false,
       "context_compactions": 0,
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 2.7,
-      "outcome": "no-output",
+      "duration_minutes": 4.8,
+      "outcome": "committed",
       "start_date": "2026-04-19T21:44:23.037Z",
       "end_date": null,
       "error": "Agent process produced no output (0-byte log)",
@@ -6052,7 +6005,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:43:02.228Z",
-      "endedAt": "2026-04-19T21:47:28.383Z",
+      "endedAt": "2026-04-19T21:49:02.814Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -6060,6 +6013,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "9a88a0d4-91ca-488c-b4a2-9ec06cd14f9c",
       "tool": "copilot-cli",
       "premium": true,
@@ -6085,9 +6040,7 @@
       "duration_minutes": 4.2,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:43:02.228Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "9b73a7bc-24b9-42c0-a33b-f6bb41262f1d": {
       "sessionId": "9b73a7bc-24b9-42c0-a33b-f6bb41262f1d",
@@ -6097,7 +6050,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:43:28.792Z",
-      "endedAt": "2026-04-19T21:47:28.386Z",
+      "endedAt": "2026-04-19T21:49:02.817Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -6105,6 +6058,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "9b73a7bc-24b9-42c0-a33b-f6bb41262f1d",
       "tool": "copilot-cli",
       "premium": true,
@@ -6119,7 +6074,7 @@
       "agent": "bmad-dev-story",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 31,
+      "agent_turns": 46,
       "git_commits": 0,
       "git_pushes": 0,
       "aborted": false,
@@ -6127,12 +6082,10 @@
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 4,
+      "duration_minutes": 5.8,
       "outcome": "no-output",
       "start_date": "2026-04-19T21:43:28.792Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "9bbedf71-31a5-4b57-b1c4-c033fbf0acf5": {
       "sessionId": "9bbedf71-31a5-4b57-b1c4-c033fbf0acf5",
@@ -6314,7 +6267,7 @@
       "model": "gpt-5.3-codex",
       "status": "failed",
       "startedAt": "2026-04-19T21:46:34.275Z",
-      "endedAt": "2026-04-19T21:47:28.390Z",
+      "endedAt": "2026-04-19T21:49:02.820Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -6322,6 +6275,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "a1857835-d7e3-4fb9-8bdd-e6a48945fa3b",
       "tool": "copilot-cli",
       "premium": true,
@@ -6336,20 +6291,18 @@
       "agent": "bmad-code-review",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 7,
+      "agent_turns": 12,
       "git_commits": 0,
       "git_pushes": 0,
       "aborted": false,
       "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
+      "subagent_count": 3,
+      "subagent_tokens": 444588,
       "error_count": 0,
-      "duration_minutes": 0.8,
+      "duration_minutes": 2.6,
       "outcome": "delivered",
       "start_date": "2026-04-19T21:46:34.275Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "a73dbe50-1b20-404a-9318-fa54f8f125ac": {
       "sessionId": "a73dbe50-1b20-404a-9318-fa54f8f125ac",
@@ -6531,7 +6484,7 @@
       "model": "gpt-5.3-codex",
       "status": "failed",
       "startedAt": "2026-04-19T21:46:15.509Z",
-      "endedAt": "2026-04-19T21:47:28.393Z",
+      "endedAt": "2026-04-19T21:49:02.823Z",
       "usage": {
         "requests": 2,
         "tokensIn": 0,
@@ -6539,6 +6492,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "aa9df846-dcb9-4fec-b41a-aa706e6b2ee0",
       "tool": "copilot-cli",
       "premium": true,
@@ -6553,20 +6508,18 @@
       "agent": "bmad-code-review",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 8,
+      "agent_turns": 11,
       "git_commits": 0,
       "git_pushes": 0,
       "aborted": false,
       "context_compactions": 0,
-      "subagent_count": 0,
+      "subagent_count": 2,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 1.2,
+      "duration_minutes": 3,
       "outcome": "delivered",
       "start_date": "2026-04-19T21:46:15.509Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "ac184dc0-70d8-4c27-9b05-48b36396287e": {
       "sessionId": "ac184dc0-70d8-4c27-9b05-48b36396287e",
@@ -7694,7 +7647,7 @@
       "model": "claude-sonnet-4.6",
       "status": "failed",
       "startedAt": "2026-04-19T21:24:00.952Z",
-      "endedAt": "2026-04-19T21:47:28.396Z",
+      "endedAt": "2026-04-19T21:49:02.826Z",
       "usage": {
         "requests": 4,
         "tokensIn": 0,
@@ -7702,6 +7655,8 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
       "session_id": "dff105a5-d102-4c56-84db-2f353d062768",
       "tool": "copilot-cli",
       "premium": true,
@@ -7727,9 +7682,7 @@
       "duration_minutes": 16.7,
       "outcome": "aborted",
       "start_date": "2026-04-19T21:24:00.952Z",
-      "end_date": null,
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1
+      "end_date": null
     },
     "dffbc7d9-d986-467d-b72f-fb74aa9001d0": {
       "sessionId": "dffbc7d9-d986-467d-b72f-fb74aa9001d0",
@@ -7945,6 +7898,51 @@
       "outcome": "committed",
       "start_date": "2026-04-15T22:00:06.558Z",
       "end_date": "2026-04-15T22:02:45.196Z"
+    },
+    "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c": {
+      "sessionId": "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "failed",
+      "startedAt": "2026-04-19T21:43:53.776Z",
+      "endedAt": "2026-04-19T21:49:02.829Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
+      "session_id": "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 22,
+      "git_commits": 1,
+      "git_pushes": 1,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 3,
+      "outcome": "pushed",
+      "start_date": "2026-04-19T21:43:53.776Z",
+      "end_date": null
     },
     "edea74b8-d48f-425e-a7a3-90551ba590b3": {
       "sessionId": "edea74b8-d48f-425e-a7a3-90551ba590b3",
@@ -10845,6 +10843,40 @@
         "tokensOut": 6300,
         "tokensCached": 988100,
         "totalTokens": 1106300
+      }
+    },
+    "workflow-bmad-dev-story-1776635065696-1": {
+      "sessionId": "workflow-bmad-dev-story-1776635065696-1",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "unknown",
+      "status": "completed",
+      "startedAt": "",
+      "endedAt": null,
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1000000,
+        "tokensOut": 6000,
+        "tokensCached": 974900,
+        "totalTokens": 1006000
+      }
+    },
+    "workflow-bmad-dev-story-1776635096564-2": {
+      "sessionId": "workflow-bmad-dev-story-1776635096564-2",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "unknown",
+      "status": "completed",
+      "startedAt": "",
+      "endedAt": null,
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1300000,
+        "tokensOut": 7100,
+        "tokensCached": 1300000,
+        "totalTokens": 1307100
       }
     },
     "workflow-bmad-dev-story-1776635106737-3": {
