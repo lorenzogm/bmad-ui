@@ -16,3 +16,8 @@ Resolution (2026-04-16): both items were implemented and closed in `.github/work
 - Cross-tab `storage` event listener to sync orchestrating state when changed from another tab or DevTools.
 - Garbage collection for zombie localStorage keys from abandoned navigations (e.g. `bmad-orchestrating:epic-X` left behind if user never returns).
 - Store richer metadata in localStorage (JSON object with `startedAt`, `epicId`) instead of bare `"true"` string, enabling TTL checks and debugging.
+
+## Deferred from: code review of 5-1-create-npx-bmad-method-ui-install-cli (2026-04-18)
+
+- No `--access public` flag on `npm publish` (.github/workflows/publish.yml:34) — unscoped package defaults to public, low risk; revisit if package is ever renamed to a scoped name
+- Non-TTY stdin causes silent abort on overwrite guard (bin/install.mjs:19) — behavior is safe (empty input defaults to N = abort), but may confuse automation; revisit if CI install use-cases emerge

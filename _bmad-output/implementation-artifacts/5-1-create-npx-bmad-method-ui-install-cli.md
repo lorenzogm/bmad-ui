@@ -1,6 +1,6 @@
 # Story 5.1: Create `npx bmad-method-ui install` CLI
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -231,6 +231,19 @@ claude-sonnet-4.6
 - `package.json` (repo root) — UPDATED (reverted to unscoped `bmad-method-ui` for public npm)
 - `bin/install.mjs` — UPDATED (usage message `npx bmad-method-ui install`)
 - `.github/workflows/publish.yml` — CREATED (publish to public npm on release via `NPM_TOKEN` secret)
+
+### Review Findings
+
+- [x] [Review][Patch] Windows path resolution broken — use `fileURLToPath()` [bin/install.mjs:14]
+- [x] [Review][Patch] Shell injection via unsanitized `workflow_dispatch` version input [.github/workflows/publish.yml:31]
+- [x] [Review][Patch] No guard if source directory absent from npm package [bin/install.mjs:16]
+- [x] [Review][Patch] `_bmad-custom/` parent directory not created before `cpSync` [bin/install.mjs:36]
+- [x] [Review][Patch] Unhandled filesystem error during copy (no try/catch around cpSync) [bin/install.mjs:36]
+- [x] [Review][Patch] Next-steps says `npm install` but app uses `pnpm` — violates AC2 [bin/install.mjs:42]
+- [x] [Review][Patch] `pnpm-lock.yaml` and `pnpm-workspace.yaml` copied to user project — violates AC5 [bin/install.mjs:38]
+- [x] [Review][Patch] `cpSync` node_modules filter uses substring match — exclude exact path segment [bin/install.mjs:38]
+- [x] [Review][Defer] No `--access public` flag on `npm publish` [.github/workflows/publish.yml:34] — deferred, pre-existing; unscoped package defaults to public
+- [x] [Review][Defer] Non-TTY stdin causes silent abort on overwrite [bin/install.mjs:19] — deferred, pre-existing; behavior is safe (defaults N = abort)
 
 ## Change Log
 
