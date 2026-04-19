@@ -84,7 +84,7 @@ development_status:
   epic-6-retrospective: done
 
   epic-7: in-progress
-  7-1-set-up-playwright-infrastructure-and-first-smoke-tests: done
+  7-1-set-up-playwright-infrastructure-and-first-smoke-tests: ready-for-dev
   7-2-complete-route-smoke-coverage: backlog
   7-3-data-dependent-view-validation: backlog
   7-4-ci-integration-and-merge-gating: backlog

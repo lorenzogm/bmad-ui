@@ -17,8 +17,7 @@
     "build": "tsc --noEmit && vite build",
     "check:lint": "biome check src/",
     "check:types": "tsc --noEmit",
-    "check:tests": "vitest run --passWithNoTests",
-    "check:e2e": "playwright test"
+    "check:tests": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@tanstack/react-query": "5.99.0",
@@ -31,7 +30,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.12",
-    "@playwright/test": "1.59.1",
     "@tailwindcss/vite": "4.2.2",
     "@types/marked": "6.0.0",
     "@types/node": "24.5.2",

@@ -32,10 +32,5 @@ Thumbs.db
 # Testing
 coverage/
 
-# Playwright
-test-results/
-playwright-report/
-blob-report/
-
 # Cache
 .turbo/
