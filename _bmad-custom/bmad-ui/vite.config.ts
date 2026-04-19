@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react"
 import { type ChildProcess, spawn } from "node:child_process"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
-import { defineConfig } from "vite"
+import { defineConfig } from "vitest/config"
 import { attachApi } from "./scripts/agent-server"
 import { staticDataPlugin } from "./scripts/vite-plugin-static-data"
 
@@ -48,5 +48,8 @@ export default defineConfig({
     fs: {
       allow: ["..", "../.."],
     },
+  },
+  test: {
+    exclude: ["**/node_modules/**", "**/dist/**", "tests/**"],
   },
 })

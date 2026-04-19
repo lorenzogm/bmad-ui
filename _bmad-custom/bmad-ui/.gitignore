@@ -34,3 +34,9 @@ coverage/
 
 # Cache
 .turbo/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
