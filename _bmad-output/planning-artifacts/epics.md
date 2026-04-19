@@ -167,6 +167,11 @@ _No UX Design document was found for Phase 1. Phase 1 is infrastructure-focused;
 | FR43 | Epic 9 | Compare session quality across model+skill combos |
 | FR44 | Epic 9 | Track session complexity indicators |
 | FR45 | Epic 9 | Generate autonomous workflow configuration from data |
+| AR1 | Epic 10 | Three-boundary architecture enforcement via modularization |
+| AR2 | Epic 10 | Resolve adapter/API layer package location |
+| AR3 | Epic 10 | Normalize API logic in adapter layer |
+| AR6 | Epic 10 | Correct pattern violations at abstraction boundary |
+| FR38 | Epic 10 | Phase 2 refactoring baseline (agent-server decomposition) |
 
 ## Epic List
 
@@ -204,6 +209,12 @@ Users experience a polished, responsive bmad-ui with improved empty states, load
 ### Epic 9: Session Analytics & Autonomous Workflow Optimization
 Maintainer can observe rich session-level quality metrics (one-shot success, delivery rate, corrections, aborts, complexity indicators) aggregated by skill and model, enabling data-driven selection of optimal model+skill combinations for autonomous agent workflows.
 **FRs covered:** FR41, FR42, FR43, FR44, FR45
+
+### Epic 10: Agent Server Modularization
+Maintainers and AI agents can work on the API/backend adapter layer as a set of focused, domain-collocated modules — each domain in its own folder with collocated types, constants, Zod schemas, and functions — instead of a single 4,883-line monolith, enabling faster iteration, safer concurrent modifications, and proper separation of concerns mandated by the architecture.
+**Architecture requirements covered:** AR1, AR2, AR3, AR6, AR7
+**FRs reinforced:** FR38, FR39
+**NFRs reinforced:** NFR13, NFR19
 
 ---
 
@@ -1175,3 +1186,224 @@ So that I can configure an autonomous workflow runner to use the best-performing
   ```
 - The `/api/analytics/quality-config` endpoint generates the YAML server-side
 - UI renders it via the `marked` library (already a dependency) in a code block
+
+---
+
+## Epic 10: Agent Server Modularization
+
+Maintainers and AI agents can work on the API/backend adapter layer as a set of focused, domain-collocated modules — each domain in its own folder with collocated types, constants, Zod schemas, and functions — instead of a single 4,883-line monolith, enabling faster iteration, safer concurrent modifications, and proper separation of concerns mandated by the architecture.
+
+**Architecture requirements covered:** AR1, AR2, AR3, AR6, AR7
+**FRs reinforced:** FR38, FR39
+**NFRs reinforced:** NFR13, NFR19
+
+**Decomposition Principles:**
+- Domain-driven: each module represents a business domain, not a technical layer
+- Full collocation: types, constants, and functions live together in the domain that owns them
+- Folder per domain: each domain gets its own folder for multi-file growth
+- Zod schemas for validating JSON file reads and request bodies (replacing `as Type` assertions)
+- No generic `types.ts`, `constants.ts`, `config.ts`, or `utils.ts` files
+
+**Target Structure:**
+
+```
+scripts/server/
+├── paths.ts                      — projectRoot + artifactsRoot derivation (~5 lines)
+├── runtime/
+│   ├── index.ts                  — re-exports
+│   ├── state.ts                  — RuntimeState + Zod schema + persistence + creation
+│   └── sessions.ts               — RuntimeSession + lifecycle + process mgmt + zombie detection
+├── sprint/
+│   ├── index.ts                  — re-exports
+│   ├── overview.ts               — SprintOverview type + buildOverviewPayload
+│   └── summarize.ts              — workflow types + summarization functions
+├── epics/
+│   ├── index.ts                  — re-exports
+│   ├── parser.ts                 — ParsedEpicMarkdownRow + markdown parsing + story content
+│   └── dependencies.ts           — DependencyTreeNode + EpicConsistency + dep tree + story deps
+├── logs/
+│   ├── index.ts                  — re-exports
+│   ├── events.ts                 — event finding + log building + describeToolCall
+│   └── session-detail.ts         — SessionDetailResponse + detail building + summary extraction
+├── analytics/
+│   ├── index.ts                  — re-exports
+│   ├── store.ts                  — AnalyticsStore + AgentSession + Zod schema + persistence
+│   ├── costing.ts                — TokenUsageData + costing models + token parsing
+│   └── aggregation.ts            — dedup + validation + buildAnalyticsPayload
+├── links-notes/
+│   ├── index.ts                  — re-exports
+│   ├── links.ts                  — link types + CRUD + YAML serialization
+│   └── notes.ts                  — note types + CRUD
+└── routes/
+    ├── index.ts                  — attachApi coordinator (~50 lines)
+    ├── overview.ts
+    ├── sessions.ts
+    ├── orchestrator.ts
+    ├── stories.ts
+    ├── epics.ts
+    ├── analytics.ts
+    ├── workflow.ts
+    ├── links.ts
+    └── notes.ts
+```
+
+**Story to requirement mapping:**
+- Story 10.1 -> AR1, AR2, FR38 (establish domain boundary structure + add Zod)
+- Story 10.2 -> AR1, AR3 (isolate sprint domain)
+- Story 10.3 -> AR1, AR3 (isolate epic domain)
+- Story 10.4 -> AR1, AR3 (isolate logs domain)
+- Story 10.5 -> AR1, AR3 (isolate analytics domain)
+- Story 10.6 -> AR1, AR3, AR6, AR7 (decompose routes + extract links-notes domain)
+
+### Story 10.1: Extract Runtime Domain
+
+As a maintainer,
+I want the runtime state management and session lifecycle domain extracted into `scripts/server/runtime/` with collocated types, constants, and Zod schemas,
+So that the orchestrator runtime contract — how sessions are created, started, monitored, and cleaned up — lives in one focused domain folder.
+
+**Acceptance Criteria:**
+
+**Given** agent-server.ts,
+**When** the runtime domain is extracted,
+**Then** a `scripts/server/runtime/` folder is created with:
+- `state.ts` containing `RuntimeState` type, Zod schema for runtime-state.json reads (replacing `as RuntimeState` assertions), and functions: `persistRuntimeState`, `readRuntimeStateFile`, `createEmptyRuntimeState`, `loadOrCreateRuntimeState`, `createRuntimeSession`
+- `sessions.ts` containing `RuntimeSession` type and functions: `startRuntimeSession`, `isChildProcessAlive`, `resetRunningProcessState`, `ensureRunningProcessStateIsFresh`, `markZombieSessionsAsFailed`, `markZombieAnalyticsSessionsFailed`, `buildAutoResolveInstructions`, `buildAgentCommand`, plus `runningSessionProcesses` state
+- `index.ts` re-exporting the public API of both files
+
+**Given** Zod is not yet a project dependency,
+**When** this story begins,
+**Then** Zod is added via `pnpm add zod`
+
+**Given** a `scripts/server/paths.ts` does not yet exist,
+**When** this story is implemented,
+**Then** a minimal `scripts/server/paths.ts` is created exporting only `projectRoot` and `artifactsRoot` (derived from `__dirname`), used by all domain modules that need base path resolution
+
+**Given** the extraction is complete,
+**When** `pnpm check` is run,
+**Then** lint, types, tests, and build all pass with zero regressions
+
+**Given** existing consumers of agent-server.ts (`vite.config.ts`, `vite-plugin-static-data.ts`),
+**When** they import from agent-server.ts,
+**Then** all imports continue to work without changes — agent-server.ts re-exports from domain modules
+
+### Story 10.2: Extract Sprint & Overview Domain
+
+As a maintainer,
+I want sprint summarization and overview construction extracted into `scripts/server/sprint/` with collocated types,
+So that the complex sprint aggregation logic — how workflow progress is computed and presented — is navigable independently from runtime, analytics, and routing concerns.
+
+**Acceptance Criteria:**
+
+**Given** the runtime domain from Story 10.1,
+**When** the sprint domain is extracted,
+**Then** a `scripts/server/sprint/` folder is created with:
+- `overview.ts` containing `SprintOverview` type and `buildOverviewPayload` function
+- `summarize.ts` containing `StoryStatus`, `EpicStatus`, `WorkflowStepState`, `StoryWorkflowStepSkill`, `EpicWorkflowStepSkill`, `EpicLifecycleSteps` types, `STORY_WORKFLOW_STEPS` and `EPIC_WORKFLOW_STEPS` constants, `sprintStatusFile` path, sprint regex constants, and functions: `summarizeSprintFromEpics`, `loadSprintOverview`, `summarizeSprint`, `summarizeEpicSteps`, `deriveStoryStepStateFromStatus`, `toStepState`
+- `index.ts` re-exporting the public API
+
+**Given** the extraction is complete,
+**When** `pnpm check` is run,
+**Then** all quality gates pass with zero regressions
+
+**Given** the original agent-server.ts behavior,
+**When** compared before and after,
+**Then** all behavior is identical — this is a pure refactoring with no functional changes
+
+### Story 10.3: Extract Epic & Story Domain
+
+As a maintainer,
+I want epic markdown parsing, story dependencies, and story content extraction into `scripts/server/epics/` with collocated types,
+So that the planning artifact interpretation logic is isolated and testable independently.
+
+**Acceptance Criteria:**
+
+**Given** the sprint domain from Story 10.2,
+**When** the epic domain is extracted,
+**Then** a `scripts/server/epics/` folder is created with:
+- `parser.ts` containing `ParsedEpicMarkdownRow` type, all `EPICS_*` regex constants, `epicsFile` path, and functions: `parseEpicMarkdownRows`, `getEpicMetadataFromMarkdown`, `getStoryContentFromEpics`, `findStoryMarkdown`, `slugifyStoryLabel`
+- `dependencies.ts` containing `DependencyTreeNode`, `EpicConsistency` types, `storyDependenciesFile` path, `STORY_ID_PREFIX_REGEX`, `EPIC_DEPENDENCY_NUMBER_REGEX`, `YAML_STORY_HEADER_REGEX`, `YAML_DEP_ITEM_REGEX` constants, and functions: `buildDependencyTree`, `loadStoryDependencies`, `summarizeEpicConsistency`, `updateSprintStoryStatus`
+- `index.ts` re-exporting the public API
+
+**Given** the extraction is complete,
+**When** `pnpm check` is run,
+**Then** all quality gates pass with zero regressions
+
+### Story 10.4: Extract Logs & Observability Domain
+
+As a maintainer,
+I want log event processing and session detail construction extracted into `scripts/server/logs/` with collocated types,
+So that the Copilot CLI log interpretation logic — the core of the observability layer — is navigable and evolvable independently.
+
+**Acceptance Criteria:**
+
+**Given** the runtime domain from Story 10.1,
+**When** the logs domain is extracted,
+**Then** a `scripts/server/logs/` folder is created with:
+- `events.ts` containing event log processing: `findAllCliEventsJsonl`, `buildLogFromEvents`, `describeToolCall`, `stripAnsi`, `escapeRegExp`, and associated regex constants (`PS_LINE_REGEX`)
+- `session-detail.ts` containing `ExternalProcess`, `SessionDetailResponse` types, `SUMMARY_LINE_REGEX`, and functions: `buildCleanLogContent`, `buildSessionDetailPayload`, `getExternalCliProcesses`, `getCompletedSessionSummary`, `extractGeneratedSummary`, `extractLastAssistantBlock`, `fallbackSummary`, `readOptionalTextFile`
+- `index.ts` re-exporting the public API
+
+**Given** the extraction is complete,
+**When** `pnpm check` is run,
+**Then** all quality gates pass with zero regressions
+
+### Story 10.5: Extract Analytics Domain
+
+As a maintainer,
+I want all analytics computation, token usage parsing, costing models, and session deduplication extracted into `scripts/server/analytics/` with collocated types and Zod schemas,
+So that the analytics engine — the data processing pipeline for session metrics — can evolve independently.
+
+**Acceptance Criteria:**
+
+**Given** the runtime and logs domains from prior stories,
+**When** the analytics domain is extracted,
+**Then** a `scripts/server/analytics/` folder is created with:
+- `store.ts` containing `AgentSession`, `AnalyticsStore` types, Zod schemas for agent-sessions.json entry validation (replacing `as` assertions), `analyticsStorePath`, and functions: `readAnalyticsStore`, `persistAnalyticsStore`, `upsertAnalyticsSession`, `backfillAnalyticsStore`, `persistSessionAnalytics`
+- `costing.ts` containing `TokenUsageData`, `SessionAnalyticsData`, `AnalyticsRatesUsdData`, `AnalyticsEstimatedCostUsdData`, `AnalyticsCostingData` types, costing constants (`DEFAULT_STAGE_MODELS`, `DEFAULT_WORKFLOW_MODEL`, `SKILL_MODEL_OVERRIDES`), and functions: `zeroUsage`, `addUsage`, `normalizeAnalyticsCosting`, `parseTokenUsageFromLog`, `parseTokenCount`, `toNullableNumber`
+- `aggregation.ts` containing dedup/validation constants (`SESSION_DEDUP_WINDOW_MS`, `STALE_SESSION_THRESHOLD_MS`), `ANALYTICS_*` regex patterns, and functions: `deduplicateSessions`, `validateRunningStatus`, `buildAnalyticsPayload`, `getEpicIdFromStoryId`, `inferSkillFromLogFilename`, `inferStoryIdFromLogFilename`, `parseRuntimeStateRobust`, `analyticsToRuntimeSession`, `sessionToAnalyticsUpdate`
+- `index.ts` re-exporting the public API
+
+**Given** the extraction is complete,
+**When** `pnpm check` is run,
+**Then** all quality gates pass with zero regressions
+
+### Story 10.6: Decompose API Routes by Domain with Zod Validation
+
+As a maintainer,
+I want the monolithic `attachApi` function decomposed into domain-grouped route handler modules with Zod request body validation, and the links-notes domain extracted,
+So that adding or debugging any API endpoint no longer requires navigating a 1,500-line conditional chain, and request payloads are validated at the boundary.
+
+**Acceptance Criteria:**
+
+**Given** the domain modules from Stories 10.1–10.5,
+**When** the links-notes domain is extracted,
+**Then** a `scripts/server/links-notes/` folder is created with:
+- `links.ts` containing link types, `linksFile` path, `serializeLinksYaml`, `parseSimpleYamlList`, `stripYamlQuotes`, and YAML constants (`YAML_COMMENT_REGEX`, `LAST_UPDATED_COMMENT_REGEX`)
+- `notes.ts` containing note types, `notesFile` path, and notes CRUD helpers
+- `index.ts` re-exporting the public API
+
+**Given** all domain modules exist,
+**When** the API routes are decomposed,
+**Then** a `scripts/server/routes/` folder is created with:
+- `overview.ts` handling `/api/overview` and `/api/events/overview` (imports from sprint)
+- `sessions.ts` handling `/api/session/:id`, `/api/events/session/:id`, `/api/session/:id/input`, `/api/session/:id/start`, `/api/session/:id/abort` (imports from runtime + logs)
+- `orchestrator.ts` handling `/api/orchestrator/run`, `/api/orchestrator/input`, `/api/orchestrator/run-stage`, `/api/orchestrator/stop` (imports from runtime)
+- `stories.ts` handling `/api/story/:id`, `/api/story-preview/:id`, `/api/story/:id/mark-review` (imports from epics)
+- `epics.ts` handling `/api/epic/:id` (imports from epics)
+- `analytics.ts` handling `/api/analytics`, `/api/sessions/regenerate-logs` (imports from analytics)
+- `workflow.ts` handling `/api/workflow/skip-step`, `/api/workflow/unskip-step`, `/api/workflow/run-skill`, `/api/artifacts/files` (imports from runtime + epics)
+- `links.ts` handling `/api/links` GET/POST/PUT/DELETE (imports from links-notes)
+- `notes.ts` handling `/api/notes` GET/POST/PUT/DELETE (imports from links-notes)
+- `index.ts` containing the `attachApi` coordinator (~50 lines) that parses the URL and delegates to domain route handlers
+
+**Given** route handlers that parse request bodies,
+**When** JSON bodies are received,
+**Then** Zod schemas validate request payloads at the route boundary, replacing `parseJsonBody<T>` type assertions with `z.parse()` calls
+
+**Given** the final `agent-server.ts`,
+**When** reviewed,
+**Then** it contains only imports from `server/*` modules and the public export block — under 100 lines
+
+**Given** the decomposition is complete,
+**When** `pnpm check` is run,
+**Then** all quality gates pass with zero regressions
