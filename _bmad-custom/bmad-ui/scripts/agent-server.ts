@@ -94,6 +94,8 @@ type SprintOverview = {
 		name: string;
 		status: EpicStatus;
 		storyCount: number;
+		plannedStoryCount: number;
+		storiesToCreate: number;
 		byStoryStatus: Record<StoryStatus, number>;
 		lifecycleSteps: EpicLifecycleSteps;
 	}>;
@@ -1092,6 +1094,8 @@ function summarizeSprintFromEpics(
 			name: string;
 			status: EpicStatus;
 			storyCount: number;
+			plannedStoryCount: number;
+			storiesToCreate: number;
 			byStoryStatus: Record<StoryStatus, number>;
 			lifecycleSteps: EpicLifecycleSteps;
 		}
@@ -1108,6 +1112,8 @@ function summarizeSprintFromEpics(
 			name: epicNames.get(epicNumber) ?? `Epic ${epicNumber}`,
 			status: "backlog",
 			storyCount: 0,
+			plannedStoryCount: 0,
+			storiesToCreate: 0,
 			byStoryStatus: {
 				backlog: 0,
 				"ready-for-dev": 0,
@@ -1145,6 +1151,13 @@ function summarizeSprintFromEpics(
 			epic.byStoryStatus,
 		);
 
+		// In epics-only mode, all stories come from epics.md so plannedStoryCount == storyCount
+		epic.plannedStoryCount = epic.storyCount;
+		epic.storiesToCreate = stories
+			.filter((s) => Number(s.id.split("-")[0]) === epic.number)
+			.filter((s) => s.steps["bmad-create-story"] !== "completed")
+			.length;
+
 		if (epic.status === "done") {
 			epic.lifecycleSteps["bmad-sprint-status"] = "completed";
 			epic.lifecycleSteps["bmad-sprint-planning"] = "completed";
@@ -1173,10 +1186,11 @@ async function loadSprintOverview(
 	sessions: SessionAnalyticsData[],
 ): Promise<SprintOverview> {
 	let epicNames = new Map<number, string>();
+	let epicsContentForPlanning = "";
 	if (existsSync(epicsFile)) {
 		try {
-			const epicsContent = await readFile(epicsFile, "utf8");
-			for (const line of epicsContent.split("\n")) {
+			epicsContentForPlanning = await readFile(epicsFile, "utf8");
+			for (const line of epicsContentForPlanning.split("\n")) {
 				const m = line.trim().match(EPICS_EPIC_HEADING_WITH_NAME_REGEX);
 				if (m) {
 					const n = Number(m[1]);
@@ -1187,6 +1201,7 @@ async function loadSprintOverview(
 			}
 		} catch {
 			epicNames = new Map();
+			epicsContentForPlanning = "";
 		}
 	}
 
@@ -1194,16 +1209,37 @@ async function loadSprintOverview(
 	if (existsSync(sprintStatusFile)) {
 		const sprintContent = await readFile(sprintStatusFile, "utf8");
 		overview = summarizeSprint(sprintContent, sessions);
-	} else {
-		let epicsContent = "";
-		if (existsSync(epicsFile)) {
-			try {
-				epicsContent = await readFile(epicsFile, "utf8");
-			} catch {
-				epicsContent = "";
+
+		// Compute plannedStoryCount and storiesToCreate from epics.md
+		if (epicsContentForPlanning) {
+			const plannedPerEpic = new Map<number, number>();
+			for (const line of epicsContentForPlanning.split("\n")) {
+				const match = line.trim().match(EPICS_STORY_HEADING_REGEX);
+				if (!match) continue;
+				const epicNum = Number(match[1]);
+				if (!Number.isFinite(epicNum)) continue;
+				plannedPerEpic.set(epicNum, (plannedPerEpic.get(epicNum) ?? 0) + 1);
+			}
+			for (const epic of overview.epics) {
+				const plannedCount = plannedPerEpic.get(epic.number) ?? epic.storyCount;
+				epic.plannedStoryCount = plannedCount;
+				const createdCount = overview.stories
+					.filter((s) => Number(s.id.split("-")[0]) === epic.number)
+					.filter((s) => s.steps["bmad-create-story"] === "completed")
+					.length;
+				epic.storiesToCreate = Math.max(0, plannedCount - createdCount);
+			}
+		} else {
+			for (const epic of overview.epics) {
+				epic.plannedStoryCount = epic.storyCount;
+				epic.storiesToCreate = overview.stories
+					.filter((s) => Number(s.id.split("-")[0]) === epic.number)
+					.filter((s) => s.steps["bmad-create-story"] !== "completed")
+					.length;
 			}
 		}
-		overview = summarizeSprintFromEpics(epicsContent, sessions);
+	} else {
+		overview = summarizeSprintFromEpics(epicsContentForPlanning, sessions);
 	}
 
 	for (const epic of overview.epics) {
@@ -1748,6 +1784,8 @@ function summarizeSprint(
 			name: string;
 			status: EpicStatus;
 			storyCount: number;
+			plannedStoryCount: number;
+			storiesToCreate: number;
 			byStoryStatus: Record<StoryStatus, number>;
 			lifecycleSteps: EpicLifecycleSteps;
 		}
@@ -1766,6 +1804,8 @@ function summarizeSprint(
 				name: `Epic ${storyNumber}`,
 				status: explicitEpicStatus.get(storyNumber) || "backlog",
 				storyCount: 0,
+				plannedStoryCount: 0,
+				storiesToCreate: 0,
 				byStoryStatus: {
 					backlog: 0,
 					"ready-for-dev": 0,
@@ -1798,6 +1838,8 @@ function summarizeSprint(
 				name: `Epic ${epicNumber}`,
 				status,
 				storyCount: 0,
+				plannedStoryCount: 0,
+				storiesToCreate: 0,
 				byStoryStatus: {
 					backlog: 0,
 					"ready-for-dev": 0,
@@ -2019,6 +2061,28 @@ function getStoryContentFromEpics(
 		.join("\n")
 		.trim();
 	return { title, content };
+}
+
+/**
+ * Extract planned story IDs for a given epic from epics.md content.
+ * Returns full story IDs for stories already tracked in sprintStories,
+ * or the "N-M-" prefix for stories not yet tracked in sprint-status.
+ */
+function getPlannedStoriesFromEpics(
+	epicsContent: string,
+	epicNumber: number,
+	sprintStories: Array<{ id: string }>,
+): string[] {
+	const results: string[] = [];
+	for (const line of epicsContent.split("\n")) {
+		const match = line.trim().match(EPICS_STORY_HEADING_REGEX);
+		if (!match) continue;
+		if (Number(match[1]) !== epicNumber) continue;
+		const prefix = `${match[1]}-${match[2]}-`;
+		const found = sprintStories.find((s) => s.id.startsWith(prefix));
+		results.push(found ? found.id : prefix);
+	}
+	return results;
 }
 
 function summarizeEpicConsistency(
@@ -4180,10 +4244,16 @@ function attachApi(server: ViteDevServer): void {
 					.sort((a, b) => (a.id > b.id ? 1 : -1));
 
 				let epicMeta = { name: "", description: "" };
+				let plannedStories: string[] = [];
 				if (existsSync(epicsFile)) {
 					try {
 						const epicsContent = await readFile(epicsFile, "utf8");
 						epicMeta = getEpicMetadataFromMarkdown(epicsContent, epicNumber);
+						plannedStories = getPlannedStoriesFromEpics(
+							epicsContent,
+							epicNumber,
+							overview.stories,
+						);
 					} catch {
 						// ignore parse errors
 					}
@@ -4199,9 +4269,12 @@ function attachApi(server: ViteDevServer): void {
 							description: epicMeta.description,
 							status: epic.status,
 							storyCount: epic.storyCount,
+							plannedStoryCount: epic.plannedStoryCount,
+							storiesToCreate: epic.storiesToCreate,
 							byStoryStatus: epic.byStoryStatus,
 						},
 						stories,
+						plannedStories,
 					}),
 				);
 				return;
@@ -4869,6 +4942,7 @@ export {
 	findStoryMarkdown,
 	getCompletedSessionSummary,
 	getEpicMetadataFromMarkdown,
+	getPlannedStoriesFromEpics,
 	getStoryContentFromEpics,
 	linksFile,
 	loadOrCreateRuntimeState,

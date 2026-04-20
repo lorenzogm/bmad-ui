@@ -13,6 +13,7 @@ import {
 	findStoryMarkdown,
 	getCompletedSessionSummary,
 	getEpicMetadataFromMarkdown,
+	getPlannedStoriesFromEpics,
 	getStoryContentFromEpics,
 	linksFile,
 	parseSimpleYamlList,
@@ -64,6 +65,14 @@ function staticDataPlugin(): Plugin {
 					.filter((story) => Number(story.id.split("-")[0]) === epic.number)
 					.sort((a, b) => (a.id > b.id ? 1 : -1));
 
+				const plannedStories = epicsContent
+					? getPlannedStoriesFromEpics(
+							epicsContent,
+							epic.number,
+							overview.sprintOverview.stories,
+						)
+					: [];
+
 				emit(`epic/epic-${epic.number}.json`, {
 					epic: {
 						id: epic.id,
@@ -72,9 +81,12 @@ function staticDataPlugin(): Plugin {
 						description: epicMeta.description,
 						status: epic.status,
 						storyCount: epic.storyCount,
+						plannedStoryCount: epic.plannedStoryCount,
+						storiesToCreate: epic.storiesToCreate,
 						byStoryStatus: epic.byStoryStatus,
 					},
 					stories,
+					plannedStories,
 				});
 			}
 

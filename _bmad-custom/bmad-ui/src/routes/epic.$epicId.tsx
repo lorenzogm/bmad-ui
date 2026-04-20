@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { storyStepLabel } from "../app"
@@ -16,6 +17,7 @@ const EPIC_NUMBER_REGEX = /^epic-(\d+)$/
 const PERCENT_MULTIPLIER = 100
 const ORCHESTRATING_STORAGE_PREFIX = "bmad-orchestrating:"
 const ORCHESTRATING_INITIATED_SUFFIX = ":initiated"
+const EPIC_REFETCH_INTERVAL_MS = 5_000
 
 type SkillName = "bmad-create-story" | "bmad-dev-story" | "bmad-code-review"
 type WorkflowSkill = SkillName | "bmad-retrospective"
@@ -152,9 +154,6 @@ function SessionLink(props: { session: RuntimeSession | null }) {
 
 function EpicDetailPage() {
   const { epicId } = useParams({ from: "/epic/$epicId" })
-  const [data, setData] = useState<EpicDetailResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [pendingSkill, setPendingSkill] = useState<string | null>(null)
   const [overviewData, setOverviewData] = useState<OverviewResponse | null>(null)
   const [isPlanning, setIsPlanning] = useState(false)
@@ -180,12 +179,46 @@ function EpicDetailPage() {
   )
   const [orchestrationPending, setOrchestrationPending] = useState(new Set<string>())
 
+  const { data: epicQueryData, error: epicError } = useQuery<EpicDetailResponse>({
+    queryKey: ["epic", epicId],
+    queryFn: async () => {
+      const res = await fetch(apiUrl(`/api/epic/${encodeURIComponent(epicId)}`))
+      if (!res.ok) throw new Error(`epic detail request failed: ${res.status}`)
+      return res.json() as Promise<EpicDetailResponse>
+    },
+    refetchInterval: IS_LOCAL_MODE ? EPIC_REFETCH_INTERVAL_MS : false,
+  })
+
+  const { data: overviewQueryData } = useQuery<OverviewResponse>({
+    queryKey: ["overview"],
+    queryFn: async () => {
+      const res = await fetch(apiUrl("/api/overview"))
+      if (!res.ok) throw new Error(`overview request failed: ${res.status}`)
+      return res.json() as Promise<OverviewResponse>
+    },
+    refetchInterval: IS_LOCAL_MODE ? EPIC_REFETCH_INTERVAL_MS : false,
+  })
+
+  // Merge storyDependencies from overview into epic data
+  const data = useMemo<EpicDetailResponse | null>(() => {
+    if (!epicQueryData) return null
+    return {
+      ...epicQueryData,
+      storyDependencies: overviewQueryData?.storyDependencies ?? epicQueryData.storyDependencies,
+    }
+  }, [epicQueryData, overviewQueryData])
+
+  // Keep overviewData in sync (used by EventSource updates and orchestration logic)
+  const effectiveOverviewData = overviewQueryData ?? overviewData
+
+  const [skillError, setSkillError] = useState<string | null>(null)
+
   const handleRunSkill = useCallback(async (skill: WorkflowSkill, storyId?: string) => {
     if (!IS_LOCAL_MODE) {
       return
     }
     setPendingSkill(storyId ? `${skill}:${storyId}` : skill)
-    setError(null)
+    setSkillError(null)
 
     try {
       const response = await fetch("/api/workflow/run-skill", {
@@ -203,128 +236,56 @@ function EpicDetailPage() {
       if (!response.ok) {
         throw new Error(`workflow request failed: ${response.status}`)
       }
-
-      setData((prev) => {
-        if (!prev || !storyId || skill === "bmad-retrospective") {
-          return prev
-        }
-
-        return {
-          ...prev,
-          stories: prev.stories.map((story) =>
-            story.id === storyId
-              ? {
-                  ...story,
-                  steps: {
-                    ...story.steps,
-                    [skill]: "running",
-                  },
-                }
-              : story
-          ),
-        }
-      })
     } catch (runSkillError) {
       setPendingSkill(null)
-      setError(String(runSkillError))
+      setSkillError(String(runSkillError))
     }
   }, [])
 
+  // EventSource is still allowed to remain as useEffect (REST fetch replaced by useQuery above)
   useEffect(() => {
+    if (!IS_LOCAL_MODE || typeof EventSource === "undefined") return
     let mounted = true
-    let eventSource: EventSource | null = null
+    const eventSource = new EventSource("/api/events/overview")
 
-    const load = async () => {
+    eventSource.onmessage = (event) => {
+      if (!mounted) return
       try {
-        const [epicResponse, overviewResponse] = await Promise.all([
-          fetch(apiUrl(`/api/epic/${encodeURIComponent(epicId)}`)),
-          fetch(apiUrl("/api/overview")),
-        ])
-        if (!epicResponse.ok) {
-          throw new Error(`epic detail request failed: ${epicResponse.status}`)
-        }
-        const [epicPayload, overviewPayload] = await Promise.all([
-          epicResponse.json() as Promise<EpicDetailResponse>,
-          overviewResponse.ok
-            ? (overviewResponse.json() as Promise<OverviewResponse>)
-            : Promise.resolve(null),
-        ])
-        if (mounted) {
-          setData({
-            ...epicPayload,
-            storyDependencies: overviewPayload?.storyDependencies ?? epicPayload.storyDependencies,
-          })
-          if (overviewPayload) {
-            setOverviewData(overviewPayload)
-          }
-          setError(null)
-          setLoading(false)
-        }
-      } catch (epicError) {
-        if (mounted) {
-          setError(String(epicError))
-          setLoading(false)
-        }
-      }
-    }
+        const overview = JSON.parse(event.data) as OverviewResponse
+        setOverviewData(overview)
 
-    load()
+        setPendingSkill((prevPendingSkill) =>
+          shouldClearPendingSkill(prevPendingSkill, overview.sprintOverview.stories)
+            ? null
+            : prevPendingSkill
+        )
 
-    if (IS_LOCAL_MODE && typeof EventSource !== "undefined") {
-      eventSource = new EventSource("/api/events/overview")
-      eventSource.onmessage = (event) => {
-        if (!mounted) return
-        try {
-          const overview = JSON.parse(event.data) as OverviewResponse
-          setOverviewData(overview)
-          const storyUpdates = new Map(overview.sprintOverview.stories.map((s) => [s.id, s]))
-
-          setPendingSkill((prevPendingSkill) =>
-            shouldClearPendingSkill(prevPendingSkill, overview.sprintOverview.stories)
-              ? null
-              : prevPendingSkill
-          )
-
-          setData((prev) => {
-            if (!prev) return prev
-            return {
-              ...prev,
-              stories: prev.stories.map((story) => {
-                const update = storyUpdates.get(story.id)
-                return update ? { ...story, status: update.status, steps: update.steps } : story
-              }),
-              storyDependencies: overview.storyDependencies ?? prev.storyDependencies,
-            }
-          })
-
-          setOrchestrationPending((prev) => {
-            if (prev.size === 0) return prev
-            let changed = false
-            const next = new Set(prev)
-            for (const [storyId, update] of storyUpdates) {
-              for (const skill of ["bmad-dev-story", "bmad-code-review"] as const) {
-                const key = `${skill}:${storyId}`
-                if (next.has(key) && update.steps[skill] !== "not-started") {
-                  next.delete(key)
-                  changed = true
-                }
+        const storyUpdates = new Map(overview.sprintOverview.stories.map((s) => [s.id, s]))
+        setOrchestrationPending((prev) => {
+          if (prev.size === 0) return prev
+          let changed = false
+          const next = new Set(prev)
+          for (const [storyId, update] of storyUpdates) {
+            for (const skill of ["bmad-dev-story", "bmad-code-review"] as const) {
+              const key = `${skill}:${storyId}`
+              if (next.has(key) && update.steps[skill] !== "not-started") {
+                next.delete(key)
+                changed = true
               }
             }
-            return changed ? next : prev
-          })
-        } catch (parseError) {
-          if (mounted) {
-            setError(String(parseError))
           }
-        }
+          return changed ? next : prev
+        })
+      } catch {
+        // ignore SSE parse errors
       }
     }
 
     return () => {
       mounted = false
-      eventSource?.close()
+      eventSource.close()
     }
-  }, [epicId])
+  }, [])
 
   const stories = useMemo(
     () =>
@@ -360,24 +321,24 @@ function EpicDetailPage() {
   const epicNumber = epicId.match(EPIC_NUMBER_REGEX)?.[1] ?? null
 
   const retrospectiveState = useMemo<WorkflowStepState>(() => {
-    if (!overviewData || !epicNumber) {
+    if (!effectiveOverviewData || !epicNumber) {
       return "not-started"
     }
 
-    const epic = overviewData.sprintOverview.epics.find(
+    const epic = effectiveOverviewData.sprintOverview.epics.find(
       (candidate) => candidate.number === Number(epicNumber)
     )
 
     return epic?.lifecycleSteps["bmad-retrospective"] ?? "not-started"
-  }, [overviewData, epicNumber])
+  }, [effectiveOverviewData, epicNumber])
 
   const latestRetroSession = useMemo(() => {
-    const runtimeSessions = overviewData?.runtimeState?.sessions ?? []
+    const runtimeSessions = effectiveOverviewData?.runtimeState?.sessions ?? []
     const matching = runtimeSessions
       .filter((s) => s.skill === "bmad-retrospective" && s.status !== "planned")
       .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))
     return matching[0] ?? null
-  }, [overviewData])
+  }, [effectiveOverviewData])
 
   const allStoriesDone = useMemo(
     () => stories.length > 0 && stories.every((story) => story.status === "done"),
@@ -471,7 +432,7 @@ function EpicDetailPage() {
   useEffect(() => {
     if (!isOrchestrating || !data) return
 
-    const runtimeSessions = overviewData?.runtimeState?.sessions ?? []
+    const runtimeSessions = effectiveOverviewData?.runtimeState?.sessions ?? []
     const deps = data.storyDependencies ?? {}
     const currentStoryStatusMap = new Map<string, string>()
     for (const s of stories) {
@@ -694,7 +655,7 @@ function EpicDetailPage() {
     data,
     orchestratingKey,
     orchestratingInitiatedKey,
-    overviewData,
+    effectiveOverviewData,
   ])
 
   const doneCount = stories.filter((s) => s.status === "done").length
@@ -711,17 +672,24 @@ function EpicDetailPage() {
         ? "in-progress"
         : (data?.epic.status ?? "backlog")
 
-  if (loading) {
-    return <main className="screen loading">Loading epic detail...</main>
+  if (epicError) {
+    return (
+      <main className="screen">
+        <div className="panel" style={{ borderColor: "var(--highlight-2)" }}>
+          <p className="eyebrow" style={{ color: "var(--highlight-2)" }}>
+            Error
+          </p>
+          <p style={{ color: "var(--muted)" }}>{String(epicError)}</p>
+          <Link className="ghost mt-4 inline-block" to="/">
+            ← Back to Home
+          </Link>
+        </div>
+      </main>
+    )
   }
 
   if (!data) {
-    return (
-      <main className="screen loading">
-        <p>{error || "Epic not found"}</p>
-        <Link to="/">Back to home</Link>
-      </main>
-    )
+    return <main className="screen loading">Loading epic detail...</main>
   }
 
   return (
@@ -828,7 +796,7 @@ function EpicDetailPage() {
             </thead>
             <tbody>
               {filteredStories.map((story) => {
-                const runtimeSessions = overviewData?.runtimeState?.sessions ?? []
+                const runtimeSessions = effectiveOverviewData?.runtimeState?.sessions ?? []
 
                 // bmad-create-story state with running session check
                 const rawCreateState = story.steps["bmad-create-story"] ?? "not-started"
@@ -1075,7 +1043,7 @@ function EpicDetailPage() {
         </section>
       ) : null}
 
-      {error ? <p className="error-banner">{error}</p> : null}
+      {skillError ? <p className="error-banner">{skillError}</p> : null}
     </main>
   )
 }
