@@ -330,7 +330,13 @@ function EpicDetailPage() {
         status: "backlog" as StoryStatus,
         steps: PLANNED_ONLY_STEPS,
       }))
-    return [...stories, ...plannedOnlyEntries]
+    return [...stories, ...plannedOnlyEntries].sort((a, b) => {
+      const aTicket = parseStoryTicket(a.id)
+      const bTicket = parseStoryTicket(b.id)
+      if (aTicket.epic !== bTicket.epic) return aTicket.epic - bTicket.epic
+      if (aTicket.story !== bTicket.story) return aTicket.story - bTicket.story
+      return a.id.localeCompare(b.id)
+    })
   }, [data?.plannedStories, stories])
 
   const epicNumber = epicId.match(EPIC_NUMBER_REGEX)?.[1] ?? null
@@ -361,11 +367,11 @@ function EpicDetailPage() {
   )
 
   const storiesNeedingPlan = useMemo(() => {
-    const fromPlanned = data?.plannedStories ?? []
+    const existingIds = new Set(stories.map((s) => s.id))
+    const fromPlanned = (data?.plannedStories ?? []).filter((pid) => !existingIds.has(pid))
     const fromExisting = stories
       .filter((s) => s.steps["bmad-create-story"] === "not-started")
       .map((s) => s.id)
-      .filter((id) => !fromPlanned.includes(id))
     return [...fromPlanned, ...fromExisting]
   }, [data?.plannedStories, stories])
 
@@ -379,12 +385,10 @@ function EpicDetailPage() {
     setIsPlanning(true)
     setBulkError(null)
 
+    const existingIds = new Set(stories.map((s) => s.id))
     const storiesToPlan = [
-      ...(data.plannedStories ?? []),
-      ...stories
-        .filter((s) => s.steps["bmad-create-story"] === "not-started")
-        .map((s) => s.id)
-        .filter((id) => !(data.plannedStories ?? []).includes(id)),
+      ...(data.plannedStories ?? []).filter((pid) => !existingIds.has(pid)),
+      ...stories.filter((s) => s.steps["bmad-create-story"] === "not-started").map((s) => s.id),
     ]
 
     if (storiesToPlan.length === 0) {

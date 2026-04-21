@@ -1,6 +1,6 @@
 # Story 8.2: Integrate Backlog Artifacts with UI Workflows
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,18 +18,18 @@ So that planning outputs and execution views stay connected.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1 — Fix planned-only story sort order in `filteredStories` (AC: 1)
-  - [ ] In `epic.$epicId.tsx`, update the `filteredStories` useMemo (currently line ~324) to sort the combined `[...stories, ...plannedOnlyEntries]` array using `parseStoryTicket` before returning, so planned-only rows appear at their correct ticket position rather than appended at the end
-  - [ ] Verify with a visual scan that if sprint-status has stories 8.1 and 8.3 and epics.md has 8.1, 8.2, 8.3, the table displays them in order 8.1 → 8.2 → 8.3
+- [x] Task 1 — Fix planned-only story sort order in `filteredStories` (AC: 1)
+  - [x] In `epic.$epicId.tsx`, update the `filteredStories` useMemo (currently line ~324) to sort the combined `[...stories, ...plannedOnlyEntries]` array using `parseStoryTicket` before returning, so planned-only rows appear at their correct ticket position rather than appended at the end
+  - [x] Verify with a visual scan that if sprint-status has stories 8.1 and 8.3 and epics.md has 8.1, 8.2, 8.3, the table displays them in order 8.1 → 8.2 → 8.3
 
-- [ ] Task 2 — Fix "Plan all stories" to exclude already-created stories (AC: 2)
-  - [ ] In `epic.$epicId.tsx`, update `storiesNeedingPlan` useMemo (currently line ~363): filter `data?.plannedStories` to exclude story IDs that already exist in the `stories` array (i.e. filter by `!existingIds.has(pid)`), so the button count only reflects genuinely untracked stories
-  - [ ] Update `handlePlanAllStories` callback (currently line ~377): build `storiesToPlan` from (a) `data.plannedStories` filtered to planned-only entries (not in `existingIds`) and (b) existing stories where `steps["bmad-create-story"] === "not-started"` — eliminating the previous dedup logic that relied on inclusion in `data.plannedStories`
-  - [ ] Verify: if story 8.2 has `bmad-create-story` = "completed", it is NOT submitted when "Plan all stories" is clicked
+- [x] Task 2 — Fix "Plan all stories" to exclude already-created stories (AC: 2)
+  - [x] In `epic.$epicId.tsx`, update `storiesNeedingPlan` useMemo (currently line ~363): filter `data?.plannedStories` to exclude story IDs that already exist in the `stories` array (i.e. filter by `!existingIds.has(pid)`), so the button count only reflects genuinely untracked stories
+  - [x] Update `handlePlanAllStories` callback (currently line ~377): build `storiesToPlan` from (a) `data.plannedStories` filtered to planned-only entries (not in `existingIds`) and (b) existing stories where `steps["bmad-create-story"] === "not-started"` — eliminating the previous dedup logic that relied on inclusion in `data.plannedStories`
+  - [x] Verify: if story 8.2 has `bmad-create-story` = "completed", it is NOT submitted when "Plan all stories" is clicked
 
-- [ ] Task 3 — Validate end-to-end and run quality gate (AC: 3, 4, 5)
-  - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass with zero errors
-  - [ ] Confirm no TypeScript errors in the updated memos/callbacks
+- [x] Task 3 — Validate end-to-end and run quality gate (AC: 3, 4, 5)
+  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass with zero errors
+  - [x] Confirm no TypeScript errors in the updated memos/callbacks
 
 ## Dev Notes
 
@@ -169,4 +169,17 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Fixed `filteredStories` useMemo in `epic.$epicId.tsx` to sort the merged stories array (existing + planned-only) by `parseStoryTicket` comparator, ensuring correct ticket order (e.g. 8.1 → 8.2 → 8.3).
+- Fixed `storiesNeedingPlan` useMemo to exclude already-tracked stories from `data.plannedStories`, so only genuinely unplanned stories count toward the "Plan all stories" button.
+- Fixed `handlePlanAllStories` callback to build `storiesToPlan` using the same exclusion logic — already-created stories (with `bmad-create-story` != `"not-started"`) are no longer re-submitted.
+- All changes are isolated to `src/routes/epic.$epicId.tsx` — no server-side, type, or CSS changes needed.
+- `pnpm check` (lint + types + tests + build) passes with zero errors.
+
 ### File List
+
+- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
+- `_bmad-output/implementation-artifacts/8-2-integrate-backlog-artifacts-with-ui-workflows.md`
+
+## Change Log
+
+- 2026-04-21: Implemented story 8.2 — fixed planned-only story sort order in `filteredStories` and fixed "Plan all stories" dedup logic in `storiesNeedingPlan` + `handlePlanAllStories` (AC 1, 2, 3, 4, 5 satisfied; pnpm check passes).
