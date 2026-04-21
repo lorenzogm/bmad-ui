@@ -100,7 +100,7 @@ development_status:
 
   epic-9: in-progress
   9-1-improve-empty-states-and-loading-feedback: ready-for-dev
-  9-2-navigation-and-active-route-clarity: backlog
+  9-2-navigation-and-active-route-clarity: ready-for-dev
   9-3-status-badge-consistency-across-views: ready-for-dev
   9-4-responsive-layout-and-spacing-refinements: backlog
   9-5-session-detail-back-navigation: done
