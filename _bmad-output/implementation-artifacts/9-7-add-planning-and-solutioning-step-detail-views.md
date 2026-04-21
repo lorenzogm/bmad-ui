@@ -1,6 +1,6 @@
 # Story 9.7: Add Planning & Solutioning Step Detail Views
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -52,6 +52,10 @@ so that I can inspect the related artifacts and understand what each workflow sk
   - [x] Extend `_bmad-custom/bmad-ui/tests/smoke.spec.ts` or add a focused Playwright case that opens the new detail views and verifies they render without JavaScript errors.
   - [x] Run `cd _bmad-custom/bmad-ui && pnpm check`.
   - [x] Manually verify `/workflow/planning`, `/workflow/solutioning`, and the new detail routes in the browser.
+
+### Review Findings
+
+- [x] [Review][Patch] Validate detail slug route params before rendering the link [_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx:16] — fixed by parsing `detailSlug` with a strict `phase/step` guard so malformed slugs do not generate invalid route params.
 
 ## Dev Notes
 

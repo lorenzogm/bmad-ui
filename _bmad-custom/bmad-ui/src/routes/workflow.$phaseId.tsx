@@ -3,6 +3,7 @@ import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-route
 import { useCallback, useMemo, useState } from "react"
 import type { WorkflowPhase, WorkflowStep } from "../app"
 import { detectWorkflowStatus, storyStepLabel } from "../app"
+import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type { OverviewResponse, RuntimeSession } from "../types"
 import { workflowLayoutRoute } from "./workflow"
@@ -11,6 +12,14 @@ const HTTP_CONFLICT = 409
 
 const VALID_PHASE_IDS = ["analysis", "planning", "solutioning", "implementation", "improvement"]
 
+function parseDetailSlug(detailSlug: string): { phaseId: string; stepId: string } | null {
+  const [phaseId, stepId, ...rest] = detailSlug.split("/")
+  if (!phaseId || !stepId || rest.length > 0) {
+    return null
+  }
+  return { phaseId, stepId }
+}
+
 function WorkflowPhaseDetailPage() {
   const { phaseId } = useParams({ from: "/workflow/$phaseId" as const })
   const navigate = useNavigate()
@@ -18,7 +27,7 @@ function WorkflowPhaseDetailPage() {
   const [pendingSkill, setPendingSkill] = useState<string | null>(null)
   const [pendingSkip, setPendingSkip] = useState<string | null>(null)
 
-  const { data, isLoading, error } = useQuery<OverviewResponse>({
+  const { data, isLoading, error, refetch } = useQuery<OverviewResponse>({
     queryKey: ["overview"],
     queryFn: async () => {
       const response = await fetch(apiUrl("/api/overview"))
@@ -129,11 +138,11 @@ function WorkflowPhaseDetailPage() {
     [queryClient]
   )
   if (isLoading) {
-    return <main className="screen loading">Loading...</main>
+    return <PageSkeleton />
   }
 
   if (error) {
-    return <main className="screen loading">{String(error)}</main>
+    return <QueryErrorState message={String(error)} onRetry={refetch} />
   }
 
   if (!isValidPhase || !phase) {
@@ -227,6 +236,7 @@ function WorkflowPhaseDetailPage() {
                 const matchingSession = runtimeSessions.find(
                   (s) => s.skill === step.skill && s.status !== "planned"
                 )
+                const detailParams = step.detailSlug ? parseDetailSlug(step.detailSlug) : null
 
                 return (
                   <tr key={step.id}>
@@ -314,11 +324,11 @@ function WorkflowPhaseDetailPage() {
                             ◉
                           </Link>
                         ) : null}
-                        {step.detailSlug ? (
+                        {detailParams ? (
                           <Link
                             params={{
-                              phaseId: step.detailSlug.split("/")[0],
-                              stepId: step.detailSlug.split("/")[1],
+                              phaseId: detailParams.phaseId,
+                              stepId: detailParams.stepId,
                             }}
                             style={{
                               fontSize: "0.75rem",
