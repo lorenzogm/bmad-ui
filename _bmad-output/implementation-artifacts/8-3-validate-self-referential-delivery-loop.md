@@ -1,6 +1,6 @@
 # Story 8.3: Validate Self-Referential Delivery Loop
 
-Status: in-progress
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,35 +20,35 @@ So that Phase 1 proves operational readiness for Phase 2.
 
 ## Tasks / Subtasks
 
-- [ ] Confirm dependency stories are done before starting (AC: #1)
-  - [ ] Verify 8-1 (Deliver Core Workflow Visibility Views) is in `done` status in sprint-status.yaml
-  - [ ] Verify 8-2 (Integrate Backlog Artifacts with UI Workflows) is in `done` status in sprint-status.yaml
-  - [ ] If either is not done, block this story and report status
+- [x] Confirm dependency stories are done before starting (AC: #1)
+  - [x] Verify 8-1 (Deliver Core Workflow Visibility Views) is in `done` status in sprint-status.yaml
+  - [x] Verify 8-2 (Integrate Backlog Artifacts with UI Workflows) is in `done` status in sprint-status.yaml
+  - [x] If either is not done, block this story and report status
 
-- [ ] Exercise key UI views against real bmad-ui project data at Epic 8 delivery state (AC: #1, #2)
-  - [ ] Start dev server (`cd _bmad-custom/bmad-ui && pnpm dev`) and open bmad-ui in browser
-  - [ ] Verify home page sprint overview shows correct epic/story counts reflecting Epic 8 progress
-  - [ ] Navigate to epic detail view for epic-8 — confirm all 4 stories (8-1 through 8-4) appear with correct statuses
-  - [ ] Navigate to a story-8 detail view — confirm story spec content from `_bmad-output/implementation-artifacts/8-*.md` is rendered correctly
-  - [ ] Navigate to sessions list view — confirm recent agent sessions (Epic 8 execution sessions) appear in the table
-  - [ ] Navigate to a session detail view — confirm individual session details render
-  - [ ] Navigate to analytics dashboard — confirm charts include Epic 8 session data
-  - [ ] Navigate to workflow view — confirm workflow phases render correctly
-  - [ ] Record any views that fail to render, display empty, or throw console errors
-  - [ ] Run `agent-browser errors` to check for JavaScript console errors
+- [x] Exercise key UI views against real bmad-ui project data at Epic 8 delivery state (AC: #1, #2)
+  - [x] Start dev server (`cd _bmad-custom/bmad-ui && pnpm dev`) and open bmad-ui in browser
+  - [x] Verify home page sprint overview shows correct epic/story counts reflecting Epic 8 progress
+  - [x] Navigate to epic detail view for epic-8 — confirm all 4 stories (8-1 through 8-4) appear with correct statuses
+  - [x] Navigate to a story-8 detail view — confirm story spec content from `_bmad-output/implementation-artifacts/8-*.md` is rendered correctly
+  - [x] Navigate to sessions list view — confirm recent agent sessions (Epic 8 execution sessions) appear in the table
+  - [x] Navigate to a session detail view — confirm individual session details render
+  - [x] Navigate to analytics dashboard — confirm charts include Epic 8 session data
+  - [x] Navigate to workflow view — confirm workflow phases render correctly
+  - [x] Record any views that fail to render, display empty, or throw console errors
+  - [x] Run `agent-browser errors` to check for JavaScript console errors
 
-- [ ] Fix any rendering issues discovered during validation (AC: #1)
-  - [ ] Address any JavaScript console errors in the views exercised above
-  - [ ] Ensure graceful empty states appear where data may be absent (no blank screens)
-  - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check` to confirm no regressions
+- [x] Fix any rendering issues discovered during validation (AC: #1)
+  - [x] Address any JavaScript console errors in the views exercised above
+  - [x] Ensure graceful empty states appear where data may be absent (no blank screens)
+  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` to confirm no regressions
 
-- [ ] Update `docs/phase-1-completion.md` with Epic 8 validation results (AC: #2, #3)
-  - [ ] Update the view-by-view results table to reflect current state
-  - [ ] Document Epic 8 traceability path: epic plan → story spec → session execution → UI visibility
-  - [ ] Update Sprint State section to reflect Epic 8 completion counts
-  - [ ] Add "Epic 8 Validation" section: loop verified including 8.1–8.4 story delivery
-  - [ ] Capture any remaining open gaps and deferred items as Phase 2 baseline inputs
-  - [ ] Note whether `deferred-work.md` items from earlier stories were addressed or remain open
+- [x] Update `docs/phase-1-completion.md` with Epic 8 validation results (AC: #2, #3)
+  - [x] Update the view-by-view results table to reflect current state
+  - [x] Document Epic 8 traceability path: epic plan → story spec → session execution → UI visibility
+  - [x] Update Sprint State section to reflect Epic 8 completion counts
+  - [x] Add "Epic 8 Validation" section: loop verified including 8.1–8.4 story delivery
+  - [x] Capture any remaining open gaps and deferred items as Phase 2 baseline inputs
+  - [x] Note whether `deferred-work.md` items from earlier stories were addressed or remain open
 
 ### Review Findings
 
@@ -195,6 +195,21 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+ec490405-7a3a-4823-8696-ab632942393f
+
 ### Completion Notes List
 
+- Prerequisites confirmed: 8-1 and 8-2 are both `done` in sprint-status.yaml
+- All 7 key routes exercised against live dev server (pnpm dev + agent-browser)
+- Zero JavaScript console errors across all validated views
+- Epic 8 data verified correct in all views: 4 stories in epic detail, correct statuses, 284 sessions in analytics
+- Story 8.3 markdown content (11 447 chars) renders correctly at `/stories/8-3-validate-self-referential-delivery-loop`
+- No rendering bugs found — no code fixes required
+- `pnpm check` passes clean (lint + types + tests + build)
+- `docs/phase-1-completion.md` updated with Epic 8 validation table, updated sprint counts, updated session analytics, and Phase 2 baseline at Phase 1 close
+- `useEffect` data fetching violations in `story.$storyId.tsx`, `session.$sessionId.tsx`, `prepare-story.$storyId.tsx`, `analytics-utils.tsx` confirmed still present — documented as Phase 2 debt
+- Deferred work items from earlier stories remain open and are reflected in Phase 2 baseline
+
 ### File List
+
+- `docs/phase-1-completion.md` — Updated with Epic 8 validation results, updated counts, Phase 2 baseline
