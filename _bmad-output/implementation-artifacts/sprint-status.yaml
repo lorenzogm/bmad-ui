@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-20T08:10:00Z
+last_updated: 2026-04-21T12:47:40Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -104,6 +104,7 @@ development_status:
   9-4-responsive-layout-and-spacing-refinements: backlog
   9-5-session-detail-back-navigation: done
   9-6-sidebar-running-sessions-panel: backlog
+  9-7-add-planning-and-solutioning-step-detail-views: ready-for-dev
   epic-9-retrospective: optional
 
   epic-10: backlog

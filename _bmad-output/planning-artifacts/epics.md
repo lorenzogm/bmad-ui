@@ -1012,6 +1012,7 @@ Users experience a polished, responsive bmad-ui with improved empty states, load
 - Story 9.4 -> NFR3, NFR22
 - Story 9.5 -> FR28, NFR21
 - Story 9.6 -> FR28, NFR21
+- Story 9.7 -> FR29, FR30, FR32, NFR21
 
 ### Story 9.1: Improve Empty States and Loading Feedback
 
@@ -1143,6 +1144,38 @@ So that I can instantly see what's happening without scanning through completed 
 - Filter `sessionsData` by `status === "running"` before slicing with `SESSIONS_SIDEBAR_LIMIT`
 - Reuse the existing `.sidebar-session-status` dot with `data-status="running"` for the green pulse indicator
 - The "No active sessions" empty label should use `var(--muted)` and match the `.sidebar-sublink` size/padding
+
+### Story 9.7: Add Planning & Solutioning Step Detail Views
+
+As a user reviewing BMAD workflow phases,
+I want direct detail views for the PRD, UX Design, and Architecture steps,
+So that I can inspect the related artifacts and understand what each workflow skill will ask before I run it.
+
+**Acceptance Criteria:**
+
+**Given** the Planning phase detail page,
+**When** the PRD and UX Design rows render,
+**Then** each row includes a detail link that opens a dedicated step detail view without removing the existing run, skip, or session actions
+
+**Given** the Solutioning phase detail page,
+**When** the Architecture row renders,
+**Then** it includes the same detail link pattern and opens a dedicated Architecture detail view
+
+**Given** a step detail view,
+**When** the related planning artifact exists,
+**Then** the page shows its current status and a readable markdown preview of the corresponding document
+
+**Given** the UX step has been skipped or no UX markdown artifact exists,
+**When** the UX detail view is opened,
+**Then** the page shows a graceful skipped or not-created state plus the UX skill guidance instead of an error
+
+**Given** a PRD, UX Design, or Architecture detail view,
+**When** the page loads,
+**Then** it shows a skill overview plus a summary of the question themes and prompts that the related BMAD skill asks, based on the current workflow step files
+
+**Given** local and production modes,
+**When** the detail views load,
+**Then** they use the existing dual-mode architecture: dev data from the Vite agent server, production data from emitted static JSON, and frontend fetching through `apiUrl()`
 
 ---
 
