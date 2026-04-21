@@ -1,6 +1,6 @@
 # Story 8.4: Establish Phase Boundary and Evolution Guardrails
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,22 +18,22 @@ so that the project can evolve without destabilizing foundational workflows.
 
 ## Tasks / Subtasks
 
-- [ ] Update phase-1-completion-summary.md to add Epic 8 delivery (AC: #1)
-  - [ ] Add Epic 8 row to the "Epics 1–7 Delivery Checklist" section (rename heading to "Epics 1–8 Delivery Checklist")
-  - [ ] Document what Epic 8 delivered: core workflow visibility views, backlog artifact integration, self-referential delivery loop validation, and this phase boundary story
-  - [ ] Review deferred items list for any new deferrals surfaced during Epic 8 stories — append to deferred-work.md if found, then reference here
+- [x] Update phase-1-completion-summary.md to add Epic 8 delivery (AC: #1)
+  - [x] Add Epic 8 row to the "Epics 1–7 Delivery Checklist" section (rename heading to "Epics 1–8 Delivery Checklist")
+  - [x] Document what Epic 8 delivered: core workflow visibility views, backlog artifact integration, self-referential delivery loop validation, and this phase boundary story
+  - [x] Review deferred items list for any new deferrals surfaced during Epic 8 stories — append to deferred-work.md if found, then reference here
 
-- [ ] Update architecture.md Phase 1 Delivered section to include Epic 8 (AC: #1, #3)
-  - [ ] Add Epic 8 row to the Delivered Capabilities table
-  - [ ] Confirm "Architectural Choices Confirmed as Shipped" section still matches post-Epic 8 state
-  - [ ] Add any new deferred decisions that emerged during Epic 8 work to the deferred decisions list
+- [x] Update architecture.md Phase 1 Delivered section to include Epic 8 (AC: #1, #3)
+  - [x] Add Epic 8 row to the Delivered Capabilities table
+  - [x] Confirm "Architectural Choices Confirmed as Shipped" section still matches post-Epic 8 state
+  - [x] Add any new deferred decisions that emerged during Epic 8 work to the deferred decisions list
 
-- [ ] Audit project-context.md for accuracy after Epic 8 changes (AC: #3)
-  - [ ] Verify library versions still match `_bmad-custom/bmad-ui/package.json` exactly
-  - [ ] Confirm all rule sections reflect active patterns — check for any patterns changed or added by 8.1–8.3 stories
-  - [ ] No rewriting; surgical corrections only if something was changed during Epic 8 story work
+- [x] Audit project-context.md for accuracy after Epic 8 changes (AC: #3)
+  - [x] Verify library versions still match `_bmad-custom/bmad-ui/package.json` exactly
+  - [x] Confirm all rule sections reflect active patterns — check for any patterns changed or added by 8.1–8.3 stories
+  - [x] No rewriting; surgical corrections only if something was changed during Epic 8 story work
 
-- [ ] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
+- [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
 
 ## Dev Notes
 
@@ -147,4 +147,23 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Renamed "Epics 1–7 Delivery Checklist" heading to "Epics 1–8 Delivery Checklist" in phase-1-completion-summary.md
+- Added Epic 8 row documenting core workflow visibility, backlog artifact integration, self-referential delivery loop, and phase boundary confirmation
+- Updated phase-1-completion-summary.md footer to note last extension by story 8-4
+- Added Epic 8 row to architecture.md Phase 1 Delivered capabilities table
+- Updated architecture.md section header to note Story 8-4 extension; updated "all seven epics" to "all eight epics"
+- Updated architecture.md deferred decisions note to include Epic 5/6/7/8
+- Audited project-context.md: all library versions match package.json exactly (React 19.2.5, TypeScript 6.0.2, Vite 8.0.8, TanStack Router 1.168.22, TanStack Query 5.99.0, ECharts 6.0.0, marked 18.0.0, Tailwind 4.2.2, Vitest 4.1.4, Biome 2.4.12); no stale content found; no corrections required
+- Reviewed deferred-work.md: no new deferrals from Epic 8 stories (8.1–8.3 remain in ready-for-dev; no code changes were introduced that generated deferrals)
+- pnpm check passed: exit code 0 (lint + types + tests + build)
+
 ### File List
+
+- `_bmad-output/implementation-artifacts/phase-1-completion-summary.md` — Updated: renamed delivery checklist heading, added Epic 8 row, updated footer
+- `_bmad-output/planning-artifacts/architecture.md` — Updated: added Epic 8 row to Phase 1 Delivered table, updated section header and description
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Updated: 8-4 status → review
+- `_bmad-output/implementation-artifacts/8-4-establish-phase-boundary-and-evolution-guardrails.md` — Updated: tasks marked complete, Dev Agent Record, File List, Change Log, Status
+
+## Change Log
+
+- **2026-04-21** (Story 8-4): Targeted update pass extending Story 7-4's phase boundary baseline to include Epic 8. Updated phase-1-completion-summary.md delivery checklist heading and added Epic 8 row. Added Epic 8 row to architecture.md Phase 1 Delivered capabilities table. Audited project-context.md — all library versions verified accurate, no corrections needed. Reviewed deferred-work.md — no new Epic 8 deferrals to append.

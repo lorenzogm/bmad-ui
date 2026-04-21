@@ -6,9 +6,9 @@ _Document purpose: Establish explicit boundaries between Phase 1 delivered outco
 
 ## Phase 1 Done Criteria
 
-All seven epics are complete. The following checklist defines the Phase 1 delivered baseline.
+All eight epics are complete. The following checklist defines the Phase 1 delivered baseline.
 
-### Epics 1–7 Delivery Checklist
+### Epics 1–8 Delivery Checklist
 
 - ✅ **Epic 1 — Open-Source Repository Governance**: Public GitHub repo with CODEOWNERS, PR template, issue templates, branch protection rules, and MIT license.
 - ✅ **Epic 2 — Terraform-Managed Infrastructure**: GitHub and Vercel resources provisioned via Terraform 1.14.x; state stored in Terraform Cloud; CI/CD pipeline enforces plan/apply gates.
@@ -17,6 +17,7 @@ All seven epics are complete. The following checklist defines the Phase 1 delive
 - ✅ **Epic 5 — Portable Installation CLI**: `npx bmad-method-ui install` scaffolds the BMAD UI workspace into any target project; published to npm as an unscoped public package.
 - ✅ **Epic 6 — Setup, Deploy, and Troubleshooting Documentation**: `docs/` contains getting-started, integration architecture, data models, API contracts, and component inventory guides.
 - ✅ **Epic 7 — Playwright E2E Smoke Tests**: End-to-end smoke tests cover all primary routes; Playwright is integrated as a required CI merge gate in `ci.yml`.
+- ✅ **Epic 8 — Core Product Operation & Phase Readiness Validation**: bmad-ui proven as visual companion; backlog artifacts surfaced in UI; self-referential delivery loop validated; Phase 1 boundary confirmed with Epics 1–8 as baseline.
 
 ---
 
@@ -138,4 +139,4 @@ If **any answer is NO** → **New Capability Expansion (Phase 3)**
 ---
 
 _Created: 2026-04-21_
-_Story: 7-4-establish-phase-boundary-and-evolution-guardrails_
+_Story: 7-4-establish-phase-boundary-and-evolution-guardrails — Last extended by: 8-4-establish-phase-boundary-and-evolution-guardrails_

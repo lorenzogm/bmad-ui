@@ -777,9 +777,9 @@ Reconcile the existing frontend package to the selected Vite baseline, then impl
 
 ## Phase 1 Delivered
 
-_Added: 2026-04-21 (Story 7-4)_
+_Added: 2026-04-21 (Story 7-4) — Extended: 2026-04-21 (Story 8-4)_
 
-All seven epics are complete. This section records what was actually shipped in Phase 1 as a stable baseline for future refactoring and feature growth.
+All eight epics are complete. This section records what was actually shipped in Phase 1 as a stable baseline for future refactoring and feature growth.
 
 ### Delivered Capabilities
 
@@ -792,6 +792,7 @@ All seven epics are complete. This section records what was actually shipped in 
 | Epic 5 | Portable CLI: `npx bmad-method-ui install`; published to npm | ✅ Done |
 | Epic 6 | Setup, deploy, and troubleshooting documentation in `docs/` | ✅ Done |
 | Epic 7 | Playwright E2E smoke tests on all routes as CI merge gate | ✅ Done |
+| Epic 8 | Core product operation: workflow visibility, backlog artifact integration, self-referential delivery loop validation | ✅ Done |
 
 ### Architectural Choices Confirmed as Shipped
 
@@ -815,4 +816,4 @@ All deferred decisions listed at [Deferred Decisions (Post-MVP)](#data-architect
 - Offline-first synchronization — **not started**
 - Distributed background job architecture — **not started**
 
-Additional deferrals surfaced during Epic 5/6/7 work are tracked in `_bmad-output/implementation-artifacts/deferred-work.md`.
+Additional deferrals surfaced during Epic 5/6/7/8 work are tracked in `_bmad-output/implementation-artifacts/deferred-work.md`.
