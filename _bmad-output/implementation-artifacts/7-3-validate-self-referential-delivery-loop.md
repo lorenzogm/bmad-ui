@@ -1,6 +1,6 @@
 # Story 7.3: Validate Self-Referential Delivery Loop
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -42,6 +42,12 @@ So that Phase 1 proves operational readiness for Phase 2.
   - [x] Capture Phase 1 done criteria met (infrastructure, CI/CD, docs, adoption signals, E2E baseline)
   - [x] Capture open gaps and deferred items as Phase 2 baseline inputs
   - [x] List deferred items from `deferred-work.md` that remain relevant for Phase 2
+
+### Review Findings
+
+- [x] [Review][Patch] Epic detail validation target mismatch (epic-8 required, epic-9 reported) [docs/phase-1-completion.md:35]
+- [x] [Review][Patch] Story detail route evidence is truncated (`/stories/7-3-...`) and not reproducible [docs/phase-1-completion.md:36]
+- [x] [Review][Defer] Pre-existing TanStack Query adoption gap remains in story/session/prepare-story and analytics routes [_bmad-output/implementation-artifacts/7-3-validate-self-referential-delivery-loop.md:149] — deferred, pre-existing
 
 ## Dev Notes
 
@@ -143,7 +149,7 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
-- All 7 core views validated against real bmad-ui project data: home, workflow, epic detail (epic-7, epic-9), story detail, sessions list, session detail, analytics dashboard — all render without errors.
+- All 7 core views validated against real bmad-ui project data: home, workflow, epic detail (epic-7, epic-8), story detail, sessions list, session detail, analytics dashboard — all render without errors.
 - No rendering bugs found; all routes have graceful loading/error states.
 - `pnpm check` passes (lint + types + build) with no regressions.
 - Non-breaking code quality gaps noted: `story.$storyId.tsx`, `session.$sessionId.tsx`, `prepare-story.$storyId.tsx`, and `analytics-utils.tsx` still use `useEffect` for data fetching instead of TanStack Query — documented as Phase 2 technical debt.
@@ -153,5 +159,5 @@ claude-sonnet-4.6
 ### File List
 
 - `docs/phase-1-completion.md` — Created: Phase 1 validation summary, traceability documentation, Phase 2 baseline
-- `_bmad-output/implementation-artifacts/7-3-validate-self-referential-delivery-loop.md` — Updated: all tasks checked, status "review"
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Updated: story 7-3 status "review"
+- `_bmad-output/implementation-artifacts/7-3-validate-self-referential-delivery-loop.md` — Updated: all tasks checked, status "done"
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Updated: story 7-3 status "done"

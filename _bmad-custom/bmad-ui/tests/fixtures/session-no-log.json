@@ -1,0 +1,25 @@
+{
+  "session": {
+    "id": "session-no-log-456",
+    "skill": "bmad-dev-story",
+    "model": "claude-sonnet-4.6",
+    "storyId": "7-5-test-story",
+    "status": "completed",
+    "startedAt": "2026-04-21T10:00:00.000Z",
+    "endedAt": "2026-04-21T10:30:00.000Z",
+    "command": "bmad-dev-story 7-5-test-story",
+    "promptPath": "/path/to/prompt.md",
+    "logPath": "/path/to/session-no-log-456.log",
+    "worktreePath": null,
+    "exitCode": 0,
+    "error": null,
+    "userMessages": []
+  },
+  "logContent": null,
+  "promptContent": null,
+  "summary": null,
+  "logExists": false,
+  "promptExists": false,
+  "isRunning": false,
+  "canSendInput": false
+}

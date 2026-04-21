@@ -1,6 +1,6 @@
 # Story 7.5: Deep E2E Coverage for Workflow Actions and Session Traces
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -22,39 +22,39 @@ so that broken `Plan all stories`, `Develop all stories`, story-sync, and sessio
 
 ## Tasks / Subtasks
 
-- [ ] Create `tests/workflow-actions.spec.ts` covering epic bulk action scenarios (AC: #1, #2)
-  - [ ] Mock `/api/epic/:epicId` responses to simulate a mix of planned-only, ready, in-progress, and done stories
-  - [ ] Verify `Plan all stories (N)` button renders **only** when there are unplanned stories and is disabled in prod mode
-  - [ ] Verify `Develop all stories` button renders **only** when there are ready-for-dev stories and is disabled in prod mode
-  - [ ] Verify already-planned stories are **not** included in `storiesNeedingPlan` (button count reflects eligible count)
-  - [ ] Intercept POST `/api/workflow/:skill/:storyId` and assert correct story IDs are sent (no duplicates, no already-done stories)
-  - [ ] Assert `bulkError` banner appears when any bulk request returns a non-409 error
-  - [ ] Assert orchestration stop button appears during `Develop all stories` run and clicking it clears `isOrchestrating`
+- [x] Create `tests/workflow-actions.spec.ts` covering epic bulk action scenarios (AC: #1, #2)
+  - [x] Mock `/api/epic/:epicId` responses to simulate a mix of planned-only, ready, in-progress, and done stories
+  - [x] Verify `Plan all stories (N)` button renders **only** when there are unplanned stories and is disabled in prod mode
+  - [x] Verify `Develop all stories` button renders **only** when there are ready-for-dev stories and is disabled in prod mode
+  - [x] Verify already-planned stories are **not** included in `storiesNeedingPlan` (button count reflects eligible count)
+  - [x] Intercept POST `/api/workflow/:skill/:storyId` and assert correct story IDs are sent (no duplicates, no already-done stories)
+  - [x] Assert `bulkError` banner appears when any bulk request returns a non-409 error
+  - [x] Assert orchestration stop button appears during `Develop all stories` run and clicking it clears `isOrchestrating`
 
-- [ ] Create `tests/artifact-consistency.spec.ts` covering data consistency across views (AC: #1, #3)
-  - [ ] Mock `/api/overview` to return known epic/story counts and assert home page stat numbers match
-  - [ ] Mock `/api/epic/:epicId` to return stories in mixed statuses and assert story table row count, status badges match
-  - [ ] Assert a story with status `done` shows the `Done` badge class (`.step-badge.step-done`)
-  - [ ] Assert a story with status `backlog` shows the correct muted badge style
-  - [ ] Mock mismatched data (epic says 3 stories, sprint-status has 4) and assert no JS crash — graceful table render
-  - [ ] Assert navigation from epic detail story row to `/stories/:storyId` loads the story detail without JS errors
+- [x] Create `tests/artifact-consistency.spec.ts` covering data consistency across views (AC: #1, #3)
+  - [x] Mock `/api/overview` to return known epic/story counts and assert home page stat numbers match
+  - [x] Mock `/api/epic/:epicId` to return stories in mixed statuses and assert story table row count, status badges match
+  - [x] Assert a story with status `done` shows the `Done` badge class (`.step-badge.step-done`)
+  - [x] Assert a story with status `backlog` shows the correct muted badge style
+  - [x] Mock mismatched data (epic says 3 stories, sprint-status has 4) and assert no JS crash — graceful table render
+  - [x] Assert navigation from epic detail story row to `/stories/:storyId` loads the story detail without JS errors
 
-- [ ] Create `tests/session-traces.spec.ts` covering session log state variants (AC: #1, #4)
-  - [ ] Mock `/api/session/:sessionId` with `logExists: true`, `logContent: "<populated log>"`, `isRunning: false` — assert log entries render inside `.chat-log-collapse`
-  - [ ] Mock with `logExists: false`, `logContent: null`, `isRunning: false` — assert `.chat-empty-state` shows "No log output" and muted path hint
-  - [ ] Mock with `logExists: true`, `logContent: null`, `isRunning: true` — assert "Waiting for agent output…" state and typing indicator renders
-  - [ ] Mock with `summary` present and `isRunning: false` — assert `.chat-session-summary` section is visible
-  - [ ] Assert `/sessions` list page shows sessions table with at least one row when `/api/analytics` returns session data
-  - [ ] Assert clicking a session row in the list navigates to `/session/:sessionId` detail page without JS errors
+- [x] Create `tests/session-traces.spec.ts` covering session log state variants (AC: #1, #4)
+  - [x] Mock `/api/session/:sessionId` with `logExists: true`, `logContent: "<populated log>"`, `isRunning: false` — assert log entries render inside `.chat-log-collapse`
+  - [x] Mock with `logExists: false`, `logContent: null`, `isRunning: false` — assert `.chat-empty-state` shows "No log output" and muted path hint
+  - [x] Mock with `logExists: true`, `logContent: null`, `isRunning: true` — assert "Waiting for agent output…" state and typing indicator renders
+  - [x] Mock with `summary` present and `isRunning: false` — assert `.chat-session-summary` section is visible
+  - [x] Assert `/sessions` list page shows sessions table with at least one row when `/api/analytics` returns session data
+  - [x] Assert clicking a session row in the list navigates to `/session/:sessionId` detail page without JS errors
 
-- [ ] Add network-mocking helpers (AC: #1)
-  - [ ] Extract a shared `mockApi(page, route, fixture)` helper in `tests/helpers/mock-api.ts` to reduce boilerplate
-  - [ ] Add minimal fixture JSON files in `tests/fixtures/` for epic response, overview response, session detail response variants
+- [x] Add network-mocking helpers (AC: #1)
+  - [x] Extract a shared `mockApi(page, route, fixture)` helper in `tests/helpers/mock-api.ts` to reduce boilerplate
+  - [x] Add minimal fixture JSON files in `tests/fixtures/` for epic response, overview response, session detail response variants
 
-- [ ] Verify full suite passes CI: `cd _bmad-custom/bmad-ui && pnpm run check:e2e` (AC: #1, #5)
-  - [ ] All new tests pass headless with Chromium
-  - [ ] Existing `smoke.spec.ts` tests still pass (no regressions)
-  - [ ] CI YAML already includes E2E from Story 7.4 — no CI config changes needed
+- [x] Verify full suite passes CI: `cd _bmad-custom/bmad-ui && pnpm run check:e2e` (AC: #1, #5)
+  - [x] All new tests pass headless with Chromium
+  - [x] Existing `smoke.spec.ts` tests still pass (no regressions)
+  - [x] CI YAML already includes E2E from Story 7.4 — no CI config changes needed
 
 ## Dev Notes
 
@@ -194,4 +194,22 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- All 41 tests pass (31 new + 10 existing smoke tests). No regressions.
+- Actual POST endpoint is `/api/workflow/run-skill` with JSON body `{ skill, storyId }` — story dev notes incorrectly stated `/api/workflow/:skill/:storyId`.
+- `filteredStories` on epic detail page includes `plannedStories` IDs (adds rows beyond `stories.length`); test row counts account for this.
+- Node.js 22 requires `with { type: "json" }` import assertions for JSON imports in test files.
+- Home page stat card `<p>` number is not a sibling of `h3` due to intermediate `div.flex`; use `div.panel` container filter instead of XPath sibling traversal.
+- EventSource SSE connections are mocked via `abortRoute("**/api/events/**")` to prevent connection attempts during tests.
+
 ### File List
+
+- `tests/fixtures/epic-with-mixed-stories.json` — new
+- `tests/fixtures/overview-known-counts.json` — new
+- `tests/fixtures/session-with-logs.json` — new
+- `tests/fixtures/session-no-log.json` — new
+- `tests/fixtures/session-running.json` — new
+- `tests/fixtures/analytics-with-sessions.json` — new
+- `tests/helpers/mock-api.ts` — new
+- `tests/workflow-actions.spec.ts` — new
+- `tests/artifact-consistency.spec.ts` — new
+- `tests/session-traces.spec.ts` — new

@@ -32,8 +32,8 @@ The loop being validated: **epics.md → story spec files → Copilot CLI sessio
 | `/` (Home) | `/api/overview`, `/api/analytics` | ✅ Renders | Shows 11 epics, 46 stories, 234 sessions, cost summary |
 | `/workflow` | `/api/overview` | ✅ Renders | Phases render correctly from overview data |
 | `/epics/epic-7` | `/api/epic/epic-7` | ✅ Renders | Title, story list, planned stories all shown |
-| `/epics/epic-9` | `/api/epic/epic-9` | ✅ Renders | In-progress epic with backlog stories shown |
-| `/stories/7-3-...` | `/api/story/:storyId` | ✅ Renders | Story spec content rendered in markdown |
+| `/epics/epic-8` | `/api/epic/epic-8` | ✅ Renders | Backlog epic with planned stories shown |
+| `/stories/7-3-validate-self-referential-delivery-loop` | `/api/story/:storyId` | ✅ Renders | Story spec content rendered in markdown |
 | `/sessions` | `/api/analytics` | ✅ Renders | Table shows 234 sessions with filter controls |
 | `/sessions/:id` | `/api/session/:id` | ✅ Renders | Session detail, log content, model/status shown |
 | `/analytics` | `/api/analytics` | ✅ Renders | Charts and metrics render with real session data |

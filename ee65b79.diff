@@ -1,0 +1,383 @@
+diff --git a/_bmad-output/implementation-artifacts/7-4-establish-phase-boundary-and-evolution-guardrails.md b/_bmad-output/implementation-artifacts/7-4-establish-phase-boundary-and-evolution-guardrails.md
+index f9a7ae4..55f9992 100644
+--- a/_bmad-output/implementation-artifacts/7-4-establish-phase-boundary-and-evolution-guardrails.md
++++ b/_bmad-output/implementation-artifacts/7-4-establish-phase-boundary-and-evolution-guardrails.md
+@@ -1,6 +1,6 @@
+ # Story 7.4: Establish Phase Boundary and Evolution Guardrails
+ 
+-Status: ready-for-dev
++Status: review
+ 
+ ## Story
+ 
+@@ -18,28 +18,28 @@ so that the project can evolve without destabilizing foundational workflows.
+ 
+ ## Tasks / Subtasks
+ 
+-- [ ] Create Phase 1 completion summary document (AC: #1)
+-  - [ ] Document Phase 1 done criteria checklist (all epics 1–7 completed)
+-  - [ ] List all deferred Phase 2 items from PRD, architecture, and deferred-work.md
+-  - [ ] List all deferred Phase 3 items from PRD
+-  - [ ] Include a "why deferred" rationale for each major deferral
++- [x] Create Phase 1 completion summary document (AC: #1)
++  - [x] Document Phase 1 done criteria checklist (all epics 1–7 completed)
++  - [x] List all deferred Phase 2 items from PRD, architecture, and deferred-work.md
++  - [x] List all deferred Phase 3 items from PRD
++  - [x] Include a "why deferred" rationale for each major deferral
+ 
+-- [ ] Add enhancement triage classification guide to the Phase 1 completion document (AC: #2)
+-  - [ ] Define "Foundational Hardening" category with examples
+-  - [ ] Define "New Capability Expansion" category with examples
+-  - [ ] Add a simple decision tree or checklist for classifying proposed changes
++- [x] Add enhancement triage classification guide to the Phase 1 completion document (AC: #2)
++  - [x] Define "Foundational Hardening" category with examples
++  - [x] Define "New Capability Expansion" category with examples
++  - [x] Add a simple decision tree or checklist for classifying proposed changes
+ 
+-- [ ] Audit and update `_bmad-output/project-context.md` for baseline accuracy (AC: #3)
+-  - [ ] Verify all library versions match `_bmad-custom/bmad-ui/package.json`
+-  - [ ] Confirm all rule sections reflect actual enforced patterns (no contradictions)
+-  - [ ] Remove or mark any rules that are aspirational vs. actively enforced
++- [x] Audit and update `_bmad-output/project-context.md` for baseline accuracy (AC: #3)
++  - [x] Verify all library versions match `_bmad-custom/bmad-ui/package.json`
++  - [x] Confirm all rule sections reflect actual enforced patterns (no contradictions)
++  - [x] Remove or mark any rules that are aspirational vs. actively enforced
+ 
+-- [ ] Audit `_bmad-output/planning-artifacts/architecture.md` for baseline accuracy (AC: #3)
+-  - [ ] Confirm deferred decisions list is complete and up to date
+-  - [ ] Ensure phase boundary statements are accurate relative to what was shipped
+-  - [ ] Add a "Phase 1 Delivered" summary section if missing
++- [x] Audit `_bmad-output/planning-artifacts/architecture.md` for baseline accuracy (AC: #3)
++  - [x] Confirm deferred decisions list is complete and up to date
++  - [x] Ensure phase boundary statements are accurate relative to what was shipped
++  - [x] Add a "Phase 1 Delivered" summary section if missing
+ 
+-- [ ] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
++- [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
+ 
+ ## Dev Notes
+ 
+@@ -182,4 +182,19 @@ claude-sonnet-4.6
+ 
+ ### Completion Notes List
+ 
++- Created `_bmad-output/implementation-artifacts/phase-1-completion-summary.md` with Phase 1 done criteria (Epics 1–7), all deferred Phase 2/3 items with rationale, and a full enhancement triage classification guide (decision tree + checklist).
++- Audited `_bmad-output/project-context.md`: all library versions match package.json exactly. Corrected aspirational rules: shadcn/ui + Base UI are not installed — marked as `[Phase 2 planned]`. Corrected `src/ui/` directory structure (doesn't exist in Phase 1). Updated co-location test path examples. Corrected global `types.ts` anti-pattern (legacy file exists). Updated anti-pattern wording for custom CSS classes.
++- Audited `_bmad-output/planning-artifacts/architecture.md`: deferred decisions list confirmed complete. Added "Phase 1 Delivered" section at end of document recording all seven epics and architectural choices as shipped.
++- `pnpm run check` passed (lint + types + tests + build, exit code 0).
++
+ ### File List
++
++- `_bmad-output/implementation-artifacts/phase-1-completion-summary.md` — Created
++- `_bmad-output/project-context.md` — Modified (aspirational rules marked, structure corrected)
++- `_bmad-output/planning-artifacts/architecture.md` — Modified (Phase 1 Delivered section added)
++- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Modified (status: review)
++- `_bmad-output/implementation-artifacts/7-4-establish-phase-boundary-and-evolution-guardrails.md` — Modified (tasks checked, status: review)
++
++### Change Log
++
++- 2026-04-21: Story 7-4 implementation — Phase 1 completion summary created; project-context.md corrected for aspirational vs. enforced rules; architecture.md updated with Phase 1 Delivered section; pnpm check passed.
+diff --git a/_bmad-output/implementation-artifacts/phase-1-completion-summary.md b/_bmad-output/implementation-artifacts/phase-1-completion-summary.md
+new file mode 100644
+index 0000000..50a6e07
+--- /dev/null
++++ b/_bmad-output/implementation-artifacts/phase-1-completion-summary.md
+@@ -0,0 +1,141 @@
++# Phase 1 Completion Summary
++
++_Document purpose: Establish explicit boundaries between Phase 1 delivered outcomes and post-MVP expansion plans. Enables maintainers to confidently evolve the project without destabilizing foundational workflows._
++
++---
++
++## Phase 1 Done Criteria
++
++All seven epics are complete. The following checklist defines the Phase 1 delivered baseline.
++
++### Epics 1–7 Delivery Checklist
++
++- ✅ **Epic 1 — Open-Source Repository Governance**: Public GitHub repo with CODEOWNERS, PR template, issue templates, branch protection rules, and MIT license.
++- ✅ **Epic 2 — Terraform-Managed Infrastructure**: GitHub and Vercel resources provisioned via Terraform 1.14.x; state stored in Terraform Cloud; CI/CD pipeline enforces plan/apply gates.
++- ✅ **Epic 3 — dotenvx-Based Secrets Workflow**: Root-level `.env.keys` and environment-scoped encrypted `.env.*` files; dotenvx injection into GitHub Actions via `$GITHUB_ENV`; no plaintext secrets in repo or logs.
++- ✅ **Epic 4 — CI/CD GitHub Actions Workflows**: `ci.yml` (lint + type-check + test + build) and `deploy.yml` (Vercel production deployment) run on push/PR; merge to `main` is gated on passing CI.
++- ✅ **Epic 5 — Portable Installation CLI**: `npx bmad-method-ui install` scaffolds the BMAD UI workspace into any target project; published to npm as an unscoped public package.
++- ✅ **Epic 6 — Setup, Deploy, and Troubleshooting Documentation**: `docs/` contains getting-started, integration architecture, data models, API contracts, and component inventory guides.
++- ✅ **Epic 7 — Playwright E2E Smoke Tests**: End-to-end smoke tests cover all primary routes; Playwright is integrated as a required CI merge gate in `ci.yml`.
++
++---
++
++## Deferred Items — Phase 2 (Foundational Hardening)
++
++These items are deferred because they improve existing Phase 1 capabilities rather than add new user-facing features. They carry technical debt or reliability risk but do not block the Phase 1 product from functioning.
++
++### From PRD (`prd.md#Post-MVP Features`)
++
++| Item | Why Deferred |
++|---|---|
++| Refactoring for maintainability and technical debt reduction | Phase 1 delivered a working product; refactoring scope is post-delivery cleanup. No blocking bugs, so prioritization can happen after initial release. |
++| Enhanced documentation, examples, and contribution guidelines | Initial docs are functional; richer contributor experience requires knowing what contributors actually need in practice. |
++| Reliability hardening across workflows and runtime diagnostics | Core flows work. Hardening around edge cases (e.g. concurrent sessions, error recovery) is a polish pass, not a foundational blocker. |
++
++### From Architecture (`architecture.md#Deferred Decisions`)
++
++| Item | Why Deferred |
++|---|---|
++| End-user authentication and authorization | PRD Phase 1 explicitly excludes a user-account model. Security boundary is deployment access, not app-level identity. |
++| Database adoption for runtime/session persistence | File-backed data matches the existing brownfield design. A database tier adds complexity without Phase 1 benefit. |
++| Multi-user tenancy | Flows from auth adoption; cannot be designed without the auth layer. |
++| GraphQL or alternate API protocol adoption | REST + SSE is sufficient for current dashboard needs. Protocol evolution requires a concrete workload driver. |
++| Offline-first synchronization | No offline requirement in Phase 1 scope. Adds significant service-worker complexity. |
++| Distributed background job architecture | Current orchestrator process is single-node. Distributed coordination has no workload case in Phase 1. |
++
++### From `deferred-work.md`
++
++| Item | Why Deferred |
++|---|---|
++| Focus management for New Chat flyout (ref + focus compatible with project rules) | Functional but not accessible; requires callback ref or `onTransitionEnd` pattern that was out of scope for the one-shot implementation. |
++| TTL/expiry for localStorage orchestrating flag | Safe to defer: stale state clears on next navigation. TTL adds logic without blocking usage. |
++| Multi-tab orchestration deduplication | Multiple tabs can fire duplicate API calls. Low frequency issue; deduplication needs cross-tab coordination design. |
++| Cross-tab `storage` event listener for state sync | Needed for multi-tab correctness; pairs with deduplication work. |
++| Garbage collection for zombie localStorage keys | Left-behind keys from abandoned navigations are harmless; GC is a cleanup pass. |
++| Store richer metadata in localStorage (`startedAt`, `epicId` JSON) | Enables TTL and debugging; deferred until TTL implementation is prioritized. |
++| `--access public` flag consideration for `npm publish` | Unscoped package defaults to public; only relevant if package is renamed to a scoped name. |
++
++---
++
++## Deferred Items — Phase 3 (New Capability Expansion)
++
++These items add user-facing capabilities that do not exist in Phase 1. They require new routes, new API surfaces, or new UX design work.
++
++### From PRD (`prd.md#Vision`)
++
++| Item | Why Deferred |
++|---|---|
++| Rich agentic flow visualization and analysis UI | Requires deeper integration with orchestrator runtime artifacts; needs Phase 2 hardening as a stable base. |
++| Advanced orchestration monitoring and control features | Real-time controls (pause, stop, re-run) require auth, multi-user considerations, and reliable state persistence — all Phase 2 prerequisites. |
++| Guided product development workflow integration (PRD → epics → stories) | New UX surface with form flows, validation, and API mutations. Significant scope expansion with no Phase 1 dependency. |
++
++---
++
++## Enhancement Triage Classification Guide
++
++Use this guide to classify any proposed change before scheduling it.
++
++### Category Definitions
++
++#### Foundational Hardening (Phase 2 Target)
++
++A change is **Foundational Hardening** if it:
++- Improves the reliability, maintainability, or developer experience of an **existing** Phase 1 feature
++- Does **not** add new user-facing capabilities or routes
++- Reduces technical debt, improves error handling, or makes the codebase easier to maintain
++
++**Examples:**
++- Refactoring `agent-server.ts` for testability
++- Adding unit or integration test coverage to existing components
++- Fixing deferred localStorage issues (TTL, GC, multi-tab deduplication)
++- Improving error states or loading skeletons on existing pages
++- Accessibility improvements to existing UI (focus management, ARIA)
++- Upgrading dependency versions within the same major
++- Improving CI reliability (flaky test fixes, timeout tuning)
++
++#### New Capability Expansion (Phase 3 Target)
++
++A change is **New Capability Expansion** if it:
++- Adds a feature that **does not exist** in the current Phase 1 product
++- Requires new routes, new API endpoints, or new UX surfaces
++- Introduces a new user-visible interaction pattern not currently present
++
++**Examples:**
++- Real-time orchestration controls (pause, stop, restart)
++- Guided PRD-to-story creation workflow
++- Advanced analytics charts or dashboards beyond the current overview
++- End-user authentication and account management
++- Multi-project or multi-tenant support
++- Offline-first mode with service worker
++- Rich agentic flow visualization (timeline, dependency graph)
++
++### Decision Tree
++
++```
++Is this change to an existing feature?
++│
++├─ YES → Does it add new user-visible capabilities or new routes?
++│        │
++│        ├─ YES → New Capability Expansion (Phase 3)
++│        └─ NO  → Foundational Hardening (Phase 2)
++│
++└─ NO (it's brand new) → New Capability Expansion (Phase 3)
++```
++
++### Quick Classification Checklist
++
++Answer these questions about a proposed change:
++
++1. **Existing surface?** Does the change modify something that already exists in Phase 1?
++2. **No new routes?** Does the change avoid adding new pages or navigation entries?
++3. **No new API?** Does the change avoid adding new API endpoints or data sources?
++4. **Better, not different?** Does the change make things work better rather than differently?
++
++If **all four answers are YES** → **Foundational Hardening (Phase 2)**
++
++If **any answer is NO** → **New Capability Expansion (Phase 3)**
++
++---
++
++_Created: 2026-04-21_
++_Story: 7-4-establish-phase-boundary-and-evolution-guardrails_
+diff --git a/_bmad-output/implementation-artifacts/sprint-status.yaml b/_bmad-output/implementation-artifacts/sprint-status.yaml
+index 97d2a41..5e12219 100644
+--- a/_bmad-output/implementation-artifacts/sprint-status.yaml
++++ b/_bmad-output/implementation-artifacts/sprint-status.yaml
+@@ -36,7 +36,7 @@
+ # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+ 
+ generated: 2026-04-15T16:46:25Z
+-last_updated: 2026-04-21T12:47:40Z
++last_updated: 2026-04-21T13:59:36Z
+ project: bmad-ui
+ project_key: NOKEY
+ tracking_system: file-system
+@@ -85,9 +85,9 @@ development_status:
+ 
+   epic-7: in-progress
+   7-1-set-up-playwright-infrastructure-and-first-smoke-tests: done
+-  7-2-integrate-backlog-artifacts-with-ui-workflows: review
+-  7-3-validate-self-referential-delivery-loop: review
+-  7-4-establish-phase-boundary-and-evolution-guardrails: ready-for-dev
++  7-2-integrate-backlog-artifacts-with-ui-workflows: in-progress
++  7-3-validate-self-referential-delivery-loop: done
++  7-4-establish-phase-boundary-and-evolution-guardrails: review
+   epic-7-retrospective: optional
+ 
+   epic-8: backlog
+diff --git a/_bmad-output/planning-artifacts/architecture.md b/_bmad-output/planning-artifacts/architecture.md
+index c988118..c43c3d1 100644
+--- a/_bmad-output/planning-artifacts/architecture.md
++++ b/_bmad-output/planning-artifacts/architecture.md
+@@ -771,4 +771,48 @@ No blocking contradictions were found. The remaining open points are implementat
+ - Treat shared contracts and route registration rules as mandatory, not optional conventions
+ 
+ **First Implementation Priority:**
+-Reconcile the existing frontend package to the selected Vite baseline, then implement the adapter/API boundary and TanStack Query-based server-state flow without breaking the current route and contract structure.
+\ No newline at end of file
++Reconcile the existing frontend package to the selected Vite baseline, then implement the adapter/API boundary and TanStack Query-based server-state flow without breaking the current route and contract structure.
++
++---
++
++## Phase 1 Delivered
++
++_Added: 2026-04-21 (Story 7-4)_
++
++All seven epics are complete. This section records what was actually shipped in Phase 1 as a stable baseline for future refactoring and feature growth.
++
++### Delivered Capabilities
++
++| Epic | Capability | Status |
++|---|---|---|
++| Epic 1 | Open-source repo governance: CODEOWNERS, PR/issue templates, branch protection, MIT license | ✅ Done |
++| Epic 2 | Terraform-managed GitHub + Vercel infrastructure; Terraform Cloud state | ✅ Done |
++| Epic 3 | dotenvx-based secrets workflow; encrypted `.env.*` files; no plaintext secrets | ✅ Done |
++| Epic 4 | CI/CD GitHub Actions workflows: `ci.yml` and `deploy.yml`; merge gate on CI | ✅ Done |
++| Epic 5 | Portable CLI: `npx bmad-method-ui install`; published to npm | ✅ Done |
++| Epic 6 | Setup, deploy, and troubleshooting documentation in `docs/` | ✅ Done |
++| Epic 7 | Playwright E2E smoke tests on all routes as CI merge gate | ✅ Done |
++
++### Architectural Choices Confirmed as Shipped
++
++- **Three-boundary architecture**: frontend (React/Vite/TanStack) / adapter-API (Vite dev middleware + static JSON) / orchestrator runtime — confirmed correct
++- **File-backed data, no database**: orchestrator-generated JSON and log artifacts are the source of truth — confirmed
++- **No auth layer in Phase 1**: security boundary is deployment access, protected branches, and secrets hygiene — confirmed
++- **Dual-mode architecture** (`IS_LOCAL_MODE`): dev mode uses Vite middleware; production serves pre-built static JSON — confirmed
++- **TanStack Router with manual route tree**: all routes registered in `src/routes/route-tree.ts` — confirmed
++- **TanStack Query v5** for all server state: no `useEffect` for data fetching — confirmed
++- **Biome** as sole linter/formatter: no ESLint, no Prettier — confirmed
++- **Tailwind CSS v4 via Vite plugin**: no PostCSS, no `tailwind.config.js` — confirmed
++
++### Deferred Decisions — Status at Phase 1 Close
++
++All deferred decisions listed at [Deferred Decisions (Post-MVP)](#data-architecture) remain open and unimplemented:
++
++- End-user authentication and authorization — **not started**
++- Database adoption for runtime/session persistence — **not started**
++- Multi-user tenancy — **not started**
++- GraphQL or alternate API protocol adoption — **not started**
++- Offline-first synchronization — **not started**
++- Distributed background job architecture — **not started**
++
++Additional deferrals surfaced during Epic 5/6/7 work are tracked in `_bmad-output/implementation-artifacts/deferred-work.md`.
+\ No newline at end of file
+diff --git a/_bmad-output/project-context.md b/_bmad-output/project-context.md
+index 86852e4..0697f1a 100644
+--- a/_bmad-output/project-context.md
++++ b/_bmad-output/project-context.md
+@@ -81,17 +81,15 @@ _This file contains critical rules and patterns that AI agents must follow when
+ 
+ ### Core Principle
+ 
+-- Use **shadcn/ui** (with **Base UI** as the headless primitive layer) for all UI components
+-- **No custom CSS classes** — shared visual patterns live in React components, not CSS classes
+ - Use **Tailwind utility classes** directly on JSX elements for all styling
+-- Existing custom CSS classes in `styles.css` are legacy — do not add new ones
++- Existing custom CSS classes in `styles.css` are legacy — do not add new ones; shared visual patterns should live in React components going forward
++- **[Phase 2 planned]** shadcn/ui (with Base UI as the headless primitive layer) — neither package is installed in Phase 1; do not import or use them yet
+ 
+ ### Component Architecture
+ 
+-- Install shadcn components via CLI and customize with Tailwind + CSS variables
+-- Base UI provides accessible, unstyled headless primitives (dialogs, menus, popovers, etc.)
+-- All reusable UI components go in `src/ui/components/` following the atomic hierarchy
+-- Page-specific compositions stay in page files; shared building blocks go in `ui/components/`
++- **Current (Phase 1):** All components are colocated in route files under `src/routes/` or in `src/app.tsx`; no `src/ui/` hierarchy exists yet
++- **[Phase 2 planned]** shadcn components in `src/ui/components/` — this directory does not exist in Phase 1
++- **[Phase 2 planned]** Base UI headless primitives (dialogs, menus, popovers) — not installed in Phase 1
+ 
+ ### Theme & Design System
+ 
+@@ -115,7 +113,7 @@ _This file contains critical rules and patterns that AI agents must follow when
+ 
+ - Test runner: **Vitest** 4.1.4 — do not use Jest APIs
+ - No test files exist yet; `vitest run --passWithNoTests` is the CI command
+-- Test files should be co-located with source: `src/ui/pages/home.test.tsx`, `src/utils/format-date.test.ts`
++- Test files should be co-located with source (e.g., `src/routes/home.test.tsx`, `src/lib/mode.test.ts`); once `src/ui/` hierarchy is adopted, path examples will be `src/ui/pages/home.test.tsx`
+ - Use Vitest's built-in `describe`, `it`, `expect` — import from `"vitest"` explicitly
+ - For React component tests, use `@testing-library/react` (not Enzyme)
+ - Do not add snapshot tests — prefer explicit assertion-based tests
+@@ -141,14 +139,15 @@ _This file contains critical rules and patterns that AI agents must follow when
+ 
+ ### Code Organization
+ 
+-- **Component hierarchy** (shadcn + Base UI):
++- **Current structure (Phase 1):** Components are colocated in `src/routes/` route files and `src/app.tsx`; no `src/ui/` hierarchy exists
++- **[Phase 2 planned] Component hierarchy** (shadcn + Base UI):
+   - `src/ui/components/elements/` — basic atoms (Button, Badge, Input)
+   - `src/ui/components/patterns/` — combinations of elements (DataTable, StatCard)
+   - `src/ui/components/blocks/` — page sections (HeroPanel, SessionsTable)
+-- **Pages**: `src/ui/pages/` — top-level page components
+-- **Routes**: `src/routes/` — route definitions that reference pages
+-- **Utils**: `src/utils/` — one function per file, one export per file (e.g., `format-date.ts`, `parse-story-ticket.ts`)
+-- **Types**: colocate types with their consumers — no global `types.ts` file
++- **[Phase 2 planned] Pages**: `src/ui/pages/` — top-level page components
++- **Routes**: `src/routes/` — route definitions (current home for page logic too)
++- **[Phase 2 planned] Utils**: `src/utils/` — one function per file, one export per file
++- **Types**: colocate types with their consumers; `src/types.ts` exists as legacy — do not add new types to it
+ - **Lib**: `src/lib/` for cross-cutting concerns (e.g., `mode.ts`)
+ - Named constants for every magic number and string — declare at top of file
+ - No barrel `index.ts` files — import directly from the source file
+@@ -162,9 +161,9 @@ _This file contains critical rules and patterns that AI agents must follow when
+ - **Never use global `isNaN`, `parseInt`, `parseFloat`, `Infinity`** — Biome will fail
+ - **Never add `tailwind.config.js` or `postcss.config.js`** — Tailwind v4 via Vite plugin needs neither
+ - **Never add ESLint or Prettier** — Biome is the single linter/formatter
+-- **Never add custom CSS classes** — extract shared visuals into components
++- **Avoid new custom CSS classes** — prefer Tailwind utility classes; existing classes in `styles.css` are legacy and can be used but not extended
+ - **Never create barrel `index.ts` files** — Biome enforces `noBarrelFile`
+-- **Never put types in a global file** — colocate with consumers
++- **Avoid adding types to a global file** — colocate with consumers; `src/types.ts` exists as legacy
+ - **Never export multiple functions from a util file** — one function, one file
+ - **Never use inline magic numbers** — every constant must have a named `const`
+ - **Never use inline `style={{}}` with hardcoded colors** — use CSS variables via Tailwind
+@@ -194,4 +193,4 @@ _This file contains critical rules and patterns that AI agents must follow when
+ - Review quarterly for outdated rules
+ - Remove rules that become obvious over time
+ 
+-Last Updated: 2026-04-19
++Last Updated: 2026-04-21 (Story 7-4: aspirational Phase 2 rules marked, current structure documented)

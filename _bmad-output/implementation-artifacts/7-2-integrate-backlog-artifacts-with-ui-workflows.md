@@ -1,6 +1,6 @@
 # Story 7.2: Integrate Backlog Artifacts with UI Workflows
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -48,6 +48,8 @@ So that planning outputs and execution views stay connected.
 - [x] [Review][Patch] Transient epic refetch failures replace valid stale data with a blocking error panel [src/routes/epic.$epicId.tsx:675]
 - [x] [Review][Patch] Duplicate story headings in epics.md inflate plannedStoryCount/storiesToCreate [scripts/agent-server.ts:1216]
 - [x] [Review][Patch] Malformed epics.md parsing is silently swallowed without actionable UI feedback [scripts/agent-server.ts:4248]
+- [ ] [Review][Patch] Planned-only rows are appended unsorted, so story order no longer follows ticket order when gaps exist [src/routes/epic.$epicId.tsx:324]
+- [ ] [Review][Patch] "Plan all stories" includes already-created stories from `plannedStories`, causing redundant/conflicting create-story runs [src/routes/epic.$epicId.tsx:377]
 
 ## Dev Notes
 

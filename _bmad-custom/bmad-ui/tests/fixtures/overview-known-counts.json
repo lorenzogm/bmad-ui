@@ -1,0 +1,116 @@
+{
+  "steps": [
+    { "skill": "bmad-create-story", "label": "Create Story" },
+    { "skill": "bmad-dev-story", "label": "Dev Story" },
+    { "skill": "bmad-code-review", "label": "Code Review" }
+  ],
+  "epicSteps": [
+    { "skill": "bmad-sprint-status", "label": "Sprint Status", "state": "not-started" },
+    { "skill": "bmad-sprint-planning", "label": "Sprint Planning", "state": "not-started" },
+    { "skill": "bmad-retrospective", "label": "Retrospective", "state": "not-started" }
+  ],
+  "sprintOverview": {
+    "totalStories": 3,
+    "storiesByStatus": {
+      "done": 1,
+      "ready-for-dev": 1,
+      "backlog": 1
+    },
+    "stories": [
+      {
+        "id": "7-1-done-story",
+        "status": "done",
+        "steps": {
+          "bmad-create-story": "completed",
+          "bmad-dev-story": "completed",
+          "bmad-code-review": "completed"
+        }
+      },
+      {
+        "id": "7-2-ready-story",
+        "status": "ready-for-dev",
+        "steps": {
+          "bmad-create-story": "completed",
+          "bmad-dev-story": "not-started",
+          "bmad-code-review": "not-started"
+        }
+      },
+      {
+        "id": "7-3-backlog-story",
+        "status": "backlog",
+        "steps": {
+          "bmad-create-story": "not-started",
+          "bmad-dev-story": "not-started",
+          "bmad-code-review": "not-started"
+        }
+      }
+    ],
+    "epics": [
+      {
+        "id": "epic-7",
+        "number": 7,
+        "name": "E2E Coverage",
+        "status": "in-progress",
+        "storyCount": 3,
+        "plannedStoryCount": 1,
+        "storiesToCreate": 1,
+        "byStoryStatus": {
+          "backlog": 1,
+          "ready-for-dev": 1,
+          "in-progress": 0,
+          "review": 0,
+          "done": 1
+        },
+        "lifecycleSteps": {
+          "bmad-sprint-status": "not-started",
+          "bmad-sprint-planning": "not-started",
+          "bmad-retrospective": "not-started"
+        }
+      },
+      {
+        "id": "epic-6",
+        "number": 6,
+        "name": "Previous Epic",
+        "status": "done",
+        "storyCount": 0,
+        "plannedStoryCount": 0,
+        "storiesToCreate": 0,
+        "byStoryStatus": {
+          "backlog": 0,
+          "ready-for-dev": 0,
+          "in-progress": 0,
+          "review": 0,
+          "done": 0
+        },
+        "lifecycleSteps": {
+          "bmad-sprint-status": "completed",
+          "bmad-sprint-planning": "completed",
+          "bmad-retrospective": "completed"
+        }
+      }
+    ]
+  },
+  "runtimeState": null,
+  "agentRunner": {
+    "isRunning": false,
+    "canSendInput": false,
+    "isNonInteractive": false
+  },
+  "externalProcesses": [],
+  "dependencyTree": {
+    "nodes": []
+  },
+  "epicConsistency": {
+    "hasMismatch": false,
+    "epicsMarkdownCount": 2,
+    "sprintStatusCount": 2,
+    "warning": null
+  },
+  "storyDependenciesExist": false,
+  "storyDependencies": {},
+  "agentRunHistory": [],
+  "planningArtifactFiles": [],
+  "implementationArtifactFiles": [],
+  "activeWorkflowSkill": null,
+  "agentSessions": []
+}

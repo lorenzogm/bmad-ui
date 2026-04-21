@@ -1,0 +1,58 @@
+{
+  "sessions": [
+    {
+      "sessionId": "session-test-123",
+      "storyId": "7-5-test-story",
+      "epicId": "epic-7",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-21T10:00:00.000Z",
+      "endedAt": "2026-04-21T11:00:00.000Z",
+      "usage": {
+        "requests": 5,
+        "tokensIn": 10000,
+        "tokensOut": 5000,
+        "tokensCached": 0,
+        "totalTokens": 15000
+      }
+    }
+  ],
+  "stories": [],
+  "epics": [],
+  "project": {
+    "requests": 5,
+    "tokensIn": 10000,
+    "tokensOut": 5000,
+    "tokensCached": 0,
+    "totalTokens": 15000
+  },
+  "costing": {
+    "version": 1,
+    "copilotBilling": {
+      "primaryUnit": "premium_request",
+      "notes": "Charged per premium request",
+      "source": "github"
+    },
+    "subscription": null,
+    "totals": {
+      "premiumRequests": 5,
+      "tokensIn": 10000,
+      "tokensOut": 5000,
+      "tokensCached": 0,
+      "totalTokens": 15000
+    },
+    "ratesUsd": {
+      "premiumRequest": null,
+      "inputPer1MTokens": null,
+      "outputPer1MTokens": null,
+      "cachedInputPer1MTokens": null
+    },
+    "estimatedCostUsd": {
+      "seatCostPerUserPerMonth": null,
+      "fromPremiumRequests": null,
+      "fromTokens": null,
+      "totalWithKnownRates": null
+    }
+  }
+}
