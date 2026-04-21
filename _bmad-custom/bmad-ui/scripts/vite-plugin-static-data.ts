@@ -7,6 +7,7 @@ import {
 	buildAnalyticsPayload,
 	buildOverviewPayload,
 	buildSessionDetailPayload,
+	buildWorkflowStepDetailPayload,
 	deriveStoryStepStateFromStatus,
 	epicsFile,
 	fallbackSummary,
@@ -160,6 +161,26 @@ function staticDataPlugin(): Plugin {
 				links = parseSimpleYamlList(raw, "links");
 			}
 			emit("links.json", { links });
+
+			// ── Workflow step details ──────────────────────────────
+			const workflowStepKeys = [
+				["planning", "prd"],
+				["planning", "ux"],
+				["solutioning", "architecture"],
+			] as const;
+			for (const [phaseId, stepId] of workflowStepKeys) {
+				try {
+					const stepPayload = await buildWorkflowStepDetailPayload(
+						phaseId,
+						stepId,
+					);
+					if (stepPayload) {
+						emit(`workflow-step/${phaseId}/${stepId}.json`, stepPayload);
+					}
+				} catch {
+					// skip steps that can't be built
+				}
+			}
 
 			// ── Session details ────────────────────────────────────
 			for (const session of allAnalyticsSessions) {

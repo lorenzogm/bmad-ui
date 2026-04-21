@@ -425,6 +425,7 @@ export type WorkflowStep = {
   isCompleted: boolean
   isSkipped: boolean
   skill: string
+  detailSlug: string | null
 }
 
 export type WorkflowPhase = {
@@ -449,7 +450,8 @@ function makeStep(
   skill: string,
   isOptional: boolean,
   artifactFiles: string[],
-  matcher: (files: string[]) => boolean
+  matcher: (files: string[]) => boolean,
+  detailSlug: string | null = null
 ): WorkflowStep {
   const nonSkippedFiles = artifactFiles.filter((f) => !f.endsWith(".skipped"))
   return {
@@ -460,6 +462,7 @@ function makeStep(
     isCompleted: matcher(nonSkippedFiles),
     isSkipped: artifactFiles.some((f) => f === `${id}.skipped`),
     skill,
+    detailSlug,
   }
 }
 
@@ -556,7 +559,8 @@ export function detectWorkflowStatus(
           "bmad-create-prd",
           false,
           planningFiles,
-          (f) => f.some((x) => x.toLowerCase() === "prd.md")
+          (f) => f.some((x) => x.toLowerCase() === "prd.md"),
+          "planning/prd"
         ),
         makeStep(
           "ux",
@@ -565,7 +569,8 @@ export function detectWorkflowStatus(
           "bmad-create-ux-design",
           true,
           planningFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("ux"))
+          (f) => f.some((x) => x.toLowerCase().includes("ux")),
+          "planning/ux"
         ),
       ],
     },
@@ -585,7 +590,8 @@ export function detectWorkflowStatus(
           "bmad-create-architecture",
           false,
           planningFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("architecture"))
+          (f) => f.some((x) => x.toLowerCase().includes("architecture")),
+          "solutioning/architecture"
         ),
         makeStep(
           "epics",
@@ -733,7 +739,10 @@ function BMADWorkflowSection(props: {
       if (response.ok) {
         const result = (await response.json()) as { sessionId: string }
         if (result.sessionId) {
-          void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
+          void navigate({
+            to: "/session/$sessionId",
+            params: { sessionId: result.sessionId },
+          })
         }
       }
     } catch (_err) {

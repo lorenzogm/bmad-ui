@@ -177,6 +177,7 @@ export type EpicDetailResponse = {
   }>
   plannedStories: string[]
   storyDependencies: Record<string, string[]>
+  parseWarning?: string | null
 }
 
 export type SessionDetailResponse = {
@@ -188,6 +189,36 @@ export type SessionDetailResponse = {
   promptExists: boolean
   isRunning: boolean
   canSendInput: boolean
+}
+
+export type WorkflowStepDetailResponse = {
+  phase: {
+    id: string
+    name: string
+    number: number
+  }
+  step: {
+    id: string
+    name: string
+    description: string
+    skill: string
+    isOptional: boolean
+    isCompleted: boolean
+    isSkipped: boolean
+  }
+  artifact: {
+    status: "present" | "skipped" | "missing"
+    filePath: string | null
+    markdownContent: string | null
+  }
+  skillSummary: {
+    overview: string
+    questionThemes: Array<{
+      theme: string
+      questions: string[]
+    }>
+    sourceFiles: string[]
+  }
 }
 
 export type StoryPreviewResponse = {

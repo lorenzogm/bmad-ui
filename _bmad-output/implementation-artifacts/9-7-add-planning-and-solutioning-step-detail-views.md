@@ -1,6 +1,6 @@
 # Story 9.7: Add Planning & Solutioning Step Detail Views
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -24,34 +24,34 @@ so that I can inspect the related artifacts and understand what each workflow sk
 
 ## Tasks / Subtasks
 
-- [ ] Add a workflow-step detail response contract and payload builder (AC: 3, 4, 5)
-  - [ ] Add a dedicated response type in `_bmad-custom/bmad-ui/src/types.ts` for workflow step details covering phase metadata, step metadata, artifact state, artifact markdown content, skill summary, question-summary bullets, and source-file references.
-  - [ ] Add a dedicated dev-server endpoint in `_bmad-custom/bmad-ui/scripts/agent-server.ts` for the supported detail views only: `planning/prd`, `planning/ux`, and `solutioning/architecture`.
-  - [ ] Mirror the same payloads in `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts` so production emits matching static JSON for the new detail routes.
-  - [ ] Keep the implementation deliberately scoped to these three steps; do not build a generic parser or UI for every BMAD skill in this story.
+- [x] Add a workflow-step detail response contract and payload builder (AC: 3, 4, 5)
+  - [x] Add a dedicated response type in `_bmad-custom/bmad-ui/src/types.ts` for workflow step details covering phase metadata, step metadata, artifact state, artifact markdown content, skill summary, question-summary bullets, and source-file references.
+  - [x] Add a dedicated dev-server endpoint in `_bmad-custom/bmad-ui/scripts/agent-server.ts` for the supported detail views only: `planning/prd`, `planning/ux`, and `solutioning/architecture`.
+  - [x] Mirror the same payloads in `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts` so production emits matching static JSON for the new detail routes.
+  - [x] Keep the implementation deliberately scoped to these three steps; do not build a generic parser or UI for every BMAD skill in this story.
 
-- [ ] Add Planning/Solutioning detail navigation in the workflow UI (AC: 1, 2)
-  - [ ] Extend the workflow step model in `_bmad-custom/bmad-ui/src/app.tsx` only as needed so supported steps can expose a detail target.
-  - [ ] Update `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` to render a `Details` link or button for PRD, UX Design, and Architecture rows while preserving the existing play, skip, unskip, and session actions.
-  - [ ] Add and manually register a dedicated route for the detail page in `_bmad-custom/bmad-ui/src/routes/route-tree.ts`.
+- [x] Add Planning/Solutioning detail navigation in the workflow UI (AC: 1, 2)
+  - [x] Extend the workflow step model in `_bmad-custom/bmad-ui/src/app.tsx` only as needed so supported steps can expose a detail target.
+  - [x] Update `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` to render a `Details` link or button for PRD, UX Design, and Architecture rows while preserving the existing play, skip, unskip, and session actions.
+  - [x] Add and manually register a dedicated route for the detail page in `_bmad-custom/bmad-ui/src/routes/route-tree.ts`.
 
-- [ ] Build the step detail page (AC: 1, 2, 3, 4, 5)
-  - [ ] Create a dedicated workflow-step detail route component under `_bmad-custom/bmad-ui/src/routes/` that uses TanStack Query plus `apiUrl()` to fetch the payload.
-  - [ ] Render a summary section describing what the skill does and what kinds of questions it asks.
-  - [ ] Render a readable markdown artifact preview when content exists.
-  - [ ] Provide a graceful empty or skipped state for the UX detail view when only `ux.skipped` exists or no UX markdown file is present.
-  - [ ] Include a clear back link to the parent phase page.
+- [x] Build the step detail page (AC: 1, 2, 3, 4, 5)
+  - [x] Create a dedicated workflow-step detail route component under `_bmad-custom/bmad-ui/src/routes/` that uses TanStack Query plus `apiUrl()` to fetch the payload.
+  - [x] Render a summary section describing what the skill does and what kinds of questions it asks.
+  - [x] Render a readable markdown artifact preview when content exists.
+  - [x] Provide a graceful empty or skipped state for the UX detail view when only `ux.skipped` exists or no UX markdown file is present.
+  - [x] Include a clear back link to the parent phase page.
 
-- [ ] Curate the skill question summaries from the workflow source files (AC: 4)
-  - [ ] For `bmad-create-prd`, summarize classification and discovery questions, vision and differentiator questions, success-criteria questions, and scoping/MVP questions.
-  - [ ] For `bmad-create-ux-design`, summarize project-understanding questions, core-experience questions, and emotional-response questions.
-  - [ ] For `bmad-create-architecture`, summarize context-analysis questions, technical-preference and starter-evaluation questions, and core-decision questions.
-  - [ ] Include the specific source step-file paths in the payload or page so the summary remains traceable to the underlying skill definitions.
+- [x] Curate the skill question summaries from the workflow source files (AC: 4)
+  - [x] For `bmad-create-prd`, summarize classification and discovery questions, vision and differentiator questions, success-criteria questions, and scoping/MVP questions.
+  - [x] For `bmad-create-ux-design`, summarize project-understanding questions, core-experience questions, and emotional-response questions.
+  - [x] For `bmad-create-architecture`, summarize context-analysis questions, technical-preference and starter-evaluation questions, and core-decision questions.
+  - [x] Include the specific source step-file paths in the payload or page so the summary remains traceable to the underlying skill definitions.
 
-- [ ] Verify end-to-end behavior (AC: 1, 2, 3, 4, 5)
-  - [ ] Extend `_bmad-custom/bmad-ui/tests/smoke.spec.ts` or add a focused Playwright case that opens the new detail views and verifies they render without JavaScript errors.
-  - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check`.
-  - [ ] Manually verify `/workflow/planning`, `/workflow/solutioning`, and the new detail routes in the browser.
+- [x] Verify end-to-end behavior (AC: 1, 2, 3, 4, 5)
+  - [x] Extend `_bmad-custom/bmad-ui/tests/smoke.spec.ts` or add a focused Playwright case that opens the new detail views and verifies they render without JavaScript errors.
+  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check`.
+  - [x] Manually verify `/workflow/planning`, `/workflow/solutioning`, and the new detail routes in the browser.
 
 ## Dev Notes
 
@@ -179,7 +179,7 @@ These changes reinforce the current pattern: keep workflow-route changes paired 
 
 ### Agent Model Used
 
-GPT-5.4
+claude-sonnet-4.6
 
 ### Debug Log References
 
@@ -188,9 +188,31 @@ GPT-5.4
 - Story created to add workflow-step drilldowns for PRD, UX Design, and Architecture.
 - Scope intentionally limited to three steps to avoid overbuilding a generic artifact or skill browser.
 - UX detail view must handle `ux.skipped` and absent UX markdown gracefully.
+- Added `detailSlug: string | null` to `WorkflowStep` type and `makeStep()` helper. Three steps now carry slugs: `planning/prd`, `planning/ux`, `solutioning/architecture`.
+- Added `WorkflowStepDetailResponse` type to `types.ts` covering phase, step, artifact state + content, and skill summary with question themes and source files.
+- Added `buildWorkflowStepDetailPayload()` to `agent-server.ts` with hardcoded metadata for the three supported steps; reads planning artifact files at runtime to determine artifact status.
+- Added `/api/workflow-step/:phaseId/:stepId` GET endpoint in `agent-server.ts`.
+- Added static JSON emission for `workflow-step/planning/prd.json`, `workflow-step/planning/ux.json`, and `workflow-step/solutioning/architecture.json` in `vite-plugin-static-data.ts`.
+- Created `workflow.$phaseId.$stepId.tsx` route with `ArtifactSection` (handles present/skipped/missing) and `SkillSummarySection` (question theme cards + source file list).
+- Registered `workflowStepDetailRoute` as sibling of `workflowPhaseRoute` under `workflowLayoutRoute` in `route-tree.ts`.
+- Added "Details" inline link in actions column of `workflow.$phaseId.tsx` for steps with `detailSlug`.
+- Extended `smoke.spec.ts` with workflow phase and step detail page tests.
+- `pnpm check` passes (lint + types + tests + build).
 
 ### File List
 
 - `_bmad-output/planning-artifacts/epics.md`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `_bmad-output/implementation-artifacts/9-7-add-planning-and-solutioning-step-detail-views.md`
+- `_bmad-custom/bmad-ui/src/types.ts`
+- `_bmad-custom/bmad-ui/src/app.tsx`
+- `_bmad-custom/bmad-ui/src/routes/route-tree.ts`
+- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx`
+- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (new)
+- `_bmad-custom/bmad-ui/scripts/agent-server.ts`
+- `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
+- `_bmad-custom/bmad-ui/tests/smoke.spec.ts`
+
+## Change Log
+
+- 2026-04-21: Implemented story 9.7 — added WorkflowStepDetailResponse type, server payload builder + endpoint, static JSON emission, new detail route, detail link in phase table, and smoke tests. All five ACs satisfied; `pnpm check` passes.

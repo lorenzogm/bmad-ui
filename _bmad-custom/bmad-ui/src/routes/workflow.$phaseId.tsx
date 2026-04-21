@@ -71,7 +71,10 @@ function WorkflowPhaseDetailPage() {
 
         const result = (await response.json()) as { sessionId: string }
         if (result.sessionId) {
-          void navigate({ to: "/session/$sessionId", params: { sessionId: result.sessionId } })
+          void navigate({
+            to: "/session/$sessionId",
+            params: { sessionId: result.sessionId },
+          })
         }
       } catch (_err) {
         // ignore — server logs the error
@@ -309,6 +312,27 @@ function WorkflowPhaseDetailPage() {
                             to="/session/$sessionId"
                           >
                             ◉
+                          </Link>
+                        ) : null}
+                        {step.detailSlug ? (
+                          <Link
+                            params={{
+                              phaseId: step.detailSlug.split("/")[0],
+                              stepId: step.detailSlug.split("/")[1],
+                            }}
+                            style={{
+                              fontSize: "0.75rem",
+                              color: "var(--highlight)",
+                              textDecoration: "none",
+                              border: "1px solid rgba(46,196,182,0.35)",
+                              borderRadius: "4px",
+                              padding: "0.15rem 0.45rem",
+                              whiteSpace: "nowrap",
+                            }}
+                            title={`View details for ${step.name}`}
+                            to="/workflow/$phaseId/$stepId"
+                          >
+                            Details
                           </Link>
                         ) : null}
                       </div>
