@@ -56,6 +56,12 @@ function ActiveSprintSummary({
   runningSessionsCount,
 }: ActiveSprintSummaryProps) {
   const activeEpic = epics.find((e) => e.status === "in-progress")
+  const activeEpicDoneStories = activeEpic?.byStoryStatus?.done ?? 0
+  const activeEpicTotalStories = activeEpic?.storyCount ?? 0
+  const activeEpicCompletionPercent =
+    activeEpicTotalStories > 0
+      ? Math.round((activeEpicDoneStories / activeEpicTotalStories) * 100)
+      : 0
   const hasActivity =
     activeEpic !== undefined || inProgressStoriesCount > 0 || runningSessionsCount > 0
 
@@ -78,7 +84,8 @@ function ActiveSprintSummary({
             {activeEpic.name}
           </span>
           <span className="text-xs" style={{ color: "var(--muted)" }}>
-            {activeEpic.byStoryStatus?.done ?? 0}/{activeEpic.storyCount} stories done
+            {activeEpicDoneStories}/{activeEpicTotalStories} stories done (
+            {activeEpicCompletionPercent}%)
           </span>
           <span className={`step-badge step-in-progress`}>in-progress</span>
         </div>

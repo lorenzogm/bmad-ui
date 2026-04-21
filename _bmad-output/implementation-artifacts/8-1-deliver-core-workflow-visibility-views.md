@@ -1,6 +1,6 @@
 # Story 8.1: Deliver Core Workflow Visibility Views
 
-Status: review
+Status: done
 
 ## Story
 
@@ -37,6 +37,10 @@ so that I can understand project execution without reading raw orchestration log
 
 - [x] Run quality gate and verify no regressions (AC: #1, #2, #3)
   - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with zero errors
+
+### Review Findings
+
+- [x] [Review][Patch] Active sprint summary now includes epic completion percentage in addition to done/total stories [`_bmad-custom/bmad-ui/src/routes/home.tsx`]
 
 ## Dev Notes
 
