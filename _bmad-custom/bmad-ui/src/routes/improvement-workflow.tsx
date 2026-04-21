@@ -1,6 +1,6 @@
 import { createRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
-import { IMPROVEMENT_STEPS, storyStepLabel } from "../app"
+import { IMPROVEMENT_STEPS, StatusBadge } from "../app"
 import { IS_LOCAL_MODE } from "../lib/mode"
 import type { WorkflowStepState } from "../types"
 import { rootRoute } from "./__root"
@@ -158,20 +158,16 @@ function ImprovementWorkflowPage() {
                       <code className="improvement-step-skill">{step.skill}</code>
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
-                      <span
-                        className={`step-badge step-${isRunning ? "running" : status.state === "completed" ? "done" : "not-started"}`}
-                      >
-                        {isRunning ? (
-                          <>
-                            <span aria-hidden="true" className="agent-icon">
-                              ⬡
-                            </span>
-                            {" running"}
-                          </>
-                        ) : (
-                          storyStepLabel(status.state)
-                        )}
-                      </span>
+                      {isRunning ? (
+                        <span className="step-badge step-running">
+                          <span aria-hidden="true" className="agent-icon">
+                            ⬡
+                          </span>
+                          {" running"}
+                        </span>
+                      ) : (
+                        <StatusBadge status={status.state} />
+                      )}
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
                       <div className="improvement-actions">

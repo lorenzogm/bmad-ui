@@ -1,6 +1,6 @@
 # Story 9.3: Status Badge Consistency Across Views
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -30,42 +30,42 @@ so that I can quickly scan status without decoding inconsistent label styles.
 
 ## Tasks / Subtasks
 
-- [ ] Audit all status badge usages across the codebase (AC: 1, 2)
-  - [ ] Catalogue every inline `step-badge` pattern in `src/app.tsx` and all `src/routes/*.tsx` files
-  - [ ] Identify which render raw machine-readable values vs. already-humanized labels
-  - [ ] Identify any inline styles or non-design-system badge patterns that must be removed
+- [x] Audit all status badge usages across the codebase (AC: 1, 2)
+  - [x] Catalogue every inline `step-badge` pattern in `src/app.tsx` and all `src/routes/*.tsx` files
+  - [x] Identify which render raw machine-readable values vs. already-humanized labels
+  - [x] Identify any inline styles or non-design-system badge patterns that must be removed
 
-- [ ] Define a shared `StatusBadge` component and status label map (AC: 1, 3, 4)
-  - [ ] Add `statusBadgeClass(status: string): string` — maps raw status keys to the correct `.step-${variant}` suffix (e.g., `"in-progress"` → `"in-progress"`, `"ready-for-dev"` → `"in-progress"`, `"backlog"` → `"not-started"`)
-  - [ ] Add `statusLabel(status: string): string` — maps raw status keys to human-readable labels (e.g., `"in-progress"` → `"In Progress"`, `"ready-for-dev"` → `"Ready"`, `"not-started"` → `"To Do"`, `"backlog"` → `"To Do"`, `"running"` → `"Running"`)
-  - [ ] Export `StatusBadge` as a named function component from `src/app.tsx` — accepts `status: string` prop, renders `<span className={\`step-badge step-${statusBadgeClass(status)}\`}>{statusLabel(status)}</span>`
-  - [ ] No new CSS classes — only use existing `.step-badge` variants from `src/styles.css`
+- [x] Define a shared `StatusBadge` component and status label map (AC: 1, 3, 4)
+  - [x] Add `statusBadgeClass(status: string): string` — maps raw status keys to the correct `.step-${variant}` suffix (e.g., `"in-progress"` → `"in-progress"`, `"ready-for-dev"` → `"in-progress"`, `"backlog"` → `"not-started"`)
+  - [x] Add `statusLabel(status: string): string` — maps raw status keys to human-readable labels (e.g., `"in-progress"` → `"In Progress"`, `"ready-for-dev"` → `"Ready"`, `"not-started"` → `"To Do"`, `"backlog"` → `"To Do"`, `"running"` → `"Running"`)
+  - [x] Export `StatusBadge` as a named function component from `src/app.tsx` — accepts `status: string` prop, renders `<span className={\`step-badge step-${statusBadgeClass(status)}\`}>{statusLabel(status)}</span>`
+  - [x] No new CSS classes — only use existing `.step-badge` variants from `src/styles.css`
 
-- [ ] Replace inline badge patterns in `src/app.tsx` (AC: 4)
-  - [ ] `SessionsTable`: replace both inline `step-badge step-${displayStatus}` spans with `<StatusBadge status={displayStatus} />`
-  - [ ] `EpicTableSection`: replace `step-badge step-${epic.status}` and `step-badge step-${epic.lifecycleSteps["bmad-retrospective"]}` spans
-  - [ ] `BMADWorkflowSection` (workflow phase header badges): replace inline `step-badge step-${status}` for phase-level status summary
-  - [ ] `BMADWorkflowSection` (workflow step badges): replace inline `step-badge ${stepStatusClassName}` for individual workflow steps — keep the `isRunning` ⬡ icon logic as-is, just use `StatusBadge` for the label part
-  - [ ] `BMADWorkflowSection` (epic rows): replace `step-badge step-${epic.status}` in implementation phase epic list
+- [x] Replace inline badge patterns in `src/app.tsx` (AC: 4)
+  - [x] `SessionsTable`: replace both inline `step-badge step-${displayStatus}` spans with `<StatusBadge status={displayStatus} />`
+  - [x] `EpicTableSection`: replace `step-badge step-${epic.status}` and `step-badge step-${epic.lifecycleSteps["bmad-retrospective"]}` spans
+  - [x] `BMADWorkflowSection` (workflow phase header badges): replace inline `step-badge step-${status}` for phase-level status summary
+  - [x] `BMADWorkflowSection` (workflow step badges): replace inline `step-badge ${stepStatusClassName}` for individual workflow steps — keep the `isRunning` ⬡ icon logic as-is, just use `StatusBadge` for the label part
+  - [x] `BMADWorkflowSection` (epic rows): replace `step-badge step-${epic.status}` in implementation phase epic list
 
-- [ ] Replace inline badge patterns in route files (AC: 4)
-  - [ ] `src/routes/home.tsx` — replace `step-badge step-in-progress` hardcoded badge and `step-badge step-${epic.status}` badges
-  - [ ] `src/routes/sessions.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
-  - [ ] `src/routes/session.$sessionId.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
-  - [ ] `src/routes/analytics-sessions.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
-  - [ ] `src/routes/analytics-model-detail.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
-  - [ ] `src/routes/analytics-story-detail.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
-  - [ ] `src/routes/story.$storyId.tsx` — replace `step-badge step-${props.state}` (workflow state badge) and the inline ternary badge for story status
-  - [ ] `src/routes/epic.$epicId.tsx` — replace `step-badge step-${computedEpicStatus}`, story status badges (`storyStatusBadgeClass`), and lifecycle step badges; remove the now-redundant local `storyStatusBadgeClass` / `storyStatusLabel` / `STORY_STATUS_LABELS` / `STORY_STATUS_BADGE_CLASS` in favour of the shared map
-  - [ ] `src/routes/workflow.$phaseId.tsx` — replace step-status and epic-status badges in phase detail view
-  - [ ] `src/routes/workflow.$phaseId.$stepId.tsx` — replace `step-badge step-${statusLabel}` with `<StatusBadge status={...} />`
-  - [ ] `src/routes/workflow-index.tsx` — replace `step-badge step-${status}` in workflow overview
-  - [ ] `src/routes/improvement-workflow.tsx` — replace inline ternary badge pattern
+- [x] Replace inline badge patterns in route files (AC: 4)
+  - [x] `src/routes/home.tsx` — replace `step-badge step-in-progress` hardcoded badge and `step-badge step-${epic.status}` badges
+  - [x] `src/routes/sessions.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
+  - [x] `src/routes/session.$sessionId.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
+  - [x] `src/routes/analytics-sessions.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
+  - [x] `src/routes/analytics-model-detail.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
+  - [x] `src/routes/analytics-story-detail.tsx` — replace `step-badge step-${session.status}` with `<StatusBadge status={session.status} />`
+  - [x] `src/routes/story.$storyId.tsx` — replace `step-badge step-${props.state}` (workflow state badge) and the inline ternary badge for story status
+  - [x] `src/routes/epic.$epicId.tsx` — replace `step-badge step-${computedEpicStatus}`, story status badges (`storyStatusBadgeClass`), and lifecycle step badges; remove the now-redundant local `storyStatusBadgeClass` / `storyStatusLabel` / `STORY_STATUS_LABELS` / `STORY_STATUS_BADGE_CLASS` in favour of the shared map
+  - [x] `src/routes/workflow.$phaseId.tsx` — replace step-status and epic-status badges in phase detail view
+  - [x] `src/routes/workflow.$phaseId.$stepId.tsx` — replace `step-badge step-${statusLabel}` with `<StatusBadge status={...} />`
+  - [x] `src/routes/workflow-index.tsx` — replace `step-badge step-${status}` in workflow overview
+  - [x] `src/routes/improvement-workflow.tsx` — replace inline ternary badge pattern (running icon kept as special span)
 
-- [ ] Verify quality gate (AC: 1, 2, 3, 4)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` passes with no lint, type, or build errors
-  - [ ] No remaining inline `step-badge step-done` / `step-badge step-${rawValue}` patterns without `StatusBadge` wrapper (run `grep -r 'step-badge' src/` to confirm)
-  - [ ] Confirm `<StatusBadge>` renders meaningful text labels (not "in-progress", "not-started" as literal text) in browser dev build
+- [x] Verify quality gate (AC: 1, 2, 3, 4)
+  - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with no lint, type, or build errors
+  - [x] No remaining inline `step-badge step-done` / `step-badge step-${rawValue}` patterns without `StatusBadge` wrapper (run `grep -r 'step-badge' src/` to confirm)
+  - [x] Confirm `<StatusBadge>` renders meaningful text labels (not "in-progress", "not-started" as literal text) in browser dev build
 
 ## Dev Notes
 
@@ -186,4 +186,26 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Implemented `StatusBadge`, `statusBadgeClass`, `statusLabel` in `src/app.tsx` with `STATUS_BADGE_CLASS` and `STATUS_LABEL` maps
+- Replaced all inline `step-badge step-${...}` patterns across 12 route files with `<StatusBadge status={...} />`
+- Removed local `STORY_STATUS_LABELS`, `storyStatusLabel`, `STORY_STATUS_BADGE_CLASS`, `storyStatusBadgeClass` helpers from `epic.$epicId.tsx`
+- Running-icon badges in `workflow.$phaseId.tsx` line 260 kept as-is per Dev Notes (special case with ⬡ icon)
+- `improvement-workflow.tsx` running icon extracted to conditional: special span for running state, `StatusBadge` for non-running
+- `pnpm check` passes: lint, types, tests, build all green
+
 ### File List
+
+- `_bmad-custom/bmad-ui/src/app.tsx` (modified — added StatusBadge, statusBadgeClass, statusLabel, STATUS_BADGE_CLASS, STATUS_LABEL)
+- `_bmad-custom/bmad-ui/src/routes/home.tsx` (modified — StatusBadge import + 2 badge replacements)
+- `_bmad-custom/bmad-ui/src/routes/sessions.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-custom/bmad-ui/src/routes/analytics-model-detail.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-custom/bmad-ui/src/routes/analytics-story-detail.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-custom/bmad-ui/src/routes/story.$storyId.tsx` (modified — StatusBadge import + 2 badge replacements)
+- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx` (modified — StatusBadge import, removed 4 local helpers, replaced 10 badges)
+- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` (modified — StatusBadge import + 2 epic badge replacements)
+- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (modified — StatusBadge import, removed local statusLabel var, replaced artifact badge)
+- `_bmad-custom/bmad-ui/src/routes/workflow-index.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-custom/bmad-ui/src/routes/improvement-workflow.tsx` (modified — StatusBadge import, replaced ternary badge with conditional rendering)
+- `_bmad-output/implementation-artifacts/9-3-status-badge-consistency-across-views.md` (modified — status + tasks updated)
