@@ -1,6 +1,6 @@
 # Story 7.2: Integrate Backlog Artifacts with UI Workflows
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -41,6 +41,13 @@ So that planning outputs and execution views stay connected.
 
 - [x] Task 5 — Verify end-to-end with pnpm check (AC: 1, 2, 3)
   - [x] Run `pnpm check` from `_bmad-custom/bmad-ui` — lint, types, tests, build must all pass
+
+### Review Findings
+
+- [ ] [Review][Patch] Planned-only stories are not rendered in the epic story table [src/routes/epic.$epicId.tsx:290]
+- [ ] [Review][Patch] Transient epic refetch failures replace valid stale data with a blocking error panel [src/routes/epic.$epicId.tsx:675]
+- [ ] [Review][Patch] Duplicate story headings in epics.md inflate plannedStoryCount/storiesToCreate [scripts/agent-server.ts:1216]
+- [ ] [Review][Patch] Malformed epics.md parsing is silently swallowed without actionable UI feedback [scripts/agent-server.ts:4248]
 
 ## Dev Notes
 
