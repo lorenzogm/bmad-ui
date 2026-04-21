@@ -43,6 +43,31 @@ function formatDuration(startedAt: string | null, endedAt: string | null): strin
   return `${hours}h ${remainingMinutes}m`
 }
 
+function LoadingState() {
+  return (
+    <main className="screen">
+      <div className="panel">
+        <p style={{ color: "var(--muted)" }}>Loading sessions...</p>
+      </div>
+    </main>
+  )
+}
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <main className="screen">
+      <div className="panel" style={{ borderColor: "var(--highlight-2)" }}>
+        <p className="eyebrow" style={{ color: "var(--highlight-2)" }}>
+          Error
+        </p>
+        <p className="mt-2" style={{ color: "var(--muted)" }}>
+          {message}
+        </p>
+      </div>
+    </main>
+  )
+}
+
 function SessionsPage() {
   const [statusFilter, setStatusFilter] = useState<string>(() => {
     try {
@@ -82,13 +107,8 @@ function SessionsPage() {
     }
   }
 
-  if (isLoading) return <main className="screen loading">Loading sessions...</main>
-  if (error)
-    return (
-      <main className="screen loading">
-        <p>{String(error)}</p>
-      </main>
-    )
+  if (isLoading) return <LoadingState />
+  if (error) return <ErrorState message={String(error)} />
 
   return (
     <main className="screen">
@@ -129,55 +149,57 @@ function SessionsPage() {
           </select>
         </div>
 
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Skill / Name</th>
-                <th>Model</th>
-                <th>Story</th>
-                <th>Status</th>
-                <th>Started</th>
-                <th>Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSessions.map((session) => (
-                <tr key={session.sessionId}>
-                  <td>
-                    <span className="skill-chip">{session.skill ?? "—"}</span>
-                    <Link
-                      className={`session-link-icon${session.status === "running" ? " session-link-running" : ""}${session.status === "failed" ? " session-link-failed" : ""}`}
-                      params={{ sessionId: session.sessionId }}
-                      title={`View session: ${session.sessionId}`}
-                      to="/session/$sessionId"
-                    >
-                      ◉
-                    </Link>
-                  </td>
-                  <td>
-                    <span className="mono muted">{session.model}</span>
-                  </td>
-                  <td>
-                    <span className="mono muted">{session.storyId ?? "—"}</span>
-                  </td>
-                  <td>
-                    <span className={`step-badge step-${session.status}`}>{session.status}</span>
-                  </td>
-                  <td className="muted">{formatDate(session.startedAt)}</td>
-                  <td className="muted">{formatDuration(session.startedAt, session.endedAt)}</td>
-                </tr>
-              ))}
-              {filteredSessions.length === 0 && (
+        {filteredSessions.length === 0 ? (
+          <div className="py-8 text-center" style={{ color: "var(--muted)" }}>
+            <p>
+              No sessions found
+              {statusFilter !== ALL_FILTER ? ` with status "${statusFilter}"` : ""}.
+            </p>
+          </div>
+        ) : (
+          <div className="table-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td className="empty-row" colSpan={6}>
-                    No sessions found
-                  </td>
+                  <th>Skill / Name</th>
+                  <th>Model</th>
+                  <th>Story</th>
+                  <th>Status</th>
+                  <th>Started</th>
+                  <th>Duration</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredSessions.map((session) => (
+                  <tr key={session.sessionId}>
+                    <td>
+                      <span className="skill-chip">{session.skill ?? "—"}</span>
+                      <Link
+                        className={`session-link-icon${session.status === "running" ? " session-link-running" : ""}${session.status === "failed" ? " session-link-failed" : ""}`}
+                        params={{ sessionId: session.sessionId }}
+                        title={`View session: ${session.sessionId}`}
+                        to="/session/$sessionId"
+                      >
+                        ◉
+                      </Link>
+                    </td>
+                    <td>
+                      <span className="mono muted">{session.model}</span>
+                    </td>
+                    <td>
+                      <span className="mono muted">{session.storyId ?? "—"}</span>
+                    </td>
+                    <td>
+                      <span className={`step-badge step-${session.status}`}>{session.status}</span>
+                    </td>
+                    <td className="muted">{formatDate(session.startedAt)}</td>
+                    <td className="muted">{formatDuration(session.startedAt, session.endedAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </main>
   )

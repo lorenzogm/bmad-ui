@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-21T21:39:57Z
+last_updated: 2026-04-21T21:41:59Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -92,10 +92,10 @@ development_status:
   epic-7-retrospective: done
 
   epic-8: in-progress
-  8-1-deliver-core-workflow-visibility-views: in-progress
+  8-1-deliver-core-workflow-visibility-views: review
   8-2-integrate-backlog-artifacts-with-ui-workflows: done
   8-3-validate-self-referential-delivery-loop: ready-for-dev
-  8-4-establish-phase-boundary-and-evolution-guardrails: review
+  8-4-establish-phase-boundary-and-evolution-guardrails: done
   epic-8-retrospective: optional
 
   epic-9: in-progress

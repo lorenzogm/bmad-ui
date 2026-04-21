@@ -13,6 +13,102 @@ const NOTE_COLORS = ["teal", "amber", "purple", "pink", "blue"] as const
 
 const COST_PER_REQUEST_USD = 0.04
 
+function LoadingState() {
+  return (
+    <main className="screen">
+      <div className="panel">
+        <p style={{ color: "var(--muted)" }}>Loading dashboard...</p>
+      </div>
+    </main>
+  )
+}
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <main className="screen">
+      <div className="panel" style={{ borderColor: "var(--highlight-2)" }}>
+        <p className="eyebrow" style={{ color: "var(--highlight-2)" }}>
+          Error
+        </p>
+        <p className="mt-2" style={{ color: "var(--muted)" }}>
+          {message}
+        </p>
+      </div>
+    </main>
+  )
+}
+
+type ActiveSprintSummaryProps = {
+  epics: Array<{
+    id: string
+    name: string
+    status: string
+    storyCount: number
+    byStoryStatus: Record<string, number>
+  }>
+  inProgressStoriesCount: number
+  runningSessionsCount: number
+}
+
+function ActiveSprintSummary({
+  epics,
+  inProgressStoriesCount,
+  runningSessionsCount,
+}: ActiveSprintSummaryProps) {
+  const activeEpic = epics.find((e) => e.status === "in-progress")
+  const hasActivity =
+    activeEpic !== undefined || inProgressStoriesCount > 0 || runningSessionsCount > 0
+
+  if (!hasActivity) {
+    return (
+      <p className="mt-3" style={{ color: "var(--muted)", lineHeight: 1.7 }}>
+        All caught up — no active epics, stories, or sessions running right now.
+      </p>
+    )
+  }
+
+  return (
+    <div className="mt-4 flex flex-col gap-3">
+      {activeEpic ? (
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="eyebrow" style={{ marginBottom: 0 }}>
+            Active Epic
+          </span>
+          <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+            {activeEpic.name}
+          </span>
+          <span className="text-xs" style={{ color: "var(--muted)" }}>
+            {activeEpic.byStoryStatus?.done ?? 0}/{activeEpic.storyCount} stories done
+          </span>
+          <span className={`step-badge step-in-progress`}>in-progress</span>
+        </div>
+      ) : null}
+      <div className="flex gap-6 flex-wrap">
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block rounded-full"
+            style={{ width: 8, height: 8, background: "var(--status-progress)" }}
+          />
+          <span className="text-sm" style={{ color: "var(--muted)" }}>
+            Stories in progress:{" "}
+            <strong style={{ color: "var(--text)" }}>{inProgressStoriesCount}</strong>
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block rounded-full"
+            style={{ width: 8, height: 8, background: "var(--highlight)" }}
+          />
+          <span className="text-sm" style={{ color: "var(--muted)" }}>
+            Running sessions:{" "}
+            <strong style={{ color: "var(--text)" }}>{runningSessionsCount}</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function HomePage() {
   const {
     data: overview,
@@ -45,11 +141,11 @@ function HomePage() {
   })
 
   if (overviewLoading || analyticsLoading) {
-    return <main className="screen loading">Loading...</main>
+    return <LoadingState />
   }
 
   if (overviewError || analyticsError) {
-    return <main className="screen loading">{String(overviewError || analyticsError)}</main>
+    return <ErrorState message={String(overviewError || analyticsError)} />
   }
 
   const epics = overview?.sprintOverview.epics ?? []
@@ -69,22 +165,14 @@ function HomePage() {
 
   return (
     <main className="screen">
-      {/* Executive Summary */}
+      {/* Active Workflow State */}
       <section className="panel reveal">
         <p className="eyebrow">bmad-ui</p>
-        <p className="mt-3" style={{ color: "var(--muted)", lineHeight: 1.7 }}>
-          bmad-ui Phase 1 establishes the foundation for publishing bmad-ui as a professional,
-          open-source project that complements the bmad orchestration platform. The goal is to
-          implement GitHub repository management, Vercel deployment, CI/CD pipelines, dotenvx-based
-          secret management, and a portable installation CLI so any bmad project can add bmad-ui
-          with a single command.
-        </p>
-        <p className="mt-3" style={{ color: "var(--muted)", lineHeight: 1.7 }}>
-          The differentiator is the integration of all components into a cohesive, professionally
-          maintained system. bmad-ui's value multiplies when paired with bmad: bmad handles
-          orchestration logic, bmad-ui provides visibility and control. Phase 1 is the prerequisite
-          for Phase 2 (refactoring) and Phase 3 (guided product development features).
-        </p>
+        <ActiveSprintSummary
+          epics={epics}
+          inProgressStoriesCount={storiesByStatus["in-progress"] ?? 0}
+          runningSessionsCount={runningSessions}
+        />
       </section>
 
       {/* Links */}
@@ -231,57 +319,63 @@ function HomePage() {
         <p className="eyebrow">Epic Breakdown</p>
         <h2>Progress by Epic</h2>
         <div className="mt-4 flex flex-col gap-3">
-          {[...epics]
-            .sort((a, b) => a.number - b.number)
-            .map((epic) => {
-              const done = epic.byStoryStatus?.done ?? 0
-              const total = epic.storyCount
-              const pct = total > 0 ? Math.round((done / total) * 100) : 0
+          {epics.length === 0 ? (
+            <div className="py-8 text-center" style={{ color: "var(--muted)" }}>
+              <p>No epics found. Run sprint-planning to initialize.</p>
+            </div>
+          ) : (
+            [...epics]
+              .sort((a, b) => a.number - b.number)
+              .map((epic) => {
+                const done = epic.byStoryStatus?.done ?? 0
+                const total = epic.storyCount
+                const pct = total > 0 ? Math.round((done / total) * 100) : 0
 
-              return (
-                <Link
-                  key={epic.id}
-                  to="/epic/$epicId"
-                  params={{ epicId: epic.id }}
-                  className="flex items-center gap-4 px-4 py-3 rounded-lg"
-                  style={{
-                    background: "rgba(2, 10, 16, 0.66)",
-                    border: "1px solid rgba(151, 177, 205, 0.12)",
-                  }}
-                >
-                  <span
-                    className="text-sm font-mono font-bold shrink-0 w-8 text-center"
-                    style={{ color: "var(--highlight)" }}
-                  >
-                    {epic.number}
-                  </span>
-                  <span className="flex-1 text-sm truncate" style={{ color: "var(--text)" }}>
-                    {epic.name}
-                  </span>
-                  <span className="text-xs shrink-0" style={{ color: "var(--muted)" }}>
-                    {done}/{total} stories
-                  </span>
-                  <div
-                    className="shrink-0 rounded-full overflow-hidden"
+                return (
+                  <Link
+                    key={epic.id}
+                    to="/epic/$epicId"
+                    params={{ epicId: epic.id }}
+                    className="flex items-center gap-4 px-4 py-3 rounded-lg"
                     style={{
-                      width: 80,
-                      height: 6,
-                      background: "rgba(151, 177, 205, 0.15)",
+                      background: "rgba(2, 10, 16, 0.66)",
+                      border: "1px solid rgba(151, 177, 205, 0.12)",
                     }}
                   >
+                    <span
+                      className="text-sm font-mono font-bold shrink-0 w-8 text-center"
+                      style={{ color: "var(--highlight)" }}
+                    >
+                      {epic.number}
+                    </span>
+                    <span className="flex-1 text-sm truncate" style={{ color: "var(--text)" }}>
+                      {epic.name}
+                    </span>
+                    <span className="text-xs shrink-0" style={{ color: "var(--muted)" }}>
+                      {done}/{total} stories
+                    </span>
                     <div
-                      className="h-full rounded-full"
+                      className="shrink-0 rounded-full overflow-hidden"
                       style={{
-                        width: `${pct}%`,
-                        background: pct === 100 ? "var(--status-done)" : "var(--highlight)",
-                        transition: "width 0.3s ease",
+                        width: 80,
+                        height: 6,
+                        background: "rgba(151, 177, 205, 0.15)",
                       }}
-                    />
-                  </div>
-                  <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
-                </Link>
-              )
-            })}
+                    >
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${pct}%`,
+                          background: pct === 100 ? "var(--status-done)" : "var(--highlight)",
+                          transition: "width 0.3s ease",
+                        }}
+                      />
+                    </div>
+                    <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
+                  </Link>
+                )
+              })
+          )}
         </div>
       </section>
     </main>

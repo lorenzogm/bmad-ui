@@ -708,7 +708,13 @@ function EpicDetailPage() {
   }
 
   if (!data) {
-    return <main className="screen loading">Loading epic detail...</main>
+    return (
+      <main className="screen">
+        <div className="panel">
+          <p style={{ color: "var(--muted)" }}>Loading epic detail...</p>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -1082,7 +1088,12 @@ function EpicDetailPage() {
               })}
               {filteredStories.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>No stories found for this epic</td>
+                  <td
+                    colSpan={5}
+                    style={{ textAlign: "center", padding: "2rem 0", color: "var(--muted)" }}
+                  >
+                    No stories found for this epic.
+                  </td>
                 </tr>
               ) : null}
             </tbody>

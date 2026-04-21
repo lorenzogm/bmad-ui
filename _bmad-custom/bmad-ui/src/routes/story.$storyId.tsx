@@ -217,14 +217,29 @@ function StoryDetailPage() {
   }, [storyId])
 
   if (loading) {
-    return <main className="screen loading">Loading story detail...</main>
+    return (
+      <main className="screen">
+        <div className="panel">
+          <p style={{ color: "var(--muted)" }}>Loading story detail...</p>
+        </div>
+      </main>
+    )
   }
 
   if (error || !data) {
     return (
-      <main className="screen loading">
-        <p>{error || "Story not found"}</p>
-        <Link to="/">Back to dashboard</Link>
+      <main className="screen">
+        <div className="panel" style={{ borderColor: "var(--highlight-2)" }}>
+          <p className="eyebrow" style={{ color: "var(--highlight-2)" }}>
+            Error
+          </p>
+          <p className="mt-2" style={{ color: "var(--muted)" }}>
+            {error || "Story not found"}
+          </p>
+          <Link className="ghost mt-4 inline-block" to="/">
+            ← Back to Dashboard
+          </Link>
+        </div>
       </main>
     )
   }

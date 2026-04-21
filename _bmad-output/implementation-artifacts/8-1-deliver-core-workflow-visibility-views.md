@@ -1,6 +1,6 @@
 # Story 8.1: Deliver Core Workflow Visibility Views
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,25 +18,25 @@ so that I can understand project execution without reading raw orchestration log
 
 ## Tasks / Subtasks
 
-- [ ] Improve home page overview section to surface active workflow state (AC: #1)
-  - [ ] Replace static Phase 1 description text with dynamic active sprint context (current epic, in-progress stories count, running sessions)
-  - [ ] Ensure the "Project Summary" section correctly reflects live data with no placeholder copy
-  - [ ] Verify "At a Glance" cards all show sensible zeros when data is absent (no crash)
+- [x] Improve home page overview section to surface active workflow state (AC: #1)
+  - [x] Replace static Phase 1 description text with dynamic active sprint context (current epic, in-progress stories count, running sessions)
+  - [x] Ensure the "Project Summary" section correctly reflects live data with no placeholder copy
+  - [x] Verify "At a Glance" cards all show sensible zeros when data is absent (no crash)
 
-- [ ] Audit and improve loading and error states in core views (AC: #3)
-  - [ ] Replace `<main className="screen loading">Loading...</main>` in `home.tsx` with a styled skeleton or spinner matching the dark theme
-  - [ ] Replace raw error string in `home.tsx` with a styled error panel using CSS variables
-  - [ ] Audit `epic.$epicId.tsx` loading and error states for graceful display
-  - [ ] Audit `sessions.tsx` loading and error states for graceful display
-  - [ ] Audit `story.$storyId.tsx` loading and error states for graceful display
+- [x] Audit and improve loading and error states in core views (AC: #3)
+  - [x] Replace `<main className="screen loading">Loading...</main>` in `home.tsx` with a styled skeleton or spinner matching the dark theme
+  - [x] Replace raw error string in `home.tsx` with a styled error panel using CSS variables
+  - [x] Audit `epic.$epicId.tsx` loading and error states for graceful display
+  - [x] Audit `sessions.tsx` loading and error states for graceful display
+  - [x] Audit `story.$storyId.tsx` loading and error states for graceful display
 
-- [ ] Add empty state handling for zero-data scenarios (AC: #3)
-  - [ ] Home page "Epic Breakdown" section: show a helpful empty message when `epics.length === 0`
-  - [ ] Sessions page: show a helpful empty message when sessions list is empty (no filters active)
-  - [ ] Epic detail: show a graceful message when no stories exist in the epic
+- [x] Add empty state handling for zero-data scenarios (AC: #3)
+  - [x] Home page "Epic Breakdown" section: show a helpful empty message when `epics.length === 0`
+  - [x] Sessions page: show a helpful empty message when sessions list is empty (no filters active)
+  - [x] Epic detail: show a graceful message when no stories exist in the epic
 
-- [ ] Run quality gate and verify no regressions (AC: #1, #2, #3)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` passes with zero errors
+- [x] Run quality gate and verify no regressions (AC: #1, #2, #3)
+  - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with zero errors
 
 ## Dev Notes
 
@@ -174,4 +174,20 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Replaced static Phase 1 description in `home.tsx` with dynamic `ActiveSprintSummary` component that shows active epic, in-progress story count, and running sessions count (or "All caught up" when idle).
+- Added styled `LoadingState` and `ErrorState` helper components in `home.tsx`, `sessions.tsx` replacing bare `<main className="screen loading">` strings.
+- Improved error state in `story.$storyId.tsx` with a styled panel matching dark theme (previously used plain text in loading-class `<main>`).
+- Enhanced epic `$epicId.tsx` bare loading string with a styled panel.
+- Replaced sessions table-row empty state with a contextual `<div>` showing filter-aware message (e.g. `No sessions found with status "running"`).
+- Added empty state for Epic Breakdown section in home page when `epics.length === 0`.
+- Improved epic detail table empty row with centered styled text.
+- All changes validated via `pnpm check` (lint + types + tests + build) — zero errors.
+
 ### File List
+
+- `_bmad-custom/bmad-ui/src/routes/home.tsx` — Added `LoadingState`, `ErrorState`, `ActiveSprintSummary` components; replaced static description with dynamic sprint summary; added epic empty state
+- `_bmad-custom/bmad-ui/src/routes/sessions.tsx` — Added `LoadingState`, `ErrorState` components; replaced bare loading/error returns; improved sessions empty state with filter-aware message
+- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx` — Replaced bare loading string with styled panel; improved empty stories table row styling
+- `_bmad-custom/bmad-ui/src/routes/story.$storyId.tsx` — Replaced bare loading/error states with styled panels matching dark theme
+- `_bmad-output/implementation-artifacts/8-1-deliver-core-workflow-visibility-views.md` — Story file updated
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Story status updated to review
