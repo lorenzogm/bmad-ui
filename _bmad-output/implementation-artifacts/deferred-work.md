@@ -21,3 +21,8 @@ Resolution (2026-04-16): both items were implemented and closed in `.github/work
 
 - No `--access public` flag on `npm publish` (.github/workflows/publish.yml:34) — unscoped package defaults to public, low risk; revisit if package is ever renamed to a scoped name
 - Non-TTY stdin causes silent abort on overwrite guard (bin/install.mjs:19) — behavior is safe (empty input defaults to N = abort), but may confuse automation; revisit if CI install use-cases emerge
+
+## Deferred from: code review of 8-3-validate-self-referential-delivery-loop (2026-04-21)
+
+- Story 8.3 prerequisites are not yet satisfied (`8-1` is `in-progress`, `8-2` is `review` in sprint status), so acceptance validation must remain blocked until dependency stories are done.
+- Required 8.3 deliverable updates in `docs/phase-1-completion.md` are not part of the reviewed changeset, so AC #2/#3 traceability closure is deferred until story implementation work is completed.

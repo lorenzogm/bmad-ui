@@ -94,7 +94,7 @@ development_status:
   epic-8: in-progress
   8-1-deliver-core-workflow-visibility-views: review
   8-2-integrate-backlog-artifacts-with-ui-workflows: done
-  8-3-validate-self-referential-delivery-loop: ready-for-dev
+  8-3-validate-self-referential-delivery-loop: in-progress
   8-4-establish-phase-boundary-and-evolution-guardrails: done
   epic-8-retrospective: optional
 

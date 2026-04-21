@@ -109,6 +109,43 @@ function writeSessions(sessions) {
 	);
 }
 
+function parseIsoTimestamp(value) {
+	if (!value || typeof value !== "string") return null;
+	const parsed = Date.parse(value);
+	return Number.isNaN(parsed) ? null : parsed;
+}
+
+function normalizeMergedSession(session) {
+	const next = { ...session };
+	const startTs = next.start_date ?? next.startedAt ?? null;
+	const endTs = next.end_date ?? next.endedAt ?? null;
+	const parsedStart = parseIsoTimestamp(startTs);
+	const parsedEnd = parseIsoTimestamp(endTs);
+
+	// Guard against impossible timelines introduced by mixed source updates.
+	if (parsedStart !== null && parsedEnd !== null && parsedEnd < parsedStart) {
+		next.end_date = null;
+		next.endedAt = null;
+		if (next.status === "completed") {
+			next.status = "running";
+		}
+	}
+
+	const hasFailureSignal =
+		(typeof next.exitCode === "number" && next.exitCode !== 0) ||
+		Boolean(next.error);
+	if (hasFailureSignal) {
+		next.status = "failed";
+		if (!next.end_date && !next.endedAt) {
+			const fallbackEnd = next.start_date ?? next.startedAt ?? null;
+			next.end_date = fallbackEnd;
+			next.endedAt = fallbackEnd;
+		}
+	}
+
+	return next;
+}
+
 /** Determine if a timestamp (ISO string) means the session is still running. */
 function isActive(isoTs) {
 	if (!isoTs) return false;
@@ -472,7 +509,7 @@ function syncSessions() {
 			}
 		}
 
-		const next = { ...(prev ?? {}), ...parsed };
+		const next = normalizeMergedSession({ ...(prev ?? {}), ...parsed });
 		if (JSON.stringify(existing[id]) !== JSON.stringify(next)) {
 			existing[id] = next;
 			changed++;
@@ -537,6 +574,14 @@ function syncSessions() {
 				const session = parseVSCodeSession(sid, logPath);
 				if (session) upsert(sid, session);
 			}
+		}
+	}
+
+	for (const [id, entry] of Object.entries(existing)) {
+		const normalized = normalizeMergedSession(entry);
+		if (JSON.stringify(entry) !== JSON.stringify(normalized)) {
+			existing[id] = normalized;
+			changed++;
 		}
 	}
 

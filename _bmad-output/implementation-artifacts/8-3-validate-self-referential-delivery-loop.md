@@ -1,6 +1,6 @@
 # Story 8.3: Validate Self-Referential Delivery Loop
 
-Status: ready-for-dev
+Status: in-progress
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -49,6 +49,12 @@ So that Phase 1 proves operational readiness for Phase 2.
   - [ ] Add "Epic 8 Validation" section: loop verified including 8.1–8.4 story delivery
   - [ ] Capture any remaining open gaps and deferred items as Phase 2 baseline inputs
   - [ ] Note whether `deferred-work.md` items from earlier stories were addressed or remain open
+
+### Review Findings
+
+- [x] [Review][Patch] Normalize session sync merges to prevent invalid end-before-start timelines and completed-with-error statuses when sources conflict [`_bmad-custom/bmad-ui/scripts/sync-sessions.mjs`]
+- [x] [Review][Defer] Story 8.3 prerequisites remain unmet (`8-1` is still `in-progress` and `8-2` is still `review`), so full loop validation cannot be accepted yet [`_bmad-output/implementation-artifacts/sprint-status.yaml:95-97`] — deferred, pre-existing
+- [x] [Review][Defer] Required validation documentation updates for this story (including `docs/phase-1-completion.md` traceability/baseline updates) are not present in current changeset — deferred, pre-existing
 
 ## Dev Notes
 
