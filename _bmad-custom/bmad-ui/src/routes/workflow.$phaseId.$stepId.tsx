@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { marked } from "marked"
 import { useMemo } from "react"
+import { StatusBadge } from "../app"
 import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
 import type { WorkflowStepDetailResponse } from "../types"
@@ -222,7 +223,7 @@ function WorkflowStepDetailPage() {
     )
   }
 
-  const statusLabel =
+  const artifactStatus =
     data.artifact.status === "present"
       ? "done"
       : data.artifact.status === "skipped"
@@ -250,13 +251,7 @@ function WorkflowStepDetailPage() {
             alignItems: "center",
           }}
         >
-          <span className={`step-badge step-${statusLabel}`}>
-            {data.artifact.status === "present"
-              ? "completed"
-              : data.artifact.status === "skipped"
-                ? "skipped"
-                : "not started"}
-          </span>
+          <StatusBadge status={artifactStatus} />
           {data.step.isOptional ? (
             <span className="subtitle" style={{ fontSize: "0.8rem" }}>
               optional

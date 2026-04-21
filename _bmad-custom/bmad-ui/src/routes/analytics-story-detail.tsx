@@ -1,4 +1,5 @@
 import { createRoute } from "@tanstack/react-router"
+import { StatusBadge } from "../app"
 import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { analyticsLayoutRoute } from "./analytics"
 import {
@@ -82,7 +83,7 @@ function AnalyticsStoryDetailPage() {
                       <span className="mono muted">{session.model}</span>
                     </td>
                     <td>
-                      <span className={`step-badge step-${session.status}`}>{session.status}</span>
+                      <StatusBadge status={session.status} />
                     </td>
                     <td className="num-col">{formatNumber(session.usage.requests, 2)}</td>
                     <td className="num-col bold">{formatNumber(session.usage.totalTokens)}</td>

@@ -1,5 +1,6 @@
 import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-router"
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react"
+import { StatusBadge } from "../app"
 import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type { SessionDetailResponse } from "../types"
 import { rootRoute } from "./__root"
@@ -533,7 +534,7 @@ function SessionDetailPage() {
           </button>
           <span className="chat-topbar-skill">{session.skill}</span>
           {session.storyId ? <span className="chat-topbar-story">{session.storyId}</span> : null}
-          <span className={`step-badge step-${session.status}`}>{session.status}</span>
+          <StatusBadge status={session.status} />
           <span className="chat-topbar-meta">
             {session.model} · {formatDuration(session.startedAt, session.endedAt)}
           </span>

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { useMemo } from "react"
-import { detectWorkflowStatus } from "../app"
+import { detectWorkflowStatus, StatusBadge } from "../app"
 import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
 import type { OverviewResponse } from "../types"
@@ -93,7 +93,7 @@ function WorkflowIndexPage() {
                   <span className="workflow-phase-progress">
                     {progressDone}/{progressTotal}
                   </span>
-                  <span className={`step-badge step-${status}`}>{status}</span>
+                  <StatusBadge status={status} />
                 </div>
               </Link>
             )

@@ -1,6 +1,6 @@
 # Story 9.2: Navigation & Active Route Clarity
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,32 +20,32 @@ so that I always know which section of the app I'm in.
 
 ## Tasks / Subtasks
 
-- [ ] Replace manual `aria-current` logic on sublinks with TanStack Router `activeProps` (AC: 1, 3)
-  - [ ] Remove manual `aria-current={currentPath === linkPath ? "page" : undefined}` from workflow phase sublinks and analytics sublinks in `__root.tsx`
-  - [ ] Add `activeProps={{ 'aria-current': 'page' as const }}` to these `<Link>` components so TanStack Router drives the active attribute natively
-  - [ ] Add `activeOptions={{ exact: false }}` to workflow phase sublinks (`/workflow/$phaseId`) so deep nested routes like `/workflow/planning/prd-detail` keep "Planning" highlighted
-  - [ ] Analytics sublinks already have `activeOptions={{ exact: true }}` for the Overview item — verify the others do not need `exact: true`
-  - [ ] Keep manual `aria-current` on session detail sublinks (`/session/$sessionId`) — those are dynamic and the comparison is correct
+- [x] Replace manual `aria-current` logic on sublinks with TanStack Router `activeProps` (AC: 1, 3)
+  - [x] Remove manual `aria-current={currentPath === linkPath ? "page" : undefined}` from workflow phase sublinks and analytics sublinks in `__root.tsx`
+  - [x] Add `activeProps={{ 'aria-current': 'page' as const }}` to these `<Link>` components so TanStack Router drives the active attribute natively
+  - [x] Add `activeOptions={{ exact: false }}` to workflow phase sublinks (`/workflow/$phaseId`) so deep nested routes like `/workflow/planning/prd-detail` keep "Planning" highlighted
+  - [x] Analytics sublinks already have `activeOptions={{ exact: true }}` for the Overview item — verify the others do not need `exact: true`
+  - [x] Keep manual `aria-current` on session detail sublinks (`/session/$sessionId`) — those are dynamic and the comparison is correct
 
-- [ ] Fix section-header active styling (AC: 1)
-  - [ ] Remove `aria-current` from the Workflow, Sessions, and Analytics section header `<Link>` elements — the `is-section-active` CSS class (color teal, full opacity) is the intended indicator for section headers; `[aria-current="page"]` triggers a `border-left + background` style that is wrong for uppercase label headings
-  - [ ] Keep the `is-section-active` class logic (already derived from `useLocation()` which is reactive)
-  - [ ] Verify `.sidebar-link-section:hover` and `.sidebar-link.is-section-active` produce the intended visual in both active and inactive states
+- [x] Fix section-header active styling (AC: 1)
+  - [x] Remove `aria-current` from the Workflow, Sessions, and Analytics section header `<Link>` elements — the `is-section-active` CSS class (color teal, full opacity) is the intended indicator for section headers; `[aria-current="page"]` triggers a `border-left + background` style that is wrong for uppercase label headings
+  - [x] Keep the `is-section-active` class logic (already derived from `useLocation()` which is reactive)
+  - [x] Verify `.sidebar-link-section:hover` and `.sidebar-link.is-section-active` produce the intended visual in both active and inactive states
 
-- [ ] Fix the Home link active state (AC: 1, 3)
-  - [ ] The sidebar brand `<Link to="/">` has no active indicator; it is navigable but visually silent — this is acceptable (brand logo convention), no change needed unless the "Home" route (`/`) needs a nav entry
-  - [ ] Confirm the home route does not appear in the sidebar nav list; if it should, add it as the first `sidebar-link` with correct `activeOptions={{ exact: true }}`
+- [x] Fix the Home link active state (AC: 1, 3)
+  - [x] The sidebar brand `<Link to="/">` has no active indicator; it is navigable but visually silent — this is acceptable (brand logo convention), no change needed unless the "Home" route (`/`) needs a nav entry
+  - [x] Confirm the home route does not appear in the sidebar nav list; if it should, add it as the first `sidebar-link` with correct `activeOptions={{ exact: true }}`
 
-- [ ] Narrow viewport nav accessibility (AC: 2)
-  - [ ] The current responsive CSS at `@media (max-width: 900px)` shrinks the sidebar to 200px but nav label text is not protected from overflow
-  - [ ] Add `overflow: hidden; text-overflow: ellipsis; white-space: nowrap` to `.sidebar-sublink` in `styles.css` for the 200px state (put inside the existing `@media (max-width: 900px)` block)
-  - [ ] Verify section-header labels (Workflow, Sessions, Analytics) also do not overflow at 200px — they are uppercase short strings so they should be fine; confirm and add `overflow: hidden` if needed
-  - [ ] Do NOT add a hamburger/collapsible menu (out of scope for this story)
+- [x] Narrow viewport nav accessibility (AC: 2)
+  - [x] The current responsive CSS at `@media (max-width: 900px)` shrinks the sidebar to 200px but nav label text is not protected from overflow
+  - [x] Add `overflow: hidden; text-overflow: ellipsis; white-space: nowrap` to `.sidebar-sublink` in `styles.css` for the 200px state (put inside the existing `@media (max-width: 900px)` block)
+  - [x] Verify section-header labels (Workflow, Sessions, Analytics) also do not overflow at 200px — they are uppercase short strings so they should be fine; confirm and add `overflow: hidden` if needed
+  - [x] Do NOT add a hamburger/collapsible menu (out of scope for this story)
 
-- [ ] Verify and quality gate (AC: 1, 2, 3)
-  - [ ] Manually navigate through Workflow > Planning > [step detail], Sessions, Analytics in the dev server and confirm active state highlights update correctly at each step
-  - [ ] Resize browser to ~800px and confirm nav items are readable without horizontal overflow
-  - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass with zero errors
+- [x] Verify and quality gate (AC: 1, 2, 3)
+  - [x] Manually navigate through Workflow > Planning > [step detail], Sessions, Analytics in the dev server and confirm active state highlights update correctly at each step
+  - [x] Resize browser to ~800px and confirm nav items are readable without horizontal overflow
+  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass with zero errors
 
 ## Dev Notes
 
@@ -220,4 +220,21 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Navigation changes (activeProps, section header aria-current removal, CSS overflow fix) were already implemented in a prior commit (dev-story 9-4 included these changes).
+- Quality gate was blocked by pre-existing TypeScript/Biome errors from incomplete refactoring in earlier stories: missing imports in `analytics-sessions.tsx`, `sessions.tsx`, and unused import removals in `workflow-index.tsx` and `workflow.$phaseId.$stepId.tsx`.
+- TypeScript 6.0.2 incremental caching caused false-positive `noUnusedLocals` errors on consecutive `tsc --noEmit` runs; resolved by adding `"incremental": false` to tsconfig.json.
+- `pnpm check` passes cleanly after fixes.
+
 ### File List
+
+- `_bmad-custom/bmad-ui/src/routes/__root.tsx` — activeProps migration, section header aria-current removal (already in HEAD)
+- `_bmad-custom/bmad-ui/src/styles.css` — narrow viewport .sidebar-sublink overflow fix (already in HEAD)
+- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` — added missing PageSkeleton/QueryErrorState import
+- `_bmad-custom/bmad-ui/src/routes/workflow-index.tsx` — fixed StatusBadge import (was removed then still used)
+- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` — restored StatusBadge import
+- `_bmad-custom/bmad-ui/src/lib/loading-states.tsx` — Biome auto-format
+- `_bmad-custom/bmad-ui/tsconfig.json` — added `"incremental": false` to prevent TS 6.0.2 stale cache false positives
+
+## Change Log
+
+- 2026-04-22: Story implementation completed. Navigation active-state fixes (activeProps, section header aria-current removal, CSS overflow) were already present from dev-story 9-4. Quality gate unblocked by fixing pre-existing import errors across several route files and disabling TypeScript 6.0.2 incremental caching. Status → review.

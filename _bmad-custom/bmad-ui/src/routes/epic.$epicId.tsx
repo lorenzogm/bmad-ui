@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { StatusBadge, storyStepLabel } from "../app"
+import { StatusBadge } from "../app"
 import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type {
   EpicDetailResponse,
@@ -66,31 +66,6 @@ function getBlockingStories(
     const status = storyStatusMap.get(depId)
     return status !== "done"
   })
-}
-
-const STORY_STATUS_LABELS: Record<StoryStatus, string> = {
-  backlog: "To Do",
-  "ready-for-dev": "In Progress",
-  "in-progress": "In Progress",
-  review: "In Progress",
-  done: "Done",
-}
-
-function storyStatusLabel(status: StoryStatus): string {
-  return STORY_STATUS_LABELS[status] ?? status
-}
-
-/** Map story status to a badge class so every "In Progress" label gets the same orange style. */
-const STORY_STATUS_BADGE_CLASS: Record<StoryStatus, string> = {
-  backlog: "not-started",
-  "ready-for-dev": "in-progress",
-  "in-progress": "in-progress",
-  review: "in-progress",
-  done: "done",
-}
-
-function storyStatusBadgeClass(status: StoryStatus): string {
-  return STORY_STATUS_BADGE_CLASS[status] ?? status
 }
 
 const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
@@ -738,7 +713,7 @@ function EpicDetailPage() {
           <Link className="epic-back-link" to="/">
             ← Home
           </Link>
-          <span className={`step-badge step-${computedEpicStatus}`}>{computedEpicStatus}</span>
+          <StatusBadge status={computedEpicStatus} />
         </div>
         <p className="eyebrow">Epic {data.epic.number}</p>
         <h1 className="epic-title">{data.epic.name || data.epic.id}</h1>
@@ -840,24 +815,16 @@ function EpicDetailPage() {
                         </span>
                       </td>
                       <td>
-                        <span className="step-badge step-not-started">
-                          {storyStepLabel("not-started")}
-                        </span>
+                        <StatusBadge status="not-started" />
                       </td>
                       <td>
-                        <span className="step-badge step-not-started">
-                          {storyStepLabel("not-started")}
-                        </span>
+                        <StatusBadge status="not-started" />
                       </td>
                       <td>
-                        <span className="step-badge step-not-started">
-                          {storyStepLabel("not-started")}
-                        </span>
+                        <StatusBadge status="not-started" />
                       </td>
                       <td>
-                        <span className="step-badge step-not-started">
-                          {storyStatusLabel("backlog")}
-                        </span>
+                        <StatusBadge status="backlog" />
                       </td>
                     </tr>
                   )
@@ -958,9 +925,7 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${createState}`}>
-                          {storyStepLabel(createState)}
-                        </span>
+                        <StatusBadge status={createState} />
                         <SessionLink session={latestCreateSession} />
                         {nextSkill === "bmad-create-story" && IS_LOCAL_MODE && (
                           <Link
@@ -990,9 +955,7 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${devState}`}>
-                          {storyStepLabel(devState)}
-                        </span>
+                        <StatusBadge status={devState} />
                         <SessionLink session={latestDevSession} />
                         {nextSkill === "bmad-dev-story" && !isBlocked && IS_LOCAL_MODE && (
                           <Link
@@ -1033,9 +996,7 @@ function EpicDetailPage() {
                     </td>
                     <td>
                       <div className="step-cell">
-                        <span className={`step-badge step-${reviewState}`}>
-                          {storyStepLabel(reviewState)}
-                        </span>
+                        <StatusBadge status={reviewState} />
                         <SessionLink session={latestReviewSession} />
                         {nextSkill === "bmad-code-review" && (
                           <button
@@ -1059,11 +1020,7 @@ function EpicDetailPage() {
                       </div>
                     </td>
                     <td>
-                      <span
-                        className={`step-badge step-${storyStatusBadgeClass(story.status as StoryStatus)}`}
-                      >
-                        {storyStatusLabel(story.status as StoryStatus)}
-                      </span>
+                      <StatusBadge status={story.status} />
                     </td>
                   </tr>
                 )
@@ -1087,9 +1044,7 @@ function EpicDetailPage() {
         <section className="panel reveal delay-2">
           <h2>Run Retrospective</h2>
           <div className="step-cell">
-            <span className={`step-badge step-${retrospectiveState}`}>
-              {storyStepLabel(retrospectiveState)}
-            </span>
+            <StatusBadge status={retrospectiveState} />
             <SessionLink session={latestRetroSession} />
             {retrospectiveState === "not-started" && allStoriesDone ? (
               <button

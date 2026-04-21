@@ -1,6 +1,6 @@
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
-import { storyStepLabel } from "../app"
+import { StatusBadge } from "../app"
 import { apiUrl } from "../lib/mode"
 import type { StoryDetailResponse, StoryPreviewResponse, WorkflowStepState } from "../types"
 import { rootRoute } from "./__root"
@@ -165,7 +165,7 @@ function SectionHeader(props: { title: string; state: WorkflowStepState; stepNum
         </span>
         <h2 style={{ margin: 0, color: "var(--text)" }}>{props.title}</h2>
       </div>
-      <span className={`step-badge step-${props.state}`}>{storyStepLabel(props.state)}</span>
+      <StatusBadge status={props.state} />
     </div>
   )
 }
@@ -261,11 +261,7 @@ function StoryDetailPage() {
         <p className="eyebrow">{storyLabel}</p>
         <h1 className="epic-title">{preview?.planning?.title || data.story.id}</h1>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.5rem" }}>
-          <span
-            className={`step-badge step-${data.story.status === "done" ? "done" : data.story.status === "in-progress" ? "running" : data.story.status === "review" ? "running" : "not-started"}`}
-          >
-            {data.story.status}
-          </span>
+          <StatusBadge status={data.story.status} />
           {data.story.markdownPath ? (
             <span className="subtitle" style={{ fontSize: "0.8rem" }}>
               {data.story.markdownPath}

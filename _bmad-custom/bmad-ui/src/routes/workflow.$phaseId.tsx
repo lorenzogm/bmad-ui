@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-router"
 import { useCallback, useMemo, useState } from "react"
 import type { WorkflowPhase, WorkflowStep } from "../app"
-import { detectWorkflowStatus, storyStepLabel } from "../app"
+import { detectWorkflowStatus, StatusBadge, storyStepLabel } from "../app"
 import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type { OverviewResponse, RuntimeSession } from "../types"
@@ -390,14 +390,10 @@ function WorkflowPhaseDetailPage() {
                       </Link>
                     </td>
                     <td>
-                      <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
+                      <StatusBadge status={epic.status} />
                     </td>
                     <td>
-                      <span
-                        className={`step-badge step-${epic.lifecycleSteps["bmad-retrospective"]}`}
-                      >
-                        {storyStepLabel(epic.lifecycleSteps["bmad-retrospective"])}
-                      </span>
+                      <StatusBadge status={epic.lifecycleSteps["bmad-retrospective"]} />
                     </td>
                     <td>{epic.storyCount}</td>
                   </tr>
