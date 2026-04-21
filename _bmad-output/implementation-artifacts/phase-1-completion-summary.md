@@ -6,7 +6,8 @@ _Document purpose: Establish explicit boundaries between Phase 1 delivered outco
 
 ## Phase 1 Done Criteria
 
-All eight epics are complete. The following checklist defines the Phase 1 delivered baseline.
+Seven epics are complete and Epic 8 is in progress. The following checklist defines the
+Phase 1 delivered baseline and tracks the remaining Epic 8 closure work.
 
 ### Epics 1–8 Delivery Checklist
 
@@ -17,7 +18,7 @@ All eight epics are complete. The following checklist defines the Phase 1 delive
 - ✅ **Epic 5 — Portable Installation CLI**: `npx bmad-method-ui install` scaffolds the BMAD UI workspace into any target project; published to npm as an unscoped public package.
 - ✅ **Epic 6 — Setup, Deploy, and Troubleshooting Documentation**: `docs/` contains getting-started, integration architecture, data models, API contracts, and component inventory guides.
 - ✅ **Epic 7 — Playwright E2E Smoke Tests**: End-to-end smoke tests cover all primary routes; Playwright is integrated as a required CI merge gate in `ci.yml`.
-- ✅ **Epic 8 — Core Product Operation & Phase Readiness Validation**: bmad-ui proven as visual companion; backlog artifacts surfaced in UI; self-referential delivery loop validated; Phase 1 boundary confirmed with Epics 1–8 as baseline.
+- 🚧 **Epic 8 — Core Product Operation & Phase Readiness Validation**: Workflow visibility and backlog artifact integration are delivered; self-referential delivery loop validation and final phase-boundary closeout remain open until Stories 8-3 and 8-4 reach done.
 
 ---
 

@@ -779,7 +779,8 @@ Reconcile the existing frontend package to the selected Vite baseline, then impl
 
 _Added: 2026-04-21 (Story 7-4) — Extended: 2026-04-21 (Story 8-4)_
 
-All eight epics are complete. This section records what was actually shipped in Phase 1 as a stable baseline for future refactoring and feature growth.
+Epics 1-7 are complete and Epic 8 is in progress. This section records what was actually
+shipped in Phase 1 as a stable baseline for future refactoring and feature growth.
 
 ### Delivered Capabilities
 
@@ -792,7 +793,7 @@ All eight epics are complete. This section records what was actually shipped in 
 | Epic 5 | Portable CLI: `npx bmad-method-ui install`; published to npm | ✅ Done |
 | Epic 6 | Setup, deploy, and troubleshooting documentation in `docs/` | ✅ Done |
 | Epic 7 | Playwright E2E smoke tests on all routes as CI merge gate | ✅ Done |
-| Epic 8 | Core product operation: workflow visibility, backlog artifact integration, self-referential delivery loop validation | ✅ Done |
+| Epic 8 | Core product operation: workflow visibility and backlog artifact integration delivered; self-referential delivery loop validation pending | 🚧 In progress |
 
 ### Architectural Choices Confirmed as Shipped
 

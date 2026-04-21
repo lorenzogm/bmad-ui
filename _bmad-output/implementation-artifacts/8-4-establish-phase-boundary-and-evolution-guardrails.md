@@ -1,6 +1,6 @@
 # Story 8.4: Establish Phase Boundary and Evolution Guardrails
 
-Status: review
+Status: done
 
 ## Story
 
@@ -34,6 +34,11 @@ so that the project can evolve without destabilizing foundational workflows.
   - [x] No rewriting; surgical corrections only if something was changed during Epic 8 story work
 
 - [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
+
+### Review Findings
+
+- [x] [Review][Patch] Corrected false "all eight epics are complete" claim in phase summary [_bmad-output/implementation-artifacts/phase-1-completion-summary.md:9]
+- [x] [Review][Patch] Corrected architecture "Epic 8 ✅ Done" status to in-progress [_bmad-output/planning-artifacts/architecture.md:782]
 
 ## Dev Notes
 
@@ -154,16 +159,18 @@ claude-sonnet-4.6
 - Updated architecture.md section header to note Story 8-4 extension; updated "all seven epics" to "all eight epics"
 - Updated architecture.md deferred decisions note to include Epic 5/6/7/8
 - Audited project-context.md: all library versions match package.json exactly (React 19.2.5, TypeScript 6.0.2, Vite 8.0.8, TanStack Router 1.168.22, TanStack Query 5.99.0, ECharts 6.0.0, marked 18.0.0, Tailwind 4.2.2, Vitest 4.1.4, Biome 2.4.12); no stale content found; no corrections required
-- Reviewed deferred-work.md: no new deferrals from Epic 8 stories (8.1–8.3 remain in ready-for-dev; no code changes were introduced that generated deferrals)
+- Reviewed deferred-work.md: no new deferrals from Epic 8 stories requiring append-only updates
 - pnpm check passed: exit code 0 (lint + types + tests + build)
+- Code review follow-up: corrected Phase 1 completion and architecture Epic 8 status claims to align with sprint tracker (Epic 8 in progress)
 
 ### File List
 
 - `_bmad-output/implementation-artifacts/phase-1-completion-summary.md` — Updated: renamed delivery checklist heading, added Epic 8 row, updated footer
 - `_bmad-output/planning-artifacts/architecture.md` — Updated: added Epic 8 row to Phase 1 Delivered table, updated section header and description
-- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Updated: 8-4 status → review
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Updated: 8-4 status → done
 - `_bmad-output/implementation-artifacts/8-4-establish-phase-boundary-and-evolution-guardrails.md` — Updated: tasks marked complete, Dev Agent Record, File List, Change Log, Status
 
 ## Change Log
 
 - **2026-04-21** (Story 8-4): Targeted update pass extending Story 7-4's phase boundary baseline to include Epic 8. Updated phase-1-completion-summary.md delivery checklist heading and added Epic 8 row. Added Epic 8 row to architecture.md Phase 1 Delivered capabilities table. Audited project-context.md — all library versions verified accurate, no corrections needed. Reviewed deferred-work.md — no new Epic 8 deferrals to append.
+- **2026-04-21** (Code review resolution): Fixed contradictory completion claims by marking Epic 8 as in progress in phase-1-completion-summary.md and architecture.md; checked off all review patch findings.
