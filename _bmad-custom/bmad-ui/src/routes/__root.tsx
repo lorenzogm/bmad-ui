@@ -266,7 +266,6 @@ function RootLayout() {
         </div>
         <nav aria-label="Main navigation" className="sidebar-nav">
           <Link
-            aria-current={currentPath.startsWith("/workflow") ? "page" : undefined}
             className={`sidebar-link sidebar-link-section ${isWorkflowSection ? "is-section-active" : ""}`}
             to="/workflow"
           >
@@ -274,11 +273,11 @@ function RootLayout() {
           </Link>
 
           <div className="sidebar-submenu">
-            {WORKFLOW_SUBMENU.map((link) => {
-              const linkPath = link.phaseId ? `/workflow/${link.phaseId}` : "/workflow"
-              return link.phaseId ? (
+            {WORKFLOW_SUBMENU.map((link) =>
+              link.phaseId ? (
                 <Link
-                  aria-current={currentPath === linkPath ? "page" : undefined}
+                  activeOptions={{ exact: false }}
+                  activeProps={{ "aria-current": "page" as const }}
                   className="sidebar-sublink"
                   key={link.label}
                   params={{ phaseId: link.phaseId }}
@@ -289,7 +288,7 @@ function RootLayout() {
               ) : (
                 <Link
                   activeOptions={{ exact: true }}
-                  aria-current={currentPath === linkPath ? "page" : undefined}
+                  activeProps={{ "aria-current": "page" as const }}
                   className="sidebar-sublink"
                   key={link.label}
                   to="/workflow"
@@ -297,20 +296,19 @@ function RootLayout() {
                   {link.label}
                 </Link>
               )
-            })}
+            )}
           </div>
 
           <Link
-            aria-current={currentPath === "/sessions" ? "page" : undefined}
             className={`sidebar-link sidebar-link-section ${isSessionsSection ? "is-section-active" : ""}`}
             to="/sessions"
           >
             Sessions
           </Link>
 
-          {recentSessions.length > 0 ? (
-            <div className="sidebar-submenu">
-              {recentSessions.map((session) => {
+          <div className="sidebar-submenu">
+            {recentSessions.length > 0 ? (
+              recentSessions.map((session) => {
                 const linkPath = `/session/${session.sessionId}`
                 const isRunning = session.status === RUNNING_STATUS
                 return (
@@ -330,12 +328,13 @@ function RootLayout() {
                     {session.skill}
                   </Link>
                 )
-              })}
-            </div>
-          ) : null}
+              })
+            ) : (
+              <span className="sidebar-sessions-empty">No active sessions</span>
+            )}
+          </div>
 
           <Link
-            aria-current={currentPath === "/analytics" ? "page" : undefined}
             className={`sidebar-link sidebar-link-section ${isAnalyticsSection ? "is-section-active" : ""}`}
             to="/analytics"
           >
@@ -346,7 +345,7 @@ function RootLayout() {
             {ANALYTICS_SUBMENU.map((link) => (
               <Link
                 activeOptions={link.to === "/analytics" ? { exact: true } : undefined}
-                aria-current={currentPath === link.to ? "page" : undefined}
+                activeProps={{ "aria-current": "page" as const }}
                 className="sidebar-sublink"
                 key={link.to}
                 to={link.to}

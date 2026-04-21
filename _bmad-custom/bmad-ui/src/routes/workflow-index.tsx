@@ -2,12 +2,13 @@ import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { detectWorkflowStatus } from "../app"
+import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
 import type { OverviewResponse } from "../types"
 import { workflowLayoutRoute } from "./workflow"
 
 function WorkflowIndexPage() {
-  const { data, isLoading, error } = useQuery<OverviewResponse>({
+  const { data, isLoading, error, refetch } = useQuery<OverviewResponse>({
     queryKey: ["overview"],
     queryFn: async () => {
       const response = await fetch(apiUrl("/api/overview"))
@@ -31,11 +32,11 @@ function WorkflowIndexPage() {
   )
 
   if (isLoading) {
-    return <main className="screen loading">Loading...</main>
+    return <PageSkeleton />
   }
 
   if (error) {
-    return <main className="screen loading">{String(error)}</main>
+    return <QueryErrorState message={String(error)} onRetry={refetch} />
   }
 
   return (

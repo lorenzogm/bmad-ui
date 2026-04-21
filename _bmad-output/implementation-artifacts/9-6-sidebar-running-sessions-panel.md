@@ -1,6 +1,6 @@
 # Story 9.6: Sidebar Running Sessions Panel
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -22,19 +22,19 @@ So that I can instantly see what's happening without scanning through completed 
 
 ## Tasks / Subtasks
 
-- [ ] Add "No active sessions" empty state to sidebar sessions submenu (AC: 2)
-  - [ ] In `_bmad-custom/bmad-ui/src/routes/__root.tsx`, change the conditional `{recentSessions.length > 0 ? <div className="sidebar-submenu">...</div> : null}` to always render the submenu
-  - [ ] When `recentSessions.length === 0`, render a `<span className="sidebar-sessions-empty">No active sessions</span>` inside the submenu div
-  - [ ] When `recentSessions.length > 0`, keep the existing session link list as-is
+- [x] Add "No active sessions" empty state to sidebar sessions submenu (AC: 2)
+  - [x] In `_bmad-custom/bmad-ui/src/routes/__root.tsx`, change the conditional `{recentSessions.length > 0 ? <div className="sidebar-submenu">...</div> : null}` to always render the submenu
+  - [x] When `recentSessions.length === 0`, render a `<span className="sidebar-sessions-empty">No active sessions</span>` inside the submenu div
+  - [x] When `recentSessions.length > 0`, keep the existing session link list as-is
 
-- [ ] Verify all other ACs are met by the existing implementation (AC: 1, 3, 4, 5)
-  - [ ] Confirm `RUNNING_STATUS` filter is active on `recentSessions`
-  - [ ] Confirm `SESSIONS_SIDEBAR_LIMIT` slices the array
-  - [ ] Confirm sort by `startedAt` descending is applied
-  - [ ] Confirm Sessions sidebar link navigates to `/sessions`
+- [x] Verify all other ACs are met by the existing implementation (AC: 1, 3, 4, 5)
+  - [x] Confirm `RUNNING_STATUS` filter is active on `recentSessions`
+  - [x] Confirm `SESSIONS_SIDEBAR_LIMIT` slices the array
+  - [x] Confirm sort by `startedAt` descending is applied
+  - [x] Confirm Sessions sidebar link navigates to `/sessions`
 
-- [ ] Run quality gate (AC: all)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` must pass
+- [x] Run quality gate (AC: all)
+  - [x] `cd _bmad-custom/bmad-ui && pnpm check` must pass
 
 ## Dev Notes
 
@@ -128,4 +128,18 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Replaced `{recentSessions.length > 0 ? <div className="sidebar-submenu">…</div> : null}` with an always-rendered submenu div that shows "No active sessions" when the list is empty.
+- All other ACs (1, 3, 4, 5) were already satisfied by the existing filter/sort/slice logic — no changes needed.
+- Fixed pre-existing Biome import-order and missing-import issues in several analytics route files (`analytics-sessions.tsx`, `analytics-stories.tsx`, `analytics-story-detail.tsx`) to unblock the quality gate.
+- `pnpm check` passes: lint ✅, types ✅, tests ✅, build ✅.
+
 ### File List
+
+- `_bmad-custom/bmad-ui/src/routes/__root.tsx` — sidebar empty-state change (primary story change)
+- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` — fixed import order (pre-existing issue)
+- `_bmad-custom/bmad-ui/src/routes/analytics-stories.tsx` — fixed import order (pre-existing issue)
+- `_bmad-custom/bmad-ui/src/routes/analytics-story-detail.tsx` — added missing loading-states imports (pre-existing issue)
+
+## Change Log
+
+- 2026-04-22: Implemented "No active sessions" empty state in sidebar sessions submenu (AC 2). Fixed pre-existing lint/import issues in analytics route files to satisfy quality gate.

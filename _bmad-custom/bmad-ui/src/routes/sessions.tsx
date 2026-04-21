@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
+import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
 import type { AnalyticsResponse, SessionAnalytics } from "../types"
 import { rootRoute } from "./__root"
@@ -43,31 +44,6 @@ function formatDuration(startedAt: string | null, endedAt: string | null): strin
   return `${hours}h ${remainingMinutes}m`
 }
 
-function LoadingState() {
-  return (
-    <main className="screen">
-      <div className="panel">
-        <p style={{ color: "var(--muted)" }}>Loading sessions...</p>
-      </div>
-    </main>
-  )
-}
-
-function ErrorState({ message }: { message: string }) {
-  return (
-    <main className="screen">
-      <div className="panel" style={{ borderColor: "var(--highlight-2)" }}>
-        <p className="eyebrow" style={{ color: "var(--highlight-2)" }}>
-          Error
-        </p>
-        <p className="mt-2" style={{ color: "var(--muted)" }}>
-          {message}
-        </p>
-      </div>
-    </main>
-  )
-}
-
 function SessionsPage() {
   const [statusFilter, setStatusFilter] = useState<string>(() => {
     try {
@@ -81,6 +57,7 @@ function SessionsPage() {
     data: sessions = [],
     isLoading,
     error,
+    refetch,
   } = useQuery<SessionAnalytics[]>({
     queryKey: ["sessions"],
     queryFn: async () => {
@@ -107,8 +84,18 @@ function SessionsPage() {
     }
   }
 
-  if (isLoading) return <LoadingState />
-  if (error) return <ErrorState message={String(error)} />
+  if (isLoading) return <PageSkeleton />
+  if (error) return <QueryErrorState message={String(error)} onRetry={refetch} />
+
+  if (sessions.length === 0) {
+    return (
+      <EmptyState
+        icon="📭"
+        title="No sessions yet"
+        description="Run the sync daemon to start tracking your agent sessions: npm run sync-sessions"
+      />
+    )
+  }
 
   return (
     <main className="screen">
@@ -186,8 +173,8 @@ function SessionsPage() {
                     <td>
                       <span className="mono muted">{session.model}</span>
                     </td>
-                    <td>
-                      <span className="mono muted">{session.storyId ?? "—"}</span>
+                    <td className="max-w-[12rem]">
+                      <span className="mono muted block truncate">{session.storyId ?? "—"}</span>
                     </td>
                     <td>
                       <span className={`step-badge step-${session.status}`}>{session.status}</span>

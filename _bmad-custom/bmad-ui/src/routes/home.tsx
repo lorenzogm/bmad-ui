@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { type JSX, useState } from "react"
+import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type { AnalyticsResponse, OverviewResponse } from "../types"
 import { rootRoute } from "./__root"
@@ -12,31 +13,6 @@ type NoteItem = { id: string; text: string; color: string; createdAt: string }
 const NOTE_COLORS = ["teal", "amber", "purple", "pink", "blue"] as const
 
 const COST_PER_REQUEST_USD = 0.04
-
-function LoadingState() {
-  return (
-    <main className="screen">
-      <div className="panel">
-        <p style={{ color: "var(--muted)" }}>Loading dashboard...</p>
-      </div>
-    </main>
-  )
-}
-
-function ErrorState({ message }: { message: string }) {
-  return (
-    <main className="screen">
-      <div className="panel" style={{ borderColor: "var(--highlight-2)" }}>
-        <p className="eyebrow" style={{ color: "var(--highlight-2)" }}>
-          Error
-        </p>
-        <p className="mt-2" style={{ color: "var(--muted)" }}>
-          {message}
-        </p>
-      </div>
-    </main>
-  )
-}
 
 type ActiveSprintSummaryProps = {
   epics: Array<{
@@ -121,6 +97,7 @@ function HomePage() {
     data: overview,
     isLoading: overviewLoading,
     error: overviewError,
+    refetch: refetchOverview,
   } = useQuery<OverviewResponse>({
     queryKey: ["overview"],
     queryFn: async () => {
@@ -136,6 +113,7 @@ function HomePage() {
     data: analytics,
     isLoading: analyticsLoading,
     error: analyticsError,
+    refetch: refetchAnalytics,
   } = useQuery<AnalyticsResponse>({
     queryKey: ["analytics"],
     queryFn: async () => {
@@ -148,11 +126,19 @@ function HomePage() {
   })
 
   if (overviewLoading || analyticsLoading) {
-    return <LoadingState />
+    return <PageSkeleton />
   }
 
   if (overviewError || analyticsError) {
-    return <ErrorState message={String(overviewError || analyticsError)} />
+    return (
+      <QueryErrorState
+        message={String(overviewError || analyticsError)}
+        onRetry={() => {
+          void refetchOverview()
+          void refetchAnalytics()
+        }}
+      />
+    )
   }
 
   const epics = overview?.sprintOverview.epics ?? []
@@ -169,6 +155,16 @@ function HomePage() {
   const totalTokens = costing?.totals.totalTokens ?? 0
   const estimatedCost =
     costing?.estimatedCostUsd.fromPremiumRequests ?? totalRequests * COST_PER_REQUEST_USD
+
+  if (epics.length === 0) {
+    return (
+      <EmptyState
+        icon="🚀"
+        title="No active sprint"
+        description="Run bmad sprint-planning to set up your sprint and start tracking epics and stories."
+      />
+    )
+  }
 
   return (
     <main className="screen">

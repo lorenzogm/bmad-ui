@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { marked } from "marked"
 import { useMemo } from "react"
+import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
 import type { WorkflowStepDetailResponse } from "../types"
 import { workflowLayoutRoute } from "./workflow"
@@ -183,7 +184,7 @@ function WorkflowStepDetailPage() {
   const slug = `${phaseId}/${stepId}`
   const isSupported = SUPPORTED_DETAIL_SLUGS.has(slug)
 
-  const { data, isLoading, error } = useQuery<WorkflowStepDetailResponse>({
+  const { data, isLoading, error, refetch } = useQuery<WorkflowStepDetailResponse>({
     queryKey: ["workflow-step-detail", phaseId, stepId],
     queryFn: async () => {
       const response = await fetch(apiUrl(`/api/workflow-step/${phaseId}/${stepId}`))
@@ -212,20 +213,12 @@ function WorkflowStepDetailPage() {
   }
 
   if (isLoading) {
-    return <main className="screen loading">Loading step details...</main>
+    return <PageSkeleton />
   }
 
   if (error || !data) {
     return (
-      <main className="screen">
-        <section className="panel reveal">
-          <Link className="epic-back-link" to="/workflow/$phaseId" params={{ phaseId }}>
-            ← {phaseId.charAt(0).toUpperCase() + phaseId.slice(1)}
-          </Link>
-          <h1>Error loading step</h1>
-          <p className="subtitle">{error ? String(error) : "No data returned"}</p>
-        </section>
-      </main>
+      <QueryErrorState message={error ? String(error) : "No data returned"} onRetry={refetch} />
     )
   }
 

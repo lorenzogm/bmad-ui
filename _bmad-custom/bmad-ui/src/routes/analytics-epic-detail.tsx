@@ -1,4 +1,5 @@
 import { createRoute, Link } from "@tanstack/react-router"
+import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { analyticsLayoutRoute } from "./analytics"
 import {
   AnalyticsCostBanner,
@@ -14,15 +15,11 @@ function AnalyticsEpicDetailPage() {
   const { data, loading, error } = useAnalyticsData()
 
   if (loading) {
-    return <main className="screen loading">Loading analytics...</main>
+    return <PageSkeleton />
   }
 
   if (error || !data) {
-    return (
-      <main className="screen loading">
-        <p>{error || "Failed to load analytics"}</p>
-      </main>
-    )
+    return <QueryErrorState message={error || "Failed to load analytics"} />
   }
 
   const epic = data.epics.find((e) => e.epicId === epicId)
