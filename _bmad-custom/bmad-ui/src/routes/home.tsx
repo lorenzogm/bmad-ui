@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { type JSX, useState } from "react"
+import { StatusBadge } from "../app"
 import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
 import type { AnalyticsResponse, OverviewResponse } from "../types"
@@ -63,7 +64,7 @@ function ActiveSprintSummary({
             {activeEpicDoneStories}/{activeEpicTotalStories} stories done (
             {activeEpicCompletionPercent}%)
           </span>
-          <span className={`step-badge step-in-progress`}>in-progress</span>
+          <StatusBadge status="in-progress" />
         </div>
       ) : null}
       <div className="flex gap-6 flex-wrap">
@@ -374,7 +375,7 @@ function HomePage() {
                         }}
                       />
                     </div>
-                    <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
+                    <StatusBadge status={epic.status} />
                   </Link>
                 )
               })
