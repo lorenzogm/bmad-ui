@@ -1,6 +1,6 @@
 # Story 8.2: Integrate Backlog Artifacts with UI Workflows
 
-Status: review
+Status: done
 
 ## Story
 
@@ -30,6 +30,10 @@ So that planning outputs and execution views stay connected.
 - [x] Task 3 — Validate end-to-end and run quality gate (AC: 3, 4, 5)
   - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass with zero errors
   - [x] Confirm no TypeScript errors in the updated memos/callbacks
+
+### Review Findings
+
+- [x] [Review][Patch] No additional patch findings — clean review of story 8.2 implementation diff
 
 ## Dev Notes
 
@@ -183,3 +187,4 @@ claude-sonnet-4.6
 ## Change Log
 
 - 2026-04-21: Implemented story 8.2 — fixed planned-only story sort order in `filteredStories` and fixed "Plan all stories" dedup logic in `storiesNeedingPlan` + `handlePlanAllStories` (AC 1, 2, 3, 4, 5 satisfied; pnpm check passes).
+- 2026-04-21: Code review completed for story 8.2; no new actionable findings, status updated to done.
