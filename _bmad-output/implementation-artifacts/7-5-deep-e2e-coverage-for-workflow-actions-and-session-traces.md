@@ -1,6 +1,6 @@
 # Story 7.5: Deep E2E Coverage for Workflow Actions and Session Traces
 
-Status: review
+Status: done
 
 ## Story
 
@@ -55,6 +55,10 @@ so that broken `Plan all stories`, `Develop all stories`, story-sync, and sessio
   - [x] All new tests pass headless with Chromium
   - [x] Existing `smoke.spec.ts` tests still pass (no regressions)
   - [x] CI YAML already includes E2E from Story 7.4 — no CI config changes needed
+
+### Review Findings
+
+- [x] [Review][Patch] Synchronize non-409 Develop-all error test with workflow POST response [`_bmad-custom/bmad-ui/tests/workflow-actions.spec.ts:201`]
 
 ## Dev Notes
 

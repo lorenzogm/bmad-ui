@@ -198,9 +198,12 @@ test.describe("Workflow actions — Develop all stories", () => {
 		})
 
 		await page.goto(EPIC_PATH)
-		const developButton = page.locator('button:has-text("Develop all stories")'	)
+		const developButton = page.locator('button:has-text("Develop all stories")')
 		await expect(developButton).toBeVisible()
-		await developButton.click()
+		await Promise.all([
+			developButton.click(),
+			page.waitForResponse((response) => response.url().includes("/api/workflow/run-skill")),
+		])
 
 		// Error banner must appear for non-409 dev-story failures
 		await expect(page.locator(".error-banner")).toBeVisible({ timeout: 5000 })
