@@ -1,6 +1,6 @@
 # Story 9.1: Improve Empty States and Loading Feedback
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -27,42 +27,42 @@ So that I never see a blank screen or raw spinner without context.
 
 ## Tasks / Subtasks
 
-- [ ] Create shared loading-state components (AC: #1, #2, #3)
-  - [ ] Create `src/lib/loading-states.tsx` with `PageSkeleton`, `EmptyState`, and `QueryErrorState` components
-  - [ ] `PageSkeleton` renders 2–3 shimmering panel-shaped blocks using Tailwind `animate-pulse`
-  - [ ] `EmptyState` accepts `icon`, `title`, `description`, and optional `action` (label + onClick) props
-  - [ ] `QueryErrorState` accepts `message` and `onRetry` (the TanStack Query `refetch` function) props
+- [x] Create shared loading-state components (AC: #1, #2, #3)
+  - [x] Create `src/lib/loading-states.tsx` with `PageSkeleton`, `EmptyState`, and `QueryErrorState` components
+  - [x] `PageSkeleton` renders 2–3 shimmering panel-shaped blocks using Tailwind `animate-pulse`
+  - [x] `EmptyState` accepts `icon`, `title`, `description`, and optional `action` (label + onClick) props
+  - [x] `QueryErrorState` accepts `message` and `onRetry` (the TanStack Query `refetch` function) props
 
-- [ ] Replace raw text loading states in TanStack Query routes (AC: #1)
-  - [ ] `src/routes/workflow-index.tsx` — replace `<main className="screen loading">Loading...</main>` with `<PageSkeleton />`
-  - [ ] `src/routes/workflow.$phaseId.tsx` — replace `<main className="screen loading">Loading...</main>` with `<PageSkeleton />`
-  - [ ] `src/routes/workflow.$phaseId.$stepId.tsx` — replace `<main className="screen loading">Loading step details...</main>` with `<PageSkeleton />`
-  - [ ] `src/routes/sessions.tsx` — replace local `LoadingState` text component with `<PageSkeleton />`
-  - [ ] `src/routes/home.tsx` — replace local `LoadingState` text component with `<PageSkeleton />`
+- [x] Replace raw text loading states in TanStack Query routes (AC: #1)
+  - [x] `src/routes/workflow-index.tsx` — replace `<main className="screen loading">Loading...</main>` with `<PageSkeleton />`
+  - [x] `src/routes/workflow.$phaseId.tsx` — replace `<main className="screen loading">Loading...</main>` with `<PageSkeleton />`
+  - [x] `src/routes/workflow.$phaseId.$stepId.tsx` — replace `<main className="screen loading">Loading step details...</main>` with `<PageSkeleton />`
+  - [x] `src/routes/sessions.tsx` — replace local `LoadingState` text component with `<PageSkeleton />`
+  - [x] `src/routes/home.tsx` — replace local `LoadingState` text component with `<PageSkeleton />`
 
-- [ ] Upgrade error states to include retry (AC: #3)
-  - [ ] `src/routes/workflow-index.tsx` — replace raw error string with `<QueryErrorState message={...} onRetry={refetch} />`
-  - [ ] `src/routes/workflow.$phaseId.tsx` — replace raw error string with `<QueryErrorState />`
-  - [ ] `src/routes/workflow.$phaseId.$stepId.tsx` — replace raw error string with `<QueryErrorState />`
-  - [ ] `src/routes/sessions.tsx` — update `ErrorState` to accept and wire `refetch` as `onRetry`
-  - [ ] `src/routes/home.tsx` — update `ErrorState` to accept and wire `refetch` as `onRetry`
+- [x] Upgrade error states to include retry (AC: #3)
+  - [x] `src/routes/workflow-index.tsx` — replace raw error string with `<QueryErrorState message={...} onRetry={refetch} />`
+  - [x] `src/routes/workflow.$phaseId.tsx` — replace raw error string with `<QueryErrorState />`
+  - [x] `src/routes/workflow.$phaseId.$stepId.tsx` — replace raw error string with `<QueryErrorState />`
+  - [x] `src/routes/sessions.tsx` — update `ErrorState` to accept and wire `refetch` as `onRetry`
+  - [x] `src/routes/home.tsx` — update `ErrorState` to accept and wire `refetch` as `onRetry`
 
-- [ ] Add empty states to sessions and home (AC: #2)
-  - [ ] `src/routes/sessions.tsx` — when filtered list is empty, show `<EmptyState>` with "No sessions found" and hint to adjust filter or run sync daemon
-  - [ ] `src/routes/sessions.tsx` — when full list is empty (no data at all), show `<EmptyState>` with "No sessions yet" and hint to run `sync-sessions`
-  - [ ] `src/routes/home.tsx` — when `epics` array is empty, show `<EmptyState>` in the sprint section with "No active sprint" and hint to run `bmad sprint-planning`
+- [x] Add empty states to sessions and home (AC: #2)
+  - [x] `src/routes/sessions.tsx` — when filtered list is empty, show `<EmptyState>` with "No sessions found" and hint to adjust filter or run sync daemon
+  - [x] `src/routes/sessions.tsx` — when full list is empty (no data at all), show `<EmptyState>` with "No sessions yet" and hint to run `sync-sessions`
+  - [x] `src/routes/home.tsx` — when `epics` array is empty, show `<EmptyState>` in the sprint section with "No active sprint" and hint to run `bmad sprint-planning`
 
-- [ ] Update analytics routes that use simple text loading (AC: #1, #3)
-  - [ ] `src/routes/analytics-dashboard.tsx` — replace `<main className="screen loading">Loading analytics...</main>` with `<PageSkeleton />`
-  - [ ] `src/routes/analytics-sessions.tsx` — same
-  - [ ] `src/routes/analytics-epic-detail.tsx` — same
-  - [ ] `src/routes/analytics-model-detail.tsx` — same
-  - [ ] `src/routes/analytics-story-detail.tsx` — same
-  - [ ] `src/routes/analytics-stories.tsx` — same
-  - [ ] For analytics routes: replace generic error strings with `<QueryErrorState>` where a `refetch` is accessible from the data hook
+- [x] Update analytics routes that use simple text loading (AC: #1, #3)
+  - [x] `src/routes/analytics-dashboard.tsx` — replace `<main className="screen loading">Loading analytics...</main>` with `<PageSkeleton />`
+  - [x] `src/routes/analytics-sessions.tsx` — same
+  - [x] `src/routes/analytics-epic-detail.tsx` — same
+  - [x] `src/routes/analytics-model-detail.tsx` — same
+  - [x] `src/routes/analytics-story-detail.tsx` — same
+  - [x] `src/routes/analytics-stories.tsx` — same
+  - [x] For analytics routes: replace generic error strings with `<QueryErrorState>` where a `refetch` is accessible from the data hook
 
-- [ ] Verify quality gate (AC: all)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` passes with exit code 0
+- [x] Verify quality gate (AC: all)
+  - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with exit code 0
 
 ## Dev Notes
 
@@ -227,4 +227,25 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Created `src/lib/loading-states.tsx` with `PageSkeleton`, `EmptyState`, and `QueryErrorState` components
+- Replaced all text-based loading states across 11 route files with `<PageSkeleton />`
+- Added retry button to all error states via `QueryErrorState` with `onRetry` wired to `refetch`
+- Added `EmptyState` for sessions (empty list + filtered empty), and home page (no epics)
+- For analytics routes using `useAnalyticsData()`, `refetch` is not available — error states use `QueryErrorState` without retry per story spec
+- `pnpm check` passes with exit code 0
+
 ### File List
+
+- `_bmad-custom/bmad-ui/src/lib/loading-states.tsx` (created)
+- `_bmad-custom/bmad-ui/src/routes/workflow-index.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/sessions.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/home.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/analytics-dashboard.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/analytics-epic-detail.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/analytics-model-detail.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/analytics-story-detail.tsx` (modified)
+- `_bmad-custom/bmad-ui/src/routes/analytics-stories.tsx` (modified)
+- `_bmad-output/implementation-artifacts/9-1-improve-empty-states-and-loading-feedback.md` (updated)
