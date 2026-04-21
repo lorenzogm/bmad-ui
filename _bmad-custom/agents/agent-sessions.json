@@ -12117,7 +12117,7 @@
       "epicId": "epic-7",
       "skill": "bmad-code-review",
       "model": "gpt-5.3-codex",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-21T21:27:02.741Z",
       "endedAt": null,
       "usage": {
@@ -12141,7 +12141,7 @@
       "epicId": null,
       "skill": "general",
       "model": "gpt-5.3-codex",
-      "status": "running",
+      "status": "completed",
       "startedAt": "2026-04-21T21:27:04.383Z",
       "endedAt": "2026-04-21T21:27:10.949Z",
       "usage": {
@@ -12167,7 +12167,7 @@
       "agent": "bmad-code-review",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 18,
+      "agent_turns": 23,
       "git_commits": 0,
       "git_pushes": 0,
       "aborted": false,
@@ -12175,10 +12175,10 @@
       "subagent_count": 1,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 7.5,
+      "duration_minutes": 8,
       "outcome": "delivered",
       "start_date": "2026-04-21T21:27:04.383Z",
-      "end_date": null
+      "end_date": "2026-04-21T21:27:04.383Z"
     },
     "293dee7d-c4cb-4e0a-9cfe-511c546bd397": {
       "sessionId": "293dee7d-c4cb-4e0a-9cfe-511c546bd397",
@@ -12186,7 +12186,7 @@
       "epicId": null,
       "skill": "general",
       "model": "claude-sonnet-4.6",
-      "status": "running",
+      "status": "failed",
       "startedAt": "2026-04-21T21:33:37.554Z",
       "endedAt": "2026-04-21T21:33:43.368Z",
       "usage": {
@@ -12212,7 +12212,7 @@
       "agent": "bmad-retrospective",
       "turns": 2,
       "human_turns": 1,
-      "agent_turns": 13,
+      "agent_turns": 16,
       "git_commits": 0,
       "git_pushes": 0,
       "aborted": false,
@@ -12220,7 +12220,7 @@
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 0.9,
+      "duration_minutes": 1.4,
       "outcome": "delivered",
       "start_date": "2026-04-21T21:33:37.554Z",
       "end_date": null
