@@ -772,3 +772,47 @@ No blocking contradictions were found. The remaining open points are implementat
 
 **First Implementation Priority:**
 Reconcile the existing frontend package to the selected Vite baseline, then implement the adapter/API boundary and TanStack Query-based server-state flow without breaking the current route and contract structure.
+
+---
+
+## Phase 1 Delivered
+
+_Added: 2026-04-21 (Story 7-4)_
+
+All seven epics are complete. This section records what was actually shipped in Phase 1 as a stable baseline for future refactoring and feature growth.
+
+### Delivered Capabilities
+
+| Epic | Capability | Status |
+|---|---|---|
+| Epic 1 | Open-source repo governance: CODEOWNERS, PR/issue templates, branch protection, MIT license | ✅ Done |
+| Epic 2 | Terraform-managed GitHub + Vercel infrastructure; Terraform Cloud state | ✅ Done |
+| Epic 3 | dotenvx-based secrets workflow; encrypted `.env.*` files; no plaintext secrets | ✅ Done |
+| Epic 4 | CI/CD GitHub Actions workflows: `ci.yml` and `deploy.yml`; merge gate on CI | ✅ Done |
+| Epic 5 | Portable CLI: `npx bmad-method-ui install`; published to npm | ✅ Done |
+| Epic 6 | Setup, deploy, and troubleshooting documentation in `docs/` | ✅ Done |
+| Epic 7 | Playwright E2E smoke tests on all routes as CI merge gate | ✅ Done |
+
+### Architectural Choices Confirmed as Shipped
+
+- **Three-boundary architecture**: frontend (React/Vite/TanStack) / adapter-API (Vite dev middleware + static JSON) / orchestrator runtime — confirmed correct
+- **File-backed data, no database**: orchestrator-generated JSON and log artifacts are the source of truth — confirmed
+- **No auth layer in Phase 1**: security boundary is deployment access, protected branches, and secrets hygiene — confirmed
+- **Dual-mode architecture** (`IS_LOCAL_MODE`): dev mode uses Vite middleware; production serves pre-built static JSON — confirmed
+- **TanStack Router with manual route tree**: all routes registered in `src/routes/route-tree.ts` — confirmed
+- **TanStack Query v5** for all server state: no `useEffect` for data fetching — confirmed
+- **Biome** as sole linter/formatter: no ESLint, no Prettier — confirmed
+- **Tailwind CSS v4 via Vite plugin**: no PostCSS, no `tailwind.config.js` — confirmed
+
+### Deferred Decisions — Status at Phase 1 Close
+
+All deferred decisions listed at [Deferred Decisions (Post-MVP)](#data-architecture) remain open and unimplemented:
+
+- End-user authentication and authorization — **not started**
+- Database adoption for runtime/session persistence — **not started**
+- Multi-user tenancy — **not started**
+- GraphQL or alternate API protocol adoption — **not started**
+- Offline-first synchronization — **not started**
+- Distributed background job architecture — **not started**
+
+Additional deferrals surfaced during Epic 5/6/7 work are tracked in `_bmad-output/implementation-artifacts/deferred-work.md`.

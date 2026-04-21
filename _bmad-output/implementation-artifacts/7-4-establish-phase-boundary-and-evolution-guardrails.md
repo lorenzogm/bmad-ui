@@ -1,6 +1,6 @@
 # Story 7.4: Establish Phase Boundary and Evolution Guardrails
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -18,28 +18,28 @@ so that the project can evolve without destabilizing foundational workflows.
 
 ## Tasks / Subtasks
 
-- [ ] Create Phase 1 completion summary document (AC: #1)
-  - [ ] Document Phase 1 done criteria checklist (all epics 1–7 completed)
-  - [ ] List all deferred Phase 2 items from PRD, architecture, and deferred-work.md
-  - [ ] List all deferred Phase 3 items from PRD
-  - [ ] Include a "why deferred" rationale for each major deferral
+- [x] Create Phase 1 completion summary document (AC: #1)
+  - [x] Document Phase 1 done criteria checklist (all epics 1–7 completed)
+  - [x] List all deferred Phase 2 items from PRD, architecture, and deferred-work.md
+  - [x] List all deferred Phase 3 items from PRD
+  - [x] Include a "why deferred" rationale for each major deferral
 
-- [ ] Add enhancement triage classification guide to the Phase 1 completion document (AC: #2)
-  - [ ] Define "Foundational Hardening" category with examples
-  - [ ] Define "New Capability Expansion" category with examples
-  - [ ] Add a simple decision tree or checklist for classifying proposed changes
+- [x] Add enhancement triage classification guide to the Phase 1 completion document (AC: #2)
+  - [x] Define "Foundational Hardening" category with examples
+  - [x] Define "New Capability Expansion" category with examples
+  - [x] Add a simple decision tree or checklist for classifying proposed changes
 
-- [ ] Audit and update `_bmad-output/project-context.md` for baseline accuracy (AC: #3)
-  - [ ] Verify all library versions match `_bmad-custom/bmad-ui/package.json`
-  - [ ] Confirm all rule sections reflect actual enforced patterns (no contradictions)
-  - [ ] Remove or mark any rules that are aspirational vs. actively enforced
+- [x] Audit and update `_bmad-output/project-context.md` for baseline accuracy (AC: #3)
+  - [x] Verify all library versions match `_bmad-custom/bmad-ui/package.json`
+  - [x] Confirm all rule sections reflect actual enforced patterns (no contradictions)
+  - [x] Remove or mark any rules that are aspirational vs. actively enforced
 
-- [ ] Audit `_bmad-output/planning-artifacts/architecture.md` for baseline accuracy (AC: #3)
-  - [ ] Confirm deferred decisions list is complete and up to date
-  - [ ] Ensure phase boundary statements are accurate relative to what was shipped
-  - [ ] Add a "Phase 1 Delivered" summary section if missing
+- [x] Audit `_bmad-output/planning-artifacts/architecture.md` for baseline accuracy (AC: #3)
+  - [x] Confirm deferred decisions list is complete and up to date
+  - [x] Ensure phase boundary statements are accurate relative to what was shipped
+  - [x] Add a "Phase 1 Delivered" summary section if missing
 
-- [ ] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
+- [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
 
 ## Dev Notes
 
@@ -182,4 +182,19 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Created `_bmad-output/implementation-artifacts/phase-1-completion-summary.md` with Phase 1 done criteria (Epics 1–7), all deferred Phase 2/3 items with rationale, and a full enhancement triage classification guide (decision tree + checklist).
+- Audited `_bmad-output/project-context.md`: all library versions match package.json exactly. Corrected aspirational rules: shadcn/ui + Base UI are not installed — marked as `[Phase 2 planned]`. Corrected `src/ui/` directory structure (doesn't exist in Phase 1). Updated co-location test path examples. Corrected global `types.ts` anti-pattern (legacy file exists). Updated anti-pattern wording for custom CSS classes.
+- Audited `_bmad-output/planning-artifacts/architecture.md`: deferred decisions list confirmed complete. Added "Phase 1 Delivered" section at end of document recording all seven epics and architectural choices as shipped.
+- `pnpm run check` passed (lint + types + tests + build, exit code 0).
+
 ### File List
+
+- `_bmad-output/implementation-artifacts/phase-1-completion-summary.md` — Created
+- `_bmad-output/project-context.md` — Modified (aspirational rules marked, structure corrected)
+- `_bmad-output/planning-artifacts/architecture.md` — Modified (Phase 1 Delivered section added)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Modified (status: review)
+- `_bmad-output/implementation-artifacts/7-4-establish-phase-boundary-and-evolution-guardrails.md` — Modified (tasks checked, status: review)
+
+### Change Log
+
+- 2026-04-21: Story 7-4 implementation — Phase 1 completion summary created; project-context.md corrected for aspirational vs. enforced rules; architecture.md updated with Phase 1 Delivered section; pnpm check passed.

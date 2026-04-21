@@ -81,17 +81,15 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ### Core Principle
 
-- Use **shadcn/ui** (with **Base UI** as the headless primitive layer) for all UI components
-- **No custom CSS classes** — shared visual patterns live in React components, not CSS classes
 - Use **Tailwind utility classes** directly on JSX elements for all styling
-- Existing custom CSS classes in `styles.css` are legacy — do not add new ones
+- Existing custom CSS classes in `styles.css` are legacy — do not add new ones; shared visual patterns should live in React components going forward
+- **[Phase 2 planned]** shadcn/ui (with Base UI as the headless primitive layer) — neither package is installed in Phase 1; do not import or use them yet
 
 ### Component Architecture
 
-- Install shadcn components via CLI and customize with Tailwind + CSS variables
-- Base UI provides accessible, unstyled headless primitives (dialogs, menus, popovers, etc.)
-- All reusable UI components go in `src/ui/components/` following the atomic hierarchy
-- Page-specific compositions stay in page files; shared building blocks go in `ui/components/`
+- **Current (Phase 1):** All components are colocated in route files under `src/routes/` or in `src/app.tsx`; no `src/ui/` hierarchy exists yet
+- **[Phase 2 planned]** shadcn components in `src/ui/components/` — this directory does not exist in Phase 1
+- **[Phase 2 planned]** Base UI headless primitives (dialogs, menus, popovers) — not installed in Phase 1
 
 ### Theme & Design System
 
@@ -115,7 +113,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - Test runner: **Vitest** 4.1.4 — do not use Jest APIs
 - No test files exist yet; `vitest run --passWithNoTests` is the CI command
-- Test files should be co-located with source: `src/ui/pages/home.test.tsx`, `src/utils/format-date.test.ts`
+- Test files should be co-located with source (e.g., `src/routes/home.test.tsx`, `src/lib/mode.test.ts`); once `src/ui/` hierarchy is adopted, path examples will be `src/ui/pages/home.test.tsx`
 - Use Vitest's built-in `describe`, `it`, `expect` — import from `"vitest"` explicitly
 - For React component tests, use `@testing-library/react` (not Enzyme)
 - Do not add snapshot tests — prefer explicit assertion-based tests
@@ -141,14 +139,15 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ### Code Organization
 
-- **Component hierarchy** (shadcn + Base UI):
+- **Current structure (Phase 1):** Components are colocated in `src/routes/` route files and `src/app.tsx`; no `src/ui/` hierarchy exists
+- **[Phase 2 planned] Component hierarchy** (shadcn + Base UI):
   - `src/ui/components/elements/` — basic atoms (Button, Badge, Input)
   - `src/ui/components/patterns/` — combinations of elements (DataTable, StatCard)
   - `src/ui/components/blocks/` — page sections (HeroPanel, SessionsTable)
-- **Pages**: `src/ui/pages/` — top-level page components
-- **Routes**: `src/routes/` — route definitions that reference pages
-- **Utils**: `src/utils/` — one function per file, one export per file (e.g., `format-date.ts`, `parse-story-ticket.ts`)
-- **Types**: colocate types with their consumers — no global `types.ts` file
+- **[Phase 2 planned] Pages**: `src/ui/pages/` — top-level page components
+- **Routes**: `src/routes/` — route definitions (current home for page logic too)
+- **[Phase 2 planned] Utils**: `src/utils/` — one function per file, one export per file
+- **Types**: colocate types with their consumers; `src/types.ts` exists as legacy — do not add new types to it
 - **Lib**: `src/lib/` for cross-cutting concerns (e.g., `mode.ts`)
 - Named constants for every magic number and string — declare at top of file
 - No barrel `index.ts` files — import directly from the source file
@@ -162,9 +161,9 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Never use global `isNaN`, `parseInt`, `parseFloat`, `Infinity`** — Biome will fail
 - **Never add `tailwind.config.js` or `postcss.config.js`** — Tailwind v4 via Vite plugin needs neither
 - **Never add ESLint or Prettier** — Biome is the single linter/formatter
-- **Never add custom CSS classes** — extract shared visuals into components
+- **Avoid new custom CSS classes** — prefer Tailwind utility classes; existing classes in `styles.css` are legacy and can be used but not extended
 - **Never create barrel `index.ts` files** — Biome enforces `noBarrelFile`
-- **Never put types in a global file** — colocate with consumers
+- **Avoid adding types to a global file** — colocate with consumers; `src/types.ts` exists as legacy
 - **Never export multiple functions from a util file** — one function, one file
 - **Never use inline magic numbers** — every constant must have a named `const`
 - **Never use inline `style={{}}` with hardcoded colors** — use CSS variables via Tailwind
@@ -194,4 +193,4 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Review quarterly for outdated rules
 - Remove rules that become obvious over time
 
-Last Updated: 2026-04-19
+Last Updated: 2026-04-21 (Story 7-4: aspirational Phase 2 rules marked, current structure documented)
