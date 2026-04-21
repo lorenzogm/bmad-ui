@@ -72,8 +72,8 @@ All 11 Phase 1 epics (1–8 core + 9–11 planned) are tracked in sprint-status.
 
 | Status | Count |
 |---|---|
-| Done | 8 |
-| In-Progress | 1 (8-3, this story) |
+| Done | 6 |
+| In-Progress | 3 (epics 7, 8, 9) |
 | Backlog | 2 |
 
 ### Story Summary (48 total)
@@ -156,7 +156,7 @@ The following items from `_bmad-output/implementation-artifacts/deferred-work.md
 
 Phase 2 should begin with the following context:
 
-### Foundation Established in Phase 1 (all epics 1–8 complete)
+### Foundation Established in Phase 1 (epics 1–6 complete; epics 7–9 in-progress at Phase 1 close)
 - Repository governance, CI/CD, Vercel deployment, dotenvx secrets — all operational
 - `npx bmad-method-ui install` CLI — fully functional
 - Core UI views (home, epics, stories, sessions, analytics, workflow) — rendering correctly

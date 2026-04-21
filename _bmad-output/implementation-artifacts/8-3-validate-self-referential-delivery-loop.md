@@ -1,6 +1,6 @@
 # Story 8.3: Validate Self-Referential Delivery Loop
 
-Status: in-progress
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -55,8 +55,8 @@ So that Phase 1 proves operational readiness for Phase 2.
 - [x] [Review][Patch] Normalize session sync merges to prevent invalid end-before-start timelines and completed-with-error statuses when sources conflict [`_bmad-custom/bmad-ui/scripts/sync-sessions.mjs`]
 - [x] [Review][Defer] Story 8.3 prerequisites remain unmet (`8-1` is still `in-progress` and `8-2` is still `review`), so full loop validation cannot be accepted yet [`_bmad-output/implementation-artifacts/sprint-status.yaml:95-97`] — deferred, pre-existing
 - [x] [Review][Defer] Required validation documentation updates for this story (including `docs/phase-1-completion.md` traceability/baseline updates) are not present in current changeset — deferred, pre-existing
-- [ ] [Review][Patch] Correct Epic summary metrics in `docs/phase-1-completion.md` to match `sprint-status.yaml` (epic statuses are currently reported as `Done 8 / In-Progress 1 / Backlog 2`, but source data is `Done 6 / In-Progress 3 / Backlog 2`) [`docs/phase-1-completion.md:75-77`]
-- [ ] [Review][Patch] Correct story status breakdown and completion claim in `docs/phase-1-completion.md` (`In-Progress 1`, `Review 1`, and "all epics 1–8 complete" conflict with current sprint state where `8-3` and `9-7` are `review`, and epics 7–9 are still `in-progress`) [`docs/phase-1-completion.md:84-85`, `docs/phase-1-completion.md:159`]
+- [x] [Review][Patch] Correct Epic summary metrics in `docs/phase-1-completion.md` to match `sprint-status.yaml` (epic statuses are currently reported as `Done 8 / In-Progress 1 / Backlog 2`, but source data is `Done 6 / In-Progress 3 / Backlog 2`) [`docs/phase-1-completion.md:75-77`]
+- [x] [Review][Patch] Correct story status breakdown and completion claim in `docs/phase-1-completion.md` (`In-Progress 1`, `Review 1`, and "all epics 1–8 complete" conflict with current sprint state where `8-3` and `9-7` are `review`, and epics 7–9 are still `in-progress`) [`docs/phase-1-completion.md:84-85`, `docs/phase-1-completion.md:159`]
 
 ## Dev Notes
 
