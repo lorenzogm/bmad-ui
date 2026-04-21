@@ -785,6 +785,7 @@ Maintainer and contributors can run Playwright E2E tests that verify all existin
 - Story 7.2 -> FR46, FR47, FR52
 - Story 7.3 -> FR51, FR47
 - Story 7.4 -> FR49, FR47
+- Story 7.5 -> FR47, FR50, FR51, FR52
 
 ### Story 7.1: Set Up Playwright Infrastructure and First Smoke Tests
 
@@ -906,6 +907,40 @@ So that regressions are caught before they reach the protected branch.
 **Given** the `check` script in package.json,
 **When** it is updated for Story 7.4,
 **Then** `pnpm run check` includes E2E tests in the pipeline: `check:lint && check:types && check:tests && check:e2e && build`
+
+### Story 7.5: Deep E2E Coverage for Workflow Actions and Session Traces
+
+As a maintainer,
+I want deterministic E2E coverage for current workflow actions, artifact sync, and session traces,
+So that broken `Plan all stories`, `Develop all stories`, story-sync, and session-log behaviors are caught before they ship.
+
+**Acceptance Criteria:**
+
+**Given** the current Playwright suite is mostly smoke coverage,
+**When** Story 7.5 is implemented,
+**Then** the E2E suite adds deterministic interaction scenarios for existing Phase 1 features beyond page-load checks
+**And** those scenarios can run locally and in CI without depending on live Copilot responses
+
+**Given** an epic contains a mix of planned-only, ready, in-progress, and done stories,
+**When** the suite exercises the epic detail page and its action paths (`Plan all stories`, `Develop all stories`, and the per-story prepare/start flow),
+**Then** only eligible stories are targeted
+**And** state transitions become visible in the UI
+**And** the tests fail if already-created stories are re-planned, bulk orchestration silently stalls, or action failures are hidden behind no-op behavior
+
+**Given** `epics.md`, `sprint-status.yaml`, and runtime session data can change independently,
+**When** the suite loads the home, epic detail, story detail, and workflow-connected views against real and intentionally mismatched artifact states,
+**Then** planned stories, story counts, story statuses, and story-to-session links remain consistent
+**And** visible warnings or empty states appear instead of silent inconsistency
+
+**Given** session detail depends on synthesized log data,
+**When** the suite opens sessions with populated logs, missing logs, and actively running output,
+**Then** the page shows the correct conversation, waiting, summary, or empty-state view
+**And** the tests fail if session log content is blank, stale, or inconsistent with the session status
+
+**Given** known flaky behaviors exist in the current baseline,
+**When** Story 7.5 is completed,
+**Then** at least the `Plan all stories` / `Develop all stories` reliability gaps and inconsistent session-log visibility are reproduced by failing tests first
+**And** those regressions remain covered by the final passing suite
 
 ---
 
