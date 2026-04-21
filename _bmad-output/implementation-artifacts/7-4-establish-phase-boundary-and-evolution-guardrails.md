@@ -1,6 +1,6 @@
 # Story 7.4: Establish Phase Boundary and Evolution Guardrails
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -40,6 +40,11 @@ so that the project can evolve without destabilizing foundational workflows.
   - [x] Add a "Phase 1 Delivered" summary section if missing
 
 - [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
+
+### Review Findings
+
+- [ ] [Review][Patch] Phase 1 completion claim contradicts sprint tracker state [_bmad-output/implementation-artifacts/phase-1-completion-summary.md:9]
+- [ ] [Review][Patch] Phase 2 deferred list is incomplete (missing non-TTY stdin deferral) [_bmad-output/implementation-artifacts/phase-1-completion-summary.md:48]
 
 ## Dev Notes
 
