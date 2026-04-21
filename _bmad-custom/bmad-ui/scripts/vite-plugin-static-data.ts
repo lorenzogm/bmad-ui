@@ -88,6 +88,7 @@ function staticDataPlugin(): Plugin {
 					},
 					stories,
 					plannedStories,
+					parseWarning: null,
 				});
 			}
 

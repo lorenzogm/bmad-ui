@@ -1213,16 +1213,18 @@ async function loadSprintOverview(
 
 		// Compute plannedStoryCount and storiesToCreate from epics.md
 		if (epicsContentForPlanning) {
-			const plannedPerEpic = new Map<number, number>();
+			const plannedPerEpic = new Map<number, Set<number>>();
 			for (const line of epicsContentForPlanning.split("\n")) {
 				const match = line.trim().match(EPICS_STORY_HEADING_REGEX);
 				if (!match) continue;
 				const epicNum = Number(match[1]);
-				if (!Number.isFinite(epicNum)) continue;
-				plannedPerEpic.set(epicNum, (plannedPerEpic.get(epicNum) ?? 0) + 1);
+				const storyNum = Number(match[2]);
+				if (!Number.isFinite(epicNum) || !Number.isFinite(storyNum)) continue;
+				if (!plannedPerEpic.has(epicNum)) plannedPerEpic.set(epicNum, new Set());
+				plannedPerEpic.get(epicNum)?.add(storyNum);
 			}
 			for (const epic of overview.epics) {
-				const plannedCount = plannedPerEpic.get(epic.number) ?? epic.storyCount;
+				const plannedCount = plannedPerEpic.get(epic.number)?.size ?? epic.storyCount;
 				epic.plannedStoryCount = plannedCount;
 				const createdCount = overview.stories
 					.filter((s) => Number(s.id.split("-")[0]) === epic.number)
@@ -2342,12 +2344,15 @@ function getPlannedStoriesFromEpics(
 	epicNumber: number,
 	sprintStories: Array<{ id: string }>,
 ): string[] {
+	const seen = new Set<string>()
 	const results: string[] = [];
 	for (const line of epicsContent.split("\n")) {
 		const match = line.trim().match(EPICS_STORY_HEADING_REGEX);
 		if (!match) continue;
 		if (Number(match[1]) !== epicNumber) continue;
 		const prefix = `${match[1]}-${match[2]}-`;
+		if (seen.has(prefix)) continue;
+		seen.add(prefix);
 		const found = sprintStories.find((s) => s.id.startsWith(prefix));
 		results.push(found ? found.id : prefix);
 	}
@@ -4514,6 +4519,7 @@ function attachApi(server: ViteDevServer): void {
 
 				let epicMeta = { name: "", description: "" };
 				let plannedStories: string[] = [];
+				let parseWarning: string | null = null;
 				if (existsSync(epicsFile)) {
 					try {
 						const epicsContent = await readFile(epicsFile, "utf8");
@@ -4523,8 +4529,8 @@ function attachApi(server: ViteDevServer): void {
 							epicNumber,
 							overview.stories,
 						);
-					} catch {
-						// ignore parse errors
+					} catch (parseErr) {
+						parseWarning = `Could not read epics.md: ${String(parseErr)}`;
 					}
 				}
 
@@ -4544,6 +4550,7 @@ function attachApi(server: ViteDevServer): void {
 						},
 						stories,
 						plannedStories,
+						parseWarning,
 					}),
 				);
 				return;

@@ -8,6 +8,7 @@ import type {
   OverviewResponse,
   RuntimeSession,
   StoryStatus,
+  StoryWorkflowStepSkill,
   WorkflowStepState,
 } from "../types"
 import { rootRoute } from "./__root"
@@ -18,6 +19,12 @@ const PERCENT_MULTIPLIER = 100
 const ORCHESTRATING_STORAGE_PREFIX = "bmad-orchestrating:"
 const ORCHESTRATING_INITIATED_SUFFIX = ":initiated"
 const EPIC_REFETCH_INTERVAL_MS = 5_000
+
+const PLANNED_ONLY_STEPS: Record<StoryWorkflowStepSkill, WorkflowStepState> = {
+  "bmad-create-story": "not-started",
+  "bmad-dev-story": "not-started",
+  "bmad-code-review": "not-started",
+}
 
 type SkillName = "bmad-create-story" | "bmad-dev-story" | "bmad-code-review"
 type WorkflowSkill = SkillName | "bmad-retrospective"
@@ -315,8 +322,16 @@ function EpicDetailPage() {
   }, [stories])
 
   const filteredStories = useMemo(() => {
-    return stories
-  }, [stories])
+    const existingIds = new Set(stories.map((s) => s.id))
+    const plannedOnlyEntries = (data?.plannedStories ?? [])
+      .filter((pid) => !existingIds.has(pid))
+      .map((pid) => ({
+        id: pid,
+        status: "backlog" as StoryStatus,
+        steps: PLANNED_ONLY_STEPS,
+      }))
+    return [...stories, ...plannedOnlyEntries]
+  }, [data?.plannedStories, stories])
 
   const epicNumber = epicId.match(EPIC_NUMBER_REGEX)?.[1] ?? null
 
@@ -672,7 +687,7 @@ function EpicDetailPage() {
         ? "in-progress"
         : (data?.epic.status ?? "backlog")
 
-  if (epicError) {
+  if (epicError && !data) {
     return (
       <main className="screen">
         <div className="panel" style={{ borderColor: "var(--highlight-2)" }}>
@@ -694,6 +709,34 @@ function EpicDetailPage() {
 
   return (
     <main className="screen">
+      {epicError && data ? (
+        <div
+          className="panel"
+          style={{
+            borderColor: "var(--highlight-2)",
+            marginBottom: "1rem",
+            padding: "0.75rem 1rem",
+          }}
+        >
+          <p style={{ color: "var(--highlight-2)", margin: 0, fontSize: "0.875rem" }}>
+            ⚠ Refresh failed — showing last known data. {String(epicError)}
+          </p>
+        </div>
+      ) : null}
+      {data.parseWarning ? (
+        <div
+          className="panel"
+          style={{
+            borderColor: "var(--highlight-2)",
+            marginBottom: "1rem",
+            padding: "0.75rem 1rem",
+          }}
+        >
+          <p style={{ color: "var(--highlight-2)", margin: 0, fontSize: "0.875rem" }}>
+            ⚠ {data.parseWarning}
+          </p>
+        </div>
+      ) : null}
       <section className="panel reveal epic-header">
         <div className="epic-header-top">
           <Link className="epic-back-link" to="/">
@@ -796,7 +839,41 @@ function EpicDetailPage() {
             </thead>
             <tbody>
               {filteredStories.map((story) => {
+                const isPlannedOnly = story.id.endsWith("-")
                 const runtimeSessions = effectiveOverviewData?.runtimeState?.sessions ?? []
+
+                if (isPlannedOnly) {
+                  return (
+                    <tr key={story.id} style={{ opacity: 0.55 }}>
+                      <td>
+                        <span style={{ color: "var(--muted)" }}>
+                          {storyDisplayLabel(story.id).trim()}{" "}
+                          <span style={{ fontSize: "0.8em" }}>(planned)</span>
+                        </span>
+                      </td>
+                      <td>
+                        <span className="step-badge step-not-started">
+                          {storyStepLabel("not-started")}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="step-badge step-not-started">
+                          {storyStepLabel("not-started")}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="step-badge step-not-started">
+                          {storyStepLabel("not-started")}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="step-badge step-not-started">
+                          {storyStatusLabel("backlog")}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                }
 
                 // bmad-create-story state with running session check
                 const rawCreateState = story.steps["bmad-create-story"] ?? "not-started"

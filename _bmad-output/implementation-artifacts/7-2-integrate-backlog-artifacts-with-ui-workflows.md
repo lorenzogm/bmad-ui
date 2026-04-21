@@ -1,6 +1,6 @@
 # Story 7.2: Integrate Backlog Artifacts with UI Workflows
 
-Status: in-progress
+Status: review
 
 ## Story
 
@@ -44,10 +44,10 @@ So that planning outputs and execution views stay connected.
 
 ### Review Findings
 
-- [ ] [Review][Patch] Planned-only stories are not rendered in the epic story table [src/routes/epic.$epicId.tsx:290]
-- [ ] [Review][Patch] Transient epic refetch failures replace valid stale data with a blocking error panel [src/routes/epic.$epicId.tsx:675]
-- [ ] [Review][Patch] Duplicate story headings in epics.md inflate plannedStoryCount/storiesToCreate [scripts/agent-server.ts:1216]
-- [ ] [Review][Patch] Malformed epics.md parsing is silently swallowed without actionable UI feedback [scripts/agent-server.ts:4248]
+- [x] [Review][Patch] Planned-only stories are not rendered in the epic story table [src/routes/epic.$epicId.tsx:290]
+- [x] [Review][Patch] Transient epic refetch failures replace valid stale data with a blocking error panel [src/routes/epic.$epicId.tsx:675]
+- [x] [Review][Patch] Duplicate story headings in epics.md inflate plannedStoryCount/storiesToCreate [scripts/agent-server.ts:1216]
+- [x] [Review][Patch] Malformed epics.md parsing is silently swallowed without actionable UI feedback [scripts/agent-server.ts:4248]
 
 ## Dev Notes
 
@@ -184,14 +184,17 @@ claude-sonnet-4.6
 - EventSource usage preserved as `useEffect` (allowed per spec)
 - Added proper error state when epic fetch fails: panel with amber border, eyebrow text, back link
 - All 5 tasks and subtasks complete; `pnpm check` passes (lint + types + build)
+- **Review fixes:** Planned-only stories (prefixes from epics.md not yet in sprint-status) now rendered in table as dimmed rows with "(planned)" label; transient refetch failures no longer replace valid stale data with blocking error panel (now shows inline warning); duplicate story headings in epics.md deduplicated via Set in `getPlannedStoriesFromEpics` and `plannedPerEpic` logic; parse errors from epics.md now surfaced as `parseWarning` field in API response and shown as amber warning banner in UI
 
 ### File List
 
 - `_bmad-custom/bmad-ui/scripts/agent-server.ts`
 - `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
 - `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
+- `_bmad-custom/bmad-ui/src/types.ts`
 - `_bmad-output/implementation-artifacts/7-2-integrate-backlog-artifacts-with-ui-workflows.md`
 
 ## Change Log
 
 - 2026-04-20: Implemented story 7.2 — populated `plannedStories`, `plannedStoryCount`, `storiesToCreate` in server/static responses; migrated epic detail route to TanStack Query; added error state for failed epic fetches
+- 2026-04-21: Addressed 4 review findings — rendered planned-only story rows in table; fixed transient refetch failure to show inline banner instead of blocking error; deduplicated story headings in epic count logic; surfaced epics.md parse errors as `parseWarning` in API and UI
