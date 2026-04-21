@@ -22,6 +22,42 @@ const DEFAULT_SESSION_STATUS_FILTERS = [
 const SPRINT_WARNING_FALLBACK_MESSAGE =
   "epics.md and sprint-status.yaml are inconsistent. Re-run Sprint Planning."
 
+const STATUS_BADGE_CLASS: Record<string, string> = {
+  done: "done",
+  completed: "done",
+  skipped: "done",
+  "in-progress": "in-progress",
+  running: "running",
+  "ready-for-dev": "in-progress",
+  review: "review",
+  backlog: "not-started",
+  "not-started": "not-started",
+  pending: "not-started",
+  planned: "planned",
+  failed: "failed",
+  cancelled: "cancelled",
+  stale: "stale",
+  warning: "warning",
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  done: "Done",
+  completed: "Done",
+  skipped: "Skipped",
+  "in-progress": "In Progress",
+  running: "Running",
+  "ready-for-dev": "Ready",
+  review: "In Review",
+  backlog: "To Do",
+  "not-started": "To Do",
+  pending: "Pending",
+  planned: "Planned",
+  failed: "Failed",
+  cancelled: "Cancelled",
+  stale: "Stale",
+  warning: "Warning",
+}
+
 type OverviewEpic = OverviewResponse["sprintOverview"]["epics"][number]
 type OverviewEpicConsistency = OverviewResponse["epicConsistency"]
 type SessionActionKind = "start" | "abort"
@@ -35,6 +71,27 @@ export function storyStepLabel(state: string): string {
   if (state === "running") return "in-progress"
   if (state === "not-started") return "to do"
   return state
+}
+
+function titleCase(s: string): string {
+  return s
+    .split(/[-_\s]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ")
+}
+
+export function statusBadgeClass(status: string): string {
+  return STATUS_BADGE_CLASS[status] ?? status
+}
+
+export function statusLabel(status: string): string {
+  return STATUS_LABEL[status] ?? titleCase(status)
+}
+
+export function StatusBadge(props: { status: string }) {
+  const cls = STATUS_BADGE_CLASS[props.status] ?? props.status
+  const label = STATUS_LABEL[props.status] ?? titleCase(props.status)
+  return <span className={`step-badge step-${cls}`}>{label}</span>
 }
 
 function formatDate(value: string | null): string {
@@ -160,7 +217,7 @@ function SessionsTable(props: { sessions: NormalizedSession[] }) {
                   <td>{session.model}</td>
                   <td>{toShortStoryId(session.storyId)}</td>
                   <td>
-                    <span className={`step-badge step-${displayStatus}`}>{displayStatus}</span>
+                    <StatusBadge status={displayStatus} />
                   </td>
                   <td>{formatDate(session.startedAt)}</td>
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
@@ -183,7 +240,7 @@ function SessionsTable(props: { sessions: NormalizedSession[] }) {
                 <td>{session.model}</td>
                 <td>{toShortStoryId(session.storyId ?? null)}</td>
                 <td>
-                  <span className={`step-badge step-${displayStatus}`}>{displayStatus}</span>
+                  <StatusBadge status={displayStatus} />
                 </td>
                 <td>{formatDate(session.start_date)}</td>
                 <td>{formatDuration(session.start_date, session.end_date)}</td>
@@ -804,13 +861,13 @@ function BMADWorkflowSection(props: {
                       epicsDoneCount > 0 ||
                       sortedEpics.some((e) => e.status === "in-progress")
                     const status = allDone ? "done" : anyProgress ? "in-progress" : "backlog"
-                    return <span className={`step-badge step-${status}`}>{status}</span>
+                    return <StatusBadge status={status} />
                   }
                   const allStepsDone =
                     phase.steps.length > 0 && phase.steps.every((s) => s.isCompleted)
                   const anyDone = phase.steps.some((s) => s.isCompleted)
                   const status = allStepsDone ? "done" : anyDone ? "in-progress" : "pending"
-                  return <span className={`step-badge step-${status}`}>{status}</span>
+                  return <StatusBadge status={status} />
                 })()}
                 <span className="workflow-phase-chevron" aria-hidden="true">
                   {isOpen ? "▲" : "▼"}
@@ -924,7 +981,7 @@ function BMADWorkflowSection(props: {
                             {`Epic ${epic.number}: ${epicLabels.get(epic.id) ?? epic.id}`}
                           </Link>
                         </div>
-                        <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
+                        <StatusBadge status={epic.status} />
                       </div>
                     ))}
                 </div>
@@ -986,12 +1043,10 @@ export function EpicTableSection(props: {
                   </Link>
                 </td>
                 <td>
-                  <span className={`step-badge step-${epic.status}`}>{epic.status}</span>
+                  <StatusBadge status={epic.status} />
                 </td>
                 <td>
-                  <span className={`step-badge step-${epic.lifecycleSteps["bmad-retrospective"]}`}>
-                    {storyStepLabel(epic.lifecycleSteps["bmad-retrospective"])}
-                  </span>
+                  <StatusBadge status={epic.lifecycleSteps["bmad-retrospective"]} />
                 </td>
                 <td>{epic.storyCount}</td>
               </tr>

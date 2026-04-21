@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { storyStepLabel } from "../app"
+import { StatusBadge, storyStepLabel } from "../app"
 import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type {
   EpicDetailResponse,
@@ -720,28 +720,14 @@ function EpicDetailPage() {
   return (
     <main className="screen">
       {epicError && data ? (
-        <div
-          className="panel"
-          style={{
-            borderColor: "var(--highlight-2)",
-            marginBottom: "1rem",
-            padding: "0.75rem 1rem",
-          }}
-        >
+        <div className="panel mb-4 py-3 px-4" style={{ borderColor: "var(--highlight-2)" }}>
           <p style={{ color: "var(--highlight-2)", margin: 0, fontSize: "0.875rem" }}>
             ⚠ Refresh failed — showing last known data. {String(epicError)}
           </p>
         </div>
       ) : null}
       {data.parseWarning ? (
-        <div
-          className="panel"
-          style={{
-            borderColor: "var(--highlight-2)",
-            marginBottom: "1rem",
-            padding: "0.75rem 1rem",
-          }}
-        >
+        <div className="panel mb-4 py-3 px-4" style={{ borderColor: "var(--highlight-2)" }}>
           <p style={{ color: "var(--highlight-2)", margin: 0, fontSize: "0.875rem" }}>
             ⚠ {data.parseWarning}
           </p>
@@ -781,15 +767,7 @@ function EpicDetailPage() {
           </div>
         ) : null}
         {storiesNeedingPlan.length > 0 || showDevelopAllButton ? (
-          <div
-            style={{
-              display: "flex",
-              gap: "0.75rem",
-              marginTop: "1.25rem",
-              flexWrap: "wrap",
-              alignItems: "center",
-            }}
-          >
+          <div className="flex gap-3 mt-5 flex-wrap items-center">
             {storiesNeedingPlan.length > 0 ? (
               <button
                 className="cta"
@@ -855,8 +833,8 @@ function EpicDetailPage() {
                 if (isPlannedOnly) {
                   return (
                     <tr key={story.id} style={{ opacity: 0.55 }}>
-                      <td>
-                        <span style={{ color: "var(--muted)" }}>
+                      <td className="max-w-0">
+                        <span className="block truncate" style={{ color: "var(--muted)" }}>
                           {storyDisplayLabel(story.id).trim()}{" "}
                           <span style={{ fontSize: "0.8em" }}>(planned)</span>
                         </span>
@@ -969,8 +947,12 @@ function EpicDetailPage() {
 
                 return (
                   <tr key={story.id}>
-                    <td>
-                      <Link params={{ storyId: story.id }} to="/story/$storyId">
+                    <td className="max-w-0">
+                      <Link
+                        className="block truncate"
+                        params={{ storyId: story.id }}
+                        to="/story/$storyId"
+                      >
                         {storyDisplayLabel(story.id)}
                       </Link>
                     </td>

@@ -1,6 +1,6 @@
 # Story 9.4: Responsive Layout and Spacing Refinements
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,24 +20,24 @@ so that the app is comfortable to use for extended monitoring sessions.
 
 ## Tasks / Subtasks
 
-- [ ] Audit and fix panel spacing at 1280px (AC: 1)
-  - [ ] Verify `.screen > .panel` margin and padding are visually consistent across all routes
-  - [ ] Ensure `home.tsx` grid cards (Epics, Stories, Sessions stat panels) use Tailwind gap/padding classes instead of inline `style={}` spacing hacks
-  - [ ] Confirm `.screen` padding `2rem 1rem 3rem` still looks correct; apply `1.5rem` horizontal on wide viewports if needed
+- [x] Audit and fix panel spacing at 1280px (AC: 1)
+  - [x] Verify `.screen > .panel` margin and padding are visually consistent across all routes
+  - [x] Ensure `home.tsx` grid cards (Epics, Stories, Sessions stat panels) use Tailwind gap/padding classes instead of inline `style={}` spacing hacks
+  - [x] Confirm `.screen` padding `2rem 1rem 3rem` still looks correct; apply `1.5rem` horizontal on wide viewports if needed
 
-- [ ] Add text truncation for long content (AC: 2)
-  - [ ] Epic detail table: add `max-w-0` (or equivalent `min-w-0 overflow-hidden`) + `truncate` to the story-ID `<td>` cells so very long story slugs (e.g. `9-4-responsive-layout-and-spacing-refinements`) do not blow out the table
-  - [ ] Sessions table `Skill / Name` column: confirm `.skill-chip` already has `white-space: nowrap`; add `truncate` to the surrounding cell if the chip + link combo can still overflow at narrow widths
-  - [ ] Epic title (`.epic-title`) in `epic.$epicId.tsx` hero: ensure it has `overflow-wrap: break-word` or `line-clamp` so a very long epic title does not overflow its panel
-  - [ ] Any `session.notes` or `storyId` text in session tables: use `max-w-[12rem] truncate` or similar Tailwind classes so they do not cause horizontal scroll
+- [x] Add text truncation for long content (AC: 2)
+  - [x] Epic detail table: add `max-w-0` (or equivalent `min-w-0 overflow-hidden`) + `truncate` to the story-ID `<td>` cells so very long story slugs (e.g. `9-4-responsive-layout-and-spacing-refinements`) do not blow out the table
+  - [x] Sessions table `Skill / Name` column: confirm `.skill-chip` already has `white-space: nowrap`; add `truncate` to the surrounding cell if the chip + link combo can still overflow at narrow widths
+  - [x] Epic title (`.epic-title`) in `epic.$epicId.tsx` hero: ensure it has `overflow-wrap: break-word` or `line-clamp` so a very long epic title does not overflow its panel
+  - [x] Any `session.notes` or `storyId` text in session tables: use `max-w-[12rem] truncate` or similar Tailwind classes so they do not cause horizontal scroll
 
-- [ ] Ensure row height consistency in tables (AC: 3)
-  - [ ] Confirm global `th, td { padding: 0.55rem 0.4rem; vertical-align: middle }` in `styles.css` is respected everywhere; fix any route that overrides with non-standard padding
-  - [ ] Verify `.step-cell` rows in epic detail table have `vertical-align: middle` and badge sizes are uniform so no row is taller than others due to wrapping
+- [x] Ensure row height consistency in tables (AC: 3)
+  - [x] Confirm global `th, td { padding: 0.55rem 0.4rem; vertical-align: middle }` in `styles.css` is respected everywhere; fix any route that overrides with non-standard padding
+  - [x] Verify `.step-cell` rows in epic detail table have `vertical-align: middle` and badge sizes are uniform so no row is taller than others due to wrapping
 
-- [ ] Validate, check quality gate, and commit (all ACs)
-  - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass before marking done
-  - [ ] Visually verify at 1280px viewport: home, sessions, epic detail, and session list pages
+- [x] Validate, check quality gate, and commit (all ACs)
+  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass before marking done
+  - [x] Visually verify at 1280px viewport: home, sessions, epic detail, and session list pages
 
 ## Dev Notes
 
@@ -155,4 +155,18 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Added `overflow-wrap: break-word` to `.epic-title` in `styles.css`
+- Added `max-w-0 truncate block` on story-ID cells in epic detail table (planned-only and regular rows)
+- Added `max-w-[12rem]` + `block truncate` to sessions table story column
+- Replaced inline `style={{ marginBottom, padding }}` with Tailwind `mb-4 py-3 px-4` on warning banners in `epic.$epicId.tsx`
+- Replaced inline `style={{ display:flex, gap, marginTop, flexWrap, alignItems }}` with Tailwind classes on epic action buttons container
+- Fixed pre-existing lint/format issues: unused import in `sessions.tsx`, import ordering in analytics files, formatting in `app.tsx` and `workflow.$phaseId.$stepId.tsx`
+- `pnpm check` passes: lint + types + tests + build all green
+
 ### File List
+
+- `_bmad-custom/bmad-ui/src/styles.css`
+- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
+- `_bmad-custom/bmad-ui/src/routes/sessions.tsx`
+- `_bmad-custom/bmad-ui/src/routes/home.tsx`
+- `_bmad-custom/bmad-ui/src/app.tsx`

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
+import { StatusBadge } from "../app"
 import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
 import type { AnalyticsResponse, SessionAnalytics } from "../types"
@@ -177,7 +178,7 @@ function SessionsPage() {
                       <span className="mono muted block truncate">{session.storyId ?? "—"}</span>
                     </td>
                     <td>
-                      <span className={`step-badge step-${session.status}`}>{session.status}</span>
+                      <StatusBadge status={session.status} />
                     </td>
                     <td className="muted">{formatDate(session.startedAt)}</td>
                     <td className="muted">{formatDuration(session.startedAt, session.endedAt)}</td>
