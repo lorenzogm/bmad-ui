@@ -1,11 +1,6 @@
 # Story 7.2: Integrate Backlog Artifacts with UI Workflows
 
-Status: in-progress
-
-## Story
-
-As a user,
-I want bmad-ui to operate with backlog artifacts produced by bmad workflows,
+Status: done
 So that planning outputs and execution views stay connected.
 
 ## Acceptance Criteria

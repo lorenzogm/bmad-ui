@@ -1,11 +1,6 @@
 # Story 7.4: Establish Phase Boundary and Evolution Guardrails
 
-Status: in-progress
-
-## Story
-
-As a maintainer,
-I want explicit boundaries between Phase 1 outcomes and post-MVP expansion,
+Status: done
 so that the project can evolve without destabilizing foundational workflows.
 
 ## Acceptance Criteria
