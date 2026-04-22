@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-22T17:38:42Z
+last_updated: 2026-04-22T17:44:12Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -118,9 +118,9 @@ development_status:
 
   epic-11: in-progress
   11-1-extract-runtime-domain: ready-for-dev
-  11-2-extract-sprint-and-overview-domain: backlog
-  11-3-extract-epic-and-story-domain: backlog
-  11-4-extract-logs-and-observability-domain: backlog
+  11-2-extract-sprint-and-overview-domain: ready-for-dev
+  11-3-extract-epic-and-story-domain: ready-for-dev
+  11-4-extract-logs-and-observability-domain: ready-for-dev
   11-5-extract-analytics-domain: backlog
   11-6-decompose-api-routes-by-domain-with-zod-validation: backlog
   epic-11-retrospective: optional
