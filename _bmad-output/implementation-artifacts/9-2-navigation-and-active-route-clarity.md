@@ -1,6 +1,6 @@
 # Story 9.2: Navigation & Active Route Clarity
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -46,6 +46,10 @@ so that I always know which section of the app I'm in.
   - [x] Manually navigate through Workflow > Planning > [step detail], Sessions, Analytics in the dev server and confirm active state highlights update correctly at each step
   - [x] Resize browser to ~800px and confirm nav items are readable without horizontal overflow
   - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass with zero errors
+
+### Review Findings
+
+- [x] [Review][Patch] Story review completed with no remaining navigation defects; tracking artifacts synchronized to `done`.
 
 ## Dev Notes
 
