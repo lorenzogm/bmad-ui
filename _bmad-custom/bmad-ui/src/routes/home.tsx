@@ -157,7 +157,7 @@ function HomePage() {
   const estimatedCost =
     costing?.estimatedCostUsd.fromPremiumRequests ?? totalRequests * COST_PER_REQUEST_USD
 
-  if (epics.length === 0) {
+  if (epics.length === 0 && stories.length === 0 && sessions.length === 0) {
     return (
       <EmptyState
         icon="🚀"

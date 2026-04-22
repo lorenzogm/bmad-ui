@@ -238,7 +238,7 @@ function RootLayout() {
     currentPath.startsWith("/sessions") || currentPath.startsWith("/session/")
   const [chatOpen, setChatOpen] = useState(false)
 
-  const { data: sessionsData } = useQuery<SessionAnalytics[]>({
+  const { data: sessionsData, isLoading: isSessionsLoading } = useQuery<SessionAnalytics[]>({
     queryKey: ["sidebar-sessions"],
     queryFn: async () => {
       const response = await fetch(apiUrl("/api/analytics"))
@@ -307,7 +307,9 @@ function RootLayout() {
           </Link>
 
           <div className="sidebar-submenu">
-            {recentSessions.length > 0 ? (
+            {isSessionsLoading ? (
+              <span className="sidebar-sessions-empty">Loading sessions…</span>
+            ) : recentSessions.length > 0 ? (
               recentSessions.map((session) => {
                 const linkPath = `/session/${session.sessionId}`
                 const isRunning = session.status === RUNNING_STATUS

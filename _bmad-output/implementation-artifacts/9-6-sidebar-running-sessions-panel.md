@@ -1,6 +1,6 @@
 # Story 9.6: Sidebar Running Sessions Panel
 
-Status: review
+Status: done
 
 ## Story
 
@@ -35,6 +35,14 @@ So that I can instantly see what's happening without scanning through completed 
 
 - [x] Run quality gate (AC: all)
   - [x] `cd _bmad-custom/bmad-ui && pnpm check` must pass
+
+### Review Findings
+
+- [x] [Review][Patch] Show loading state while sidebar sessions query initializes [`_bmad-custom/bmad-ui/src/routes/__root.tsx:309`]
+- [x] [Review][Patch] Prevent retry click event from being forwarded into TanStack `refetch` options [`_bmad-custom/bmad-ui/src/lib/loading-states.tsx:57`]
+- [x] [Review][Patch] Replace shared loading-state inline styles with Tailwind/CSS-variable classes [`_bmad-custom/bmad-ui/src/lib/loading-states.tsx:1`]
+- [x] [Review][Patch] Keep home dashboard visible when epics are empty but other analytics data exists [`_bmad-custom/bmad-ui/src/routes/home.tsx:160`]
+- [x] [Review][Defer] Story commit touched files beyond the planned single-file scope — deferred, pre-existing
 
 ## Dev Notes
 
