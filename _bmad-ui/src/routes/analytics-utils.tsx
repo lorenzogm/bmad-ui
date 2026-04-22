@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { apiUrl } from "../lib/mode"
 import type {
   AnalyticsCosting,
+  AnalyticsQuality,
   AnalyticsResponse,
   EpicAnalytics,
   SessionAnalytics,
@@ -505,6 +506,177 @@ export function buildRequestsByEpicOption(epics: EpicAnalytics[]): echarts.EChar
           itemStyle: { color: CHART_PALETTE[i % CHART_PALETTE.length] },
         })),
         barMaxWidth: 40,
+      },
+    ],
+  }
+}
+
+// ── Quality chart colors ───────────────────────────────────────────
+
+const QUALITY_COLOR_ONESHOT = "#2ec4b6" // var(--status-done)
+const QUALITY_COLOR_CORRECTED = "#22c55e" // var(--status-progress)
+const QUALITY_COLOR_ABORTED = "#ff9f1c" // var(--highlight-2)
+const QUALITY_COLOR_NOOUTPUT = "#6b7280" // var(--status-backlog)
+
+// ── Quality chart builders ─────────────────────────────────────────
+
+export function buildOneShotRateBySkillOption(quality: AnalyticsQuality): echarts.EChartsOption {
+  const rate = (v: { oneShot: number; sessions: number }) =>
+    v.sessions > 0 ? v.oneShot / v.sessions : 0
+  const sorted = Object.entries(quality.bySkill).sort(([, a], [, b]) => rate(b) - rate(a))
+  const names = sorted.map(([k]) => k)
+  const rates = sorted.map(([, v]) => rate(v))
+  const sessions = sorted.map(([, v]) => v.sessions)
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+      formatter: (params: unknown) => {
+        const p = params as Array<{ dataIndex: number }>
+        const idx = p[0].dataIndex
+        return `${names[idx]}<br/>${Math.round(rates[idx] * 100)}% one-shot (${sessions[idx]} sessions)`
+      },
+    },
+    xAxis: {
+      type: "value",
+      min: 0,
+      max: 1,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: {
+        color: CHART_MUTED_COLOR,
+        formatter: (v: number) => `${Math.round(v * 100)}%`,
+      },
+      splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+    },
+    yAxis: {
+      type: "category",
+      data: names,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+    },
+    series: [
+      {
+        type: "bar",
+        data: rates,
+        itemStyle: { color: QUALITY_COLOR_ONESHOT },
+        barMaxWidth: 32,
+      },
+    ],
+  }
+}
+
+export function buildOneShotRateByModelOption(quality: AnalyticsQuality): echarts.EChartsOption {
+  const rate = (v: { oneShot: number; sessions: number }) =>
+    v.sessions > 0 ? v.oneShot / v.sessions : 0
+  const sorted = Object.entries(quality.byModel).sort(([, a], [, b]) => rate(b) - rate(a))
+  const names = sorted.map(([k]) => k)
+  const rates = sorted.map(([, v]) => rate(v))
+  const sessions = sorted.map(([, v]) => v.sessions)
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+      formatter: (params: unknown) => {
+        const p = params as Array<{ dataIndex: number }>
+        const idx = p[0].dataIndex
+        return `${names[idx]}<br/>${Math.round(rates[idx] * 100)}% one-shot (${sessions[idx]} sessions)`
+      },
+    },
+    xAxis: {
+      type: "value",
+      min: 0,
+      max: 1,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: {
+        color: CHART_MUTED_COLOR,
+        formatter: (v: number) => `${Math.round(v * 100)}%`,
+      },
+      splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+    },
+    yAxis: {
+      type: "category",
+      data: names,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+    },
+    series: [
+      {
+        type: "bar",
+        data: rates,
+        itemStyle: { color: QUALITY_COLOR_ONESHOT },
+        barMaxWidth: 32,
+      },
+    ],
+  }
+}
+
+export function buildSessionsBySkillStackedOption(
+  quality: AnalyticsQuality
+): echarts.EChartsOption {
+  const sorted = Object.entries(quality.bySkill).sort(([, a], [, b]) => b.sessions - a.sessions)
+  const names = sorted.map(([k]) => k)
+  const oneShotData = sorted.map(([, v]) => v.oneShot)
+  const correctedData = sorted.map(([, v]) => v.corrected)
+  const abortedData = sorted.map(([, v]) => v.aborted)
+  const noOutputData = sorted.map(([, v]) => v.sessions - v.oneShot - v.corrected - v.aborted)
+
+  return {
+    ...buildBaseChartOption(),
+    tooltip: {
+      ...buildBaseChartOption().tooltip,
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+    },
+    legend: {
+      data: ["One-Shot", "Corrected", "Aborted", "No-Output"],
+      textStyle: { color: CHART_MUTED_COLOR },
+    },
+    xAxis: {
+      type: "category",
+      data: names,
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR, rotate: names.length > 4 ? 30 : 0 },
+    },
+    yAxis: {
+      type: "value",
+      axisLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+      axisLabel: { color: CHART_MUTED_COLOR },
+      splitLine: { lineStyle: { color: CHART_BORDER_COLOR } },
+    },
+    series: [
+      {
+        name: "One-Shot",
+        type: "bar",
+        stack: "sessions",
+        data: oneShotData,
+        itemStyle: { color: QUALITY_COLOR_ONESHOT },
+      },
+      {
+        name: "Corrected",
+        type: "bar",
+        stack: "sessions",
+        data: correctedData,
+        itemStyle: { color: QUALITY_COLOR_CORRECTED },
+      },
+      {
+        name: "Aborted",
+        type: "bar",
+        stack: "sessions",
+        data: abortedData,
+        itemStyle: { color: QUALITY_COLOR_ABORTED },
+      },
+      {
+        name: "No-Output",
+        type: "bar",
+        stack: "sessions",
+        data: noOutputData,
+        itemStyle: { color: QUALITY_COLOR_NOOUTPUT },
       },
     ],
   }

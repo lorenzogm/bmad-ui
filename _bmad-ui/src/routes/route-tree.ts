@@ -5,6 +5,7 @@ import { analyticsEpicDetailRoute } from "./analytics-epic-detail"
 import { analyticsEpicsRoute } from "./analytics-epics"
 import { analyticsModelDetailRoute } from "./analytics-model-detail"
 import { analyticsModelsRoute } from "./analytics-models"
+import { analyticsQualityRoute } from "./analytics-quality"
 import { analyticsSessionsRoute } from "./analytics-sessions"
 import { analyticsStoriesRoute } from "./analytics-stories"
 import { analyticsStoryDetailRoute } from "./analytics-story-detail"
@@ -42,5 +43,6 @@ export const routeTree = rootRoute.addChildren([
     analyticsSessionsRoute,
     analyticsModelsRoute,
     analyticsModelDetailRoute,
+    analyticsQualityRoute,
   ]),
 ])
