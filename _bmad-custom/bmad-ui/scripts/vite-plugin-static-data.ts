@@ -17,9 +17,11 @@ import {
 	getPlannedStoriesFromEpics,
 	getStoryContentFromEpics,
 	linksFile,
+	markZombieAnalyticsSessionsFailed,
 	parseSimpleYamlList,
 	readAnalyticsStore,
 	setBuildMode,
+	upsertAnalyticsSession,
 } from "./agent-server";
 
 /**
@@ -189,7 +191,7 @@ function staticDataPlugin(): Plugin {
 					continue;
 				}
 				try {
-					const payload = await buildSessionDetailPayload(session.sessionId);
+					const payload = await buildSessionDetailPayload(session.sessionId, { readAnalyticsStore, markZombiesFailed: markZombieAnalyticsSessionsFailed, upsertSession: upsertAnalyticsSession, analyticsToRuntimeSession });
 					if (payload) {
 						emit(`session/${session.sessionId}.json`, payload);
 					}

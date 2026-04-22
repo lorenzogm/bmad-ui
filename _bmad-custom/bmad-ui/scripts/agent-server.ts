@@ -1,11 +1,9 @@
-import { execFile, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 import type { ViteDevServer } from "vite";
 import {
 	buildDependencyTree,
@@ -45,10 +43,6 @@ import {
 	setRunningProcessKind,
 	startRuntimeSession,
 } from "./server/runtime";
-import type {
-	StoryWorkflowStepSkill,
-	WorkflowStepState,
-} from "./server/sprint";
 import {
 	SPRINT_STORY_STATUS_REGEX,
 	STORY_WORKFLOW_STEPS,
@@ -56,38 +50,21 @@ import {
 	loadSprintOverview,
 	summarizeEpicSteps,
 } from "./server/sprint";
+import {
+	buildLogFromEvents,
+	buildSessionDetailPayload,
+	fallbackSummary,
+	findAllCliEventsJsonl,
+	getCompletedSessionSummary,
+	getExternalCliProcesses,
+	readOptionalTextFile,
+	stripAnsi,
+} from "./server/logs";
 
 const __agentServerDirname =
 	typeof __dirname !== "undefined"
 		? __dirname
 		: fileURLToPath(new URL(".", import.meta.url));
-
-const execFileAsync = promisify(execFile);
-
-const copilotSessionStateDir = path.join(
-	os.homedir(),
-	".copilot",
-	"session-state",
-);
-const SESSION_TIMESTAMP_REGEX = /(\d{13})$/;
-const SESSION_MATCH_WINDOW_MS = 30_000;
-
-type ExternalProcess = {
-	pid: number;
-	elapsed: string;
-	command: string;
-};
-
-type SessionDetailResponse = {
-	session: RuntimeSession;
-	logContent: string | null;
-	promptContent: string | null;
-	summary: string | null;
-	logExists: boolean;
-	promptExists: boolean;
-	isRunning: boolean;
-	canSendInput: boolean;
-};
 
 
 type AgentSession = {
@@ -134,8 +111,6 @@ const SKILL_MODEL_OVERRIDES: Record<string, string> = {
 	"bmad-code-review": "gpt-5.3-codex",
 };
 
-const PS_LINE_REGEX = /^(\d+)\s+([^\s]+)\s+(.+)$/;
-const SUMMARY_LINE_REGEX = /(?:^|\n)(?:summary|resumen)\s*:\s*(.+)$/im;
 const SESSION_DETAIL_PATH_REGEX = /^\/api\/session\/([^/]+)$/;
 const SESSION_EVENTS_PATH_REGEX = /^\/api\/events\/session\/([^/]+)$/;
 const SESSION_INPUT_PATH_REGEX = /^\/api\/session\/([^/]+)\/input$/;
@@ -302,245 +277,8 @@ async function buildOverviewPayload() {
 	};
 }
 
-function describeToolCall(toolName: string): string {
-	const map: Record<string, string> = {
-		read_file: "Reading file",
-		grep_search: "Searching code",
-		file_search: "Finding files",
-		list_dir: "Listing directory",
-		semantic_search: "Searching semantically",
-		replace_string_in_file: "Editing file",
-		multi_replace_string_in_file: "Editing files",
-		create_file: "Creating file",
-		run_in_terminal: "Running command",
-		execution_subagent: "Running subagent",
-		search_subagent: "Running search",
-		runSubagent: "Running subagent",
-		get_errors: "Checking errors",
-		manage_todo_list: "Updating todos",
-		memory: "Using memory",
-		vscode_listCodeUsages: "Finding usages",
-		vscode_renameSymbol: "Renaming symbol",
-		fetch_webpage: "Fetching webpage",
-	};
-	return map[toolName] || toolName;
-}
 
-async function findAllCliEventsJsonl(
-	sessionId: string,
-	userMessages: Array<{ sentAt: string }>,
-): Promise<string[]> {
-	const match = SESSION_TIMESTAMP_REGEX.exec(sessionId);
-	if (!match) {
-		return [];
-	}
 
-	// Collect all timestamps to match: the session ID ts + each userMessage sentAt
-	const timestamps: number[] = [Number(match[1])];
-	for (const msg of userMessages) {
-		const ms = Date.parse(msg.sentAt);
-		if (!Number.isNaN(ms)) {
-			timestamps.push(ms);
-		}
-	}
-
-	if (!existsSync(copilotSessionStateDir)) {
-		return [];
-	}
-
-	let entries: string[];
-	try {
-		entries = await readdir(copilotSessionStateDir);
-	} catch {
-		return [];
-	}
-
-	// Build index of CLI session created_at timestamps
-	const cliIndex: Array<{ createdMs: number; eventsPath: string }> = [];
-	for (const entry of entries) {
-		const wsPath = path.join(copilotSessionStateDir, entry, "workspace.yaml");
-		if (!existsSync(wsPath)) {
-			continue;
-		}
-
-		try {
-			const wsContent = await readFile(wsPath, "utf8");
-			const createdMatch = /created_at:\s*(\S+)/.exec(wsContent);
-			if (!createdMatch) {
-				continue;
-			}
-
-			const createdMs = Date.parse(createdMatch[1]);
-			if (Number.isNaN(createdMs)) {
-				continue;
-			}
-
-			const eventsPath = path.join(
-				copilotSessionStateDir,
-				entry,
-				"events.jsonl",
-			);
-			if (existsSync(eventsPath)) {
-				cliIndex.push({ createdMs, eventsPath });
-			}
-		} catch {}
-	}
-
-	// Match each timestamp to a CLI session
-	const matched: Array<{ ts: number; eventsPath: string }> = [];
-	for (const ts of timestamps) {
-		for (const cli of cliIndex) {
-			if (Math.abs(cli.createdMs - ts) <= SESSION_MATCH_WINDOW_MS) {
-				matched.push({ ts, eventsPath: cli.eventsPath });
-				break;
-			}
-		}
-	}
-
-	// Sort by timestamp to get chronological order
-	matched.sort((a, b) => a.ts - b.ts);
-
-	// Deduplicate paths (same CLI session could match multiple timestamps)
-	const seen = new Set<string>();
-	const result: string[] = [];
-	for (const m of matched) {
-		if (!seen.has(m.eventsPath)) {
-			seen.add(m.eventsPath);
-			result.push(m.eventsPath);
-		}
-	}
-
-	return result;
-}
-
-function buildLogFromEvents(eventsContent: string): string {
-	const lines = eventsContent.split("\n").filter((l) => l.trim().length > 0);
-	const output: string[] = [];
-
-	for (const line of lines) {
-		let event: Record<string, unknown>;
-		try {
-			event = JSON.parse(line) as Record<string, unknown>;
-		} catch {
-			continue;
-		}
-
-		const eventType = event.type as string | undefined;
-		const eventData = (event.data ?? {}) as Record<string, unknown>;
-
-		switch (eventType) {
-			case "user.message": {
-				const content =
-					typeof eventData.content === "string" ? eventData.content.trim() : "";
-				if (content) {
-					output.push(`[user] ${content}`);
-				}
-				break;
-			}
-
-			case "assistant.message": {
-				const content =
-					typeof eventData.content === "string" ? eventData.content.trim() : "";
-				if (content) {
-					output.push(content);
-				}
-
-				const toolRequests = Array.isArray(eventData.toolRequests)
-					? eventData.toolRequests
-					: [];
-				for (const req of toolRequests) {
-					const name = (req as Record<string, unknown>).name || "unknown";
-					const desc = describeToolCall(String(name));
-					let detail = "";
-
-					const rawArgs = (req as Record<string, unknown>).arguments;
-					const args: Record<string, unknown> =
-						typeof rawArgs === "string"
-							? (() => {
-									try {
-										return JSON.parse(rawArgs) as Record<string, unknown>;
-									} catch {
-										return {};
-									}
-								})()
-							: typeof rawArgs === "object" && rawArgs !== null
-								? (rawArgs as Record<string, unknown>)
-								: {};
-
-					if (typeof args.filePath === "string") {
-						detail = ` ${path.basename(args.filePath)}`;
-					} else if (typeof args.query === "string") {
-						const q = args.query.slice(0, 60);
-						detail = q ? ` "${q}"` : "";
-					} else if (typeof args.command === "string") {
-						const cmd = args.command.slice(0, 80);
-						detail = cmd ? ` \`${cmd}\`` : "";
-					}
-
-					output.push(`● ${desc}${detail}`);
-				}
-				break;
-			}
-
-			case "tool.execution_complete": {
-				// result can be a string or an object with content/detailedContent
-				const rawResult = eventData.result;
-				let resultText = "";
-				if (typeof rawResult === "string") {
-					resultText = rawResult.trim();
-				} else if (typeof rawResult === "object" && rawResult !== null) {
-					const resultObj = rawResult as Record<string, unknown>;
-					const content =
-						typeof resultObj.content === "string" ? resultObj.content : "";
-					const detailed =
-						typeof resultObj.detailedContent === "string"
-							? resultObj.detailedContent
-							: "";
-					resultText = (detailed || content).trim();
-				}
-				if (resultText.length > 0) {
-					const resultLines = resultText.split("\n");
-					for (const rl of resultLines) {
-						output.push(`  │ ${rl}`);
-					}
-					output.push(`  └ done`);
-				}
-				break;
-			}
-
-			default:
-				break;
-		}
-	}
-
-	return output.join("\n");
-}
-
-async function buildCleanLogContent(
-	sessionId: string,
-	userMessages: Array<{ sentAt: string }>,
-	fallbackRawLog: string | null,
-): Promise<string | null> {
-	const eventsPaths = await findAllCliEventsJsonl(sessionId, userMessages);
-	if (eventsPaths.length > 0) {
-		try {
-			const parts: string[] = [];
-			for (const ep of eventsPaths) {
-				const eventsContent = await readFile(ep, "utf8");
-				const built = buildLogFromEvents(eventsContent);
-				if (built.trim().length > 0) {
-					parts.push(built);
-				}
-			}
-			if (parts.length > 0) {
-				return parts.join("\n\n");
-			}
-		} catch {
-			// fall through to raw log
-		}
-	}
-	return fallbackRawLog;
-}
 
 type WorkflowStepDetailKey =
 	| "planning/prd"
@@ -812,41 +550,6 @@ async function buildWorkflowStepDetailPayload(
 	};
 }
 
-async function buildSessionDetailPayload(
-	sessionId: string,
-): Promise<SessionDetailResponse | null> {
-	const store = await readAnalyticsStore();
-	await markZombieAnalyticsSessionsFailed(Object.values(store.sessions), upsertAnalyticsSession);
-	const analyticsEntry = store.sessions[sessionId] || null;
-	if (!analyticsEntry) {
-		return null;
-	}
-	const session = analyticsToRuntimeSession(analyticsEntry);
-
-	const rawLogContent = await readOptionalTextFile(session.logPath);
-	const fallbackLog = rawLogContent
-		? stripAnsi(rawLogContent).replace(/\r/g, "")
-		: null;
-	const logContent = await buildCleanLogContent(
-		session.id,
-		session.userMessages || [],
-		fallbackLog,
-	);
-	const promptContent = await readOptionalTextFile(session.promptPath);
-
-	return {
-		session,
-		logContent,
-		promptContent,
-		summary: logContent ? extractLastAssistantBlock(logContent) : null,
-		logExists: Boolean(session.logPath && existsSync(session.logPath)),
-		promptExists: Boolean(session.promptPath && existsSync(session.promptPath)),
-		isRunning:
-			session.status === "running" || runningSessionProcesses.has(session.id),
-		canSendInput: runningSessionProcesses.has(session.id),
-	};
-}
-
 async function parseJsonBody<T>(
 	req: AsyncIterable<Buffer | string>,
 ): Promise<T> {
@@ -860,209 +563,6 @@ async function parseJsonBody<T>(
 	return (rawBody.length > 0 ? JSON.parse(rawBody) : {}) as T;
 }
 
-async function getExternalCliProcesses(): Promise<ExternalProcess[]> {
-	if (buildMode) {
-		return [];
-	}
-	const { stdout } = await execFileAsync("ps", [
-		"-ax",
-		"-o",
-		"pid=,etime=,command=",
-	]);
-	const keywords = [
-		"copilot",
-		"orchestrator.mjs",
-		"bmad:orchestrate",
-		"agent run",
-	];
-
-	return stdout
-		.split("\n")
-		.map((line) => line.trim())
-		.filter((line) => line.length > 0)
-		.map((line) => {
-			const match = line.match(PS_LINE_REGEX);
-			if (!match) {
-				return null;
-			}
-			const pid = Number(match[1]);
-			const elapsed = match[2];
-			const command = match[3];
-			return { pid, elapsed, command };
-		})
-		.filter((item): item is ExternalProcess => item !== null)
-		.filter((item) =>
-			keywords.some((keyword) => item.command.toLowerCase().includes(keyword)),
-		)
-		.slice(0, 12);
-}
-
-function stripAnsi(value: string): string {
-	let cleaned = "";
-
-	for (let index = 0; index < value.length; index += 1) {
-		const current = value[index];
-
-		if (current === "\u001b" && value[index + 1] === "[") {
-			index += 2;
-
-			while (index < value.length && value[index] !== "m") {
-				index += 1;
-			}
-
-			continue;
-		}
-
-		cleaned += current;
-	}
-
-	return cleaned;
-}
-
-function extractGeneratedSummary(logContent: string): string | null {
-	const clean = stripAnsi(logContent).replace(/\r/g, "").trim();
-	if (!clean) {
-		return null;
-	}
-
-	const summaryMatch = clean.match(SUMMARY_LINE_REGEX);
-	if (summaryMatch?.[1]) {
-		return summaryMatch[1].trim();
-	}
-
-	const lines = clean
-		.split("\n")
-		.map((line) => line.trim())
-		.filter((line) => line.length > 0);
-
-	for (let index = lines.length - 1; index >= 0; index -= 1) {
-		const line = lines[index];
-		if (line.length >= 40 && !line.startsWith("[") && !line.startsWith("{")) {
-			return line;
-		}
-	}
-
-	return null;
-}
-
-function extractLastAssistantBlock(logContent: string): string | null {
-	const clean = stripAnsi(logContent).replace(/\r/g, "").trim();
-	if (!clean) {
-		return null;
-	}
-
-	const lines = clean.split("\n");
-
-	// Skip trailing non-text lines (orchestrator, tools, user)
-	let end = lines.length - 1;
-	while (end >= 0) {
-		const line = lines[end];
-		if (
-			line.startsWith("[user] ") ||
-			line.startsWith("[orchestrator]") ||
-			line.startsWith("● ") ||
-			line.startsWith("  │") ||
-			line.startsWith("  └") ||
-			line.trim().length === 0
-		) {
-			end -= 1;
-		} else {
-			break;
-		}
-	}
-
-	if (end < 0) {
-		return null;
-	}
-
-	// Collect text lines backwards until we hit a non-text line
-	const textLines: string[] = [];
-	for (let i = end; i >= 0; i -= 1) {
-		const line = lines[i];
-		if (
-			line.startsWith("[user] ") ||
-			line.startsWith("[orchestrator]") ||
-			line.startsWith("● ") ||
-			line.startsWith("  │") ||
-			line.startsWith("  └")
-		) {
-			break;
-		}
-		textLines.unshift(line);
-	}
-
-	const text = textLines.join("\n").trim();
-	return text.length > 0 ? text : null;
-}
-
-async function getCompletedSessionSummary(
-	sessions: SessionAnalyticsData[],
-	storyId: string,
-	skill: StoryWorkflowStepSkill,
-): Promise<string | null> {
-	const latest = sessions
-		.filter((session) => session.storyId === storyId && session.skill === skill)
-		.filter((session) => session.status === "completed")
-		.sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0];
-
-	const latestLogPath = latest?.logPath;
-	if (!latestLogPath) {
-		return null;
-	}
-
-	if (!existsSync(latestLogPath)) {
-		return null;
-	}
-
-	try {
-		const logContent = await readFile(latestLogPath, "utf8");
-		return extractGeneratedSummary(logContent);
-	} catch {
-		return null;
-	}
-}
-
-function fallbackSummary(
-	skill: StoryWorkflowStepSkill,
-	state: WorkflowStepState,
-	markdownPath: string | null,
-): string {
-	if (skill === "bmad-create-story" && state === "completed" && markdownPath) {
-		return `Story artifact generated at ${markdownPath}.`;
-	}
-
-	if (state === "running") {
-		return "Skill execution in progress.";
-	}
-
-	if (state === "not-started") {
-		return "No generated summary yet.";
-	}
-
-	if (state === "failed") {
-		return "Skill failed. Check session logs for details.";
-	}
-
-	return "Completed, but no generated summary was found.";
-}
-
-async function readOptionalTextFile(
-	filePath: string | null,
-): Promise<string | null> {
-	if (!filePath) {
-		return null;
-	}
-
-	if (!existsSync(filePath)) {
-		return null;
-	}
-
-	try {
-		return await readFile(filePath, "utf8");
-	} catch {
-		return null;
-	}
-}
 
 type TokenUsageData = {
 	requests: number;
@@ -2105,7 +1605,7 @@ function attachApi(server: ViteDevServer): void {
 			if (sessionDetailMatch && req.method === "GET") {
 				try {
 					const sessionId = decodeURIComponent(sessionDetailMatch[1]);
-					const payload = await buildSessionDetailPayload(sessionId);
+					const payload = await buildSessionDetailPayload(sessionId, { readAnalyticsStore, markZombiesFailed: markZombieAnalyticsSessionsFailed, upsertSession: upsertAnalyticsSession, analyticsToRuntimeSession });
 					if (!payload) {
 						res.writeHead(404, { "Content-Type": "application/json" });
 						res.end(
@@ -2139,7 +1639,7 @@ function attachApi(server: ViteDevServer): void {
 
 				const push = async () => {
 					try {
-						const payload = await buildSessionDetailPayload(sessionId);
+						const payload = await buildSessionDetailPayload(sessionId, { readAnalyticsStore, markZombiesFailed: markZombieAnalyticsSessionsFailed, upsertSession: upsertAnalyticsSession, analyticsToRuntimeSession });
 						if (!payload) {
 							res.write(
 								`event: missing\ndata: ${JSON.stringify({ error: `session not found: ${sessionId}` })}\n\n`,
@@ -3539,6 +3039,7 @@ export {
 	linksFile,
 	loadOrCreateRuntimeState,
 	loadSprintOverview,
+	markZombieAnalyticsSessionsFailed,
 	markZombieSessionsAsFailed,
 	parseSimpleYamlList,
 	readAnalyticsStore,
