@@ -41,7 +41,6 @@ so that the app is comfortable to use for extended monitoring sessions.
 
 ### Review Findings
 
-- [x] [Review][Patch] Add safe normalization in `StatusBadge` for unknown status tokens [_bmad-custom/bmad-ui/src/app.tsx:91]
 - [x] [Review][Patch] Prevent `Skill / Name` cell overflow with truncation container in sessions table [_bmad-custom/bmad-ui/src/routes/sessions.tsx:166]
 - [x] [Review][Patch] Keep `(planned)` marker visible when story ID truncates [_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx:811]
 - [x] [Review][Patch] Add tooltip to truncated session story ID cell [_bmad-custom/bmad-ui/src/routes/sessions.tsx:180]
