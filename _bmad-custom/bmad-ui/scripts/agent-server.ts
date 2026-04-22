@@ -1,5 +1,5 @@
-import { type ChildProcess, execFile, spawn } from "node:child_process";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { execFile, spawn } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -7,6 +7,50 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import type { ViteDevServer } from "vite";
+import {
+	EPICS_EPIC_HEADING_REGEX,
+	EPICS_EPIC_HEADING_WITH_NAME_REGEX,
+	EPICS_STORY_HEADING_REGEX,
+	STORY_ID_PREFIX_REGEX,
+	buildDependencyTree,
+	deriveEpicStatusFromStories,
+	epicsFile,
+	escapeRegExp,
+	findStoryMarkdown,
+	getEpicMetadataFromMarkdown,
+	getPlannedStoriesFromEpics,
+	getStoryContentFromEpics,
+	loadStoryDependencies,
+	parseEpicMarkdownRows,
+	slugifyStoryLabel,
+	summarizeEpicConsistency,
+	syncEpicStatusInSprintContent,
+} from "./server/epics";
+import type { RuntimeSession, RuntimeState } from "./server/runtime";
+import {
+	activeWorkflowSkill,
+	buildAgentCommand,
+	buildAutoResolveInstructions,
+	buildMode,
+	createRuntimeSession,
+	ensureRunningProcessStateIsFresh,
+	incrementSessionIdCounter,
+	loadOrCreateRuntimeState,
+	markZombieAnalyticsSessionsFailed,
+	markZombieSessionsAsFailed,
+	readRuntimeStateFile,
+	resetRunningProcessState,
+	runningProcess,
+	runningProcessCanAcceptInput,
+	runningProcessKind,
+	runningSessionProcesses,
+	setBuildMode,
+	setActiveWorkflowSkill,
+	setRunningProcess,
+	setRunningProcessCanAcceptInput,
+	setRunningProcessKind,
+	startRuntimeSession,
+} from "./server/runtime";
 
 const __agentServerDirname =
 	typeof __dirname !== "undefined"
@@ -44,41 +88,6 @@ type EpicLifecycleSteps = Record<EpicWorkflowStepSkill, WorkflowStepState>;
 
 type WorkflowStepState = "not-started" | "running" | "completed" | "failed";
 
-type RuntimeSession = {
-	id: string;
-	skill: string;
-	model: string;
-	storyId: string | null;
-
-	status: string;
-	startedAt: string;
-	endedAt: string | null;
-	command: string;
-	promptPath: string;
-	logPath: string;
-	worktreePath: string | null;
-	exitCode: number | null;
-	error: string | null;
-	userMessages: Array<{
-		id: string;
-		text: string;
-		sentAt: string;
-	}>;
-};
-
-type RuntimeState = {
-	status: string;
-	startedAt: string;
-	updatedAt: string;
-	currentStage: string;
-	dryRun: boolean;
-	execute: boolean;
-	nonInteractive: boolean;
-	targetStory: { id: string; status: StoryStatus } | null;
-	parallelCandidate: { id: string; status: StoryStatus } | null;
-	sessions: RuntimeSession[];
-	notes: string[];
-};
 
 type SprintOverview = {
 	totalStories: number;
@@ -118,27 +127,6 @@ type SessionDetailResponse = {
 	canSendInput: boolean;
 };
 
-type DependencyTreeNode = {
-	id: string;
-	label: string;
-	status: EpicStatus;
-	storyCount: number;
-	dependsOn: string[];
-};
-
-type ParsedEpicMarkdownRow = {
-	id: string;
-	number: number;
-	label: string;
-	dependsOn: string[];
-};
-
-type EpicConsistency = {
-	hasMismatch: boolean;
-	epicsMarkdownCount: number;
-	sprintStatusCount: number;
-	warning: string | null;
-};
 
 type AgentSession = {
 	session_id?: string;
@@ -172,12 +160,6 @@ const sprintStatusFile = path.join(
 	"implementation-artifacts",
 	"sprint-status.yaml",
 );
-const epicsFile = path.join(artifactsRoot, "planning-artifacts", "epics.md");
-const storyDependenciesFile = path.join(
-	projectRoot,
-	"_bmad-custom",
-	"story-dependencies.yaml",
-);
 const linksFile = path.join(projectRoot, "_bmad-custom", "links.yaml");
 const notesFile = path.join(projectRoot, "_bmad-custom", "notes.json");
 
@@ -208,157 +190,12 @@ const SKILL_MODEL_OVERRIDES: Record<string, string> = {
 	"bmad-code-review": "gpt-5.3-codex",
 };
 
-let buildMode = false;
-
-function setBuildMode(value: boolean): void {
-	buildMode = value;
-}
-
-let runningProcess: ReturnType<typeof spawn> | null = null;
-const runningSessionProcesses = new Map<string, ChildProcess>();
-let runningProcessCanAcceptInput = false;
-let runningProcessKind: "orchestrator" | "stage" | null = null;
-let activeWorkflowSkill: string | null = null;
-let sessionIdCounter = 0;
-
-function isChildProcessAlive(processRef: ChildProcess): boolean {
-	if (processRef.exitCode !== null || processRef.killed) {
-		return false;
-	}
-
-	if (!processRef.pid) {
-		return false;
-	}
-
-	try {
-		process.kill(processRef.pid, 0);
-		return true;
-	} catch {
-		return false;
-	}
-}
-
-function resetRunningProcessState(): void {
-	runningProcess = null;
-	runningProcessCanAcceptInput = false;
-	runningProcessKind = null;
-}
-
-function ensureRunningProcessStateIsFresh(): void {
-	if (!runningProcess) {
-		return;
-	}
-
-	if (!isChildProcessAlive(runningProcess)) {
-		resetRunningProcessState();
-	}
-}
-
-async function markZombieSessionsAsFailed(
-	runtimeState: RuntimeState | null,
-): Promise<boolean> {
-	if (buildMode) {
-		return false;
-	}
-	if (!runtimeState?.sessions) {
-		return false;
-	}
-
-	let mutated = false;
-
-	for (const session of runtimeState.sessions) {
-		if (session.status !== "running") {
-			continue;
-		}
-
-		if (runningSessionProcesses.has(session.id)) {
-			continue;
-		}
-
-		const logEmpty =
-			!session.logPath ||
-			!existsSync(session.logPath) ||
-			statSync(session.logPath).size === 0;
-
-		if (logEmpty) {
-			session.status = "failed";
-			session.error = "Agent process produced no output (0-byte log)";
-			session.endedAt = session.endedAt || new Date().toISOString();
-			session.exitCode = session.exitCode ?? -1;
-			mutated = true;
-		} else {
-			session.status = "completed";
-			session.endedAt = session.endedAt || new Date().toISOString();
-			session.exitCode = session.exitCode ?? 0;
-			mutated = true;
-		}
-	}
-
-	if (mutated) {
-		await persistRuntimeState(runtimeState);
-	}
-
-	return mutated;
-}
-
-async function markZombieAnalyticsSessionsFailed(
-	sessions: SessionAnalyticsData[],
-): Promise<boolean> {
-	if (buildMode) {
-		return false;
-	}
-
-	let mutated = false;
-
-	for (const session of sessions) {
-		if (session.status !== "running") {
-			continue;
-		}
-
-		if (runningSessionProcesses.has(session.sessionId)) {
-			continue;
-		}
-
-		const logEmpty =
-			!session.logPath ||
-			!existsSync(session.logPath) ||
-			statSync(session.logPath).size === 0;
-
-		const update: Partial<SessionAnalyticsData> & { sessionId: string } = {
-			sessionId: session.sessionId,
-		};
-
-		if (logEmpty) {
-			update.status = "failed";
-			update.error = "Agent process produced no output (0-byte log)";
-			update.endedAt = session.endedAt || new Date().toISOString();
-			update.exitCode = session.exitCode ?? -1;
-		} else {
-			update.status = "completed";
-			update.endedAt = session.endedAt || new Date().toISOString();
-			update.exitCode = session.exitCode ?? 0;
-		}
-
-		await upsertAnalyticsSession(update);
-		mutated = true;
-	}
-
-	return mutated;
-}
-
 const PS_LINE_REGEX = /^(\d+)\s+([^\s]+)\s+(.+)$/;
 const SPRINT_STORY_STATUS_REGEX =
 	/^([0-9]+-[0-9]+-[a-z0-9-]+):\s*(backlog|ready-for-dev|in-progress|review|done)$/;
 const EPIC_STATUS_REGEX = /^epic-(\d+):\s*(backlog|in-progress|done)$/;
 const EPIC_PLANNING_REGEX = /^epic-(\d+)-planning:\s*([a-z-]+)$/;
 const EPIC_RETROSPECTIVE_REGEX = /^epic-(\d+)-retrospective:\s*([a-z-]+)$/;
-const EPICS_MARKDOWN_ROW_REGEX =
-	/^\|\s*(\d+)\s*\|\s*([^|]+?)\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|/;
-const EPICS_STORY_HEADING_REGEX = /^###\s+Story\s+(\d+)\.(\d+):\s*(.*)$/i;
-const EPICS_EPIC_HEADING_REGEX = /^##+\s+Epic\s+(\d+)\s*:/i;
-const EPICS_EPIC_HEADING_WITH_NAME_REGEX = /^##+\s+Epic\s+(\d+)\s*:\s*(.+)$/i;
-const EPICS_STORY_FALLBACK_LABEL = "story";
-const EPIC_DEPENDENCY_NUMBER_REGEX = /\d+/g;
 const SUMMARY_LINE_REGEX = /(?:^|\n)(?:summary|resumen)\s*:\s*(.+)$/im;
 const SESSION_DETAIL_PATH_REGEX = /^\/api\/session\/([^/]+)$/;
 const SESSION_EVENTS_PATH_REGEX = /^\/api\/events\/session\/([^/]+)$/;
@@ -373,70 +210,20 @@ const EPIC_DETAIL_PATH_REGEX = /^\/api\/epic\/epic-(\d+)$/;
 const WORKFLOW_STEP_DETAIL_PATH_REGEX =
 	/^\/api\/workflow-step\/(planning|solutioning)\/(prd|ux|architecture)$/;
 const LAST_UPDATED_COMMENT_REGEX = /^#\s*last_updated:\s*.*$/m;
-const YAML_COMMENT_REGEX = /#.*$/;
-const YAML_STORY_HEADER_REGEX = /^ {2}(\d+-\d+-[a-z0-9-]+):$/;
-const YAML_DEP_ITEM_REGEX = /^\s{4}- (\d+-\d+-[a-z0-9-]+)$/;
 const ANALYTICS_REQUESTS_LINE_REGEX = /^Requests\s+([\d.]+)/m;
 const ANALYTICS_TOKENS_LINE_REGEX =
 	/^Tokens\s+\u2191\s*([\d.]+)([kmb]?)\s*\u2022\s*\u2193\s*([\d.]+)([kmb]?)\s*\u2022\s*([\d.]+)([kmb]?)\s*\(cached\)/m;
 const ANALYTICS_OLD_STYLE_SESSION_REGEX = /^(\d+)-(\d+)-(.+)$/;
 const ANALYTICS_EPIC_SESSION_REGEX = /^epic-(\d+)-(.+)$/;
-
-function buildAutoResolveInstructions(skill: string): string | null {
-	if (skill === "bmad-code-review") {
-		return [
-			"AUTOMATED ORCHESTRATION MODE — do NOT halt or wait for user input at any checkpoint.",
-			"- For decision-needed findings: use your best technical judgment to resolve each one as a patch (apply the fix) or defer (if pre-existing). Never leave them unresolved.",
-			"- For patch findings: batch-apply ALL fixes automatically (equivalent to option 0). Do not ask the user to choose.",
-			"- After applying fixes, run the build (`npm run build` or `tsc --noEmit`) and fix any new errors before finishing.",
-			"- Mark all resolved findings as checked off in the story file.",
-			"- Update the story status to done only if every finding was resolved. Otherwise keep it in-progress.",
-			"- Complete the entire review-and-fix cycle within this single session.",
-		].join("\n");
-	}
-
-	if (skill === "bmad-retrospective") {
-		return [
-			"AUTOMATED ORCHESTRATION MODE — do NOT halt or wait for user input at any checkpoint.",
-			"- Set {{non_interactive}} = true for the entire workflow.",
-			"- Auto-detect the epic number from sprint-status.yaml (highest epic with all stories done). Do not ask for confirmation.",
-			"- If the epic is incomplete, proceed with a partial retrospective automatically.",
-			"- Generate the full retrospective report and write it to the implementation artifacts folder.",
-			"- Do not ask the user any questions — make all decisions autonomously.",
-			"- Complete every step of the retrospective workflow without stopping.",
-		].join("\n");
-	}
-
-	return null;
-}
-
-function buildAgentCommand(model: string, promptFilePath: string): string {
-	const template =
-		process.env.BMAD_AGENT_COMMAND_TEMPLATE ||
-		'copilot --model "{model}" --allow-all-tools --no-ask-user --no-color --plain-diff -p "$(cat "{promptFile}")"';
-
-	return template
-		.replaceAll("{model}", model)
-		.replaceAll("{promptFile}", `${promptFilePath}`);
-}
-
-async function persistRuntimeState(runtimeState: RuntimeState): Promise<void> {
-	runtimeState.updatedAt = new Date().toISOString();
-	await mkdir(path.dirname(runtimeStatePath), { recursive: true });
-	await writeFile(
-		runtimeStatePath,
-		`${JSON.stringify(runtimeState, null, 2)}\n`,
-		"utf8",
-	);
-}
-
-async function readRuntimeStateFile(): Promise<RuntimeState | null> {
-	if (!existsSync(runtimeStatePath)) {
-		return null;
-	}
-
-	return JSON.parse(await readFile(runtimeStatePath, "utf8")) as RuntimeState;
-}
+const STORY_MARKDOWN_STATUS_REGEX =
+	/^Status:\s*(backlog|ready-for-dev|in-progress|review|done)\s*$/im;
+const STORY_STATUS_ORDER: Record<StoryStatus, number> = {
+	backlog: 0,
+	"ready-for-dev": 1,
+	"in-progress": 2,
+	review: 3,
+	done: 4,
+};
 
 async function readAgentSessionsFile(): Promise<AgentSession[]> {
 	const candidatePath =
@@ -502,375 +289,11 @@ function normalizeToAgentSession(entry: Record<string, unknown>): AgentSession {
 	};
 }
 
-function createEmptyRuntimeState(): RuntimeState {
-	const now = new Date().toISOString();
-	return {
-		status: "running",
-		startedAt: now,
-		updatedAt: now,
-		currentStage: "home",
-		dryRun: false,
-		execute: true,
-		nonInteractive: true,
-		targetStory: null,
-		parallelCandidate: null,
-		sessions: [],
-		notes: ["Agent sessions run in the workspace root."],
-	};
-}
-
-async function loadOrCreateRuntimeState(): Promise<RuntimeState> {
-	const existing = await readRuntimeStateFile();
-	if (existing) {
-		return existing;
-	}
-
-	const nextState = createEmptyRuntimeState();
-	await persistRuntimeState(nextState);
-	return nextState;
-}
-
-function createRuntimeSession(params: {
-	id: string;
-	skill: string;
-	model: string;
-	storyId?: string | null;
-	command: string;
-	promptPath: string;
-	logPath: string;
-}): RuntimeSession {
-	return {
-		id: params.id,
-		skill: params.skill,
-		model: params.model,
-		storyId: params.storyId || null,
-		status: "planned",
-		startedAt: new Date().toISOString(),
-		endedAt: null,
-		command: params.command,
-		promptPath: params.promptPath,
-		logPath: params.logPath,
-		worktreePath: null,
-		exitCode: null,
-		error: null,
-		userMessages: [],
-	};
-}
-
-async function startRuntimeSession(session: RuntimeSession): Promise<void> {
-	session.status = "running";
-	session.startedAt = new Date().toISOString();
-	session.endedAt = null;
-	session.exitCode = null;
-	session.error = null;
-	await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
-
-	// Auto-update sprint-status.yaml when a dev-story session starts
-	if (session.skill === "bmad-dev-story" && session.storyId) {
-		await updateSprintStoryStatus(session.storyId, "in-progress");
-	}
-
-	const stageProcess = spawn(session.command, {
-		cwd: projectRoot,
-		shell: true,
-		env: process.env,
-	});
-	// Only set runningProcess if nothing is currently tracked (legacy single-
-	// process APIs: stdin forwarding and /kill). With parallel sessions the
-	// first started process is the one that "owns" those APIs.
-	if (!runningProcess) {
-		runningProcess = stageProcess;
-		runningProcessKind = "stage";
-	}
-	runningProcessCanAcceptInput = false;
-	runningSessionProcesses.set(session.id, stageProcess);
-
-	stageProcess.stdout?.on("data", async (chunk: Buffer | string) => {
-		await writeFile(session.logPath, chunk.toString(), {
-			encoding: "utf8",
-			flag: "a",
-		});
-	});
-
-	stageProcess.stderr?.on("data", async (chunk: Buffer | string) => {
-		await writeFile(session.logPath, chunk.toString(), {
-			encoding: "utf8",
-			flag: "a",
-		});
-	});
-
-	stageProcess.on("close", async (code: number | null) => {
-		const isCancelled = session.status === "cancelled";
-		session.exitCode = session.exitCode ?? code ?? null;
-		if (!isCancelled) {
-			session.status = code === 0 ? "completed" : "failed";
-		}
-		if (session.endedAt === null) {
-			session.endedAt = new Date().toISOString();
-		}
-		if (!isCancelled && code !== 0 && !session.error) {
-			session.error = `Agent command exited with code ${code}`;
-		}
-		await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
-		await persistSessionAnalytics(session);
-		// Only reset the single-process handle if this session owns it
-		if (runningProcess === stageProcess) {
-			resetRunningProcessState();
-		}
-		runningSessionProcesses.delete(session.id);
-
-		// Auto-update sprint-status.yaml when a dev-story or code-review session ends
-		if (!isCancelled && session.storyId) {
-			if (session.skill === "bmad-dev-story" && code === 0) {
-				await updateSprintStoryStatus(session.storyId, "review");
-			} else if (session.skill === "bmad-code-review" && code === 0) {
-				await updateSprintStoryStatus(session.storyId, "done");
-			}
-		}
-
-		// Merge worktree branch into main and clean up
-		if (code === 0 && !isCancelled && session.worktreePath) {
-			let mergeSucceeded = false;
-
-			// Step 1: Ensure we're on main branch
-			try {
-				await execFileAsync("git", ["checkout", "main"], { cwd: projectRoot });
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] switched to main branch\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			} catch (checkoutError) {
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] failed to checkout main: ${String(checkoutError)}\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			}
-
-			// Step 2: Fetch latest changes
-			try {
-				await execFileAsync("git", ["fetch", "origin", "main"], {
-					cwd: projectRoot,
-				});
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] fetched latest changes from origin\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			} catch (fetchError) {
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] fetch warning: ${String(fetchError)}\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			}
-
-			// Step 3: Try merge with conflict resolution strategy (prefer worktree changes)
-			try {
-				await execFileAsync(
-					"git",
-					["merge", "--no-edit", "-X", "theirs", session.id],
-					{
-						cwd: projectRoot,
-					},
-				);
-				mergeSucceeded = true;
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] ✓ successfully merged branch ${session.id} into main\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			} catch (_mergeError) {
-				// Try to resolve conflicts automatically by taking their version (worktree)
-				try {
-					await execFileAsync(
-						"git",
-						["diff", "--name-only", "--diff-filter=U"],
-						{
-							cwd: projectRoot,
-						},
-					);
-					// If there are conflicts, try to resolve them
-					await execFileAsync("git", ["checkout", "--theirs", "."], {
-						cwd: projectRoot,
-					});
-					await execFileAsync("git", ["add", "-A"], { cwd: projectRoot });
-					await execFileAsync(
-						"git",
-						[
-							"commit",
-							"--no-edit",
-							"-m",
-							`Merge branch '${session.id}' with conflict resolution`,
-						],
-						{ cwd: projectRoot },
-					);
-					mergeSucceeded = true;
-					await writeFile(
-						session.logPath,
-						`\n[orchestrator] ✓ merged with automatic conflict resolution (accepted worktree changes)\n`,
-						{
-							encoding: "utf8",
-							flag: "a",
-						},
-					);
-				} catch (conflictError) {
-					// Last resort: abort merge and continue cleanup
-					await writeFile(
-						session.logPath,
-						`\n[orchestrator] merge conflict resolution failed: ${String(conflictError)}\n`,
-						{
-							encoding: "utf8",
-							flag: "a",
-						},
-					);
-					try {
-						await execFileAsync("git", ["merge", "--abort"], {
-							cwd: projectRoot,
-						});
-						await writeFile(
-							session.logPath,
-							`\n[orchestrator] aborted merge attempt\n`,
-							{
-								encoding: "utf8",
-								flag: "a",
-							},
-						);
-					} catch (abortError) {
-						await writeFile(
-							session.logPath,
-							`\n[orchestrator] merge abort failed: ${String(abortError)}\n`,
-							{
-								encoding: "utf8",
-								flag: "a",
-							},
-						);
-					}
-				}
-			}
-
-			// Step 4: Push changes to remote if merge succeeded
-			if (mergeSucceeded) {
-				try {
-					await execFileAsync("git", ["push", "origin", "main"], {
-						cwd: projectRoot,
-					});
-					await writeFile(
-						session.logPath,
-						`\n[orchestrator] ✓ pushed changes to origin/main\n`,
-						{
-							encoding: "utf8",
-							flag: "a",
-						},
-					);
-				} catch (pushError) {
-					await writeFile(
-						session.logPath,
-						`\n[orchestrator] push to remote failed: ${String(pushError)}\n`,
-						{
-							encoding: "utf8",
-							flag: "a",
-						},
-					);
-				}
-			}
-
-			// Step 5: Clean up worktree and branch (always attempt, even if merge failed)
-			try {
-				await execFileAsync(
-					"git",
-					["worktree", "remove", "--force", session.worktreePath],
-					{
-						cwd: projectRoot,
-					},
-				);
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] removed worktree directory\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			} catch (cleanupError) {
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] worktree removal failed: ${String(cleanupError)}\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			}
-
-			try {
-				await execFileAsync("git", ["branch", "-D", session.id], {
-					cwd: projectRoot,
-				});
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] deleted branch ${session.id}\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			} catch (branchError) {
-				await writeFile(
-					session.logPath,
-					`\n[orchestrator] branch deletion failed: ${String(branchError)}\n`,
-					{
-						encoding: "utf8",
-						flag: "a",
-					},
-				);
-			}
-		}
-	});
-
-	stageProcess.on("error", async (err: Error) => {
-		const isCancelled = session.status === "cancelled";
-		if (!isCancelled) {
-			session.status = "failed";
-			session.error = String(err);
-		}
-		session.endedAt = new Date().toISOString();
-		if (!isCancelled) {
-			await writeFile(session.logPath, `\n${String(err)}\n`, {
-				encoding: "utf8",
-				flag: "a",
-			});
-		}
-		await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
-		await persistSessionAnalytics(session);
-		if (runningProcess === stageProcess) {
-			resetRunningProcessState();
-		}
-		runningSessionProcesses.delete(session.id);
-	});
-}
-
 async function buildOverviewPayload() {
 	ensureRunningProcessStateIsFresh();
 	const store = await readAnalyticsStore();
 	const analyticsSessions = Object.values(store.sessions);
-	await markZombieAnalyticsSessionsFailed(analyticsSessions);
+	await markZombieAnalyticsSessionsFailed(analyticsSessions, upsertAnalyticsSession);
 	const sprintOverview = await loadSprintOverview(analyticsSessions);
 	const externalProcesses = await getExternalCliProcesses();
 	const epicsContent = existsSync(epicsFile)
@@ -909,9 +332,9 @@ async function buildOverviewPayload() {
 	// value so there is no stale data after the process exits.
 	const runningSession = analyticsSessions.find((s) => s.status === "running");
 	if (runningSession) {
-		activeWorkflowSkill = runningSession.skill;
+		setActiveWorkflowSkill(runningSession.skill);
 	} else if (activeWorkflowSkill && !runningSessionProcesses.size) {
-		activeWorkflowSkill = null;
+		setActiveWorkflowSkill(null);
 	}
 
 	const runtimeSessions = analyticsSessions.map(analyticsToRuntimeSession);
@@ -948,16 +371,6 @@ async function buildOverviewPayload() {
 		activeWorkflowSkill,
 		agentSessions,
 	};
-}
-
-function slugifyStoryLabel(value: string): string {
-	const lowered = value.toLowerCase();
-	const sanitized = lowered
-		.replace(/[^a-z0-9\s-]/g, "")
-		.trim()
-		.replace(/\s+/g, "-")
-		.replace(/-+/g, "-");
-	return sanitized || EPICS_STORY_FALLBACK_LABEL;
 }
 
 function summarizeSprintFromEpics(
@@ -1220,11 +633,13 @@ async function loadSprintOverview(
 				const epicNum = Number(match[1]);
 				const storyNum = Number(match[2]);
 				if (!Number.isFinite(epicNum) || !Number.isFinite(storyNum)) continue;
-				if (!plannedPerEpic.has(epicNum)) plannedPerEpic.set(epicNum, new Set());
+				if (!plannedPerEpic.has(epicNum))
+					plannedPerEpic.set(epicNum, new Set());
 				plannedPerEpic.get(epicNum)?.add(storyNum);
 			}
 			for (const epic of overview.epics) {
-				const plannedCount = plannedPerEpic.get(epic.number)?.size ?? epic.storyCount;
+				const plannedCount =
+					plannedPerEpic.get(epic.number)?.size ?? epic.storyCount;
 				epic.plannedStoryCount = plannedCount;
 				const createdCount = overview.stories
 					.filter((s) => Number(s.id.split("-")[0]) === epic.number)
@@ -1250,7 +665,156 @@ async function loadSprintOverview(
 		}
 	}
 
+	await applyStoryStatusOverridesFromMarkdown(overview);
+
 	return overview;
+}
+
+async function applyStoryStatusOverridesFromMarkdown(
+	overview: SprintOverview,
+): Promise<void> {
+	const markdownStatuses = await loadStoryStatusesFromMarkdown();
+	if (markdownStatuses.size === 0) {
+		return;
+	}
+
+	let changed = false;
+	for (const story of overview.stories) {
+		const markdownStatus = markdownStatuses.get(story.id);
+		if (!markdownStatus) {
+			continue;
+		}
+
+		const markdownRank = STORY_STATUS_ORDER[markdownStatus];
+		const currentRank = STORY_STATUS_ORDER[story.status];
+		if (markdownRank <= currentRank) {
+			continue;
+		}
+
+		story.status = markdownStatus;
+		story.steps = {
+			"bmad-create-story": deriveStoryStepStateFromStatus(
+				markdownStatus,
+				"bmad-create-story",
+			),
+			"bmad-dev-story": deriveStoryStepStateFromStatus(
+				markdownStatus,
+				"bmad-dev-story",
+			),
+			"bmad-code-review": deriveStoryStepStateFromStatus(
+				markdownStatus,
+				"bmad-code-review",
+			),
+		};
+		changed = true;
+	}
+
+	if (!changed) {
+		return;
+	}
+
+	recomputeSprintOverviewCounts(overview);
+}
+
+async function loadStoryStatusesFromMarkdown(): Promise<
+	Map<string, StoryStatus>
+> {
+	const implementationDir = path.join(
+		artifactsRoot,
+		"implementation-artifacts",
+	);
+	if (!existsSync(implementationDir)) {
+		return new Map();
+	}
+
+	const statuses = new Map<string, StoryStatus>();
+
+	async function walk(dir: string): Promise<void> {
+		const entries = await readdir(dir, { withFileTypes: true });
+		for (const entry of entries) {
+			const fullPath = path.join(dir, entry.name);
+			if (entry.isDirectory()) {
+				await walk(fullPath);
+				continue;
+			}
+
+			if (!entry.isFile() || !entry.name.endsWith(".md")) {
+				continue;
+			}
+
+			const storyId = entry.name.replace(/\.md$/, "");
+			const match = storyId.match(STORY_ID_PREFIX_REGEX);
+			if (!match) {
+				continue;
+			}
+
+			let content = "";
+			try {
+				content = await readFile(fullPath, "utf8");
+			} catch {
+				continue;
+			}
+
+			const statusMatch = content.match(STORY_MARKDOWN_STATUS_REGEX);
+			if (!statusMatch) {
+				continue;
+			}
+
+			statuses.set(storyId, statusMatch[1] as StoryStatus);
+		}
+	}
+
+	await walk(implementationDir);
+	return statuses;
+}
+
+function recomputeSprintOverviewCounts(overview: SprintOverview): void {
+	const nextStoriesByStatus: Record<string, number> = {
+		backlog: 0,
+		"ready-for-dev": 0,
+		"in-progress": 0,
+		review: 0,
+		done: 0,
+	};
+
+	for (const story of overview.stories) {
+		nextStoriesByStatus[story.status] += 1;
+	}
+	overview.storiesByStatus = nextStoriesByStatus;
+
+	for (const epic of overview.epics) {
+		epic.storyCount = 0;
+		epic.byStoryStatus = {
+			backlog: 0,
+			"ready-for-dev": 0,
+			"in-progress": 0,
+			review: 0,
+			done: 0,
+		};
+	}
+
+	for (const story of overview.stories) {
+		const epicNumber = Number(story.id.split("-")[0]);
+		if (!Number.isFinite(epicNumber)) {
+			continue;
+		}
+		const epic = overview.epics.find(
+			(candidate) => candidate.number === epicNumber,
+		);
+		if (!epic) {
+			continue;
+		}
+		epic.storyCount += 1;
+		epic.byStoryStatus[story.status] += 1;
+	}
+
+	for (const epic of overview.epics) {
+		epic.status = deriveEpicStatusFromStories(
+			epic.status,
+			epic.storyCount,
+			epic.byStoryStatus,
+		);
+	}
 }
 
 function describeToolCall(toolName: string): string {
@@ -1493,7 +1057,10 @@ async function buildCleanLogContent(
 	return fallbackRawLog;
 }
 
-type WorkflowStepDetailKey = "planning/prd" | "planning/ux" | "solutioning/architecture";
+type WorkflowStepDetailKey =
+	| "planning/prd"
+	| "planning/ux"
+	| "solutioning/architecture";
 
 type WorkflowStepDetailResponse = {
 	phase: { id: string; name: string; number: number };
@@ -1735,10 +1302,7 @@ async function buildWorkflowStepDetailPayload(
 	} else if (artifactFileName) {
 		artifactStatus = "present";
 		const fullPath = path.join(planningDir, artifactFileName);
-		filePath = path.relative(
-			path.join(artifactsRoot, ".."),
-			fullPath,
-		);
+		filePath = path.relative(path.join(artifactsRoot, ".."), fullPath);
 		try {
 			markdownContent = await readFile(fullPath, "utf8");
 		} catch {
@@ -1767,7 +1331,7 @@ async function buildSessionDetailPayload(
 	sessionId: string,
 ): Promise<SessionDetailResponse | null> {
 	const store = await readAnalyticsStore();
-	await markZombieAnalyticsSessionsFailed(Object.values(store.sessions));
+	await markZombieAnalyticsSessionsFailed(Object.values(store.sessions), upsertAnalyticsSession);
 	const analyticsEntry = store.sessions[sessionId] || null;
 	if (!analyticsEntry) {
 		return null;
@@ -1885,28 +1449,6 @@ function deriveStoryStepStateFromStatus(
 	}
 
 	return "not-started";
-}
-
-function deriveEpicStatusFromStories(
-	currentStatus: EpicStatus,
-	storyCount: number,
-	byStoryStatus: Record<StoryStatus, number>,
-): EpicStatus {
-	if (storyCount === 0) {
-		return currentStatus;
-	}
-
-	if (byStoryStatus.done === storyCount) {
-		return "done";
-	}
-
-	const hasProgress =
-		byStoryStatus["ready-for-dev"] > 0 ||
-		byStoryStatus["in-progress"] > 0 ||
-		byStoryStatus.review > 0 ||
-		byStoryStatus.done > 0;
-
-	return hasProgress ? "in-progress" : "backlog";
 }
 
 function summarizeSprint(
@@ -2195,370 +1737,6 @@ function summarizeEpicSteps(sessions: SessionAnalyticsData[]): Array<{
 	});
 }
 
-function parseEpicMarkdownRows(epicsContent: string): ParsedEpicMarkdownRow[] {
-	const rows: ParsedEpicMarkdownRow[] = [];
-	const seen = new Set<string>();
-
-	for (const line of epicsContent.split("\n")) {
-		const trimmed = line.trim();
-
-		// Try markdown table row first: | 1 | Name | ... | deps |
-		const tableRow = trimmed.match(EPICS_MARKDOWN_ROW_REGEX);
-		if (tableRow) {
-			const epicNumber = Number(tableRow[1]);
-			if (!Number.isFinite(epicNumber)) {
-				continue;
-			}
-			const id = `epic-${epicNumber}`;
-			if (seen.has(id)) {
-				continue;
-			}
-			const label = tableRow[2].trim();
-			const dependenciesCell = tableRow[4].trim();
-			const dependencyNumbers =
-				dependenciesCell.match(EPIC_DEPENDENCY_NUMBER_REGEX) || [];
-			const dependsOn = dependencyNumbers.map(
-				(value) => `epic-${Number(value)}`,
-			);
-			rows.push({ id, number: epicNumber, label, dependsOn });
-			seen.add(id);
-			continue;
-		}
-
-		// Fallback: heading format ## Epic N: Name
-		const headingRow = trimmed.match(EPICS_EPIC_HEADING_WITH_NAME_REGEX);
-		if (headingRow) {
-			const epicNumber = Number(headingRow[1]);
-			if (!Number.isFinite(epicNumber)) {
-				continue;
-			}
-			const id = `epic-${epicNumber}`;
-			if (seen.has(id)) {
-				continue;
-			}
-			const label = headingRow[2].trim();
-			rows.push({ id, number: epicNumber, label, dependsOn: [] });
-			seen.add(id);
-		}
-	}
-
-	return rows.sort((a, b) => a.number - b.number);
-}
-
-function getEpicMetadataFromMarkdown(
-	epicsContent: string,
-	epicNumber: number,
-): { name: string; description: string } {
-	const lines = epicsContent.split("\n");
-	let name = "";
-	const descLines: string[] = [];
-	let foundHeading = false;
-
-	for (let i = 0; i < lines.length; i++) {
-		const trimmed = lines[i].trim();
-
-		if (!foundHeading) {
-			const headingMatch = trimmed.match(EPICS_EPIC_HEADING_WITH_NAME_REGEX);
-			if (headingMatch && Number(headingMatch[1]) === epicNumber) {
-				name = headingMatch[2].trim();
-				foundHeading = true;
-			}
-			continue;
-		}
-
-		if (
-			trimmed.startsWith("#") ||
-			trimmed.startsWith("**Story to FR") ||
-			trimmed.startsWith("**FRs covered")
-		) {
-			break;
-		}
-
-		if (trimmed.length > 0) {
-			descLines.push(trimmed);
-		}
-	}
-
-	return { name, description: descLines.join(" ") };
-}
-
-const STORY_ID_PREFIX_REGEX = /^(\d+)-(\d+)-/;
-
-function getStoryContentFromEpics(
-	epicsContent: string,
-	storyId: string,
-): { title: string; content: string } | null {
-	const idMatch = storyId.match(STORY_ID_PREFIX_REGEX);
-	if (!idMatch) {
-		return null;
-	}
-
-	const epicNum = idMatch[1];
-	const storyNum = idMatch[2];
-	const storyHeadingPrefix = `### Story ${epicNum}.${storyNum}:`;
-
-	const lines = epicsContent.split("\n");
-	let startIndex = -1;
-	let endIndex = lines.length;
-	let title = "";
-
-	for (let i = 0; i < lines.length; i++) {
-		const trimmed = lines[i].trim();
-
-		if (startIndex === -1) {
-			if (trimmed.startsWith(storyHeadingPrefix)) {
-				startIndex = i;
-				title = trimmed.replace(/^###\s*/, "");
-			}
-			continue;
-		}
-
-		if (
-			trimmed.startsWith("### ") ||
-			trimmed.startsWith("## ") ||
-			trimmed === "---"
-		) {
-			endIndex = i;
-			break;
-		}
-	}
-
-	if (startIndex === -1) {
-		return null;
-	}
-
-	const content = lines
-		.slice(startIndex + 1, endIndex)
-		.join("\n")
-		.trim();
-	return { title, content };
-}
-
-/**
- * Extract planned story IDs for a given epic from epics.md content.
- * Returns full story IDs for stories already tracked in sprintStories,
- * or the "N-M-" prefix for stories not yet tracked in sprint-status.
- */
-function getPlannedStoriesFromEpics(
-	epicsContent: string,
-	epicNumber: number,
-	sprintStories: Array<{ id: string }>,
-): string[] {
-	const seen = new Set<string>()
-	const results: string[] = [];
-	for (const line of epicsContent.split("\n")) {
-		const match = line.trim().match(EPICS_STORY_HEADING_REGEX);
-		if (!match) continue;
-		if (Number(match[1]) !== epicNumber) continue;
-		const prefix = `${match[1]}-${match[2]}-`;
-		if (seen.has(prefix)) continue;
-		seen.add(prefix);
-		const found = sprintStories.find((s) => s.id.startsWith(prefix));
-		results.push(found ? found.id : prefix);
-	}
-	return results;
-}
-
-function summarizeEpicConsistency(
-	parsedEpicRows: ParsedEpicMarkdownRow[],
-	sprintOverview: SprintOverview,
-): EpicConsistency {
-	const epicsMarkdownCount = parsedEpicRows.length;
-	const sprintStatusCount = sprintOverview.epics.length;
-	const hasMismatch = epicsMarkdownCount !== sprintStatusCount;
-
-	if (!hasMismatch) {
-		return {
-			hasMismatch,
-			epicsMarkdownCount,
-			sprintStatusCount,
-			warning: null,
-		};
-	}
-
-	return {
-		hasMismatch,
-		epicsMarkdownCount,
-		sprintStatusCount,
-		warning: `Epic count mismatch: epics.md defines ${epicsMarkdownCount} epic${epicsMarkdownCount === 1 ? "" : "s"}, sprint-status.yaml tracks ${sprintStatusCount}. Re-run Sprint Planning to synchronize.`,
-	};
-}
-
-function buildDependencyTree(
-	parsedEpicRows: ParsedEpicMarkdownRow[],
-	sprintOverview: SprintOverview,
-): DependencyTreeNode[] {
-	const sprintEpicMap = new Map(
-		sprintOverview.epics.map((epic) => [
-			epic.id,
-			{ status: epic.status, storyCount: epic.storyCount },
-		]),
-	);
-
-	const nodes: DependencyTreeNode[] = [];
-
-	for (const row of parsedEpicRows) {
-		const id = row.id;
-		const sprintData = sprintEpicMap.get(id);
-
-		nodes.push({
-			id,
-			label: row.label,
-			status: sprintData?.status || "backlog",
-			storyCount: sprintData?.storyCount || 0,
-			dependsOn: row.dependsOn,
-		});
-	}
-
-	if (nodes.length === 0) {
-		return sprintOverview.epics.map((epic) => ({
-			id: epic.id,
-			label: epic.id,
-			status: epic.status,
-			storyCount: epic.storyCount,
-			dependsOn: [],
-		}));
-	}
-
-	return nodes.sort((a, b) => {
-		const aNumber = Number(a.id.replace("epic-", ""));
-		const bNumber = Number(b.id.replace("epic-", ""));
-		return aNumber - bNumber;
-	});
-}
-
-/**
- * Load story-level dependencies from the YAML file.
- * Returns Record<storyId, string[]> for all stories with explicit dependencies.
- */
-function loadStoryDependencies(): Record<string, string[]> {
-	const deps: Record<string, string[]> = {};
-
-	if (!existsSync(storyDependenciesFile)) {
-		return deps;
-	}
-
-	let content: string;
-	try {
-		content = readFileSync(storyDependenciesFile, "utf8");
-	} catch {
-		return deps;
-	}
-
-	let currentStory: string | null = null;
-
-	for (const rawLine of content.split("\n")) {
-		const line = rawLine.replace(YAML_COMMENT_REGEX, "").trimEnd();
-		if (line.trim().length === 0) {
-			continue;
-		}
-
-		const storyMatch = line.match(YAML_STORY_HEADER_REGEX);
-		if (storyMatch) {
-			currentStory = storyMatch[1];
-			if (!deps[currentStory]) {
-				deps[currentStory] = [];
-			}
-			continue;
-		}
-
-		const depMatch = line.match(YAML_DEP_ITEM_REGEX);
-		if (depMatch && currentStory) {
-			deps[currentStory].push(depMatch[1]);
-			continue;
-		}
-
-		// Epic header or anything else: reset current story
-		if (!line.startsWith("  ")) {
-			currentStory = null;
-		}
-	}
-
-	return deps;
-}
-
-function escapeRegExp(value: string): string {
-	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function syncEpicStatusInSprintContent(
-	content: string,
-	epicNumber: number,
-): string {
-	const storyLinePattern = new RegExp(
-		`^${epicNumber}-\\d+-[a-z0-9-]+:\\s*(backlog|ready-for-dev|in-progress|review|done)$`,
-		"gm",
-	);
-	const byStoryStatus: Record<StoryStatus, number> = {
-		backlog: 0,
-		"ready-for-dev": 0,
-		"in-progress": 0,
-		review: 0,
-		done: 0,
-	};
-
-	let storyCount = 0;
-	for (const match of content.matchAll(storyLinePattern)) {
-		const storyStatus = match[1] as StoryStatus;
-		byStoryStatus[storyStatus] += 1;
-		storyCount += 1;
-	}
-
-	if (storyCount === 0) {
-		return content;
-	}
-
-	const epicLinePattern = new RegExp(
-		`^(\\s*epic-${epicNumber}:\\s*)(backlog|in-progress|done)$`,
-		"m",
-	);
-	const epicLineMatch = content.match(epicLinePattern);
-	if (!epicLineMatch?.[2]) {
-		return content;
-	}
-
-	const currentStatus = epicLineMatch[2] as EpicStatus;
-	const derivedStatus = deriveEpicStatusFromStories(
-		currentStatus,
-		storyCount,
-		byStoryStatus,
-	);
-
-	if (derivedStatus === currentStatus) {
-		return content;
-	}
-
-	return content.replace(epicLinePattern, `$1${derivedStatus}`);
-}
-
-async function updateSprintStoryStatus(
-	storyId: string,
-	newStatus: string,
-): Promise<void> {
-	if (!existsSync(sprintStatusFile)) return;
-	const content = await readFile(sprintStatusFile, "utf8");
-	const linePattern = new RegExp(
-		`^(${escapeRegExp(storyId)}:\\s*)(backlog|ready-for-dev|in-progress|review|done)$`,
-		"m",
-	);
-	if (!linePattern.test(content)) return;
-	let next = content.replace(linePattern, `$1${newStatus}`);
-	const epicNumber = Number(storyId.split("-")[0]);
-	if (Number.isFinite(epicNumber)) {
-		next = syncEpicStatusInSprintContent(next, epicNumber);
-	}
-	next = next.replace(
-		LAST_UPDATED_COMMENT_REGEX,
-		`# last_updated: ${new Date().toISOString().slice(0, 10)}`,
-	);
-	const lastUpdatedFieldPattern = /^last_updated:\s*.*$/m;
-	next = next.replace(
-		lastUpdatedFieldPattern,
-		`last_updated: ${new Date().toISOString()}`,
-	);
-	await writeFile(sprintStatusFile, next, "utf8");
-}
-
 function stripAnsi(value: string): string {
 	let cleaned = "";
 
@@ -2706,56 +1884,6 @@ function fallbackSummary(
 	}
 
 	return "Completed, but no generated summary was found.";
-}
-
-function findStoryMarkdown(
-	storyId: string,
-): Promise<{ path: string; content: string } | null> {
-	const root = path.join(artifactsRoot, "implementation-artifacts");
-
-	async function walk(
-		dirPath: string,
-	): Promise<{ path: string; content: string } | null> {
-		const entries = await readdir(dirPath, { withFileTypes: true });
-
-		for (const entry of entries) {
-			const absolutePath = path.join(dirPath, entry.name);
-
-			if (entry.isDirectory()) {
-				const nested = await walk(absolutePath);
-				if (nested) {
-					return nested;
-				}
-				continue;
-			}
-
-			if (!entry.isFile()) {
-				continue;
-			}
-
-			if (!entry.name.endsWith(".md")) {
-				continue;
-			}
-
-			if (!entry.name.startsWith(storyId)) {
-				continue;
-			}
-
-			const content = await readFile(absolutePath, "utf8");
-			return {
-				path: path.relative(projectRoot, absolutePath),
-				content,
-			};
-		}
-
-		return null;
-	}
-
-	if (!existsSync(root)) {
-		return Promise.resolve(null);
-	}
-
-	return walk(root);
 }
 
 async function readOptionalTextFile(
@@ -3952,7 +3080,7 @@ function attachApi(server: ViteDevServer): void {
 						await upsertAnalyticsSession(sessionToAnalyticsUpdate(session));
 
 						try {
-							await startRuntimeSession(session);
+							await startRuntimeSession(session, { upsertSession: upsertAnalyticsSession, toAnalyticsUpdate: sessionToAnalyticsUpdate, persistSessionAnalytics });
 						} catch (restartError) {
 							session.status = "failed";
 							session.error = `Failed to restart session: ${String(restartError)}`;
@@ -4070,7 +3198,7 @@ function attachApi(server: ViteDevServer): void {
 					}
 
 					try {
-						await startRuntimeSession(session);
+						await startRuntimeSession(session, { upsertSession: upsertAnalyticsSession, toAnalyticsUpdate: sessionToAnalyticsUpdate, persistSessionAnalytics });
 					} catch (worktreeError) {
 						session.status = "failed";
 						session.error = `Failed to start session: ${String(worktreeError)}`;
@@ -4150,25 +3278,26 @@ function attachApi(server: ViteDevServer): void {
 
 				const commandArgs = ["bmad:orchestrate", "--"];
 
-				runningProcess = spawn("pnpm", commandArgs, {
+				const orchestratorProcess = spawn("pnpm", commandArgs, {
 					cwd: projectRoot,
 					shell: true,
 					env: process.env,
 					stdio: ["pipe", "ignore", "ignore"],
 				});
-				runningProcessCanAcceptInput = false;
-				runningProcessKind = "orchestrator";
+				setRunningProcess(orchestratorProcess);
+				setRunningProcessCanAcceptInput(false);
+				setRunningProcessKind("orchestrator");
 
-				runningProcess.on("close", () => {
-					runningProcess = null;
-					runningProcessCanAcceptInput = false;
-					runningProcessKind = null;
+				orchestratorProcess.on("close", () => {
+					setRunningProcess(null);
+					setRunningProcessCanAcceptInput(false);
+					setRunningProcessKind(null);
 				});
 
-				runningProcess.on("error", () => {
-					runningProcess = null;
-					runningProcessCanAcceptInput = false;
-					runningProcessKind = null;
+				orchestratorProcess.on("error", () => {
+					setRunningProcess(null);
+					setRunningProcessCanAcceptInput(false);
+					setRunningProcessKind(null);
 				});
 
 				res.writeHead(202, { "Content-Type": "application/json" });
@@ -4257,7 +3386,7 @@ function attachApi(server: ViteDevServer): void {
 					await mkdir(runtimeLogsDir, { recursive: true });
 
 					const timestamp = Date.now();
-					const sessionId = `${stage}-${timestamp}-${++sessionIdCounter}`;
+					const sessionId = `${stage}-${timestamp}-${incrementSessionIdCounter()}`;
 					const promptPath = path.join(
 						runtimeLogsDir,
 						`${sessionId}.prompt.txt`,
@@ -4337,9 +3466,9 @@ function attachApi(server: ViteDevServer): void {
 				}
 
 				runningProcess.kill();
-				runningProcess = null;
-				runningProcessCanAcceptInput = false;
-				runningProcessKind = null;
+				setRunningProcess(null);
+				setRunningProcessCanAcceptInput(false);
+				setRunningProcessKind(null);
 				res.writeHead(200, { "Content-Type": "application/json" });
 				res.end(JSON.stringify({ status: "stopped" }));
 				return;
@@ -4856,7 +3985,7 @@ function attachApi(server: ViteDevServer): void {
 					await mkdir(runtimeLogsDir, { recursive: true });
 
 					const timestamp = Date.now();
-					const sessionId = `workflow-${skill}-${timestamp}-${++sessionIdCounter}`;
+					const sessionId = `workflow-${skill}-${timestamp}-${incrementSessionIdCounter()}`;
 					const promptPath = path.join(
 						runtimeLogsDir,
 						`${sessionId}.prompt.txt`,
@@ -4915,8 +4044,8 @@ function attachApi(server: ViteDevServer): void {
 						worktreePath: session.worktreePath,
 					});
 
-					await startRuntimeSession(session);
-					activeWorkflowSkill = skill;
+					await startRuntimeSession(session, { upsertSession: upsertAnalyticsSession, toAnalyticsUpdate: sessionToAnalyticsUpdate, persistSessionAnalytics });
+					setActiveWorkflowSkill(skill);
 
 					res.writeHead(202, { "Content-Type": "application/json" });
 					res.end(JSON.stringify({ status: "started", sessionId }));

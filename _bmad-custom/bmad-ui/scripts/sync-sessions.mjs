@@ -18,6 +18,7 @@ import { existsSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
+import process from "node:process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -57,12 +58,18 @@ const PREMIUM_MULTIPLIERS = new Map([
 	["gpt-5", 2],
 ]);
 
-/**
- * Skills that never produce git commits by design — their output IS the
- * review / plan / analysis itself.  These get outcome "delivered" when
- * the session completes normally, instead of requiring a git commit/push.
- */
-const NON_COMMITTING_SKILLS = new Set([
+const SKILLS_CONFIG_PATH = join(
+	__dirname,
+	"..",
+	"..",
+	"..",
+	"_bmad-custom",
+	"agents",
+	"skills-config.json",
+);
+
+/** Default set of skills that never produce git commits by design. */
+const DEFAULT_NON_COMMITTING_SKILLS = [
 	"bmad-code-review",
 	"bmad-sprint-planning",
 	"bmad-sprint-status",
@@ -72,7 +79,35 @@ const NON_COMMITTING_SKILLS = new Set([
 	"bmad-review-edge-case-hunter",
 	"bmad-check-implementation-readiness",
 	"bmad-checkpoint-preview",
-]);
+];
+
+/**
+ * Skills that never produce git commits by design — their output IS the
+ * review / plan / analysis itself.  These get outcome "delivered" when
+ * the session completes normally, instead of requiring a git commit/push.
+ *
+ * Loaded from skills-config.json; falls back to hardcoded defaults if
+ * file is missing or malformed.
+ */
+function loadNonCommittingSkills() {
+	try {
+		if (existsSync(SKILLS_CONFIG_PATH)) {
+			const cfg = JSON.parse(readFileSync(SKILLS_CONFIG_PATH, "utf8"));
+			if (
+				cfg &&
+				Array.isArray(cfg.nonCommittingSkills) &&
+				cfg.nonCommittingSkills.length > 0
+			) {
+				return new Set(cfg.nonCommittingSkills);
+			}
+		}
+	} catch {
+		// fall through to default
+	}
+	return new Set(DEFAULT_NON_COMMITTING_SKILLS);
+}
+
+const NON_COMMITTING_SKILLS = loadNonCommittingSkills();
 
 /** Minimum characters of real human content after stripping auto-injected XML. */
 const MIN_HUMAN_CONTENT_LEN = 10;
@@ -186,16 +221,12 @@ function findBmadWorkspaceHash() {
 // ─── Copilot CLI parser ───────────────────────────────────────────────────────
 
 /**
- * Parses ~/.copilot/session-state/<sid>/events.jsonl
+ * Pure parser: takes the raw events.jsonl content as a string.
  * Returns an AgentSession-format object or null if not a bmad-ui session.
+ * Exported for unit testing.
  */
-function parseCLISession(sessionId, eventsPath) {
-	let content;
-	try {
-		content = readFileSync(eventsPath, "utf8");
-	} catch {
-		return null;
-	}
+export function parseCLISessionContent(sessionId, content, nonCommittingSkills) {
+	const skillSet = nonCommittingSkills ?? NON_COMMITTING_SKILLS;
 
 	let model = "unknown";
 	let startDate = null;
@@ -214,6 +245,10 @@ function parseCLISession(sessionId, eventsPath) {
 	let subagentCount = 0;
 	let subagentTokens = 0;
 	let errorCount = 0;
+
+	// agent_active_minutes: sum of per-turn time (user.message → assistant.turn_end)
+	let agentActiveMs = 0;
+	let pendingUserMessageTs = null;
 
 	for (const raw of content.split("\n")) {
 		const line = raw.trim();
@@ -248,11 +283,22 @@ function parseCLISession(sessionId, eventsPath) {
 				if (stripped.length > MIN_HUMAN_CONTENT_LEN) {
 					humanTurns++;
 				}
+				// Record timestamp for agent_active_minutes tracking
+				if (ts) pendingUserMessageTs = Date.parse(ts);
 				break;
 			}
-			case "assistant.turn_end":
+			case "assistant.turn_end": {
 				agentTurns++;
+				// Accumulate active turn time
+				if (pendingUserMessageTs !== null && ts) {
+					const turnEndMs = Date.parse(ts);
+					if (!Number.isNaN(turnEndMs) && turnEndMs > pendingUserMessageTs) {
+						agentActiveMs += turnEndMs - pendingUserMessageTs;
+					}
+					pendingUserMessageTs = null;
+				}
 				break;
+			}
 			case "skill.invoked":
 				if (obj.data?.name) skill = obj.data.name;
 				break;
@@ -298,10 +344,14 @@ function parseCLISession(sessionId, eventsPath) {
 		if (diffMs > 0) durationMinutes = Math.round((diffMs / 60_000) * 10) / 10;
 	}
 
+	// agent_active_minutes: sum of per-turn active time (rounded to 1 decimal)
+	const agentActiveMinutes =
+		agentActiveMs > 0 ? Math.round((agentActiveMs / 60_000) * 10) / 10 : 0;
+
 	// Skill-aware outcome derivation
 	// Non-committing skills (code-review, planning, etc.) count as "delivered"
 	// when the session completes normally — they never produce git commits by design.
-	const isNonCommitting = NON_COMMITTING_SKILLS.has(skill);
+	const isNonCommitting = skillSet.has(skill);
 	let outcome = "no-output";
 	if (aborted) {
 		outcome = "aborted";
@@ -337,11 +387,26 @@ function parseCLISession(sessionId, eventsPath) {
 		subagent_tokens: subagentTokens,
 		error_count: errorCount,
 		duration_minutes: durationMinutes,
+		agent_active_minutes: agentActiveMinutes,
 		outcome,
 		status,
 		start_date: startDate,
 		end_date: status === "completed" ? (lastTs ?? startDate) : null,
 	};
+}
+
+/**
+ * Parses ~/.copilot/session-state/<sid>/events.jsonl
+ * Returns an AgentSession-format object or null if not a bmad-ui session.
+ */
+function parseCLISession(sessionId, eventsPath) {
+	let content;
+	try {
+		content = readFileSync(eventsPath, "utf8");
+	} catch {
+		return null;
+	}
+	return parseCLISessionContent(sessionId, content);
 }
 
 // ─── VS Code debug log parser ─────────────────────────────────────────────────
@@ -528,13 +593,14 @@ function syncSessions() {
 			const eventsPath = join(CLI_BASE, sid, "events.jsonl");
 			if (!existsSync(eventsPath)) continue;
 
-			// Skip already-completed sessions that have outcome fields populated
+			// Skip already-completed sessions that have all outcome fields populated
 			const prev = existing[sid];
 			if (
 				prev?.tool === "copilot-cli" &&
 				prev?.status === "completed" &&
 				prev?.end_date &&
-				prev?.outcome
+				prev?.outcome &&
+				prev?.agent_active_minutes != null
 			)
 				continue;
 
