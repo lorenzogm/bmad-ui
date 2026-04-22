@@ -15440,7 +15440,7 @@
       "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-22T21:39:22.193Z",
-      "end_date": null,
+      "end_date": "2026-04-22T22:04:46.622Z",
       "notes": "Story 10-3: Quality nav link added. Most impl was already in HEAD."
     },
     "37b830d5-320c-4bc3-acab-f859ee084c8e": {
@@ -15487,7 +15487,7 @@
       "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-22T21:39:22.193Z",
-      "end_date": null
+      "end_date": "2026-04-22T22:01:51.225Z"
     },
     "4794edb7-75d7-45e9-843e-6b97b9db1c22": {
       "sessionId": "4794edb7-75d7-45e9-843e-6b97b9db1c22",
@@ -15533,7 +15533,7 @@
       "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-22T21:39:22.225Z",
-      "end_date": null
+      "end_date": "2026-04-22T21:52:27.730Z"
     },
     "5ea6d604-7e75-4ff9-a859-b0e530c72d84": {
       "sessionId": "5ea6d604-7e75-4ff9-a859-b0e530c72d84",
@@ -15567,19 +15567,19 @@
       "agent": "bmad-dev-story",
       "turns": 3,
       "human_turns": 1,
-      "agent_turns": 165,
-      "git_commits": 0,
-      "git_pushes": 0,
+      "agent_turns": 169,
+      "git_commits": 1,
+      "git_pushes": 1,
       "aborted": true,
       "context_compactions": 1,
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 27.6,
+      "duration_minutes": 28,
       "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-22T21:39:22.224Z",
-      "end_date": null
+      "end_date": "2026-04-22T22:07:24.316Z"
     },
     "c2bcfd96-ea17-484a-b0ff-253d84c95eda": {
       "sessionId": "c2bcfd96-ea17-484a-b0ff-253d84c95eda",
@@ -15625,7 +15625,7 @@
       "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-22T21:39:22.303Z",
-      "end_date": null,
+      "end_date": "2026-04-22T22:04:05.816Z",
       "notes": "Story 10.2 — implementation was already in HEAD from story 10.4 dev. Verified all ACs satisfied."
     },
     "d6f8700c-9284-4515-9774-2d1317db0edf": {
@@ -15649,30 +15649,31 @@
       "session_id": "d6f8700c-9284-4515-9774-2d1317db0edf",
       "tool": "copilot-cli",
       "premium": true,
-      "premium_requests": 3,
+      "premium_requests": 4,
       "premium_multiplier": 1,
-      "premium_cost_units": 3,
+      "premium_cost_units": 4,
       "tokens": {
         "input": 0,
         "output": 0,
         "total": 0
       },
       "agent": "bmad-retrospective",
-      "turns": 3,
-      "human_turns": 1,
-      "agent_turns": 20,
-      "git_commits": 0,
-      "git_pushes": 0,
+      "turns": 4,
+      "human_turns": 2,
+      "agent_turns": 63,
+      "git_commits": 2,
+      "git_pushes": 2,
       "aborted": false,
-      "context_compactions": 0,
-      "subagent_count": 0,
+      "context_compactions": 1,
+      "subagent_count": 1,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 6.5,
-      "agent_active_minutes": 0.2,
-      "outcome": "delivered",
+      "duration_minutes": 69.3,
+      "agent_active_minutes": 0.6,
+      "outcome": "pushed",
       "start_date": "2026-04-22T21:37:56.866Z",
-      "end_date": null
+      "end_date": null,
+      "notes": "Epic 12 retrospective completed. Retro doc saved, sprint-status updated. Key findings: 0/3 story files for Epic 12 (same-commit rule), 9-epic carry on Epic 4 CI/CD patches, 12-epic carry on dotenvx caveat."
     }
   }
 }

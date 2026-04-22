@@ -71,14 +71,6 @@ const SESSIONS_REFETCH_INTERVAL_MS = 3_000
 const RUNNING_STATUS = "running"
 const WORKFLOW_SESSION_PREFIX = "workflow-"
 
-const WORKFLOW_SUBMENU = [
-  { label: "Overview", phaseId: null },
-  { label: "Analysis", phaseId: "analysis" },
-  { label: "Planning", phaseId: "planning" },
-  { label: "Solutioning", phaseId: "solutioning" },
-  { label: "Implementation", phaseId: "implementation" },
-] as const
-
 const ANALYTICS_SUBMENU = [
   { label: "Overview", to: "/analytics" },
   { label: "Epics", to: "/analytics/epics" },
@@ -233,10 +225,18 @@ function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
 function RootLayout() {
   const location = useLocation()
   const currentPath = location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/"
-  const isAnalyticsSection = currentPath.startsWith("/analytics")
-  const isWorkflowSection = currentPath.startsWith("/workflow")
-  const isSessionsSection =
-    currentPath.startsWith("/sessions") || currentPath.startsWith("/session/")
+  const isDiscoverSection = currentPath.startsWith("/workflow/analysis")
+  const isDefineSection =
+    currentPath.startsWith("/workflow/planning") || currentPath.startsWith("/workflow/solutioning")
+  const isDevelopSection =
+    currentPath === "/" ||
+    currentPath.startsWith("/workflow/implementation") ||
+    currentPath.startsWith("/epic.") ||
+    currentPath.startsWith("/story.")
+  const isDeliverSection =
+    currentPath.startsWith("/sessions") ||
+    currentPath.startsWith("/session/") ||
+    currentPath.startsWith("/analytics")
   const [chatOpen, setChatOpen] = useState(false)
 
   const { data: sessionsData, isLoading: isSessionsLoading } = useQuery<SessionAnalytics[]>({
@@ -266,48 +266,98 @@ function RootLayout() {
           </Link>
         </div>
         <nav aria-label="Main navigation" className="sidebar-nav">
+          {/* ◇ Discover */}
           <Link
-            className={`sidebar-link sidebar-link-section ${isWorkflowSection ? "is-section-active" : ""}`}
-            to="/workflow"
+            className={`sidebar-link sidebar-link-section ${isDiscoverSection ? "is-section-active" : ""}`}
+            params={{ phaseId: "analysis" }}
+            to="/workflow/$phaseId"
           >
-            Workflow
+            ◇ Discover
           </Link>
-
           <div className="sidebar-submenu">
-            {WORKFLOW_SUBMENU.map((link) =>
-              link.phaseId ? (
-                <Link
-                  activeOptions={{ exact: false }}
-                  activeProps={{ "aria-current": "page" as const }}
-                  className="sidebar-sublink"
-                  key={link.label}
-                  params={{ phaseId: link.phaseId }}
-                  to="/workflow/$phaseId"
-                >
-                  {link.label}
-                </Link>
-              ) : (
-                <Link
-                  activeOptions={{ exact: true }}
-                  activeProps={{ "aria-current": "page" as const }}
-                  className="sidebar-sublink"
-                  key={link.label}
-                  to="/workflow"
-                >
-                  {link.label}
-                </Link>
-              )
-            )}
+            <Link
+              activeOptions={{ exact: false }}
+              activeProps={{ "aria-current": "page" as const }}
+              className="sidebar-sublink"
+              params={{ phaseId: "analysis" }}
+              to="/workflow/$phaseId"
+            >
+              Research
+            </Link>
           </div>
 
+          {/* ◇ Define */}
           <Link
-            className={`sidebar-link sidebar-link-section ${isSessionsSection ? "is-section-active" : ""}`}
+            className={`sidebar-link sidebar-link-section ${isDefineSection ? "is-section-active" : ""}`}
+            params={{ phaseId: "planning" }}
+            to="/workflow/$phaseId"
+          >
+            ◇ Define
+          </Link>
+          <div className="sidebar-submenu">
+            <Link
+              activeOptions={{ exact: false }}
+              activeProps={{ "aria-current": "page" as const }}
+              className="sidebar-sublink"
+              params={{ phaseId: "planning" }}
+              to="/workflow/$phaseId"
+            >
+              Plan
+            </Link>
+            <Link
+              activeOptions={{ exact: false }}
+              activeProps={{ "aria-current": "page" as const }}
+              className="sidebar-sublink"
+              params={{ phaseId: "solutioning" }}
+              to="/workflow/$phaseId"
+            >
+              Design
+            </Link>
+          </div>
+
+          {/* ◇ Develop */}
+          <Link
+            className={`sidebar-link sidebar-link-section ${isDevelopSection ? "is-section-active" : ""}`}
+            to="/"
+          >
+            ◇ Develop
+          </Link>
+          <div className="sidebar-submenu">
+            <Link
+              activeOptions={{ exact: true }}
+              activeProps={{ "aria-current": "page" as const }}
+              className="sidebar-sublink"
+              to="/"
+            >
+              Sprint
+            </Link>
+            <Link
+              activeOptions={{ exact: false }}
+              activeProps={{ "aria-current": "page" as const }}
+              className="sidebar-sublink"
+              params={{ phaseId: "implementation" }}
+              to="/workflow/$phaseId"
+            >
+              Implement
+            </Link>
+          </div>
+
+          {/* ◇ Deliver */}
+          <Link
+            className={`sidebar-link sidebar-link-section ${isDeliverSection ? "is-section-active" : ""}`}
             to="/sessions"
           >
-            Sessions
+            ◇ Deliver
           </Link>
-
           <div className="sidebar-submenu">
+            <Link
+              activeOptions={{ exact: true }}
+              activeProps={{ "aria-current": "page" as const }}
+              className="sidebar-sublink"
+              to="/sessions"
+            >
+              Sessions
+            </Link>
             {isSessionsLoading ? (
               <span className="sidebar-sessions-empty">Loading sessions…</span>
             ) : recentSessions.length > 0 ? (
@@ -332,22 +382,17 @@ function RootLayout() {
                   </Link>
                 )
               })
-            ) : (
-              <span className="sidebar-sessions-empty">No active sessions</span>
-            )}
-          </div>
-
-          <Link
-            className={`sidebar-link sidebar-link-section ${isAnalyticsSection ? "is-section-active" : ""}`}
-            to="/analytics"
-          >
-            Analytics
-          </Link>
-
-          <div className="sidebar-submenu">
-            {ANALYTICS_SUBMENU.map((link) => (
+            ) : null}
+            <Link
+              activeOptions={{ exact: true }}
+              activeProps={{ "aria-current": "page" as const }}
+              className="sidebar-sublink"
+              to="/analytics"
+            >
+              Analytics
+            </Link>
+            {ANALYTICS_SUBMENU.filter((link) => link.to !== "/analytics").map((link) => (
               <Link
-                activeOptions={link.to === "/analytics" ? { exact: true } : undefined}
                 activeProps={{ "aria-current": "page" as const }}
                 className="sidebar-sublink"
                 key={link.to}
@@ -357,6 +402,22 @@ function RootLayout() {
               </Link>
             ))}
           </div>
+
+          {/* 📚 Docs */}
+          <Link
+            className={`sidebar-link sidebar-link-section ${currentPath === "/docs" ? "is-section-active" : ""}`}
+            to="/docs"
+          >
+            📚 Docs
+          </Link>
+
+          {/* 🤖 Agents */}
+          <Link
+            className={`sidebar-link sidebar-link-section ${currentPath === "/agents" ? "is-section-active" : ""}`}
+            to="/agents"
+          >
+            🤖 Agents
+          </Link>
 
           <div className="sidebar-spacer" />
 

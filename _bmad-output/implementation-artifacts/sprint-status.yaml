@@ -130,3 +130,9 @@ development_status:
   12-2-consolidate-data-files-into-artifacts: done
   12-3-fix-npx-bmad-method-ui-install-cli: done
   epic-12-retrospective: done
+
+  epic-13: done
+  13-1-restructure-sidebar-navigation-double-diamond: done
+  13-2-add-documentation-browser-route: done
+  13-3-add-agents-catalog-route: done
+  epic-13-retrospective: optional

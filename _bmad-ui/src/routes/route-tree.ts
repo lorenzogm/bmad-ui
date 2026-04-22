@@ -1,4 +1,5 @@
 import { rootRoute } from "./__root"
+import { agentsRoute } from "./agents"
 import { analyticsLayoutRoute } from "./analytics"
 import { analyticsDashboardRoute } from "./analytics-dashboard"
 import { analyticsEpicDetailRoute } from "./analytics-epic-detail"
@@ -9,6 +10,7 @@ import { analyticsQualityRoute } from "./analytics-quality"
 import { analyticsSessionsRoute } from "./analytics-sessions"
 import { analyticsStoriesRoute } from "./analytics-stories"
 import { analyticsStoryDetailRoute } from "./analytics-story-detail"
+import { docsRoute } from "./docs"
 import { epicDetailRoute } from "./epic.$epicId"
 import { homeRoute } from "./home"
 import { improvementWorkflowRoute } from "./improvement-workflow"
@@ -29,6 +31,8 @@ export const routeTree = rootRoute.addChildren([
   prepareStoryRoute,
   storyDetailRoute,
   sessionDetailRoute,
+  docsRoute,
+  agentsRoute,
   workflowLayoutRoute.addChildren([
     workflowIndexRoute,
     workflowPhaseRoute,
