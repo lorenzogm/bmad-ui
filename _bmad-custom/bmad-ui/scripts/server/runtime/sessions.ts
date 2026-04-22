@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { projectRoot } from "../paths.js";
 import { updateSprintStoryStatus } from "../epics/index.js";
 import { persistRuntimeState, type RuntimeSession, type RuntimeState } from "./state.js";
+import type { SessionAnalyticsData } from "../analytics/index.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -123,15 +124,6 @@ export async function markZombieSessionsAsFailed(
 	return mutated;
 }
 
-// TODO Story 11.5: replace local type alias with import from ../analytics
-type ZombieAnalyticsSession = {
-	sessionId: string;
-	status?: string;
-	logPath?: string | null;
-	endedAt?: string | null;
-	exitCode?: number | null;
-};
-
 type UpsertSessionFn = (update: {
 	sessionId: string;
 	status?: string;
@@ -141,7 +133,7 @@ type UpsertSessionFn = (update: {
 }) => Promise<void>;
 
 export async function markZombieAnalyticsSessionsFailed(
-	sessions: ZombieAnalyticsSession[],
+	sessions: SessionAnalyticsData[],
 	upsertSession: UpsertSessionFn,
 ): Promise<boolean> {
 	if (buildMode) {
