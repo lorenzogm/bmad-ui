@@ -1,60 +1,15 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import type { ParsedEpicMarkdownRow } from "./parser";
+import { projectRoot, sprintStatusFile } from "../paths.js";
+import type { EpicStatus, SprintOverview, StoryStatus } from "../sprint/index.js";
 
-// TODO(11.1): Replace inline path resolution with imports from "../paths" once Story 11.1 is merged.
-const __epicDepsDirname =
-	typeof __dirname !== "undefined"
-		? __dirname
-		: fileURLToPath(new URL(".", import.meta.url));
-
-const projectRoot = path.resolve(__epicDepsDirname, "..", "..", "..", "..", "..");
-
-// TODO(11.2): Replace inline storyDependenciesFile and sprintStatusFile with imports from "../sprint" once Story 11.2 is merged.
 export const storyDependenciesFile = path.join(
 	projectRoot,
 	"_bmad-custom",
 	"story-dependencies.yaml",
 );
-
-const sprintStatusFile = path.join(
-	projectRoot,
-	"_bmad-output",
-	"implementation-artifacts",
-	"sprint-status.yaml",
-);
-
-// TODO(11.2): Replace inline type definitions with imports from "../sprint" once Story 11.2 is merged.
-type StoryStatus =
-	| "backlog"
-	| "ready-for-dev"
-	| "in-progress"
-	| "review"
-	| "done";
-type EpicStatus = "backlog" | "in-progress" | "done";
-
-type SprintOverview = {
-	totalStories: number;
-	storiesByStatus: Record<string, number>;
-	stories: Array<{
-		id: string;
-		status: StoryStatus;
-		steps: Record<string, string>;
-	}>;
-	epics: Array<{
-		id: string;
-		number: number;
-		name: string;
-		status: EpicStatus;
-		storyCount: number;
-		plannedStoryCount: number;
-		storiesToCreate: number;
-		byStoryStatus: Record<StoryStatus, number>;
-		lifecycleSteps: Record<string, string>;
-	}>;
-};
 
 export type DependencyTreeNode = {
 	id: string;
