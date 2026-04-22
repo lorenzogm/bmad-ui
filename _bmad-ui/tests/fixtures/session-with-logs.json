@@ -13,7 +13,13 @@
     "worktreePath": null,
     "exitCode": 0,
     "error": null,
-    "userMessages": []
+    "userMessages": [],
+    "outcome": "pushed",
+    "agentActiveMinutes": 42.5,
+    "humanTurns": 3,
+    "agentTurns": 8,
+    "gitCommits": 2,
+    "gitPushes": 1
   },
   "logContent": "[user] hello agent\nSome agent response text.\n● Read some-file.ts\n  └ done\n",
   "promptContent": null,

@@ -1,0 +1,136 @@
+{
+	"sessions": [
+		{
+			"sessionId": "session-outcome-pushed-1",
+			"storyId": "10-1-test-story",
+			"epicId": "epic-10",
+			"skill": "bmad-dev-story",
+			"model": "claude-sonnet-4.6",
+			"status": "completed",
+			"startedAt": "2026-04-22T10:00:00.000Z",
+			"endedAt": "2026-04-22T10:45:00.000Z",
+			"outcome": "pushed",
+			"agentActiveMinutes": 22.5,
+			"humanTurns": 4,
+			"agentTurns": 4,
+			"gitCommits": 2,
+			"gitPushes": 1,
+			"usage": {
+				"requests": 12,
+				"tokensIn": 30000,
+				"tokensOut": 8000,
+				"tokensCached": 0,
+				"totalTokens": 38000
+			}
+		},
+		{
+			"sessionId": "session-outcome-delivered-2",
+			"storyId": null,
+			"epicId": null,
+			"skill": "bmad-code-review",
+			"model": "claude-sonnet-4.6",
+			"status": "completed",
+			"startedAt": "2026-04-22T11:00:00.000Z",
+			"endedAt": "2026-04-22T11:30:00.000Z",
+			"outcome": "delivered",
+			"agentActiveMinutes": 18.3,
+			"humanTurns": 2,
+			"agentTurns": 2,
+			"gitCommits": 0,
+			"gitPushes": 0,
+			"usage": {
+				"requests": 6,
+				"tokensIn": 15000,
+				"tokensOut": 4000,
+				"tokensCached": 0,
+				"totalTokens": 19000
+			}
+		},
+		{
+			"sessionId": "session-outcome-aborted-3",
+			"storyId": null,
+			"epicId": null,
+			"skill": "bmad-dev-story",
+			"model": "claude-sonnet-4.6",
+			"status": "completed",
+			"startedAt": "2026-04-22T12:00:00.000Z",
+			"endedAt": "2026-04-22T12:05:00.000Z",
+			"outcome": "aborted",
+			"agentActiveMinutes": 3.1,
+			"humanTurns": 1,
+			"agentTurns": 1,
+			"gitCommits": 0,
+			"gitPushes": 0,
+			"usage": {
+				"requests": 2,
+				"tokensIn": 5000,
+				"tokensOut": 1000,
+				"tokensCached": 0,
+				"totalTokens": 6000
+			}
+		}
+	],
+	"stories": [
+		{
+			"storyId": "10-1-test-story",
+			"epicId": "epic-10",
+			"sessionCount": 1,
+			"usage": {
+				"requests": 12,
+				"tokensIn": 30000,
+				"tokensOut": 8000,
+				"tokensCached": 0,
+				"totalTokens": 38000
+			}
+		}
+	],
+	"epics": [
+		{
+			"epicId": "epic-10",
+			"storyCount": 1,
+			"sessionCount": 1,
+			"usage": {
+				"requests": 12,
+				"tokensIn": 30000,
+				"tokensOut": 8000,
+				"tokensCached": 0,
+				"totalTokens": 38000
+			}
+		}
+	],
+	"project": {
+		"requests": 20,
+		"tokensIn": 50000,
+		"tokensOut": 13000,
+		"tokensCached": 0,
+		"totalTokens": 63000
+	},
+	"costing": {
+		"version": 1,
+		"copilotBilling": {
+			"primaryUnit": "premium_request",
+			"notes": "Charged per premium request",
+			"source": "github"
+		},
+		"subscription": null,
+		"totals": {
+			"premiumRequests": 20,
+			"tokensIn": 50000,
+			"tokensOut": 13000,
+			"tokensCached": 0,
+			"totalTokens": 63000
+		},
+		"ratesUsd": {
+			"premiumRequest": null,
+			"inputPer1MTokens": null,
+			"outputPer1MTokens": null,
+			"cachedInputPer1MTokens": null
+		},
+		"estimatedCostUsd": {
+			"seatCostPerUserPerMonth": null,
+			"fromPremiumRequests": null,
+			"fromTokens": null,
+			"totalWithKnownRates": null
+		}
+	}
+}
