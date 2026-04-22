@@ -7,15 +7,15 @@ Status: ready-for-dev
 ## Story
 
 As a maintainer,
-I want the sync-sessions daemon to extract rich outcome and complexity metrics from Copilot CLI events.jsonl logs,
-so that each session in agent-sessions.json contains the data needed to determine session quality without manual annotation.
+I want the sync-sessions daemon to extract rich outcome and complexity metrics from Copilot CLI events.jsonl logs and fully backfill all historical sessions from local logs,
+so that agent-sessions.json contains complete, accurate quality data for every past and future session without manual annotation.
 
 ## Acceptance Criteria
 
 1. **Given** a Copilot CLI session with events.jsonl containing `user.message`, `tool.execution_start`, `abort`, `session.error`, `session.compaction_start`, and subagent events,
    **When** the sync daemon processes the session,
-   **Then** it extracts and persists the following additional fields to agent-sessions.json:
-   - `human_turns` (number) — count of real user messages, excluding auto-injected `<skill-context>` and `<reminder>` wrapper content
+   **Then** it extracts and persists the following fields to agent-sessions.json:
+   - `human_turns` (number) — count of real user messages, excluding auto-injected XML wrappers
    - `agent_turns` (number) — count of `assistant.turn_end` events
    - `git_commits` (number) — count of bash tool calls containing `git commit`
    - `git_pushes` (number) — count of bash tool calls containing `git push`
@@ -24,93 +24,148 @@ so that each session in agent-sessions.json contains the data needed to determin
    - `subagent_count` (number) — count of `subagent.started` events
    - `subagent_tokens` (number) — sum of `totalTokens` from `subagent.completed` events
    - `error_count` (number) — count of `session.error` events
-   - `duration_minutes` (number) — wall-clock time from session start to last event
+   - `duration_minutes` (number) — wall-clock time from session start to last event (total elapsed)
+   - `agent_active_minutes` (number) — sum of per-turn active time only: time from each `user.message` timestamp to the next `assistant.turn_end` timestamp; excludes idle time while the human is composing the next prompt
    - `outcome` (string) — one of: `"pushed"`, `"committed"`, `"delivered"`, `"aborted"`, `"error"`, `"no-output"`
 
-2. **Given** a session using a non-committing skill (e.g. `bmad-code-review`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-retrospective`, `bmad-validate-prd`),
+2. **Given** a session using a non-committing skill,
    **When** the session completes without abort or error and has at least one agent turn,
-   **Then** the outcome is `"delivered"` — these skills never produce git commits by design; their output IS the review/plan/analysis itself
+   **Then** the outcome is `"delivered"` — these skills never produce git commits by design; their output IS the review/plan/analysis
 
-3. **Given** the sync daemon running in watch mode,
-   **When** a session was already synced as `status: "completed"` with all outcome fields populated,
+3. **Given** the `NON_COMMITTING_SKILLS` set must stay current as new skills are added,
+   **When** a developer adds a new non-committing skill to the project,
+   **Then** they update `_bmad-custom/agents/skills-config.json` (the single source of truth for skill classification) rather than modifying `sync-sessions.mjs` directly; the daemon reads `nonCommittingSkills` from this file at startup
+
+4. **Given** the sync daemon running in watch mode,
+   **When** a session was already synced as `status: "completed"` with all outcome fields populated (including `agent_active_minutes`),
    **Then** it is skipped on subsequent polls to avoid re-parsing large files
 
-4. **Given** the sync daemon started with `--once`,
-   **When** 130+ historical sessions exist,
-   **Then** all sessions are processed and the daemon exits within 30 seconds (NFR23)
+5. **Given** the sync daemon started with `--once`,
+   **When** all historical sessions exist in `~/.copilot/session-state/`,
+   **Then** all sessions for this project are processed and the daemon exits within 30 seconds (NFR23)
 
-5. **Given** the existing `agent-sessions.json` with sessions that have the old schema (no outcome fields),
+6. **Given** the existing `agent-sessions.json` with sessions that have the old schema (no outcome or `agent_active_minutes` fields),
    **When** the sync daemon runs,
-   **Then** it enriches those sessions with the new fields via upsert without losing existing data
+   **Then** it enriches those sessions with the new fields via upsert without losing existing data (storyId, epicId, notes, etc.)
+
+7. **Given** this computer has 359 CLI session directories in `~/.copilot/session-state/`,
+   **When** `node scripts/sync-sessions.mjs --once` is run,
+   **Then** all sessions belonging to this project (identified by `cwd` containing `/lorenzogm/bmad-ui`) are parsed and written to `agent-sessions.json`; sessions already fully enriched are skipped for efficiency
+
+8. **Given** the sessions list view at `/sessions` and session detail view at `/session/:id`,
+   **When** session data is loaded from the API,
+   **Then** the `outcome`, `agent_active_minutes`, `human_turns`, `agent_turns`, `git_commits`, and `git_pushes` fields are displayed or available for display in the UI without JavaScript errors
+
+9. **Given** the sessions UI at `/sessions`,
+   **When** a Playwright E2E test suite runs against a controlled fixture containing sessions with the new schema fields,
+   **Then** all tests pass with zero JavaScript errors, verifying:
+   - Sessions list renders with correct status badges
+   - Each session row shows skill, model, outcome, and duration
+   - Clicking a session row navigates to the session detail page
+   - Session detail page renders without errors
+   - A dummy epic with test sessions is created, all actions verified (run skill, view session, navigation), then the dummy data is cleaned up so no test artifacts persist
 
 ## Tasks / Subtasks
 
-- [ ] Verify implementation against AC1: all outcome+complexity fields populated correctly (AC: 1)
-  - [ ] Confirm `parseCLISession()` in `scripts/sync-sessions.mjs` handles all 11 required fields
-  - [ ] Confirm `human_turns` stripping: `<skill-context>`, `<reminder>`, `<context>`, `<current_datetime>`, `<invoked_skills>`, `<userRequest>`, `<system_notification>`, `<summary>`, `<available_skills>`, `<plan_mode>` XML blocks are stripped; only count messages with >10 chars of real content remaining
-  - [ ] Confirm `git commit` and `git push` detection covers bash tool calls with `toolName === "bash"` or `"shell"`
+- [ ] Add `agent_active_minutes` field to `parseCLISession()` (AC: 1)
+  - [ ] Track per-turn timing: record timestamp of each `user.message` event; on the next `assistant.turn_end`, add `(turn_end_ts - user_message_ts)` to accumulator
+  - [ ] Store result in `agent_active_minutes` (rounded to 1 decimal place, same as `duration_minutes`)
+  - [ ] Update the skip-completed guard in `syncSessions()` to also require `agent_active_minutes` is populated before skipping (AC: 4)
 
-- [ ] Verify non-committing skill outcome derivation (AC: 2)
-  - [ ] Confirm `NON_COMMITTING_SKILLS` set includes all skills listed in epics: `bmad-code-review`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-retrospective`, `bmad-validate-prd`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-check-implementation-readiness`, `bmad-checkpoint-preview`
-  - [ ] Confirm outcome derivation order: `"aborted"` > `"error"` > `"pushed"` > `"committed"` > `"delivered"` (non-committing + agentTurns > 0) > `"no-output"`
+- [ ] Extract skill classification to external config file (AC: 3)
+  - [ ] Create `_bmad-custom/agents/skills-config.json` with `{ "nonCommittingSkills": [...] }` containing the full current set
+  - [ ] Update `sync-sessions.mjs` to load `NON_COMMITTING_SKILLS` from this file at startup (fallback to hardcoded set if file missing/malformed)
+  - [ ] Ensure the file is not gitignored and is committed as part of this story
 
-- [ ] Verify skip-completed logic (AC: 3)
-  - [ ] Confirm the guard in `syncSessions()`: skip CLI sessions where `prev?.tool === "copilot-cli" && prev?.status === "completed" && prev?.end_date && prev?.outcome`
-  - [ ] Confirm old sessions without `outcome` field are NOT skipped and get re-parsed for backfill
+- [ ] Full historical backfill (AC: 7)
+  - [ ] Run `cd _bmad-custom/bmad-ui && time node scripts/sync-sessions.mjs --once` on this machine
+  - [ ] Verify all 359 `~/.copilot/session-state/` sessions are scanned; count how many belong to this project and are written to `agent-sessions.json`
+  - [ ] Verify completion within 30 seconds (NFR23)
+  - [ ] Commit the resulting `agent-sessions.json` with updated records
 
-- [ ] Validate performance requirement NFR23 (AC: 4)
-  - [ ] Run `time node scripts/sync-sessions.mjs --once` with 130+ sessions in `~/.copilot/session-state/`
-  - [ ] Verify completion within 30 seconds
+- [ ] Wire new fields through API and types (AC: 8)
+  - [ ] Add `agent_active_minutes`, `human_turns`, `agent_turns`, `git_commits`, `git_pushes`, `outcome` to `SessionAnalyticsData` type in `scripts/agent-server.ts`
+  - [ ] Add the same fields to `SessionAnalytics` type in `src/types.ts`
+  - [ ] Ensure `analyticsToRuntimeSession()` passes these fields through so they are available in session detail responses
+  - [ ] Update the `/api/analytics` response to include these fields per session
 
-- [ ] Verify upsert correctness for old-schema sessions (AC: 5)
-  - [ ] Confirm `normalizeMergedSession({ ...(prev ?? {}), ...parsed })` preserves existing fields like `storyId`, `epicId`, `notes` from old sessions
-  - [ ] Confirm old `workflow-*` sessions (non-CLI) are unaffected by CLI parsing
+- [ ] Add Vitest unit tests for `parseCLISession()` logic (AC: 1, 2, 4)
+  - [ ] Test: `user.message` events with auto-injected XML stripped and real content counted correctly as `human_turns`
+  - [ ] Test: `tool.execution_start` bash calls with `git commit` and `git push` produce correct `git_commits`/`git_pushes`
+  - [ ] Test: `abort` event → `outcome: "aborted"`
+  - [ ] Test: `bmad-code-review` skill with no git activity + agentTurns > 0 → `outcome: "delivered"`
+  - [ ] Test: `session.error` events → correct `error_count`
+  - [ ] Test: `subagent.started` and `subagent.completed` events → correct `subagent_count`/`subagent_tokens`
+  - [ ] Test: `agent_active_minutes` accumulates only user-message-to-turn-end durations, not idle gaps
+  - [ ] Test: already-completed session with `outcome` and `agent_active_minutes` populated → skipped in subsequent sync
 
-- [ ] Add Vitest unit tests for `parseCLISession()` logic
-  - [ ] Test: session with `user.message` events — some stripped, some real — produces correct `human_turns`
-  - [ ] Test: session with `tool.execution_start` bash calls with `git commit` and `git push` produces correct `git_commits`/`git_pushes`
-  - [ ] Test: session with `abort` event produces `outcome: "aborted"`
-  - [ ] Test: session using `bmad-code-review` skill with no git activity produces `outcome: "delivered"`
-  - [ ] Test: session with `session.error` events produces correct `error_count`
-  - [ ] Test: session with `subagent.started` and `subagent.completed` events produces correct `subagent_count`/`subagent_tokens`
-  - [ ] Test: already-completed session with `outcome` populated is skipped in subsequent sync
+- [ ] Add Playwright E2E tests for sessions UI with new fields (AC: 9)
+  - [ ] Create `tests/fixtures/analytics-with-outcome-sessions.json` containing 3–5 sessions with full new-schema fields (`outcome`, `agent_active_minutes`, `human_turns`, etc.), including at least one `"pushed"`, one `"delivered"`, one `"aborted"` outcome
+  - [ ] Add test: sessions list renders all rows without JS errors; `outcome` values appear in each row
+  - [ ] Add test: clicking a session navigates to `/session/:id` and detail page renders without JS errors
+  - [ ] Add test: session detail page shows `agent_active_minutes` duration (prefer asserting on the element rather than exact value)
+  - [ ] Add dummy-epic fixture to `tests/fixtures/` for epic workflow action tests; run all existing epic action tests against it; confirm no test creates persistent test artifacts in `agent-sessions.json`
+  - [ ] Verify `pnpm test:e2e` passes with zero failures
 
 - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check` to verify quality gate passes
 
 ## Dev Notes
 
-### ⚠️ Implementation Already Exists
+### ⚠️ Core Implementation Already Exists — Focus on Gaps
 
-The core implementation for this story is **pre-built** in `_bmad-custom/bmad-ui/scripts/sync-sessions.mjs`. Before writing any code, verify the current implementation covers all acceptance criteria. The primary work for this story is:
+`_bmad-custom/bmad-ui/scripts/sync-sessions.mjs` already handles most of Story 10.1. The new work is:
+1. **`agent_active_minutes`** — NEW field, not yet implemented; replaces naive wall-clock `duration_minutes` for "how long was the agent actually working"
+2. **`skills-config.json`** — extract `NON_COMMITTING_SKILLS` to an external file so it is maintainable without touching the daemon
+3. **Historical backfill** — run `--once` and commit the result
+4. **Type plumbing** — surface new fields in `SessionAnalyticsData`, `SessionAnalytics`, and `analyticsToRuntimeSession()`
+5. **E2E tests** — the sessions UI has no dedicated E2E coverage for the new fields
 
-1. **Verification** — confirm all AC conditions are satisfied by the existing code
-2. **Testing** — add Vitest unit tests for `parseCLISession()` since none exist
-3. **Performance validation** — confirm NFR23 (30-second budget) with the real session count
+### `agent_active_minutes` vs `duration_minutes`
 
-### Key Implementation Location
+`duration_minutes` = wall-clock from `session.start` to last event (includes idle time waiting for human)
 
-All logic lives in `_bmad-custom/bmad-ui/scripts/sync-sessions.mjs`:
+`agent_active_minutes` = sum of individual turn response times:
+```
+for each user.message event at timestamp T_user:
+    find next assistant.turn_end at timestamp T_end
+    active_ms += (T_end - T_user)
+agent_active_minutes = round(active_ms / 60_000, 1)
+```
+This is the measure of "how long the agent was thinking/working", not how long the session was open.
 
-| Concern | Lines (approx) |
+### Key File Locations
+
+| File | Purpose |
 |---|---|
-| `NON_COMMITTING_SKILLS` set | ~65–75 |
-| `AUTO_INJECTED_XML_RE` regex | ~81–83 |
-| `parseCLISession()` — all field extraction | ~192–345 |
-| `human_turns` counter (stripping logic) | ~244–251 |
-| `tool.execution_start` git detection | ~259–266 |
-| `abort` / `session.error` / compaction handling | ~268–283 |
-| Outcome derivation | ~302–316 |
-| `syncSessions()` — skip-completed guard | ~532–539 |
-| Upsert + `normalizeMergedSession` merge | ~512–517 |
+| `_bmad-custom/bmad-ui/scripts/sync-sessions.mjs` | Daemon — parseCLISession(), syncSessions() |
+| `_bmad-custom/agents/agent-sessions.json` | Target sessions store (413 sessions as of story creation) |
+| `_bmad-custom/agents/skills-config.json` | NEW — skill classification config (create this file) |
+| `_bmad-custom/bmad-ui/scripts/agent-server.ts` | API — SessionAnalyticsData type, analyticsToRuntimeSession() |
+| `_bmad-custom/bmad-ui/src/types.ts` | Frontend types — SessionAnalytics (add new fields) |
+| `_bmad-custom/bmad-ui/src/routes/sessions.tsx` | Sessions list UI |
+| `_bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx` | Session detail UI |
+| `_bmad-custom/bmad-ui/tests/session-traces.spec.ts` | Existing session E2E tests (extend, don't replace) |
+| `_bmad-custom/bmad-ui/tests/fixtures/` | JSON fixtures used by Playwright tests |
 
-### Current State of agent-sessions.json
+### skills-config.json Schema
 
-As of story creation (2026-04-22):
-- 253 CLI sessions already synced with new schema fields (`outcome`, `human_turns`, etc.)
-- 160 legacy `workflow-*` sessions with old schema (`sessionId`, `skill`, `startedAt`) — these are manually-created entries not from CLI logs; the daemon does NOT re-parse these since they have no corresponding `events.jsonl`
-- 359 CLI session directories exist in `~/.copilot/session-state/`
+```json
+{
+  "nonCommittingSkills": [
+    "bmad-code-review",
+    "bmad-sprint-planning",
+    "bmad-sprint-status",
+    "bmad-retrospective",
+    "bmad-validate-prd",
+    "bmad-review-adversarial-general",
+    "bmad-review-edge-case-hunter",
+    "bmad-check-implementation-readiness",
+    "bmad-checkpoint-preview"
+  ]
+}
+```
 
-### Outcome Derivation Rules (priority order)
+### Outcome Derivation Rules (priority order — unchanged)
 
 ```
 "aborted"   — abort event found
@@ -121,50 +176,44 @@ As of story creation (2026-04-22):
 "no-output" — none of the above
 ```
 
-### human_turns Filtering Logic
+### human_turns Filtering
 
-The `AUTO_INJECTED_XML_RE` regex strips these wrapper tags from user message content before counting:
-`skill-context`, `reminder`, `context`, `current_datetime`, `invoked_skills`, `userRequest`, `system_notification`, `summary`, `available_skills`, `plan_mode`
+`AUTO_INJECTED_XML_RE` strips these XML wrappers before counting: `skill-context`, `reminder`, `context`, `current_datetime`, `invoked_skills`, `userRequest`, `system_notification`, `summary`, `available_skills`, `plan_mode`. Messages with ≤10 chars remaining are NOT counted.
 
-Messages with ≤10 chars of real content remaining after stripping are NOT counted as human turns.
+### E2E Test Pattern (follow existing tests)
 
-### Non-Committing Skills (complete set)
+Existing session tests in `tests/session-traces.spec.ts` use `mockApi` + fixture JSON to avoid real API calls. Follow the same pattern for new tests. Do NOT rely on `agent-sessions.json` at test time — use controlled fixtures so tests are deterministic.
 
-```js
-"bmad-code-review", "bmad-sprint-planning", "bmad-sprint-status",
-"bmad-retrospective", "bmad-validate-prd", "bmad-review-adversarial-general",
-"bmad-review-edge-case-hunter", "bmad-check-implementation-readiness",
-"bmad-checkpoint-preview"
-```
+The "dummy epic" for workflow action testing means: add a fixture JSON mimicking an epic response and test the sessions+epic actions via `mockApi`. Do NOT write test data to the real `agent-sessions.json` or `sprint-status.yaml`. All test state lives in fixture files and in-memory mock routes only.
 
-### Project Structure Notes
+### Current State of agent-sessions.json
 
-- Sync daemon: `_bmad-custom/bmad-ui/scripts/sync-sessions.mjs` (ES module, Node ≥ 24)
-- Sessions file: `_bmad-custom/agents/agent-sessions.json`
-- Test file (to create): colocate as `_bmad-custom/bmad-ui/scripts/sync-sessions.test.mjs` or `src/lib/sync-sessions.test.ts` if logic is extracted — prefer Vitest in `scripts/` directory
-- `pnpm check` from `_bmad-custom/bmad-ui/` runs lint + types + tests + build
+As of 2026-04-22:
+- 253 CLI sessions with new schema fields (`outcome`, `human_turns`, etc.) — but `agent_active_minutes` NOT yet present
+- 160 legacy `workflow-*` sessions with old schema — kept as-is, not re-parsed
 
-### Testing Notes
+### NFR23 Performance Budget
 
-- No unit tests exist for `sync-sessions.mjs` — this is the most important gap to fill
-- Use Vitest: `import { describe, it, expect } from "vitest"`
-- The parsing functions operate on raw JSONL strings — mock file I/O by calling the parse functions directly with synthetic JSONL content
-- To test `parseCLISession()` directly, you need to either export it or test via a helper that wraps the file parsing
+30 seconds for `--once` across all 359 session directories. Current sync is synchronous I/O; if it exceeds budget, consider `Promise.all` for parallel file reads.
 
-### NFR23 Performance Requirement
+### Project-Context Key Rules
 
-- Daemon must process all 130+ historical sessions within 30 seconds using `--once` mode
-- Current implementation is synchronous (blocking I/O) — with 359 sessions, verify this completes in time
-- If performance is insufficient, consider batching or async file reads
+- Never use `useEffect` for data fetching — TanStack Query only
+- Route files: `src/routes/` — always register new routes in `src/routes/route-tree.ts`
+- Types colocated with consumers; do NOT add to `src/types.ts` unless it is a shared API response type
+- Biome 2.4.12: `Number.isNaN()`, no barrel files, named function components, `import type`
+- CSS variables only — no hardcoded colors
 
 ### References
 
-- [Source: _bmad-output/planning-artifacts/epics.md#Story 10.1] — acceptance criteria, FR41, FR44, NFR23, NFR24
+- [Source: _bmad-output/planning-artifacts/epics.md#Story 10.1] — original ACs, FR41, FR44, NFR23, NFR24
 - [Source: _bmad-output/planning-artifacts/epics.md#NFR23] — 30-second processing budget
-- [Source: _bmad-output/planning-artifacts/epics.md#NFR24] — metrics must derive from local logs only (no network)
-- [Source: _bmad-custom/bmad-ui/scripts/sync-sessions.mjs] — existing implementation to verify
-- [Source: _bmad-custom/agents/agent-sessions.json] — target file with 413 current sessions
-- [Source: _bmad-output/project-context.md] — TypeScript/Biome rules, test standards
+- [Source: _bmad-output/planning-artifacts/epics.md#NFR24] — local-only metrics (no network)
+- [Source: _bmad-custom/bmad-ui/scripts/sync-sessions.mjs] — existing daemon implementation
+- [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts:2947] — SessionAnalyticsData type to extend
+- [Source: _bmad-custom/bmad-ui/src/types.ts:277] — SessionAnalytics frontend type to extend
+- [Source: _bmad-custom/bmad-ui/tests/session-traces.spec.ts] — E2E test pattern to follow
+- [Source: _bmad-output/project-context.md] — TypeScript/Biome/React rules
 
 ## Dev Agent Record
 
@@ -176,9 +225,8 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
-- Story created 2026-04-22: core implementation pre-built in sync-sessions.mjs
-- Primary dev work: add Vitest unit tests for parseCLISession() and verify all ACs against existing code
-- 253 CLI sessions already enriched; 160 legacy workflow-* sessions use old schema and are not re-processed by daemon
-- Performance validation (NFR23) required before story can be closed
+- Story updated 2026-04-22: added `agent_active_minutes` (agent-active time excluding idle), `skills-config.json` external config AC, historical backfill AC, type plumbing tasks, and E2E test tasks
+- Core daemon implementation pre-built; primary gaps are `agent_active_minutes`, skills-config extraction, type wiring, and test coverage
+- 253 CLI sessions already enriched; none have `agent_active_minutes` yet — all need re-parse
 
 ### File List
