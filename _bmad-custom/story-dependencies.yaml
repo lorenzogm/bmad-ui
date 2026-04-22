@@ -64,3 +64,10 @@ epic-7:
   7-4-establish-phase-boundary-and-evolution-guardrails:
     - 7-3-validate-self-referential-delivery-loop
 
+
+epic-12:
+  12-1-rename-bmad-custom-to-bmad-ui-and-flatten-app-directory:
+  12-2-consolidate-data-files-into-bmad-ui-artifacts:
+    - 12-1-rename-bmad-custom-to-bmad-ui-and-flatten-app-directory
+  12-3-fix-npx-bmad-method-ui-install-cli-and-publish-new-version:
+    - 12-2-consolidate-data-files-into-bmad-ui-artifacts

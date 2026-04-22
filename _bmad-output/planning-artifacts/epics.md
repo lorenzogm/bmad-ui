@@ -191,6 +191,10 @@ _No UX Design document was found for Phase 1. Phase 1 is infrastructure-focused;
 | AR3 | Epic 11 | Normalize API logic in adapter layer |
 | AR6 | Epic 11 | Correct pattern violations at abstraction boundary |
 | FR38 | Epic 11 | Phase 2 refactoring baseline (agent-server decomposition) |
+| FR22 | Epic 12 | Install and run project using pnpm (updated paths) |
+| FR26 | Epic 12 | Install bmad-ui into any bmad project via npx (fix install) |
+| FR27 | Epic 12 | Discover required setup from quickstart docs (updated docs) |
+| FR38 | Epic 12 | Phase 2 baseline (simplified structure for extensibility) |
 
 ## Epic List
 
@@ -239,6 +243,11 @@ Maintainers and AI agents can work on the API/backend adapter layer as a set of 
 **Architecture requirements covered:** AR1, AR2, AR3, AR6, AR7
 **FRs reinforced:** FR38, FR39
 **NFRs reinforced:** NFR13, NFR19
+
+### Epic 12: Project Structure Simplification & npm Package Fix
+Users and contributors can work with a cleaner `_bmad-ui/` directory layout where the app lives at the top level (no nested `bmad-ui/bmad-ui`), data files are organized under `artifacts/`, and `npx bmad-method-ui install` correctly downloads and installs the app into any bmad project.
+**FRs reinforced:** FR22, FR26, FR27, FR38
+**NFRs reinforced:** NFR16, NFR19
 
 ---
 
@@ -1635,3 +1644,146 @@ So that adding or debugging any API endpoint no longer requires navigating a 1,5
 **Given** the decomposition is complete,
 **When** `pnpm check` is run,
 **Then** all quality gates pass with zero regressions
+
+## Epic 12: Project Structure Simplification & npm Package Fix
+
+Users and contributors can work with a cleaner `_bmad-ui/` directory layout where the app lives at the top level (no nested `bmad-ui/bmad-ui`), data files are organized under `artifacts/`, and `npx bmad-method-ui install` correctly downloads and installs the app into any bmad project.
+
+**FRs reinforced:** FR22, FR26, FR27, FR38
+**NFRs reinforced:** NFR16, NFR19
+
+**Motivation:**
+- The current `_bmad-custom/bmad-ui/` nesting creates confusion — the outer directory is named after a bmad convention while the inner directory duplicates the project name
+- Data files (links, notes, story-dependencies) are scattered at the `_bmad-custom/` root alongside unrelated agent runtime files
+- The `npx bmad-method-ui install` command fails to download files in fresh projects, blocking new user adoption
+- Simplifying to `_bmad-ui/` with the app at the root level removes one layer of nesting from every file path
+
+**Target Structure:**
+
+```
+_bmad-ui/                    ← renamed from _bmad-custom, app files at top level
+├── src/                     ← React app source (was _bmad-custom/bmad-ui/src/)
+├── scripts/                 ← server + build scripts
+├── package.json             ← app package.json
+├── vite.config.ts
+├── tsconfig.json
+├── biome.json
+├── index.html
+├── agents/                  ← runtime data (unchanged)
+│   ├── agent-sessions.json
+│   ├── runtime-state.json
+│   └── logs/
+├── artifacts/               ← NEW: consolidated data files
+│   ├── links.yaml
+│   ├── notes.json
+│   └── story-dependencies.yaml
+└── ...
+```
+
+### Story 12.1: Rename `_bmad-custom` to `_bmad-ui` and Flatten App Directory
+
+As a contributor,
+I want the project to use `_bmad-ui/` as the single app directory with source files at the top level,
+So that I don't navigate through redundant `_bmad-custom/bmad-ui/` nesting for every file.
+
+**Acceptance Criteria:**
+
+**Given** the current `_bmad-custom/` directory exists,
+**When** the directory is renamed and flattened,
+**Then** `_bmad-ui/` contains all files that were in `_bmad-custom/bmad-ui/` (src/, scripts/, package.json, vite.config.ts, tsconfig.json, biome.json, index.html, tests/, playwright.config.ts, vercel.json, .gitignore, .npmrc, .nvmrc, README.md)
+**And** `_bmad-ui/agents/` contains the runtime files that were in `_bmad-custom/agents/`
+**And** the old `_bmad-custom/` directory no longer exists
+
+**Given** files across the repository reference `_bmad-custom` or `_bmad-custom/bmad-ui`,
+**When** the rename is applied,
+**Then** ALL references are updated in:
+- GitHub Actions workflows (`.github/workflows/*.yml`)
+- Terraform configs (`infra/vercel/src/*.json`)
+- Documentation (`docs/*.md`, `README.md`, `.github/*.md`)
+- Copilot instructions (`.github/copilot-instructions.md`)
+- VS Code settings (`.vscode/settings.json`)
+- Server code (`scripts/server/paths.ts`, `scripts/server/epics/dependencies.ts`, `scripts/vite-plugin-static-data.ts`, `scripts/sync-sessions.mjs`)
+- Planning and implementation artifacts (`_bmad-output/**/*.md`)
+- Root `package.json` (the `files` field)
+**And** no file contains the string `_bmad-custom` after the migration
+
+**Given** the rename and flatten is complete,
+**When** `pnpm check` is run from `_bmad-ui/`,
+**Then** lint, types, tests, and build all pass with zero regressions
+
+**Given** git history,
+**When** the rename is performed,
+**Then** `git mv` is used where possible to preserve file history
+
+### Story 12.2: Consolidate Data Files into `_bmad-ui/artifacts/` and Clean Up
+
+As a maintainer,
+I want links, notes, and story-dependency data files organized in a dedicated `artifacts/` subdirectory,
+So that runtime agent data (sessions, state, logs) is clearly separated from project planning artifacts.
+
+**Acceptance Criteria:**
+
+**Given** `_bmad-ui/` exists from Story 12.1 with `links.yaml`, `notes.json`, `notes.yaml`, and `story-dependencies.yaml` at the top level,
+**When** the data files are reorganized,
+**Then** `_bmad-ui/artifacts/` is created containing:
+- `links.yaml` (moved from `_bmad-ui/links.yaml`)
+- `notes.json` (moved from `_bmad-ui/notes.json`)
+- `story-dependencies.yaml` (moved from `_bmad-ui/story-dependencies.yaml`)
+**And** `notes.yaml` is deleted (superseded by `notes.json`)
+**And** no data files remain at the `_bmad-ui/` root level
+
+**Given** server code references file paths for links, notes, and story-dependencies,
+**When** the files are moved to `artifacts/`,
+**Then** all path references are updated in:
+- `scripts/server/links-notes/links.ts` (or wherever `linksFile` is defined)
+- `scripts/server/links-notes/notes.ts` (or wherever `notesFile` is defined)
+- `scripts/server/epics/dependencies.ts` (or wherever `storyDependenciesFile` is defined)
+- Any other server modules that read these files
+
+**Given** the consolidation is complete,
+**When** `pnpm check` is run,
+**Then** all quality gates pass with zero regressions
+
+**Given** the UI reads links, notes, and story dependencies via API endpoints,
+**When** the app is started with `pnpm dev`,
+**Then** all data loads correctly from the new `artifacts/` paths
+
+### Story 12.3: Fix `npx bmad-method-ui install` CLI and Publish New Version
+
+As a new bmad user,
+I want `npx bmad-method-ui install` to correctly download and install bmad-ui into my project,
+So that I can add the UI dashboard to any bmad project with a single command.
+
+**Acceptance Criteria:**
+
+**Given** the root `package.json` defines the npm package,
+**When** the package layout is updated,
+**Then** the `files` field references `_bmad-ui/` (not `_bmad-custom/bmad-ui/`)
+**And** `bin/install.mjs` is still included
+
+**Given** `bin/install.mjs` copies files from the package to the user's project,
+**When** the installer is updated,
+**Then** the source path resolves to `_bmad-ui/` inside the npm package
+**And** the destination path creates `_bmad-ui/` in the user's project root (not `_bmad-custom/bmad-ui/`)
+**And** the `EXCLUDED_SEGMENTS` filter still excludes `node_modules`, `dist`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`
+**And** the `agents/` directory is excluded from the install (runtime data is project-specific)
+**And** the `artifacts/` directory is included with empty/default data files
+
+**Given** the installer is updated,
+**When** the overwrite prompt is shown for existing installs,
+**Then** the message references `_bmad-ui/` (not `_bmad-custom/bmad-ui`)
+**And** the success message and next-steps instructions reference the correct paths:
+- `cd _bmad-ui`
+- `pnpm install`
+- `pnpm run dev`
+
+**Given** the package is ready,
+**When** tested locally via `npm pack` + `npx`,
+**Then** running `npx bmad-method-ui install` in an empty directory creates `_bmad-ui/` with all expected files
+**And** no empty directories or missing files
+
+**Given** all tests pass,
+**When** a new version is published,
+**Then** the version is bumped (at least `0.2.0`) in root `package.json`
+**And** `npm publish` succeeds
+**And** `npx bmad-method-ui@latest install` works in a fresh directory
