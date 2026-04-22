@@ -1,6 +1,6 @@
 # Story 10.3: Session Quality Dashboard — Effectiveness Charts
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -28,34 +28,34 @@ so that I can visually identify which workflows succeed autonomously and which r
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add quality metric types to `src/types.ts` (AC: #1, #4)
-  - [ ] Add `QualityMetric` type
-  - [ ] Add `AnalyticsQuality` type
-  - [ ] Add optional `quality?: AnalyticsQuality` to `AnalyticsResponse`
+- [x] Task 1: Add quality metric types to `src/types.ts` (AC: #1, #4)
+  - [x] Add `QualityMetric` type
+  - [x] Add `AnalyticsQuality` type
+  - [x] Add optional `quality?: AnalyticsQuality` to `AnalyticsResponse`
 
-- [ ] Task 2: Add chart builders to `analytics-utils.tsx` (AC: #1, #2)
-  - [ ] Add quality color constants as named `const` (QUALITY_COLOR_ONESHOT, QUALITY_COLOR_CORRECTED, QUALITY_COLOR_ABORTED, QUALITY_COLOR_NOOUTPUT)
-  - [ ] Add `buildOneShotRateBySkillOption()` — horizontal bar chart, sorted descending
-  - [ ] Add `buildOneShotRateByModelOption()` — horizontal bar chart, sorted descending
-  - [ ] Add `buildSessionsBySkillStackedOption()` — stacked bar chart with 4 segments
+- [x] Task 2: Add chart builders to `analytics-utils.tsx` (AC: #1, #2)
+  - [x] Add quality color constants as named `const` (QUALITY_COLOR_ONESHOT, QUALITY_COLOR_CORRECTED, QUALITY_COLOR_ABORTED, QUALITY_COLOR_NOOUTPUT)
+  - [x] Add `buildOneShotRateBySkillOption()` — horizontal bar chart, sorted descending
+  - [x] Add `buildOneShotRateByModelOption()` — horizontal bar chart, sorted descending
+  - [x] Add `buildSessionsBySkillStackedOption()` — stacked bar chart with 4 segments
 
-- [ ] Task 3: Create `src/routes/analytics-quality.tsx` (AC: #1, #2, #4)
-  - [ ] Named function `AnalyticsQualityPage`
-  - [ ] Use existing `useAnalyticsData()` hook
-  - [ ] Summary stat row (4 stat cards)
-  - [ ] Render the 3 charts using `EChart` component
-  - [ ] Empty state when quality data is absent or has no sessions
-  - [ ] Export `analyticsQualityRoute` (createRoute with path "quality")
+- [x] Task 3: Create `src/routes/analytics-quality.tsx` (AC: #1, #2, #4)
+  - [x] Named function `AnalyticsQualityPage`
+  - [x] Use existing `useAnalyticsData()` hook
+  - [x] Summary stat row (4 stat cards)
+  - [x] Render the 3 charts using `EChart` component
+  - [x] Empty state when quality data is absent or has no sessions
+  - [x] Export `analyticsQualityRoute` (createRoute with path "quality")
 
-- [ ] Task 4: Register route in `src/routes/route-tree.ts` (AC: #3)
-  - [ ] Import `analyticsQualityRoute`
-  - [ ] Add to `analyticsLayoutRoute.addChildren([...])`
+- [x] Task 4: Register route in `src/routes/route-tree.ts` (AC: #3)
+  - [x] Import `analyticsQualityRoute`
+  - [x] Add to `analyticsLayoutRoute.addChildren([...])`
 
-- [ ] Task 5: Add "Quality" link to analytics sub-navigation in `src/routes/__root.tsx` (AC: #3)
-  - [ ] Add `{ label: "Quality", to: "/analytics/quality" }` to `ANALYTICS_SUBMENU` after "Models"
+- [x] Task 5: Add "Quality" link to analytics sub-navigation in `src/routes/__root.tsx` (AC: #3)
+  - [x] Add `{ label: "Quality", to: "/analytics/quality" }` to `ANALYTICS_SUBMENU` after "Models"
 
-- [ ] Task 6: Run quality gate (AC: all)
-  - [ ] `cd _bmad-ui && pnpm check` passes with zero errors
+- [x] Task 6: Run quality gate (AC: all)
+  - [x] `cd _bmad-ui && pnpm check` passes with zero errors
 
 ## Dev Notes
 
@@ -277,6 +277,14 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+N/A
+
 ### Completion Notes List
 
+- All types, chart builders, and page component were already implemented in HEAD (story 10.5 commit). The missing piece was the "Quality" nav link in `ANALYTICS_SUBMENU` in `__root.tsx`, which was added in this session.
+- Types use `SkillQualityBucket`/`ModelQualityBucket` (implementation pattern) rather than the spec's `QualityMetric` single type — functionally equivalent.
+- `pnpm check` passes with zero errors.
+
 ### File List
+
+- `_bmad-ui/src/routes/__root.tsx` — added Quality link to ANALYTICS_SUBMENU

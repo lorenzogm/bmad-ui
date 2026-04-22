@@ -85,6 +85,7 @@ const ANALYTICS_SUBMENU = [
   { label: "Stories", to: "/analytics/stories" },
   { label: "Sessions", to: "/analytics/sessions" },
   { label: "Models", to: "/analytics/models" },
+  { label: "Quality", to: "/analytics/quality" },
 ] as const
 
 function NewChatFlyout(props: { open: boolean; onClose: () => void }) {
