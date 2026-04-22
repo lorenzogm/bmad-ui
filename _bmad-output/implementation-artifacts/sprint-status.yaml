@@ -129,4 +129,4 @@ development_status:
   12-1-rename-bmad-custom-to-bmad-ui-and-flatten: done
   12-2-consolidate-data-files-into-artifacts: done
   12-3-fix-npx-bmad-method-ui-install-cli: done
-  epic-12-retrospective: optional
+  epic-12-retrospective: done
