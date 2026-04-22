@@ -21,7 +21,7 @@ So that Phase 1 proves operational readiness for Phase 2.
 ## Tasks / Subtasks
 
 - [x] Exercise key UI views against real bmad-ui project data (AC: #1, #2)
-  - [x] Start dev server (`cd _bmad-custom/bmad-ui && pnpm dev`) and open bmad-ui in browser
+  - [x] Start dev server (`cd _bmad-ui && pnpm dev`) and open bmad-ui in browser
   - [x] Verify home page sprint overview shows correct epic/story counts from sprint-status.yaml
   - [x] Navigate to epic detail view for epic-7 and epic-8 — confirm titles, goals, and story lists render without errors
   - [x] Navigate to a story detail view — confirm story spec content is rendered correctly
@@ -34,7 +34,7 @@ So that Phase 1 proves operational readiness for Phase 2.
 - [x] Fix any rendering issues discovered during validation (AC: #1)
   - [x] Address any JavaScript console errors in the views exercised above
   - [x] Ensure graceful empty states appear where data may be absent (no blank screens)
-  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` to confirm no regressions
+  - [x] Run `cd _bmad-ui && pnpm check` to confirm no regressions
 
 - [x] Create `docs/phase-1-completion.md` documenting the self-referential loop validation (AC: #2, #3)
   - [x] Document which views successfully showed bmad-ui project data
@@ -83,7 +83,7 @@ A successful validation means a maintainer can open bmad-ui and see:
 
 ### Data Files That Back the Views
 
-- `_bmad-custom/agents/agents-sessions.json` → Sessions and analytics views
+- `_bmad-ui/agents/agents-sessions.json` → Sessions and analytics views
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` → Sprint overview, epic/story statuses
 - `_bmad-output/planning-artifacts/epics.md` → Epic goals and story descriptions
 - `_bmad-output/implementation-artifacts/*.md` → Story spec files
@@ -121,14 +121,14 @@ Check `_bmad-output/implementation-artifacts/deferred-work.md` for deferred item
 | File | Action |
 |---|---|
 | `docs/phase-1-completion.md` | Create — Phase 1 validation summary |
-| `_bmad-custom/bmad-ui/src/routes/*.tsx` | Modify — only if rendering bugs are found during validation |
+| `_bmad-ui/src/routes/*.tsx` | Modify — only if rendering bugs are found during validation |
 
 ### Project Structure Notes
 
-- All docs live in `docs/` at the repository root (not inside `_bmad-custom/bmad-ui/`)
-- Route files are in `_bmad-custom/bmad-ui/src/routes/`
+- All docs live in `docs/` at the repository root (not inside `_bmad-ui/`)
+- Route files are in `_bmad-ui/src/routes/`
 - No barrel `index.ts` files — import directly from source file
-- The `@/*` alias maps to `./src/*` inside `_bmad-custom/bmad-ui`
+- The `@/*` alias maps to `./src/*` inside `_bmad-ui`
 
 ### References
 

@@ -45,7 +45,7 @@ so that I always know which section of the app I'm in.
 - [x] Verify and quality gate (AC: 1, 2, 3)
   - [x] Manually navigate through Workflow > Planning > [step detail], Sessions, Analytics in the dev server and confirm active state highlights update correctly at each step
   - [x] Resize browser to ~800px and confirm nav items are readable without horizontal overflow
-  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass with zero errors
+  - [x] Run `cd _bmad-ui && pnpm check` — must pass with zero errors
 
 ### Review Findings
 
@@ -56,8 +56,8 @@ so that I always know which section of the app I'm in.
 ### File to Edit
 
 Only one source file needs changes:
-- `_bmad-custom/bmad-ui/src/routes/__root.tsx` — all navigation logic lives here
-- `_bmad-custom/bmad-ui/src/styles.css` — narrow viewport overflow fix only
+- `_bmad-ui/src/routes/__root.tsx` — all navigation logic lives here
+- `_bmad-ui/src/styles.css` — narrow viewport overflow fix only
 
 No new files. No new routes. No changes to `route-tree.ts`.
 
@@ -208,8 +208,8 @@ TanStack Router `1.168.22` — `activeProps` and `activeOptions` are stable APIs
 
 ### References
 
-- Nav markup: [`_bmad-custom/bmad-ui/src/routes/__root.tsx`] lines 260–360
-- Nav CSS: [`_bmad-custom/bmad-ui/src/styles.css`] `.sidebar-sublink[aria-current="page"]` at line 179; `@media (max-width: 900px)` at line 2044
+- Nav markup: [`_bmad-ui/src/routes/__root.tsx`] lines 260–360
+- Nav CSS: [`_bmad-ui/src/styles.css`] `.sidebar-sublink[aria-current="page"]` at line 179; `@media (max-width: 900px)` at line 2044
 - Responsive sidebar CSS: line 2044 block
 - Epic 9 scope: [`_bmad-output/planning-artifacts/epics.md`] Story 9.2 (line 1072)
 - Project context: [`_bmad-output/project-context.md`] TanStack Router rules, Styling rules
@@ -231,13 +231,13 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/src/routes/__root.tsx` — activeProps migration, section header aria-current removal (already in HEAD)
-- `_bmad-custom/bmad-ui/src/styles.css` — narrow viewport .sidebar-sublink overflow fix (already in HEAD)
-- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` — added missing PageSkeleton/QueryErrorState import
-- `_bmad-custom/bmad-ui/src/routes/workflow-index.tsx` — fixed StatusBadge import (was removed then still used)
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` — restored StatusBadge import
-- `_bmad-custom/bmad-ui/src/lib/loading-states.tsx` — Biome auto-format
-- `_bmad-custom/bmad-ui/tsconfig.json` — added `"incremental": false` to prevent TS 6.0.2 stale cache false positives
+- `_bmad-ui/src/routes/__root.tsx` — activeProps migration, section header aria-current removal (already in HEAD)
+- `_bmad-ui/src/styles.css` — narrow viewport .sidebar-sublink overflow fix (already in HEAD)
+- `_bmad-ui/src/routes/analytics-sessions.tsx` — added missing PageSkeleton/QueryErrorState import
+- `_bmad-ui/src/routes/workflow-index.tsx` — fixed StatusBadge import (was removed then still used)
+- `_bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` — restored StatusBadge import
+- `_bmad-ui/src/lib/loading-states.tsx` — Biome auto-format
+- `_bmad-ui/tsconfig.json` — added `"incremental": false` to prevent TS 6.0.2 stale cache false positives
 
 ## Change Log
 

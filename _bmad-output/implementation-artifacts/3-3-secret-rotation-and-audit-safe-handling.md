@@ -146,7 +146,7 @@ git log --all --full-history -- '.env.keys'  # must be empty
 
 - This story touches CI workflow (`deploy.yml`) and adds a new doc (`docs/secret-rotation.md`)
 - No frontend code changes (React/TypeScript/Vite) — this is pure ops/CI/documentation work
-- Do NOT touch `_bmad-custom/bmad-ui/` — this story is infrastructure-layer only
+- Do NOT touch `_bmad-ui/` — this story is infrastructure-layer only
 - `docs/` is the established location for operational guides (`docs/index.md`, `docs/project-overview.md`, etc.)
 
 ### References

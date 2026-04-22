@@ -15,6 +15,6 @@ context: []
 
 ## Suggested Review Order
 
-1. [src/main.tsx](../../_bmad-custom/bmad-ui/src/main.tsx) — QueryClientProvider setup for TanStack Query
-2. [src/routes/__root.tsx](../../_bmad-custom/bmad-ui/src/routes/__root.tsx#L1-L10) — New imports and constants
-3. [src/routes/__root.tsx](../../_bmad-custom/bmad-ui/src/routes/__root.tsx#L220-L245) — useQuery hook for running sessions + sidebar rendering
+1. [src/main.tsx](../../_bmad-ui/src/main.tsx) — QueryClientProvider setup for TanStack Query
+2. [src/routes/__root.tsx](../../_bmad-ui/src/routes/__root.tsx#L1-L10) — New imports and constants
+3. [src/routes/__root.tsx](../../_bmad-ui/src/routes/__root.tsx#L220-L245) — useQuery hook for running sessions + sidebar rendering

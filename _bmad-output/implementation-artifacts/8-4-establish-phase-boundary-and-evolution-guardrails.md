@@ -29,11 +29,11 @@ so that the project can evolve without destabilizing foundational workflows.
   - [x] Add any new deferred decisions that emerged during Epic 8 work to the deferred decisions list
 
 - [x] Audit project-context.md for accuracy after Epic 8 changes (AC: #3)
-  - [x] Verify library versions still match `_bmad-custom/bmad-ui/package.json` exactly
+  - [x] Verify library versions still match `_bmad-ui/package.json` exactly
   - [x] Confirm all rule sections reflect active patterns — check for any patterns changed or added by 8.1–8.3 stories
   - [x] No rewriting; surgical corrections only if something was changed during Epic 8 story work
 
-- [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
+- [x] Verify no regressions: `cd _bmad-ui && pnpm run check` (AC: #3)
 
 ### Review Findings
 
@@ -44,7 +44,7 @@ so that the project can evolve without destabilizing foundational workflows.
 
 ### Story Nature
 
-This is primarily a **documentation and artifact maintenance** story — no source code changes in `src/`. All work is limited to markdown files in `_bmad-output/`. Do NOT touch `_bmad-custom/bmad-ui/src/`.
+This is primarily a **documentation and artifact maintenance** story — no source code changes in `src/`. All work is limited to markdown files in `_bmad-output/`. Do NOT touch `_bmad-ui/src/`.
 
 ### Prerequisite Context: What Story 7.4 Already Established
 
@@ -105,7 +105,7 @@ Check that nothing was changed in Epic 8 stories that would make the existing ru
 
 ### Key Constraints
 
-- **No source code changes** — do not touch anything in `_bmad-custom/bmad-ui/src/`
+- **No source code changes** — do not touch anything in `_bmad-ui/src/`
 - **No rewriting** of existing files — surgical additions and corrections only
 - Preserve all existing sections, structure, and wording in all files
 - `deferred-work.md` is append-only; do not restructure or clean it
@@ -130,7 +130,7 @@ Code-review findings from 7.4 (still open — may need to verify):
 - `_bmad-output/planning-artifacts/` — epics.md, prd.md, architecture.md
 - `_bmad-output/project-context.md` — AI agent rules; frozen version of project conventions
 - `_bmad-output/implementation-artifacts/deferred-work.md` — running log of deferred items
-- `_bmad-custom/bmad-ui/package.json` — source of truth for all library versions
+- `_bmad-ui/package.json` — source of truth for all library versions
 
 ### References
 

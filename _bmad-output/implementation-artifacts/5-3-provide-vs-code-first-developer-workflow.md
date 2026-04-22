@@ -95,7 +95,7 @@ Add the following to the existing settings, preserving the current Copilot entri
   "[css]": { "editor.defaultFormatter": "biomejs.biome" },
 
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.tsdk": "_bmad-custom/bmad-ui/node_modules/typescript/lib",
+  "typescript.tsdk": "_bmad-ui/node_modules/typescript/lib",
 
   "tailwindCSS.experimental.configFile": null,
   "tailwindCSS.includeLanguages": {
@@ -107,7 +107,7 @@ Add the following to the existing settings, preserving the current Copilot entri
 
 **Key reasons:**
 - Biome formatter must be set per-language to override VS Code defaults — without this, VS Code uses the built-in TypeScript formatter and ignores Biome on save.
-- `typescript.tsdk` points to the workspace-local TypeScript install (`_bmad-custom/bmad-ui/node_modules/typescript/lib`) so the VS Code TS server uses the same version as the build (5.9.x).
+- `typescript.tsdk` points to the workspace-local TypeScript install (`_bmad-ui/node_modules/typescript/lib`) so the VS Code TS server uses the same version as the build (5.9.x).
 - `tailwindCSS.experimental.configFile: null` tells the Tailwind CSS IntelliSense extension not to look for `tailwind.config.js` — this project uses Tailwind v4 via Vite plugin only, no config file exists.
 
 ### `docs/development-guide-bmad-ui.md` Required Updates
@@ -147,7 +147,7 @@ Add a **Troubleshooting** section at the bottom:
 
 ### TypeScript path aliases not resolving in editor
 
-- Ensure `.vscode/settings.json` contains `"typescript.tsdk": "_bmad-custom/bmad-ui/node_modules/typescript/lib"`
+- Ensure `.vscode/settings.json` contains `"typescript.tsdk": "_bmad-ui/node_modules/typescript/lib"`
 - Reload the VS Code TypeScript server: **TypeScript: Restart TS Server** via Command Palette
 
 ### `pnpm` command not found
@@ -174,11 +174,11 @@ The canonical package manager is **pnpm** — not npm. `pnpm-lock.yaml` is the l
 
 ### Do NOT Modify
 
-- `_bmad-custom/bmad-ui/biome.json` — Biome config is correct for Story 5.2 and must not change
-- `_bmad-custom/bmad-ui/tsconfig.json` — TS config is correct, must not change
+- `_bmad-ui/biome.json` — Biome config is correct for Story 5.2 and must not change
+- `_bmad-ui/tsconfig.json` — TS config is correct, must not change
 - `.github/workflows/ci.yml` — CI is already correct
 - `.github/CONTRIBUTING.md` — already uses pnpm correctly; align doc guide with this, don't contradict it
-- `_bmad-custom/bmad-ui/README.md` — separate file from `docs/development-guide-bmad-ui.md`; only touch if its VS Code guidance is wrong
+- `_bmad-ui/README.md` — separate file from `docs/development-guide-bmad-ui.md`; only touch if its VS Code guidance is wrong
 - Any source code in `src/` — this story is documentation and config only
 
 ### Files to Create/Modify
@@ -193,14 +193,14 @@ The canonical package manager is **pnpm** — not npm. `pnpm-lock.yaml` is the l
 
 After completing:
 1. Open a TS/TSX file — saving it should auto-format via Biome (no manual `pnpm run check:lint` needed)
-2. `pnpm run check` from `_bmad-custom/bmad-ui` passes cleanly — no regressions
+2. `pnpm run check` from `_bmad-ui` passes cleanly — no regressions
 3. Extensions panel → **Show Recommended Extensions** shows the 5 recommended extensions
 4. `docs/development-guide-bmad-ui.md` contains no `npm` commands
 
 ### Project Structure Notes
 
-- `.vscode/` is at the **repository root** (not inside `_bmad-custom/bmad-ui/`) — it applies to the whole workspace
-- `typescript.tsdk` must point to `_bmad-custom/bmad-ui/node_modules/typescript/lib` not the global install
+- `.vscode/` is at the **repository root** (not inside `_bmad-ui/`) — it applies to the whole workspace
+- `typescript.tsdk` must point to `_bmad-ui/node_modules/typescript/lib` not the global install
 - Tailwind CSS IntelliSense does not find a config file by design — Tailwind v4 is configured via Vite plugin in `vite.config.ts`, not a separate config file
 
 ### References

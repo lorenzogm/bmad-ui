@@ -48,11 +48,11 @@ context:
 
 ## Code Map
 
-- `_bmad-custom/bmad-ui/src/routes/analytics-dashboard.tsx` -- Main page to add charts below existing stat cards
-- `_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx` -- Shared analytics utilities; add reusable EChart component + theme constants
-- `_bmad-custom/bmad-ui/src/types.ts` -- Existing types (SessionAnalytics, AnalyticsResponse)
-- `_bmad-custom/bmad-ui/src/styles.css` -- Minimal chart container styles
-- `_bmad-custom/bmad-ui/package.json` -- Add `echarts` dependency
+- `_bmad-ui/src/routes/analytics-dashboard.tsx` -- Main page to add charts below existing stat cards
+- `_bmad-ui/src/routes/analytics-utils.tsx` -- Shared analytics utilities; add reusable EChart component + theme constants
+- `_bmad-ui/src/types.ts` -- Existing types (SessionAnalytics, AnalyticsResponse)
+- `_bmad-ui/src/styles.css` -- Minimal chart container styles
+- `_bmad-ui/package.json` -- Add `echarts` dependency
 
 ## Tasks & Acceptance
 
@@ -94,36 +94,36 @@ function EChart({ option }: { option: echarts.EChartsOption }) {
 ## Verification
 
 **Commands:**
-- `cd _bmad-custom/bmad-ui && npm run build` -- expected: zero errors
-- `cd _bmad-custom/bmad-ui && npx biome check src/` -- expected: no lint violations
+- `cd _bmad-ui && npm run build` -- expected: zero errors
+- `cd _bmad-ui && npx biome check src/` -- expected: no lint violations
 
 ## Suggested Review Order
 
 **Dashboard composition**
 
 - Entry point: how charts are wired into the dashboard below stat cards
-  [`analytics-dashboard.tsx:69`](../../_bmad-custom/bmad-ui/src/routes/analytics-dashboard.tsx#L69)
+  [`analytics-dashboard.tsx:69`](../../_bmad-ui/src/routes/analytics-dashboard.tsx#L69)
 
 **Reusable chart component**
 
 - Ref-based ECharts init with ResizeObserver — no useEffect needed
-  [`analytics-utils.tsx:158`](../../_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx#L158)
+  [`analytics-utils.tsx:158`](../../_bmad-ui/src/routes/analytics-utils.tsx#L158)
 
 **Chart option builders**
 
 - Line chart: requests + tokens over time, dual Y axes
-  [`analytics-utils.tsx:213`](../../_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx#L213)
+  [`analytics-utils.tsx:213`](../../_bmad-ui/src/routes/analytics-utils.tsx#L213)
 
 - Stacked bar: token breakdown (in/out/cached) per model
-  [`analytics-utils.tsx:286`](../../_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx#L286)
+  [`analytics-utils.tsx:286`](../../_bmad-ui/src/routes/analytics-utils.tsx#L286)
 
 - Donut: session count per skill with percentage labels
-  [`analytics-utils.tsx:356`](../../_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx#L356)
+  [`analytics-utils.tsx:356`](../../_bmad-ui/src/routes/analytics-utils.tsx#L356)
 
 - Bar: requests per epic with per-bar colors
-  [`analytics-utils.tsx:403`](../../_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx#L403)
+  [`analytics-utils.tsx:403`](../../_bmad-ui/src/routes/analytics-utils.tsx#L403)
 
 **Styling**
 
 - Chart container dimensions and 2-column grid layout
-  [`styles.css:2458`](../../_bmad-custom/bmad-ui/src/styles.css#L2458)
+  [`styles.css:2458`](../../_bmad-ui/src/styles.css#L2458)

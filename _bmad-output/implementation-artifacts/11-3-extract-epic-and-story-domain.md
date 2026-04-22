@@ -49,7 +49,7 @@ so that the planning artifact interpretation logic is isolated and testable inde
   - [ ] Remove the now-redundant definitions from `agent-server.ts`
 
 - [ ] Run quality gate (AC: 2)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass
+  - [ ] `cd _bmad-ui && pnpm check` — lint + types + tests + build must pass
 
 ## Dev Notes
 
@@ -67,7 +67,7 @@ Story 11.2 must be done first — `scripts/server/sprint/` must exist, exporting
 
 ### Project Root
 
-The project lives at `_bmad-custom/bmad-ui/`. All script paths are relative to there:
+The project lives at `_bmad-ui/`. All script paths are relative to there:
 - `scripts/agent-server.ts` — the 5,420-line monolith being modularized
 - `scripts/server/paths.ts` — provides `projectRoot` and `artifactsRoot` (created in Story 11.1)
 - `scripts/server/sprint/` — provides sprint types and `sprintStatusFile` (created in Story 11.2)
@@ -194,9 +194,9 @@ The `scripts/` folder is not covered by the project `tsconfig.json` — it's exe
 - Story requirements: [Source: _bmad-output/planning-artifacts/epics.md#Story 11.3]
 - Epic decomposition principles: [Source: _bmad-output/planning-artifacts/epics.md#Epic 11]
 - Story 11.1 (paths.ts, runtime domain): [Source: _bmad-output/implementation-artifacts/11-1-extract-runtime-domain.md]
-- Source monolith: `_bmad-custom/bmad-ui/scripts/agent-server.ts` (5,420 lines as of story creation)
-- Consumer: `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
-- Consumer: `_bmad-custom/bmad-ui/vite.config.ts`
+- Source monolith: `_bmad-ui/scripts/agent-server.ts` (5,420 lines as of story creation)
+- Consumer: `_bmad-ui/scripts/vite-plugin-static-data.ts`
+- Consumer: `_bmad-ui/vite.config.ts`
 
 ## Dev Agent Record
 

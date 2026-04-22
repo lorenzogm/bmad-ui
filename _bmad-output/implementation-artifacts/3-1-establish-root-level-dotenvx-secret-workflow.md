@@ -161,7 +161,7 @@ The fix at `e888b81` moved from plain GitHub secrets for Vercel to dotenvx-manag
 - `docs/secrets-workflow.md` — place in `docs/` (alongside `deployment-guide.md`, `development-guide-bmad-ui.md`)
 - `.github/CONTRIBUTING.md` — already exists; add a "Secrets & Environment" section
 - `README.md` — at repo root; update Prerequisites/Getting Started section
-- No changes to `_bmad-custom/bmad-ui/` source code needed
+- No changes to `_bmad-ui/` source code needed
 
 ### Cross-Story Context
 

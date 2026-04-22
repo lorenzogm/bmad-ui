@@ -4,7 +4,7 @@ UI for monitoring BMAD multi-agent workflows, sprint progress, and AI agent sess
 
 ## What It Shows
 
-- Live agent runtime state from `_bmad-custom/agents/`
+- Live agent runtime state from `_bmad-ui/agents/`
 - Active and completed agent sessions
 - Story progress summary from `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - Preview of key BMAD output files
@@ -18,7 +18,7 @@ UI for monitoring BMAD multi-agent workflows, sprint progress, and AI agent sess
 ## Run
 
 ```bash
-cd _bmad-custom/bmad-ui && npm run dev
+cd _bmad-ui && npm run dev
 ```
 
 Open the printed local URL in your browser.
@@ -27,7 +27,7 @@ Open the printed local URL in your browser.
 
 ```bash
 # Install dependencies
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm install
 
 # Run all quality checks (lint + types + tests + build)

@@ -1,7 +1,7 @@
 # Component Inventory - bmad-ui
 
 ## Inventory Scope
-Scanned _bmad-custom/bmad-ui/src for route components, dashboard sections, and reusable UI patterns.
+Scanned _bmad-ui/src for route components, dashboard sections, and reusable UI patterns.
 
 ## Route Components
 - __root.tsx: root route container.

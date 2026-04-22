@@ -6,9 +6,9 @@ BMAD UI — a UI for monitoring BMAD multi-agent workflows, sprint progress, and
 
 ## Key Files
 
-- `_bmad-custom/bmad-ui/src/app.tsx` — all components and page logic
-- `_bmad-custom/bmad-ui/src/styles.css` — all styles (dark theme, CSS variables)
-- `_bmad-custom/bmad-ui/src/types.ts` — shared TypeScript types
+- `_bmad-ui/src/app.tsx` — all components and page logic
+- `_bmad-ui/src/styles.css` — all styles (dark theme, CSS variables)
+- `_bmad-ui/src/types.ts` — shared TypeScript types
 - `_bmad-output/planning-artifacts/` — BMAD artifact outputs (prd.md, architecture.md, epics.md, etc.)
 - `_bmad-output/implementation-artifacts/` — spec files for development work
 - `_bmad-output/project-context.md` — detailed AI rules (always read this)
@@ -79,7 +79,7 @@ var(--status-backlog)  /* #6b7280 */
 ## Build & Quality
 
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm check    # lint + types + tests + build (run before every commit)
 ```
 
@@ -95,7 +95,7 @@ For any BMAD workflow execution (create-story, dev-story, code-review, sprint pl
 
 Required end-of-work checks:
 
-- `cd _bmad-custom/bmad-ui && pnpm check` (lint + types + tests + build — must pass before committing)
+- `cd _bmad-ui && pnpm check` (lint + types + tests + build — must pass before committing)
 - `git status --short`
 - `git add -A` (or targeted add for scoped files)
 - `git commit -m "<clear scoped message>"`
@@ -109,7 +109,7 @@ After making UI changes, verify the app works using [agent-browser](https://gith
 
 ```bash
 # 1. Start the dev server (if not already running)
-cd _bmad-custom/bmad-ui && npm run dev &
+cd _bmad-ui && npm run dev &
 
 # 2. Open the app and take a snapshot to check for errors
 agent-browser open http://localhost:5173
@@ -140,7 +140,7 @@ agent-browser install   # Downloads Chrome for Testing
 
 ## Session Analytics Logging
 
-Session tracking is **automated** via `_bmad-custom/agents/sync-sessions.mjs`, a background daemon that watches the Copilot debug logs (`~/Library/Application Support/Code - Insiders/User/workspaceStorage/…/GitHub.copilot-chat/debug-logs/*/main.jsonl`) and auto-upserts sessions into `_bmad-custom/agents/agents-sessions.json` every 5 seconds when active.
+Session tracking is **automated** via `_bmad-ui/agents/sync-sessions.mjs`, a background daemon that watches the Copilot debug logs (`~/Library/Application Support/Code - Insiders/User/workspaceStorage/…/GitHub.copilot-chat/debug-logs/*/main.jsonl`) and auto-upserts sessions into `_bmad-ui/agents/agents-sessions.json` every 5 seconds when active.
 
 **You do not need to manually update `agents-sessions.json` for `turns`, `start_date`, `end_date`, or `status`** — the daemon derives these from the debug log timestamps.
 

@@ -28,7 +28,7 @@ so that the orchestrator runtime contract — how sessions are created, started,
 ## Tasks / Subtasks
 
 - [ ] Add Zod dependency (AC: 2)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm add zod`
+  - [ ] `cd _bmad-ui && pnpm add zod`
   - [ ] Verify Zod is listed in `package.json` dependencies
 
 - [ ] Create `scripts/server/paths.ts` (AC: 3)
@@ -59,7 +59,7 @@ so that the orchestrator runtime contract — how sessions are created, started,
   - [ ] The file should shrink by ~400 lines but retain full re-export surface
 
 - [ ] Run quality gate (AC: 4)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass
+  - [ ] `cd _bmad-ui && pnpm check` — lint + types + tests + build must pass
 
 ## Dev Notes
 
@@ -69,7 +69,7 @@ so that the orchestrator runtime contract — how sessions are created, started,
 
 ### Project Root
 
-The project lives at `_bmad-custom/bmad-ui/`. All script paths are relative to there:
+The project lives at `_bmad-ui/`. All script paths are relative to there:
 - `scripts/agent-server.ts` — the 5,420-line monolith being modularized
 - `scripts/vite-plugin-static-data.ts` — also imports from `agent-server.ts`
 - `vite.config.ts` — imports `attachApi` from `./scripts/agent-server`
@@ -199,9 +199,9 @@ These two constants move to `scripts/server/paths.ts`. The other path constants 
 - Story requirements: [Source: _bmad-output/planning-artifacts/epics.md#Story 11.1]
 - Epic decomposition principles: [Source: _bmad-output/planning-artifacts/epics.md#Epic 11]
 - Three-boundary architecture: [Source: _bmad-output/planning-artifacts/architecture.md#Adapter/API Layer]
-- Source monolith: `_bmad-custom/bmad-ui/scripts/agent-server.ts` (5,420 lines as of story creation)
-- Consumer: `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
-- Consumer: `_bmad-custom/bmad-ui/vite.config.ts`
+- Source monolith: `_bmad-ui/scripts/agent-server.ts` (5,420 lines as of story creation)
+- Consumer: `_bmad-ui/scripts/vite-plugin-static-data.ts`
+- Consumer: `_bmad-ui/vite.config.ts`
 
 ## Dev Agent Record
 

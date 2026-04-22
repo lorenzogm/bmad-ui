@@ -4,7 +4,7 @@ This document describes backend contracts as consumed by the UI frontend.
 
 ## Overview
 - Contract style: REST + Server-Sent Events (SSE)
-- Consumer: _bmad-custom/bmad-ui/src/routes/* and src/app.tsx
+- Consumer: _bmad-ui/src/routes/* and src/app.tsx
 - Authentication: No explicit auth headers/tokens detected in client calls
 
 ## HTTP Endpoints
@@ -46,9 +46,9 @@ This document describes backend contracts as consumed by the UI frontend.
 - Session start flow tolerates HTTP 409 conflict as a non-fatal outcome.
 
 ## Source Evidence
-- _bmad-custom/bmad-ui/src/app.tsx
-- _bmad-custom/bmad-ui/src/routes/epics.tsx
-- _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx
-- _bmad-custom/bmad-ui/src/routes/story.$storyId.tsx
-- _bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx
-- _bmad-custom/bmad-ui/src/routes/analytics-utils.tsx
+- _bmad-ui/src/app.tsx
+- _bmad-ui/src/routes/epics.tsx
+- _bmad-ui/src/routes/epic.$epicId.tsx
+- _bmad-ui/src/routes/story.$storyId.tsx
+- _bmad-ui/src/routes/session.$sessionId.tsx
+- _bmad-ui/src/routes/analytics-utils.tsx

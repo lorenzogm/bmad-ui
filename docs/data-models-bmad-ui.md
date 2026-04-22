@@ -1,10 +1,10 @@
 # Data Models - bmad-ui
 
 ## Summary
-No database migrations, ORM schemas, or persistent relational model files were detected in _bmad-custom/bmad-ui. Data contracts are defined as TypeScript types and consumed from backend APIs.
+No database migrations, ORM schemas, or persistent relational model files were detected in _bmad-ui. Data contracts are defined as TypeScript types and consumed from backend APIs.
 
 ## Contract Model Source
-- Primary file: _bmad-custom/bmad-ui/src/types.ts
+- Primary file: _bmad-ui/src/types.ts
 
 ## Key Domain Entities (TypeScript)
 - RuntimeSession

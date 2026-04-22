@@ -61,7 +61,7 @@ so that the analytics engine — the data processing pipeline for session metric
   - [ ] Verify `markZombieAnalyticsSessionsFailed` (moved to `runtime/sessions.ts` in Story 11.1) can now import `SessionAnalyticsData` and `upsertAnalyticsSession` from the analytics domain
 
 - [ ] Run quality gate (AC: 2)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass
+  - [ ] `cd _bmad-ui && pnpm check` — lint + types + tests + build must pass
 
 ## Dev Notes
 
@@ -71,7 +71,7 @@ so that the analytics engine — the data processing pipeline for session metric
 
 ### Project Root
 
-The project lives at `_bmad-custom/bmad-ui/`. All paths are relative to there:
+The project lives at `_bmad-ui/`. All paths are relative to there:
 - `scripts/agent-server.ts` — the monolith (5,420 lines as of story creation)
 - `scripts/server/` — domain folder created in Story 11.1
 - `scripts/server/paths.ts` — `projectRoot`, `artifactsRoot` (created in Story 11.1)
@@ -296,7 +296,7 @@ After this story, these are imported from `./server/analytics` and re-exported f
 import { projectRoot } from "../paths"
 import path from "node:path"
 
-const agentsDir = path.join(projectRoot, "_bmad-custom", "agents")
+const agentsDir = path.join(projectRoot, "_bmad-ui", "agents")
 export const analyticsStorePath = path.join(agentsDir, "agent-sessions.json")
 const legacyAnalyticsStorePaths: string[] = []
 const agentSessionsPath = analyticsStorePath
@@ -315,13 +315,13 @@ const agentSessionsPath = analyticsStorePath
 
 The quality gate command is:
 ```bash
-cd _bmad-custom/bmad-ui && pnpm check
+cd _bmad-ui && pnpm check
 ```
 This runs: Biome lint → TypeScript type-check → Vitest → Vite build. All four must pass. Type errors in `scripts/` are caught during `vite build`.
 
 ### Project Structure Notes
 
-- All new files go under `_bmad-custom/bmad-ui/scripts/server/analytics/`
+- All new files go under `_bmad-ui/scripts/server/analytics/`
 - No changes to `src/` — this is a server-side refactoring only
 - No new CSS, no UI changes
 - Stories 11.1–11.4 are prerequisite; if not yet completed, implement them in sequence before this story (or verify which domains have been extracted and adapt imports accordingly)
@@ -331,7 +331,7 @@ This runs: Biome lint → TypeScript type-check → Vitest → Vite build. All f
 - Story 11.5 definition: [Source: _bmad-output/planning-artifacts/epics.md#Story 11.5: Extract Analytics Domain]
 - Epic decomposition principles: [Source: _bmad-output/planning-artifacts/epics.md#Epic 11: Agent Server Modularization]
 - Story 11.1 (runtime domain, paths.ts, Zod pattern): [Source: _bmad-output/implementation-artifacts/11-1-extract-runtime-domain.md]
-- Source monolith: `_bmad-custom/bmad-ui/scripts/agent-server.ts` (5,420 lines)
+- Source monolith: `_bmad-ui/scripts/agent-server.ts` (5,420 lines)
   - `AgentSession` type: line 143
   - `DEFAULT_STAGE_MODELS` / `DEFAULT_WORKFLOW_MODEL` / `SKILL_MODEL_OVERRIDES`: lines 202–209
   - `markZombieAnalyticsSessionsFailed`: lines 304–347
@@ -345,8 +345,8 @@ This runs: Biome lint → TypeScript type-check → Vitest → Vite build. All f
   - `SESSION_DEDUP_WINDOW_MS`, `STALE_SESSION_THRESHOLD_MS`: lines 3615, 3621
   - `deduplicateSessions` through `buildAnalyticsPayload`: lines 3633–3846
   - Export block: lines 5394–5420
-- Consumer: `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
-- Consumer: `_bmad-custom/bmad-ui/vite.config.ts`
+- Consumer: `_bmad-ui/scripts/vite-plugin-static-data.ts`
+- Consumer: `_bmad-ui/vite.config.ts`
 
 ## Dev Agent Record
 

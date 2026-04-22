@@ -39,7 +39,7 @@ so that releases are automated, auditable, and consistent across environments.
   - [x] `providers.tf` — vercel provider `4.7.1`
   - [x] `variables.tf` — `ENVIRONMENT`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `vercel` object, `environment_variables`
   - [x] `main.tf` — `vercel_project`, `vercel_project_domain` (primary + redirect), `vercel_project_environment_variable`, output `BMAD_UI_VERCEL_PROJECT_ID`
-  - [x] `config.development.json` — project `bmad-ui-dev`, root `_bmad-custom/bmad-ui`, `pnpm run build` / `pnpm install`
+  - [x] `config.development.json` — project `bmad-ui-dev`, root `_bmad-ui`, `pnpm run build` / `pnpm install`
   - [x] `config.production.json` — project `bmad-ui-prod`, same build config, `project_domains: []` (add domain later)
 - [x] Add `DOTENV_PRIVATE_KEY` to GitHub repository secrets (AC: #2)
   - [x] Go to `https://github.com/lorenzogm/bmad-ui/settings/secrets/actions`
@@ -69,7 +69,7 @@ infra/vercel/src/
 ├── providers.tf                  ← vercel provider 4.7.1
 ├── variables.tf                  ← ENVIRONMENT, VERCEL_TOKEN, VERCEL_ORG_ID, vercel object
 ├── main.tf                       ← vercel_project, domains, env vars, output
-├── config.development.json       ← project: bmad-ui-dev, root: _bmad-custom/bmad-ui
+├── config.development.json       ← project: bmad-ui-dev, root: _bmad-ui
 └── config.production.json        ← project: bmad-ui-prod, same build config
 ```
 
@@ -137,7 +137,7 @@ Unlike the source repo (`../lorenzogm`), bmad-ui has no E2E/Playwright tests yet
 
 ### Project Structure Notes
 
-- Workflow: `.github/workflows/deploy.yml` — repo root level, not inside `_bmad-custom/bmad-ui/`
+- Workflow: `.github/workflows/deploy.yml` — repo root level, not inside `_bmad-ui/`
 - Vercel Terraform: `infra/vercel/src/` — parallel to `infra/github/src/`
 - Encrypted terraform state: pushed to `terraform-state` branch only — never committed to `main`
 - `*.tfstate` and `*.tfstate.*` are already in `.gitignore`
@@ -149,7 +149,7 @@ Unlike the source repo (`../lorenzogm`), bmad-ui has no E2E/Playwright tests yet
 - [Source: _bmad-output/implementation-artifacts/2-1-terraform-github-repository-infrastructure.md] — existing Terraform patterns
 - [Source: ../lorenzogm/.github/workflows/web-vercel-deploy.yml] — source workflow (adapted)
 - [Source: ../lorenzogm/infra/vercel/web/src/] — source Terraform module (adapted)
-- [Source: _bmad-custom/bmad-ui/package.json] — pnpm@10.19.0, node>=24, `pnpm check` script
+- [Source: _bmad-ui/package.json] — pnpm@10.19.0, node>=24, `pnpm check` script
 
 ## Dev Agent Record
 
@@ -159,7 +159,7 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
-- Run 24481333089: failed — pnpm action-setup@v5 requires `package_json_file` (packageManager in `_bmad-custom/bmad-ui/package.json`, not repo root)
+- Run 24481333089: failed — pnpm action-setup@v5 requires `package_json_file` (packageManager in `_bmad-ui/package.json`, not repo root)
 - Run 24481375275: ✅ check-changes job passed (22s) — pnpm check, lint, typecheck, build all pass; deploy jobs correctly skipped (no app/infra diff)
 
 ### Completion Notes List
@@ -167,7 +167,7 @@ claude-sonnet-4.6
 - All workflow files and Terraform modules committed and pushed to `main`
 - `DOTENV_PRIVATE_KEY` GitHub Secret confirmed present (set by user ~1h before story dev)
 - `TERRAFORM_STATE_ENCRYPT_KEY` generated (`openssl rand -base64 32`), added to GitHub Secrets, and encrypted into `.env` via `dotenvx set`
-- Fix: added `package_json_file: _bmad-custom/bmad-ui/package.json` to all 4 `pnpm/action-setup@v5` steps — root has no `package.json`
+- Fix: added `package_json_file: _bmad-ui/package.json` to all 4 `pnpm/action-setup@v5` steps — root has no `package.json`
 - `TERRAFORM_STATE_ENCRYPT_KEY` loaded directly from `${{ secrets.TERRAFORM_STATE_ENCRYPT_KEY }}` in `infra-deploy` job env (per task requirement); also in encrypted `.env` for local dev
 - `VERCEL_TOKEN` and `VERCEL_ORG_ID` must be added to encrypted `.env` via `dotenvx set` before full deployment can succeed; deploy jobs correctly gated behind app/infra change detection
 - pnpm check passes on `main` ✅ (AC #1 trigger, AC #2 secrets pattern, AC #3 stage visibility all verified by design)
@@ -189,5 +189,5 @@ claude-sonnet-4.6
 - 2026-04-15: Created `.github/workflows/deploy.yml` — 4-job deploy pipeline with dotenvx secrets, Terraform state encryption, and Vercel preview/production deploys
 - 2026-04-15: Created `infra/vercel/src/` Terraform module for Vercel project provisioning (dev + prod configs)
 - 2026-04-15: Generated and added `TERRAFORM_STATE_ENCRYPT_KEY` to GitHub Secrets and encrypted `.env`
-- 2026-04-15: Fixed `pnpm/action-setup@v5` to specify `package_json_file` pointing to `_bmad-custom/bmad-ui/package.json`
+- 2026-04-15: Fixed `pnpm/action-setup@v5` to specify `package_json_file` pointing to `_bmad-ui/package.json`
 - 2026-04-15: Verified `check-changes` job (pnpm check) passes on GitHub Actions (run 24481375275)

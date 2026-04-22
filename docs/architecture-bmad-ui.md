@@ -43,7 +43,7 @@ See source-tree-analysis.md for the annotated repository tree.
 
 ## Development Workflow
 - Start dev server: pnpm --filter bmad-dashboard dev (per README guidance)
-- Build: npm run build (from _bmad-custom/bmad-ui)
+- Build: npm run build (from _bmad-ui)
 - Type check: npm run check:types
 - Tests: npm run check:tests
 

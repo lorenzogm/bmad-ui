@@ -51,7 +51,7 @@ so that I can configure an autonomous workflow runner to use the best-performing
   - [ ] Add "Quality" link in analytics sub-navigation (in `analytics-dashboard.tsx` or the nav component) if a sub-nav exists
 
 - [ ] Task 5: Quality gate (AC: all)
-  - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass
+  - [ ] Run `cd _bmad-ui && pnpm check` — lint + types + tests + build must pass
   - [ ] Verify no TypeScript errors, no Biome lint violations
 
 ## Dev Notes
@@ -68,7 +68,7 @@ Story 10.5 is the **final story in Epic 10**. It builds on:
 
 ### API Endpoint Location
 
-The new endpoint lives in `_bmad-custom/bmad-ui/scripts/agent-server.ts`, immediately after the existing `/api/analytics` block (around line 4729). Pattern to follow:
+The new endpoint lives in `_bmad-ui/scripts/agent-server.ts`, immediately after the existing `/api/analytics` block (around line 4729). Pattern to follow:
 
 ```typescript
 if (requestUrl.pathname === "/api/analytics/quality-config" && req.method === "GET") {
@@ -152,7 +152,7 @@ function downloadYaml(yaml: string) {
 
 ### Static Data Plugin (Production)
 
-Check `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts` — if it pre-builds `/api/analytics` into a static JSON file, add a similar pre-build for `/api/analytics/quality-config` so the feature works on Vercel (production is static, no live server).
+Check `_bmad-ui/scripts/vite-plugin-static-data.ts` — if it pre-builds `/api/analytics` into a static JSON file, add a similar pre-build for `/api/analytics/quality-config` so the feature works on Vercel (production is static, no live server).
 
 ### Design System
 
@@ -175,18 +175,18 @@ Check `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts` — if it pre-bu
 
 ### Project Structure Notes
 
-- Route file: `_bmad-custom/bmad-ui/src/routes/analytics-quality.tsx`
-- Agent server: `_bmad-custom/bmad-ui/scripts/agent-server.ts`
-- Static data plugin: `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
-- Route tree: `_bmad-custom/bmad-ui/src/routes/route-tree.ts`
+- Route file: `_bmad-ui/src/routes/analytics-quality.tsx`
+- Agent server: `_bmad-ui/scripts/agent-server.ts`
+- Static data plugin: `_bmad-ui/scripts/vite-plugin-static-data.ts`
+- Route tree: `_bmad-ui/src/routes/route-tree.ts`
 - Types (if any): colocate in `analytics-quality.tsx` — do NOT add to `src/types.ts`
 
 ### References
 
 - [Source: _bmad-output/planning-artifacts/epics.md#Story 10.5] — full AC and config format spec
 - [Source: _bmad-output/project-context.md#Framework-Specific Rules] — TanStack Query, route registration, useEffect ban
-- [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts#4719] — `/api/analytics` endpoint pattern
-- [Source: _bmad-custom/bmad-ui/src/routes/route-tree.ts] — analytics route registration pattern
+- [Source: _bmad-ui/scripts/agent-server.ts#4719] — `/api/analytics` endpoint pattern
+- [Source: _bmad-ui/src/routes/route-tree.ts] — analytics route registration pattern
 - [Source: _bmad-output/planning-artifacts/architecture.md#API Naming Conventions] — endpoint naming rules
 
 ## Dev Agent Record

@@ -24,7 +24,7 @@
 - [ ] I have commented my code, particularly in hard-to-understand areas (or N/A for docs-only PRs)
 - [ ] I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings (or N/A for docs-only PRs)
-- [ ] I have run `cd _bmad-custom/bmad-ui && pnpm run check` and all checks pass (or N/A for docs-only PRs)
+- [ ] I have run `cd _bmad-ui && pnpm run check` and all checks pass (or N/A for docs-only PRs)
 
 ## Screenshots (if applicable)
 <!-- Add screenshots for UI changes -->

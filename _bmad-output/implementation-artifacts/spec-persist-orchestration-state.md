@@ -14,10 +14,10 @@ route: 'one-shot'
 
 ## Suggested Review Order
 
-1. [epic.$epicId.tsx](../../_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#L15) — new `ORCHESTRATING_STORAGE_PREFIX` constant
-2. [epic.$epicId.tsx](../../_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#L138-L144) — `orchestratingKey` + `useState` initializer reading from localStorage with try/catch
-3. [epic.$epicId.tsx](../../_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#L384-L393) — `handleDevelopAllStories` now writes to localStorage
-4. [epic.$epicId.tsx](../../_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#L395-L401) — new `handleStopOrchestration` callback
-5. [epic.$epicId.tsx](../../_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#L472-L477) — cleanup in orchestration effect clears localStorage on completion
-6. [epic.$epicId.tsx](../../_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#L585-L598) — "Stop" button rendered alongside orchestrating indicator
+1. [epic.$epicId.tsx](../../_bmad-ui/src/routes/epic.$epicId.tsx#L15) — new `ORCHESTRATING_STORAGE_PREFIX` constant
+2. [epic.$epicId.tsx](../../_bmad-ui/src/routes/epic.$epicId.tsx#L138-L144) — `orchestratingKey` + `useState` initializer reading from localStorage with try/catch
+3. [epic.$epicId.tsx](../../_bmad-ui/src/routes/epic.$epicId.tsx#L384-L393) — `handleDevelopAllStories` now writes to localStorage
+4. [epic.$epicId.tsx](../../_bmad-ui/src/routes/epic.$epicId.tsx#L395-L401) — new `handleStopOrchestration` callback
+5. [epic.$epicId.tsx](../../_bmad-ui/src/routes/epic.$epicId.tsx#L472-L477) — cleanup in orchestration effect clears localStorage on completion
+6. [epic.$epicId.tsx](../../_bmad-ui/src/routes/epic.$epicId.tsx#L585-L598) — "Stop" button rendered alongside orchestrating indicator
 7. [deferred-work.md](../../_bmad-output/implementation-artifacts/deferred-work.md) — deferred review findings (TTL, multi-tab, cross-tab sync, zombie keys, richer metadata)

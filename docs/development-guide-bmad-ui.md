@@ -15,11 +15,11 @@ If not prompted, run: **Extensions: Show Recommended Extensions** from the Comma
 - pnpm 10.16+ — install with `npm install -g pnpm` or `corepack enable && corepack prepare pnpm@latest --activate`
 
 ## Location
-- Working directory: `_bmad-custom/bmad-ui`
+- Working directory: `_bmad-ui`
 
 ## Install
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm install
 ```
 
@@ -50,15 +50,15 @@ pnpm run build
 ```
 
 ## Key Config Files
-- `_bmad-custom/bmad-ui/vite.config.ts`
-- `_bmad-custom/bmad-ui/tsconfig.json`
-- `_bmad-custom/bmad-ui/package.json`
+- `_bmad-ui/vite.config.ts`
+- `_bmad-ui/tsconfig.json`
+- `_bmad-ui/package.json`
 - `.vscode/extensions.json` — recommended extensions
 - `.vscode/settings.json` — editor config (Biome formatter, TypeScript SDK)
 
 ## Typical Workflow
 1. Open repo root in VS Code, install recommended extensions.
-2. `cd _bmad-custom/bmad-ui && pnpm install`
+2. `cd _bmad-ui && pnpm install`
 3. `pnpm dev` — start the dev server (default: http://localhost:5173)
 4. Make changes, save files (Biome auto-formats on save).
 5. `pnpm run check` — run full validation before committing.
@@ -74,7 +74,7 @@ pnpm run build
 
 ### TypeScript path aliases not resolving in editor
 
-- Ensure `.vscode/settings.json` contains `"typescript.tsdk": "_bmad-custom/bmad-ui/node_modules/typescript/lib"`
+- Ensure `.vscode/settings.json` contains `"typescript.tsdk": "_bmad-ui/node_modules/typescript/lib"`
 - Reload the VS Code TypeScript server: **TypeScript: Restart TS Server** via Command Palette
 
 ### `pnpm` command not found

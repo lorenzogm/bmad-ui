@@ -215,7 +215,7 @@ Maintainers and contributors can trigger automated validation and deployment wor
 **FRs covered:** FR16, FR17, FR18, FR19, FR20, FR21
 
 ### Epic 5: Portable Installation & Developer Tooling
-Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`) — no monorepo, no global setup. The app lives entirely under `_bmad-custom/bmad-ui` and is self-contained. Contributors can install, run, lint, type-check, and build using npm with Biome and TypeScript conventions enforced.
+Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`) — no monorepo, no global setup. The app lives entirely under `_bmad-ui` and is self-contained. Contributors can install, run, lint, type-check, and build using npm with Biome and TypeScript conventions enforced.
 **FRs covered:** FR22, FR23, FR24, FR25, FR27
 
 ### Epic 6: Onboarding, Documentation & Adoption Enablement
@@ -595,7 +595,7 @@ So that I can quickly identify and fix failing stages.
 
 ## Epic 5: Portable Installation & Developer Tooling
 
-Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`) — no monorepo, no global setup. The app lives entirely under `_bmad-custom/bmad-ui` and is self-contained. Contributors can install, run, lint, type-check, and build using npm with Biome and TypeScript conventions enforced.
+Any bmad user can add bmad-ui to an existing bmad project with a single command (`npx bmad-method-ui install`) — no monorepo, no global setup. The app lives entirely under `_bmad-ui` and is self-contained. Contributors can install, run, lint, type-check, and build using npm with Biome and TypeScript conventions enforced.
 
 **Story to FR mapping:**
 - Story 5.1 -> FR22, FR27
@@ -606,28 +606,28 @@ Any bmad user can add bmad-ui to an existing bmad project with a single command 
 
 As a bmad user,
 I want to run `npx bmad-method-ui install` in my bmad project,
-So that bmad-ui is added to my project's `_bmad-custom/bmad-ui` folder instantly without manual copying or monorepo setup.
+So that bmad-ui is added to my project's `_bmad-ui` folder instantly without manual copying or monorepo setup.
 
 **Acceptance Criteria:**
 
 **Given** any directory containing a bmad project,
 **When** `npx bmad-method-ui install` is run,
-**Then** the `_bmad-custom/bmad-ui` app is copied into the current directory with all source files intact and a printed next-steps message is shown
+**Then** the `_bmad-ui` app is copied into the current directory with all source files intact and a printed next-steps message is shown
 
 **Given** the install completes,
 **When** the user follows the printed next steps,
-**Then** they can run `cd _bmad-custom/bmad-ui && npm install && npm run dev` to start the UI
+**Then** they can run `cd _bmad-ui && npm install && npm run dev` to start the UI
 
 **Given** the npm package is published,
 **When** a user runs `npx bmad-method-ui install`,
 **Then** it fetches the latest version of bmad-ui without requiring git clone or manual file copying
 
-**Given** an existing `_bmad-custom/bmad-ui` directory,
+**Given** an existing `_bmad-ui` directory,
 **When** install is run again,
 **Then** the CLI warns the user before overwriting and requires explicit confirmation
 
 **Given** a successful install,
-**When** the user opens `_bmad-custom/bmad-ui`,
+**When** the user opens `_bmad-ui`,
 **Then** the folder is fully self-contained: no external workspace dependencies, no monorepo tooling required
 
 ### Story 5.2: Enforce Code Quality Tooling Baseline
@@ -809,7 +809,7 @@ So that I have a working E2E test foundation I can run locally with a single com
 **Then** Playwright is installed as a dev dependency with `@playwright/test`
 **And** a `playwright.config.ts` exists at the project root with headless mode by default and a headed flag (`--headed`)
 **And** a `tests/` directory exists with at least one test file
-**And** `pnpm exec playwright test` runs successfully from `_bmad-custom/bmad-ui`
+**And** `pnpm exec playwright test` runs successfully from `_bmad-ui`
 **And** a `check:e2e` script is added to package.json
 
 **Given** the dev server is running,
@@ -1653,16 +1653,16 @@ Users and contributors can work with a cleaner `_bmad-ui/` directory layout wher
 **NFRs reinforced:** NFR16, NFR19
 
 **Motivation:**
-- The current `_bmad-custom/bmad-ui/` nesting creates confusion — the outer directory is named after a bmad convention while the inner directory duplicates the project name
-- Data files (links, notes, story-dependencies) are scattered at the `_bmad-custom/` root alongside unrelated agent runtime files
+- The current `_bmad-ui/` nesting creates confusion — the outer directory is named after a bmad convention while the inner directory duplicates the project name
+- Data files (links, notes, story-dependencies) are scattered at the `_bmad-ui/` root alongside unrelated agent runtime files
 - The `npx bmad-method-ui install` command fails to download files in fresh projects, blocking new user adoption
 - Simplifying to `_bmad-ui/` with the app at the root level removes one layer of nesting from every file path
 
 **Target Structure:**
 
 ```
-_bmad-ui/                    ← renamed from _bmad-custom, app files at top level
-├── src/                     ← React app source (was _bmad-custom/bmad-ui/src/)
+_bmad-ui/                    ← renamed from _bmad-ui, app files at top level
+├── src/                     ← React app source (was _bmad-ui/src/)
 ├── scripts/                 ← server + build scripts
 ├── package.json             ← app package.json
 ├── vite.config.ts
@@ -1680,21 +1680,21 @@ _bmad-ui/                    ← renamed from _bmad-custom, app files at top lev
 └── ...
 ```
 
-### Story 12.1: Rename `_bmad-custom` to `_bmad-ui` and Flatten App Directory
+### Story 12.1: Rename `_bmad-ui` to `_bmad-ui` and Flatten App Directory
 
 As a contributor,
 I want the project to use `_bmad-ui/` as the single app directory with source files at the top level,
-So that I don't navigate through redundant `_bmad-custom/bmad-ui/` nesting for every file.
+So that I don't navigate through redundant `_bmad-ui/` nesting for every file.
 
 **Acceptance Criteria:**
 
-**Given** the current `_bmad-custom/` directory exists,
+**Given** the current `_bmad-ui/` directory exists,
 **When** the directory is renamed and flattened,
-**Then** `_bmad-ui/` contains all files that were in `_bmad-custom/bmad-ui/` (src/, scripts/, package.json, vite.config.ts, tsconfig.json, biome.json, index.html, tests/, playwright.config.ts, vercel.json, .gitignore, .npmrc, .nvmrc, README.md)
-**And** `_bmad-ui/agents/` contains the runtime files that were in `_bmad-custom/agents/`
-**And** the old `_bmad-custom/` directory no longer exists
+**Then** `_bmad-ui/` contains all files that were in `_bmad-ui/` (src/, scripts/, package.json, vite.config.ts, tsconfig.json, biome.json, index.html, tests/, playwright.config.ts, vercel.json, .gitignore, .npmrc, .nvmrc, README.md)
+**And** `_bmad-ui/agents/` contains the runtime files that were in `_bmad-ui/agents/`
+**And** the old `_bmad-ui/` directory no longer exists
 
-**Given** files across the repository reference `_bmad-custom` or `_bmad-custom/bmad-ui`,
+**Given** files across the repository reference `_bmad-ui` or `_bmad-ui`,
 **When** the rename is applied,
 **Then** ALL references are updated in:
 - GitHub Actions workflows (`.github/workflows/*.yml`)
@@ -1705,7 +1705,7 @@ So that I don't navigate through redundant `_bmad-custom/bmad-ui/` nesting for e
 - Server code (`scripts/server/paths.ts`, `scripts/server/epics/dependencies.ts`, `scripts/vite-plugin-static-data.ts`, `scripts/sync-sessions.mjs`)
 - Planning and implementation artifacts (`_bmad-output/**/*.md`)
 - Root `package.json` (the `files` field)
-**And** no file contains the string `_bmad-custom` after the migration
+**And** no file contains the string `_bmad-ui` after the migration
 
 **Given** the rename and flatten is complete,
 **When** `pnpm check` is run from `_bmad-ui/`,
@@ -1758,20 +1758,20 @@ So that I can add the UI dashboard to any bmad project with a single command.
 
 **Given** the root `package.json` defines the npm package,
 **When** the package layout is updated,
-**Then** the `files` field references `_bmad-ui/` (not `_bmad-custom/bmad-ui/`)
+**Then** the `files` field references `_bmad-ui/` (not `_bmad-ui/`)
 **And** `bin/install.mjs` is still included
 
 **Given** `bin/install.mjs` copies files from the package to the user's project,
 **When** the installer is updated,
 **Then** the source path resolves to `_bmad-ui/` inside the npm package
-**And** the destination path creates `_bmad-ui/` in the user's project root (not `_bmad-custom/bmad-ui/`)
+**And** the destination path creates `_bmad-ui/` in the user's project root (not `_bmad-ui/`)
 **And** the `EXCLUDED_SEGMENTS` filter still excludes `node_modules`, `dist`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`
 **And** the `agents/` directory is excluded from the install (runtime data is project-specific)
 **And** the `artifacts/` directory is included with empty/default data files
 
 **Given** the installer is updated,
 **When** the overwrite prompt is shown for existing installs,
-**Then** the message references `_bmad-ui/` (not `_bmad-custom/bmad-ui`)
+**Then** the message references `_bmad-ui/` (not `_bmad-ui`)
 **And** the success message and next-steps instructions reference the correct paths:
 - `cd _bmad-ui`
 - `pnpm install`

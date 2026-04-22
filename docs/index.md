@@ -10,14 +10,14 @@
 ### bmad-ui
 - Type: web
 - Tech stack: React, TanStack Router, Vite, TypeScript
-- Root: _bmad-custom/bmad-ui
-- Entry point: _bmad-custom/bmad-ui/src/main.tsx
+- Root: _bmad-ui
+- Entry point: _bmad-ui/src/main.tsx
 
 ### bmad-orchestrator
 - Type: cli
 - Tech stack: Node.js ES modules
-- Root: _bmad-custom/bmad-orchestrator
-- Entry point: _bmad-custom/bmad-orchestrator/orchestrator.mjs
+- Root: _bmad-ui/bmad-orchestrator
+- Entry point: _bmad-ui/bmad-orchestrator/orchestrator.mjs
 
 ## Generated Documentation
 - [Project Overview](./project-overview.md)
@@ -38,8 +38,8 @@
 - [Secret Rotation Runbook](./secret-rotation.md)
 
 ## Existing Documentation
-- [BMAD UI README](../_bmad-custom/bmad-ui/README.md)
-- [BMAD Orchestrator README](../_bmad-custom/bmad-orchestrator/README.md)
+- [BMAD UI README](../_bmad-ui/README.md)
+- [BMAD Orchestrator README](../_bmad-ui/bmad-orchestrator/README.md)
 
 ## Getting Started
 1. Start with project-overview.md for context.

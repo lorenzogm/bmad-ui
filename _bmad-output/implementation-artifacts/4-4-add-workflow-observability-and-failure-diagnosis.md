@@ -55,7 +55,7 @@ This story touches exactly two workflow files:
 - `.github/workflows/ci.yml` — **add** a Summary step only
 - `.github/workflows/deploy.yml` — **enhance** summaries across existing jobs
 
-**Do not modify** any source files under `_bmad-custom/`, package.json scripts, or infrastructure files.
+**Do not modify** any source files under `_bmad-ui/`, package.json scripts, or infrastructure files.
 
 ### Observability Mechanisms in GitHub Actions
 
@@ -140,7 +140,7 @@ The existing `Summary` step is minimal. Enhance it to include version and commit
 ```yaml
 - name: Summary
   run: |
-    VERSION=$(node -p "require('./_bmad-custom/bmad-ui/package.json').version" 2>/dev/null || echo "unknown")
+    VERSION=$(node -p "require('./_bmad-ui/package.json').version" 2>/dev/null || echo "unknown")
     echo "## ✅ Production Deployment" >> $GITHUB_STEP_SUMMARY
     echo "" >> $GITHUB_STEP_SUMMARY
     echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
@@ -166,13 +166,13 @@ For `ci.yml` (created in 4.1): individual step failures surface automatically be
 
 ### pnpm Package Manager Constraint
 
-All pnpm commands in CI must run from `_bmad-custom/bmad-ui/` with `working-directory: _bmad-custom/bmad-ui`. Never use `npm` or `yarn`. Node.js version must be `"24"` (matches `engines.node: ">=24"` in package.json).
+All pnpm commands in CI must run from `_bmad-ui/` with `working-directory: _bmad-ui`. Never use `npm` or `yarn`. Node.js version must be `"24"` (matches `engines.node: ">=24"` in package.json).
 
 ### File Locations
 
-- CI workflow: `.github/workflows/ci.yml` (repo root level, NOT inside `_bmad-custom/`)
+- CI workflow: `.github/workflows/ci.yml` (repo root level, NOT inside `_bmad-ui/`)
 - Deploy workflow: `.github/workflows/deploy.yml` (repo root level)
-- Source: `_bmad-custom/bmad-ui/src/` — **do not touch**
+- Source: `_bmad-ui/src/` — **do not touch**
 - Infrastructure: `infra/` — **do not touch** in this story
 
 [Source: architecture.md — "Infrastructure and CI config should remain repo-level, not hidden inside frontend source directories"]

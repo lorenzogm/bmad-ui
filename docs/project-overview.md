@@ -9,37 +9,37 @@
 
 ## Executive Summary
 This repository hosts BMAD orchestration tooling and a dashboard UI used to monitor and operate story workflows. The codebase is split into two primary parts:
-- A web UI at _bmad-custom/bmad-ui (React + Vite + TanStack Router)
-- A Node.js orchestration utility at _bmad-custom/bmad-orchestrator (script-driven workflow runner)
+- A web UI at _bmad-ui (React + Vite + TanStack Router)
+- A Node.js orchestration utility at _bmad-ui/bmad-orchestrator (script-driven workflow runner)
 
 ## Parts
 
 ### bmad-ui
-- Path: _bmad-custom/bmad-ui
+- Path: _bmad-ui
 - Classification: web
 - Stack: React 19, TypeScript, Vite 7, TanStack Router
 - Responsibility: Visualize sprint/runtime state and trigger orchestration actions via API endpoints.
 
 ### bmad-orchestrator
-- Path: _bmad-custom/bmad-orchestrator
+- Path: _bmad-ui/bmad-orchestrator
 - Classification: cli
 - Stack: Node.js (ES modules)
 - Responsibility: Execute BMAD stage orchestration, write runtime telemetry, and manage session workflows.
 
 ## Key Entry Points
-- Web app bootstrap: _bmad-custom/bmad-ui/src/main.tsx
-- Web routes root: _bmad-custom/bmad-ui/src/routes/__root.tsx
-- Orchestrator runtime script: _bmad-custom/bmad-orchestrator/orchestrator.mjs
+- Web app bootstrap: _bmad-ui/src/main.tsx
+- Web routes root: _bmad-ui/src/routes/__root.tsx
+- Orchestrator runtime script: _bmad-ui/bmad-orchestrator/orchestrator.mjs
 
 ## Tech Stack Summary
 | Category | Technology | Version | Evidence |
 |---|---|---|---|
-| Frontend runtime | React | 19.2.0 | _bmad-custom/bmad-ui/package.json |
-| Router | @tanstack/react-router | 1.168.15 | _bmad-custom/bmad-ui/package.json |
-| Build tool | Vite | 7.1.7 | _bmad-custom/bmad-ui/package.json |
-| Language tooling | TypeScript | 5.9.2 | _bmad-custom/bmad-ui/package.json |
-| Testing | Vitest | 4.0.1 | _bmad-custom/bmad-ui/package.json |
-| Orchestration runtime | Node.js script | N/A | _bmad-custom/bmad-orchestrator/orchestrator.mjs |
+| Frontend runtime | React | 19.2.0 | _bmad-ui/package.json |
+| Router | @tanstack/react-router | 1.168.15 | _bmad-ui/package.json |
+| Build tool | Vite | 7.1.7 | _bmad-ui/package.json |
+| Language tooling | TypeScript | 5.9.2 | _bmad-ui/package.json |
+| Testing | Vitest | 4.0.1 | _bmad-ui/package.json |
+| Orchestration runtime | Node.js script | N/A | _bmad-ui/bmad-orchestrator/orchestrator.mjs |
 
 ## Related Documentation
 - Architecture: architecture-bmad-ui.md, architecture-bmad-orchestrator.md

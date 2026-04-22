@@ -24,10 +24,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ─── Paths ────────────────────────────────────────────────────────────────────
 
-const PROJECT_ROOT = join(__dirname, "..", "..", "..");
+const PROJECT_ROOT = join(__dirname, "..", "..");
 const SESSIONS_FILE = join(
 	PROJECT_ROOT,
-	"_bmad-custom",
+	"_bmad-ui",
 	"agents",
 	"agent-sessions.json",
 );
@@ -62,8 +62,7 @@ const SKILLS_CONFIG_PATH = join(
 	__dirname,
 	"..",
 	"..",
-	"..",
-	"_bmad-custom",
+	"_bmad-ui",
 	"agents",
 	"skills-config.json",
 );

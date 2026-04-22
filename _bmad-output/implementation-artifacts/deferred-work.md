@@ -29,8 +29,8 @@ Resolution (2026-04-16): both items were implemented and closed in `.github/work
 
 ## Deferred from: code review of 9-4-responsive-layout-and-spacing-refinements (2026-04-22)
 
-- Story scope drift in `_bmad-custom/bmad-ui/src/app.tsx` (StatusBadge + status mapping refactor added in a layout-spacing story) retained as pre-existing because it is now part of the baseline flow.
-- Status copy semantics in `_bmad-custom/bmad-ui/src/app.tsx` changed beyond this story's CSS/layout scope (`backlog` → `To Do`, `review` → `In Review`) and is deferred for a dedicated status-language alignment pass.
+- Story scope drift in `_bmad-ui/src/app.tsx` (StatusBadge + status mapping refactor added in a layout-spacing story) retained as pre-existing because it is now part of the baseline flow.
+- Status copy semantics in `_bmad-ui/src/app.tsx` changed beyond this story's CSS/layout scope (`backlog` → `To Do`, `review` → `In Review`) and is deferred for a dedicated status-language alignment pass.
 
 ## Deferred from: code review of 9-6-sidebar-running-sessions-panel (2026-04-22)
 
@@ -38,7 +38,7 @@ Resolution (2026-04-16): both items were implemented and closed in `.github/work
 
 ## Deferred from: code review of 9-3-status-badge-consistency-across-views (2026-04-22)
 
-- Story markdown status regex is brittle to markdown formatting variation (`_bmad-custom/bmad-ui/scripts/agent-server.ts:384`) and can skip status overrides unexpectedly.
-- Story status synchronization only updates when the incoming markdown status has a different order rank (`_bmad-custom/bmad-ui/scripts/agent-server.ts:1284`), which can block intentional regressions for resets/reopens.
-- Story discovery silently returns when reading implementation-artifact directories fails (`_bmad-custom/bmad-ui/scripts/agent-server.ts:1328`), obscuring operational failures.
-- Story detail step-state fallback can diverge from story-level status when no active review session exists (`_bmad-custom/bmad-ui/scripts/agent-server.ts:4587`).
+- Story markdown status regex is brittle to markdown formatting variation (`_bmad-ui/scripts/agent-server.ts:384`) and can skip status overrides unexpectedly.
+- Story status synchronization only updates when the incoming markdown status has a different order rank (`_bmad-ui/scripts/agent-server.ts:1284`), which can block intentional regressions for resets/reopens.
+- Story discovery silently returns when reading implementation-artifact directories fails (`_bmad-ui/scripts/agent-server.ts:1328`), obscuring operational failures.
+- Story detail step-state fallback can diverge from story-level status when no active review session exists (`_bmad-ui/scripts/agent-server.ts:4587`).

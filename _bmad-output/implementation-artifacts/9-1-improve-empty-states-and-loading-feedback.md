@@ -62,7 +62,7 @@ So that I never see a blank screen or raw spinner without context.
   - [x] For analytics routes: replace generic error strings with `<QueryErrorState>` where a `refetch` is accessible from the data hook
 
 - [x] Verify quality gate (AC: all)
-  - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with exit code 0
+  - [x] `cd _bmad-ui && pnpm check` passes with exit code 0
 
 ### Review Findings
 
@@ -240,16 +240,16 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/src/lib/loading-states.tsx` (created)
-- `_bmad-custom/bmad-ui/src/routes/workflow-index.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/sessions.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/home.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/analytics-dashboard.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/analytics-epic-detail.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/analytics-model-detail.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/analytics-story-detail.tsx` (modified)
-- `_bmad-custom/bmad-ui/src/routes/analytics-stories.tsx` (modified)
+- `_bmad-ui/src/lib/loading-states.tsx` (created)
+- `_bmad-ui/src/routes/workflow-index.tsx` (modified)
+- `_bmad-ui/src/routes/workflow.$phaseId.tsx` (modified)
+- `_bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (modified)
+- `_bmad-ui/src/routes/sessions.tsx` (modified)
+- `_bmad-ui/src/routes/home.tsx` (modified)
+- `_bmad-ui/src/routes/analytics-dashboard.tsx` (modified)
+- `_bmad-ui/src/routes/analytics-sessions.tsx` (modified)
+- `_bmad-ui/src/routes/analytics-epic-detail.tsx` (modified)
+- `_bmad-ui/src/routes/analytics-model-detail.tsx` (modified)
+- `_bmad-ui/src/routes/analytics-story-detail.tsx` (modified)
+- `_bmad-ui/src/routes/analytics-stories.tsx` (modified)
 - `_bmad-output/implementation-artifacts/9-1-improve-empty-states-and-loading-feedback.md` (updated)

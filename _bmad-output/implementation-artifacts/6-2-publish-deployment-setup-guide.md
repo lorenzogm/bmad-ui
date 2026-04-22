@@ -29,7 +29,7 @@ so that I can deploy bmad-ui reliably.
 - [x] Add a `## Deployment` link section to `README.md` Quick Start area pointing to `docs/deployment-guide.md` (AC: #1)
   - [x] Keep the callout "No secrets required for local dev" and add a sibling note clarifying maintainers need `DOTENV_PRIVATE_KEY` for deployment
 - [x] Verify `docs/secrets-workflow.md` links and references are consistent with the new deployment guide (read-only verification, fix only if broken)
-- [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation-only change — this should pass trivially)
+- [x] Run `cd _bmad-ui && pnpm run check` to confirm no regressions (documentation-only change — this should pass trivially)
 
 ### Review Findings
 
@@ -70,7 +70,7 @@ on:
 
 | Job | Condition | Purpose |
 |---|---|---|
-| `check-changes` | always | Detects if `infra/` or `_bmad-custom/bmad-ui/` changed; resolves target environment |
+| `check-changes` | always | Detects if `infra/` or `_bmad-ui/` changed; resolves target environment |
 | `infra-deploy` | if `infra-changed == 'true'` | Runs `terraform apply` for GitHub/Vercel infra; needs `DOTENV_PRIVATE_KEY` |
 | `deploy` | if `app-changed == 'true'` (or infra-deploy didn't fail) | Builds app; runs `vercel deploy --prod` to get a preview URL |
 | `deploy-production` | if `environment == 'production'` AND prior jobs succeeded | Promotes to Vercel production alias |
@@ -125,7 +125,7 @@ The deployment guide should include a sequential checklist for a new maintainer:
 
 1. Read `docs/deployment-guide.md` — confirm it covers: prerequisites, secrets setup, preview vs. production differences, job sequence, and diagnostic guidance
 2. Read `README.md` — confirm a link to `docs/deployment-guide.md` exists for deployment setup
-3. `cd _bmad-custom/bmad-ui && pnpm run check` passes cleanly
+3. `cd _bmad-ui && pnpm run check` passes cleanly
 
 ### Project Structure Notes
 

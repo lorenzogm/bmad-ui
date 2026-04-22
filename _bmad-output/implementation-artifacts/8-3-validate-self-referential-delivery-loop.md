@@ -26,7 +26,7 @@ So that Phase 1 proves operational readiness for Phase 2.
   - [x] If either is not done, block this story and report status
 
 - [x] Exercise key UI views against real bmad-ui project data at Epic 8 delivery state (AC: #1, #2)
-  - [x] Start dev server (`cd _bmad-custom/bmad-ui && pnpm dev`) and open bmad-ui in browser
+  - [x] Start dev server (`cd _bmad-ui && pnpm dev`) and open bmad-ui in browser
   - [x] Verify home page sprint overview shows correct epic/story counts reflecting Epic 8 progress
   - [x] Navigate to epic detail view for epic-8 — confirm all 4 stories (8-1 through 8-4) appear with correct statuses
   - [x] Navigate to a story-8 detail view — confirm story spec content from `_bmad-output/implementation-artifacts/8-*.md` is rendered correctly
@@ -40,7 +40,7 @@ So that Phase 1 proves operational readiness for Phase 2.
 - [x] Fix any rendering issues discovered during validation (AC: #1)
   - [x] Address any JavaScript console errors in the views exercised above
   - [x] Ensure graceful empty states appear where data may be absent (no blank screens)
-  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` to confirm no regressions
+  - [x] Run `cd _bmad-ui && pnpm check` to confirm no regressions
 
 - [x] Update `docs/phase-1-completion.md` with Epic 8 validation results (AC: #2, #3)
   - [x] Update the view-by-view results table to reflect current state
@@ -52,7 +52,7 @@ So that Phase 1 proves operational readiness for Phase 2.
 
 ### Review Findings
 
-- [x] [Review][Patch] Normalize session sync merges to prevent invalid end-before-start timelines and completed-with-error statuses when sources conflict [`_bmad-custom/bmad-ui/scripts/sync-sessions.mjs`]
+- [x] [Review][Patch] Normalize session sync merges to prevent invalid end-before-start timelines and completed-with-error statuses when sources conflict [`_bmad-ui/scripts/sync-sessions.mjs`]
 - [x] [Review][Defer] Story 8.3 prerequisites remain unmet (`8-1` is still `in-progress` and `8-2` is still `review`), so full loop validation cannot be accepted yet [`_bmad-output/implementation-artifacts/sprint-status.yaml:95-97`] — deferred, pre-existing
 - [x] [Review][Defer] Required validation documentation updates for this story (including `docs/phase-1-completion.md` traceability/baseline updates) are not present in current changeset — deferred, pre-existing
 - [x] [Review][Patch] Correct Epic summary metrics in `docs/phase-1-completion.md` to match `sprint-status.yaml` (epic statuses are currently reported as `Done 8 / In-Progress 1 / Backlog 2`, but source data is `Done 6 / In-Progress 3 / Backlog 2`) [`docs/phase-1-completion.md:75-77`]
@@ -103,7 +103,7 @@ Key differences:
 
 ### Data Files That Back the Views
 
-- `_bmad-custom/agents/agents-sessions.json` → Sessions and analytics views
+- `_bmad-ui/agents/agents-sessions.json` → Sessions and analytics views
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` → Sprint overview, epic/story statuses
 - `_bmad-output/planning-artifacts/epics.md` → Epic goals and story descriptions
 - `_bmad-output/implementation-artifacts/8-*.md` → Story spec files for Epic 8
@@ -140,7 +140,7 @@ Use agent-browser to catch JavaScript errors during validation:
 
 ```bash
 # Start dev server first
-cd _bmad-custom/bmad-ui && pnpm dev &
+cd _bmad-ui && pnpm dev &
 
 # Verify app loads
 agent-browser open http://localhost:5173
@@ -169,14 +169,14 @@ agent-browser close
 | File | Action |
 |---|---|
 | `docs/phase-1-completion.md` | Update — add Epic 8 validation results and updated Phase 2 baseline |
-| `_bmad-custom/bmad-ui/src/routes/*.tsx` | Modify — only if rendering bugs are found during validation |
+| `_bmad-ui/src/routes/*.tsx` | Modify — only if rendering bugs are found during validation |
 
 ### Project Structure Notes
 
-- All docs live in `docs/` at the repository root (not inside `_bmad-custom/bmad-ui/`)
-- Route files are in `_bmad-custom/bmad-ui/src/routes/`
+- All docs live in `docs/` at the repository root (not inside `_bmad-ui/`)
+- Route files are in `_bmad-ui/src/routes/`
 - No barrel `index.ts` files — import directly from source file
-- The `@/*` alias maps to `./src/*` inside `_bmad-custom/bmad-ui`
+- The `@/*` alias maps to `./src/*` inside `_bmad-ui`
 
 ### References
 

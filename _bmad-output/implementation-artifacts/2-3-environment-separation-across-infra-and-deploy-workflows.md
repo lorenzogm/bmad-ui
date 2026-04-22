@@ -103,7 +103,7 @@ jobs:
         run: |
           npx vercel --token "$VERCEL_TOKEN" \
             --yes \
-            --cwd _bmad-custom/bmad-ui/dist
+            --cwd _bmad-ui/dist
 
   production:
     name: Deploy Production
@@ -129,7 +129,7 @@ jobs:
         run: |
           npx vercel --prod --token "$VERCEL_TOKEN" \
             --yes \
-            --cwd _bmad-custom/bmad-ui/dist
+            --cwd _bmad-ui/dist
 ```
 
 **Critical environment gate:** The `environment: production` on the production job creates a GitHub Environment approval requirement. Without this, a push to `main` would immediately deploy to production — this is the AC3 guard.
@@ -167,7 +167,7 @@ docs/
 ### What NOT to Change
 
 - All files in `infra/github/src/` — no Terraform changes needed (single GitHub repo, no environment split required)
-- `_bmad-custom/bmad-ui/` — no changes (deployment is at repo level, not package level)
+- `_bmad-ui/` — no changes (deployment is at repo level, not package level)
 - Do NOT introduce Terraform workspaces or split config files for GitHub infra
 
 ### Terraform Runbook (No Change)
@@ -193,7 +193,7 @@ dotenvx run -- terraform apply -var-file=config.json
 - Filter syntax: `pnpm --filter bmad-ui build` (the frontend package name)
 - `pnpm/action-setup@v4` is the official GitHub Action for pnpm
 - Node 24 is the baseline (set in project baseline)
-- Build output: `_bmad-custom/bmad-ui/dist/` (Vite build target)
+- Build output: `_bmad-ui/dist/` (Vite build target)
 
 ### Project Structure Notes
 

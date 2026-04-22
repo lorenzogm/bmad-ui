@@ -58,30 +58,30 @@ The current workflow has four jobs:
 ```yaml
 - name: Run code quality checks
   run: pnpm check
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 ```
 This uses the composite `pnpm check` script, which means a single step fails with an opaque message. **Replace this with individual steps** matching the pattern from story 4-1's CI workflow:
 
 ```yaml
 - name: Install dependencies
   run: pnpm install --frozen-lockfile
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 
 - name: Lint
   run: pnpm check:lint
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 
 - name: Type check
   run: pnpm check:types
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 
 - name: Tests
   run: pnpm check:tests
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 
 - name: Build
   run: pnpm build
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 ```
 
 Because `check-changes` job is `needs:` for all deploy jobs, any step failure here already halts the entire pipeline — satisfying AC #3 without any additional `if:` guards.
@@ -113,13 +113,13 @@ Every job that runs pnpm commands must use:
 ```yaml
 - uses: pnpm/action-setup@v5
   with:
-    package_json_file: _bmad-custom/bmad-ui/package.json
+    package_json_file: _bmad-ui/package.json
 
 - uses: actions/setup-node@v6
   with:
     node-version: "24"
     cache: "pnpm"
-    cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+    cache-dependency-path: _bmad-ui/pnpm-lock.yaml
 ```
 Node version must be `"24"` — matches `engines.node: ">=24"` in package.json. **Never use npm or yarn.**
 
@@ -150,8 +150,8 @@ Secrets are loaded via `pnpm dlx @dotenvx/dotenvx` from encrypted `.env` files. 
 ### Project Structure Notes
 
 - File to modify: `.github/workflows/deploy.yml` (repo root level)
-- Infra and CI config is repo-level, not inside `_bmad-custom/` [Source: architecture.md]
-- No source files in `_bmad-custom/bmad-ui/` should be touched
+- Infra and CI config is repo-level, not inside `_bmad-ui/` [Source: architecture.md]
+- No source files in `_bmad-ui/` should be touched
 
 ### References
 

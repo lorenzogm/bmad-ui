@@ -66,7 +66,7 @@ So that the frontend can render effectiveness charts without client-side data cr
   - [ ] **Important:** The function is `buildAnalyticsPayload()` — NOT `buildAnalyticsResponse()` as stated in the epics (the epics contain a naming error)
 
 - [ ] Run quality gate (AC: all)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` must pass with zero errors
+  - [ ] `cd _bmad-ui && pnpm check` must pass with zero errors
 
 ## Dev Notes
 
@@ -83,8 +83,8 @@ The epics file mentions `buildAnalyticsResponse()` but the **actual function nam
 
 ### Key Files to Modify
 
-1. **`_bmad-custom/bmad-ui/src/types.ts`** — add frontend quality types (legacy file, explicitly referenced in story)
-2. **`_bmad-custom/bmad-ui/scripts/agent-server.ts`** — extend `SessionAnalyticsData` type + implement `buildQualityAggregation()` + update `buildAnalyticsPayload()` return
+1. **`_bmad-ui/src/types.ts`** — add frontend quality types (legacy file, explicitly referenced in story)
+2. **`_bmad-ui/scripts/agent-server.ts`** — extend `SessionAnalyticsData` type + implement `buildQualityAggregation()` + update `buildAnalyticsPayload()` return
 
 ### Do NOT Touch
 

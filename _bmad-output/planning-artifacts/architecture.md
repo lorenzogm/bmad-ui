@@ -471,7 +471,7 @@ bmad-ui/
 │   ├── _config/
 │   ├── bmm/
 │   └── core/
-├── _bmad-custom/
+├── _bmad-ui/
 │   ├── bmad-ui/
 │   │   ├── index.html
 │   │   ├── package.json
@@ -526,7 +526,7 @@ bmad-ui/
 │   ├── development-guide-bmad-ui.md
 │   ├── development-guide-bmad-orchestrator.md
 │   └── deployment-guide.md
-└── _bmad-custom/
+└── _bmad-ui/
 ```
 
 ### Architectural Boundaries
@@ -538,15 +538,15 @@ bmad-ui/
 - Planning artifacts and implementation artifacts are consumed as system inputs, not as frontend-owned state
 
 **Component Boundaries:**
-- `_bmad-custom/bmad-ui/src/routes/` owns route-level UI composition and navigation concerns
-- `_bmad-custom/bmad-ui/src/types.ts` owns shared frontend-facing domain contracts
-- `_bmad-custom/bmad-ui/src/app.tsx` and route modules coordinate UI behavior, but do not own backend normalization rules
+- `_bmad-ui/src/routes/` owns route-level UI composition and navigation concerns
+- `_bmad-ui/src/types.ts` owns shared frontend-facing domain contracts
+- `_bmad-ui/src/app.tsx` and route modules coordinate UI behavior, but do not own backend normalization rules
 - Analytics route modules remain in the route boundary unless a reusable non-route abstraction emerges
 
 **Service Boundaries:**
 - `orchestrator.mjs` is the runtime execution boundary
 - `runtime-state.json`, `analytics.json`, and `logs/` are runtime outputs, not source modules
-- The future adapter/API layer belongs logically between `_bmad-custom/bmad-ui` and `_bmad-custom/bmad-orchestrator`, even if implemented in a separate service or server module later
+- The future adapter/API layer belongs logically between `_bmad-ui` and `_bmad-ui/bmad-orchestrator`, even if implemented in a separate service or server module later
 - Terraform, CI/CD, and deployment concerns belong to repo-level infrastructure boundaries, not package-local UI code
 
 **Data Boundaries:**
@@ -559,20 +559,20 @@ bmad-ui/
 
 **Feature and FR Mapping:**
 - Core product operation and dashboard visibility:
-  - `_bmad-custom/bmad-ui/src/app.tsx`
-  - `_bmad-custom/bmad-ui/src/routes/index.tsx`
-  - `_bmad-custom/bmad-ui/src/routes/epics.tsx`
-  - `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
-  - `_bmad-custom/bmad-ui/src/routes/story.$storyId.tsx`
-  - `_bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx`
+  - `_bmad-ui/src/app.tsx`
+  - `_bmad-ui/src/routes/index.tsx`
+  - `_bmad-ui/src/routes/epics.tsx`
+  - `_bmad-ui/src/routes/epic.$epicId.tsx`
+  - `_bmad-ui/src/routes/story.$storyId.tsx`
+  - `_bmad-ui/src/routes/session.$sessionId.tsx`
 - Analytics and workflow analysis:
-  - `_bmad-custom/bmad-ui/src/routes/analytics*.tsx`
-  - `_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx`
+  - `_bmad-ui/src/routes/analytics*.tsx`
+  - `_bmad-ui/src/routes/analytics-utils.tsx`
 - Runtime orchestration and state production:
-  - `_bmad-custom/bmad-orchestrator/orchestrator.mjs`
-  - `_bmad-custom/bmad-orchestrator/runtime-state.json`
-  - `_bmad-custom/bmad-orchestrator/analytics.json`
-  - `_bmad-custom/bmad-orchestrator/logs/`
+  - `_bmad-ui/bmad-orchestrator/orchestrator.mjs`
+  - `_bmad-ui/bmad-orchestrator/runtime-state.json`
+  - `_bmad-ui/bmad-orchestrator/analytics.json`
+  - `_bmad-ui/bmad-orchestrator/logs/`
 - Planning and architecture inputs:
   - `_bmad-output/planning-artifacts/prd.md`
   - `_bmad-output/planning-artifacts/architecture.md`
@@ -580,12 +580,12 @@ bmad-ui/
 
 **Cross-Cutting Concerns:**
 - Shared type contracts:
-  - `_bmad-custom/bmad-ui/src/types.ts`
+  - `_bmad-ui/src/types.ts`
 - Route registration and navigation consistency:
-  - `_bmad-custom/bmad-ui/src/routes/route-tree.ts`
-  - `_bmad-custom/bmad-ui/src/routes/__root.tsx`
+  - `_bmad-ui/src/routes/route-tree.ts`
+  - `_bmad-ui/src/routes/__root.tsx`
 - UI styling and visual tokens:
-  - `_bmad-custom/bmad-ui/src/styles.css`
+  - `_bmad-ui/src/styles.css`
 - Deployment, setup, and operational guidance:
   - `docs/development-guide-bmad-ui.md`
   - `docs/development-guide-bmad-orchestrator.md`
@@ -615,15 +615,15 @@ bmad-ui/
 ### File Organization Patterns
 
 **Configuration Files:**
-- Package-local build config stays inside `_bmad-custom/bmad-ui/`
+- Package-local build config stays inside `_bmad-ui/`
 - Repo-level planning and BMAD config stay in `_bmad/` and `_bmad-output/`
 - Infrastructure and CI config should remain repo-level, not hidden inside frontend source directories
 
 **Source Organization:**
-- Frontend source remains package-local in `_bmad-custom/bmad-ui/src/`
+- Frontend source remains package-local in `_bmad-ui/src/`
 - Route modules remain grouped in `routes/`
 - Shared frontend contracts remain centralized
-- Orchestrator runtime remains isolated in `_bmad-custom/bmad-orchestrator/`
+- Orchestrator runtime remains isolated in `_bmad-ui/bmad-orchestrator/`
 
 **Test Organization:**
 - Tests should be co-located with source files inside the relevant package
@@ -638,7 +638,7 @@ bmad-ui/
 ### Development Workflow Integration
 
 **Development Server Structure:**
-- Frontend development runs from `_bmad-custom/bmad-ui/`
+- Frontend development runs from `_bmad-ui/`
 - Orchestrator runtime is an adjacent executable subsystem, not bundled into the frontend
 - Local development depends on a stable adapter/API contract between the two
 

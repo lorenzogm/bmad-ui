@@ -36,16 +36,16 @@ so that the app is comfortable to use for extended monitoring sessions.
   - [x] Verify `.step-cell` rows in epic detail table have `vertical-align: middle` and badge sizes are uniform so no row is taller than others due to wrapping
 
 - [x] Validate, check quality gate, and commit (all ACs)
-  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass before marking done
+  - [x] Run `cd _bmad-ui && pnpm check` — must pass before marking done
   - [x] Visually verify at 1280px viewport: home, sessions, epic detail, and session list pages
 
 ### Review Findings
 
-- [x] [Review][Patch] Prevent `Skill / Name` cell overflow with truncation container in sessions table [_bmad-custom/bmad-ui/src/routes/sessions.tsx:166]
-- [x] [Review][Patch] Keep `(planned)` marker visible when story ID truncates [_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx:811]
-- [x] [Review][Patch] Add tooltip to truncated session story ID cell [_bmad-custom/bmad-ui/src/routes/sessions.tsx:180]
-- [x] [Review][Defer] Story scope drift (StatusBadge refactor in this commit) [_bmad-custom/bmad-ui/src/app.tsx:25] — deferred, pre-existing
-- [x] [Review][Defer] Status copy semantics changed beyond layout scope [_bmad-custom/bmad-ui/src/app.tsx:43] — deferred, pre-existing
+- [x] [Review][Patch] Prevent `Skill / Name` cell overflow with truncation container in sessions table [_bmad-ui/src/routes/sessions.tsx:166]
+- [x] [Review][Patch] Keep `(planned)` marker visible when story ID truncates [_bmad-ui/src/routes/epic.$epicId.tsx:811]
+- [x] [Review][Patch] Add tooltip to truncated session story ID cell [_bmad-ui/src/routes/sessions.tsx:180]
+- [x] [Review][Defer] Story scope drift (StatusBadge refactor in this commit) [_bmad-ui/src/app.tsx:25] — deferred, pre-existing
+- [x] [Review][Defer] Status copy semantics changed beyond layout scope [_bmad-ui/src/app.tsx:43] — deferred, pre-existing
 
 ## Dev Notes
 
@@ -60,10 +60,10 @@ This is a **CSS-only / Tailwind-class polish story**. Do NOT:
 
 | File | Expected change |
 |------|-----------------|
-| `_bmad-custom/bmad-ui/src/styles.css` | Minor additions: add `overflow-wrap: break-word` to `.epic-title` if not already present; verify table cell padding globally |
-| `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx` | Add Tailwind `truncate` / `min-w-0` to story-ID `<td>` and ensure `.epic-title` wraps safely |
-| `_bmad-custom/bmad-ui/src/routes/sessions.tsx` | Confirm or add `truncate` classes on long text cells |
-| `_bmad-custom/bmad-ui/src/routes/home.tsx` | Replace hardcoded inline `style={}` spacing in the Epics/Stories/Sessions stat grid with Tailwind gap/padding classes |
+| `_bmad-ui/src/styles.css` | Minor additions: add `overflow-wrap: break-word` to `.epic-title` if not already present; verify table cell padding globally |
+| `_bmad-ui/src/routes/epic.$epicId.tsx` | Add Tailwind `truncate` / `min-w-0` to story-ID `<td>` and ensure `.epic-title` wraps safely |
+| `_bmad-ui/src/routes/sessions.tsx` | Confirm or add `truncate` classes on long text cells |
+| `_bmad-ui/src/routes/home.tsx` | Replace hardcoded inline `style={}` spacing in the Epics/Stories/Sessions stat grid with Tailwind gap/padding classes |
 
 Do **not** touch `route-tree.ts`, `types.ts`, `agent-server.ts`, or `vite-plugin-static-data.ts` — this story makes no structural or data changes.
 
@@ -146,12 +146,12 @@ Never hardcode colors. Never use `style={{ backgroundColor: '...' }}`.
 
 - [Source: _bmad-output/planning-artifacts/epics.md#Story 9.4] — acceptance criteria
 - [Source: _bmad-output/project-context.md#Styling Rules] — Tailwind-first, no new CSS classes, no hardcoded colors
-- [Source: _bmad-custom/bmad-ui/src/styles.css#L456-L484] — `.screen` and `.panel` layout definitions
-- [Source: _bmad-custom/bmad-ui/src/styles.css#L1720-L1737] — global table styles
-- [Source: _bmad-custom/bmad-ui/src/styles.css#L2044-L2064] — `@media (max-width: 900px)` responsive rules
-- [Source: _bmad-custom/bmad-ui/src/routes/sessions.tsx] — session table structure
-- [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#L960-L1100] — story table rows
-- [Source: _bmad-custom/bmad-ui/src/routes/home.tsx#L196-L200] — Epics/Stories/Sessions stat grid
+- [Source: _bmad-ui/src/styles.css#L456-L484] — `.screen` and `.panel` layout definitions
+- [Source: _bmad-ui/src/styles.css#L1720-L1737] — global table styles
+- [Source: _bmad-ui/src/styles.css#L2044-L2064] — `@media (max-width: 900px)` responsive rules
+- [Source: _bmad-ui/src/routes/sessions.tsx] — session table structure
+- [Source: _bmad-ui/src/routes/epic.$epicId.tsx#L960-L1100] — story table rows
+- [Source: _bmad-ui/src/routes/home.tsx#L196-L200] — Epics/Stories/Sessions stat grid
 
 ## Dev Agent Record
 
@@ -173,8 +173,8 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/src/styles.css`
-- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
-- `_bmad-custom/bmad-ui/src/routes/sessions.tsx`
-- `_bmad-custom/bmad-ui/src/routes/home.tsx`
-- `_bmad-custom/bmad-ui/src/app.tsx`
+- `_bmad-ui/src/styles.css`
+- `_bmad-ui/src/routes/epic.$epicId.tsx`
+- `_bmad-ui/src/routes/sessions.tsx`
+- `_bmad-ui/src/routes/home.tsx`
+- `_bmad-ui/src/app.tsx`

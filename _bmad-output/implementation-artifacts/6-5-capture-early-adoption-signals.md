@@ -24,7 +24,7 @@ so that I can evaluate traction and prioritize improvements.
   - [x] Define the signal inventory: what to monitor and where (GitHub Insights, stars, forks, issues, discussions, first-time contributors)
   - [x] Provide a minimal weekly review template with fields for each signal category
   - [x] Document how to map signal trends to backlog planning actions (mapping table or guidance)
-- [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (documentation only — this should be a no-op)
+- [x] Run `cd _bmad-ui && pnpm run check` to confirm no regressions (documentation only — this should be a no-op)
 
 ### Review Findings
 
@@ -134,7 +134,7 @@ After completing:
 1. `docs/adoption-signals.md` exists and covers stars, forks, issues, discussions, first-time contributors
 2. The file contains a weekly review template maintainers can copy-paste
 3. The file contains guidance on mapping signals to backlog planning actions
-4. `cd _bmad-custom/bmad-ui && pnpm run check` passes cleanly — no regressions
+4. `cd _bmad-ui && pnpm run check` passes cleanly — no regressions
 
 ### Project Structure Notes
 

@@ -25,10 +25,10 @@ corepack enable && corepack prepare pnpm@latest --activate
 ### `pnpm install` fails from repo root
 
 **Symptom:** `ERR_PNPM_NO_PKG_MANIFEST  No package.json (or package.yaml, or package.json5) was found in /path/to/bmad-ui`
-**Likely cause:** `package.json` and `pnpm-lock.yaml` live in `_bmad-custom/bmad-ui/`, not at the repository root
+**Likely cause:** `package.json` and `pnpm-lock.yaml` live in `_bmad-ui/`, not at the repository root
 **Resolution:**
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm install
 ```
 **Evidence to collect (if unresolved):** Full error output and your current working directory (`pwd`)
@@ -38,10 +38,10 @@ pnpm install
 ### `pnpm dev` or `pnpm run check` fails with "Missing script"
 
 **Symptom:** `ERR_PNPM_NO_SCRIPT  Missing script: dev` when running from the repo root
-**Likely cause:** Same root cause — pnpm scripts are defined in `_bmad-custom/bmad-ui/package.json`
+**Likely cause:** Same root cause — pnpm scripts are defined in `_bmad-ui/package.json`
 **Resolution:**
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm dev       # start dev server
 pnpm run check # run full quality gate
 ```
@@ -77,7 +77,7 @@ pnpm run check # run full quality gate
 **Resolution:** Ensure `.vscode/settings.json` contains:
 ```json
 {
-  "typescript.tsdk": "_bmad-custom/bmad-ui/node_modules/typescript/lib"
+  "typescript.tsdk": "_bmad-ui/node_modules/typescript/lib"
 }
 ```
 Then reload: **Command Palette → TypeScript: Restart TS Server**
@@ -95,7 +95,7 @@ CI runs these steps in order: `pnpm install --frozen-lockfile` → Lint → Type
 **Likely cause:** `pnpm-lock.yaml` is out of sync with `package.json` (e.g., a dependency was added without committing the updated lockfile)
 **Resolution:**
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm install        # regenerates pnpm-lock.yaml
 git add pnpm-lock.yaml
 git commit -m "chore: update pnpm lockfile"
@@ -110,7 +110,7 @@ git commit -m "chore: update pnpm lockfile"
 **Likely cause:** Code committed without passing Biome checks locally
 **Resolution:**
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm run check:lint --fix   # auto-fix what Biome can fix
 pnpm run check:lint         # verify all clear
 ```
@@ -124,7 +124,7 @@ pnpm run check:lint         # verify all clear
 **Likely cause:** TypeScript errors committed — missing `import type`, wrong path alias, type mismatch
 **Resolution:**
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm run check:types   # run locally to see same errors
 ```
 Fix each error reported, then re-run to confirm clean.
@@ -138,7 +138,7 @@ Fix each error reported, then re-run to confirm clean.
 **Likely cause:** A test file has broken imports or a failing assertion. (Note: the suite currently passes with no tests via `--passWithNoTests`; this only fails if a test file exists with errors.)
 **Resolution:**
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm run check:tests   # reproduce locally
 ```
 Fix the broken test or import, then re-run.
@@ -152,7 +152,7 @@ Fix the broken test or import, then re-run.
 **Likely cause:** TypeScript errors that only surface during full compilation, missing assets, or circular imports
 **Resolution:**
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm run build   # reproduce locally; TypeScript must pass before bundling
 ```
 **Evidence to collect (if unresolved):** Full build output from CI step log, especially any `tsc` errors before the Vite output
@@ -163,7 +163,7 @@ pnpm run build   # reproduce locally; TypeScript must pass before bundling
 
 All four steps can be reproduced with a single command:
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm run check   # runs lint → types → tests → build; stops on first failure
 ```
 

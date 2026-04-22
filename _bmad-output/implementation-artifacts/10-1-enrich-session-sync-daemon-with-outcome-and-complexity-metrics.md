@@ -34,7 +34,7 @@ so that agent-sessions.json contains complete, accurate quality data for every p
 
 3. **Given** the `NON_COMMITTING_SKILLS` set must stay current as new skills are added,
    **When** a developer adds a new non-committing skill to the project,
-   **Then** they update `_bmad-custom/agents/skills-config.json` (the single source of truth for skill classification) rather than modifying `sync-sessions.mjs` directly; the daemon reads `nonCommittingSkills` from this file at startup
+   **Then** they update `_bmad-ui/agents/skills-config.json` (the single source of truth for skill classification) rather than modifying `sync-sessions.mjs` directly; the daemon reads `nonCommittingSkills` from this file at startup
 
 4. **Given** the sync daemon running in watch mode,
    **When** a session was already synced as `status: "completed"` with all outcome fields populated (including `agent_active_minutes`),
@@ -73,12 +73,12 @@ so that agent-sessions.json contains complete, accurate quality data for every p
   - [ ] Update the skip-completed guard in `syncSessions()` to also require `agent_active_minutes` is populated before skipping (AC: 4)
 
 - [ ] Extract skill classification to external config file (AC: 3)
-  - [ ] Create `_bmad-custom/agents/skills-config.json` with `{ "nonCommittingSkills": [...] }` containing the full current set
+  - [ ] Create `_bmad-ui/agents/skills-config.json` with `{ "nonCommittingSkills": [...] }` containing the full current set
   - [ ] Update `sync-sessions.mjs` to load `NON_COMMITTING_SKILLS` from this file at startup (fallback to hardcoded set if file missing/malformed)
   - [ ] Ensure the file is not gitignored and is committed as part of this story
 
 - [ ] Full historical backfill (AC: 7)
-  - [ ] Run `cd _bmad-custom/bmad-ui && time node scripts/sync-sessions.mjs --once` on this machine
+  - [ ] Run `cd _bmad-ui && time node scripts/sync-sessions.mjs --once` on this machine
   - [ ] Verify all 359 `~/.copilot/session-state/` sessions are scanned; count how many belong to this project and are written to `agent-sessions.json`
   - [ ] Verify completion within 30 seconds (NFR23)
   - [ ] Commit the resulting `agent-sessions.json` with updated records
@@ -107,13 +107,13 @@ so that agent-sessions.json contains complete, accurate quality data for every p
   - [ ] Add dummy-epic fixture to `tests/fixtures/` for epic workflow action tests; run all existing epic action tests against it; confirm no test creates persistent test artifacts in `agent-sessions.json`
   - [ ] Verify `pnpm test:e2e` passes with zero failures
 
-- [ ] Run `cd _bmad-custom/bmad-ui && pnpm check` to verify quality gate passes
+- [ ] Run `cd _bmad-ui && pnpm check` to verify quality gate passes
 
 ## Dev Notes
 
 ### ⚠️ Core Implementation Already Exists — Focus on Gaps
 
-`_bmad-custom/bmad-ui/scripts/sync-sessions.mjs` already handles most of Story 10.1. The new work is:
+`_bmad-ui/scripts/sync-sessions.mjs` already handles most of Story 10.1. The new work is:
 1. **`agent_active_minutes`** — NEW field, not yet implemented; replaces naive wall-clock `duration_minutes` for "how long was the agent actually working"
 2. **`skills-config.json`** — extract `NON_COMMITTING_SKILLS` to an external file so it is maintainable without touching the daemon
 3. **Historical backfill** — run `--once` and commit the result
@@ -137,15 +137,15 @@ This is the measure of "how long the agent was thinking/working", not how long t
 
 | File | Purpose |
 |---|---|
-| `_bmad-custom/bmad-ui/scripts/sync-sessions.mjs` | Daemon — parseCLISession(), syncSessions() |
-| `_bmad-custom/agents/agent-sessions.json` | Target sessions store (413 sessions as of story creation) |
-| `_bmad-custom/agents/skills-config.json` | NEW — skill classification config (create this file) |
-| `_bmad-custom/bmad-ui/scripts/agent-server.ts` | API — SessionAnalyticsData type, analyticsToRuntimeSession() |
-| `_bmad-custom/bmad-ui/src/types.ts` | Frontend types — SessionAnalytics (add new fields) |
-| `_bmad-custom/bmad-ui/src/routes/sessions.tsx` | Sessions list UI |
-| `_bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx` | Session detail UI |
-| `_bmad-custom/bmad-ui/tests/session-traces.spec.ts` | Existing session E2E tests (extend, don't replace) |
-| `_bmad-custom/bmad-ui/tests/fixtures/` | JSON fixtures used by Playwright tests |
+| `_bmad-ui/scripts/sync-sessions.mjs` | Daemon — parseCLISession(), syncSessions() |
+| `_bmad-ui/agents/agent-sessions.json` | Target sessions store (413 sessions as of story creation) |
+| `_bmad-ui/agents/skills-config.json` | NEW — skill classification config (create this file) |
+| `_bmad-ui/scripts/agent-server.ts` | API — SessionAnalyticsData type, analyticsToRuntimeSession() |
+| `_bmad-ui/src/types.ts` | Frontend types — SessionAnalytics (add new fields) |
+| `_bmad-ui/src/routes/sessions.tsx` | Sessions list UI |
+| `_bmad-ui/src/routes/session.$sessionId.tsx` | Session detail UI |
+| `_bmad-ui/tests/session-traces.spec.ts` | Existing session E2E tests (extend, don't replace) |
+| `_bmad-ui/tests/fixtures/` | JSON fixtures used by Playwright tests |
 
 ### skills-config.json Schema
 
@@ -209,10 +209,10 @@ As of 2026-04-22:
 - [Source: _bmad-output/planning-artifacts/epics.md#Story 10.1] — original ACs, FR41, FR44, NFR23, NFR24
 - [Source: _bmad-output/planning-artifacts/epics.md#NFR23] — 30-second processing budget
 - [Source: _bmad-output/planning-artifacts/epics.md#NFR24] — local-only metrics (no network)
-- [Source: _bmad-custom/bmad-ui/scripts/sync-sessions.mjs] — existing daemon implementation
-- [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts:2947] — SessionAnalyticsData type to extend
-- [Source: _bmad-custom/bmad-ui/src/types.ts:277] — SessionAnalytics frontend type to extend
-- [Source: _bmad-custom/bmad-ui/tests/session-traces.spec.ts] — E2E test pattern to follow
+- [Source: _bmad-ui/scripts/sync-sessions.mjs] — existing daemon implementation
+- [Source: _bmad-ui/scripts/agent-server.ts:2947] — SessionAnalyticsData type to extend
+- [Source: _bmad-ui/src/types.ts:277] — SessionAnalytics frontend type to extend
+- [Source: _bmad-ui/tests/session-traces.spec.ts] — E2E test pattern to follow
 - [Source: _bmad-output/project-context.md] — TypeScript/Biome/React rules
 
 ## Dev Agent Record

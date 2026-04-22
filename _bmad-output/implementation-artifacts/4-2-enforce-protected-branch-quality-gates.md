@@ -173,7 +173,7 @@ The exact string must match what GitHub registers. Case-sensitive. Use the GitHu
 ### Project Structure Notes
 
 - All changes are in `infra/github/src/` — three files: `variables.tf`, `main.tf`, `config.json`
-- No frontend source files (`_bmad-custom/bmad-ui/`) are touched
+- No frontend source files (`_bmad-ui/`) are touched
 - No workflow YAML files are created (the deploy is handled by the existing `deploy.yml`)
 - Terraform state is managed by the `deploy.yml` workflow's state branch mechanism — no manual state manipulation
 

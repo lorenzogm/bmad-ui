@@ -12,7 +12,7 @@ so that I have a working E2E test foundation I can run locally with a single com
 
 ## Acceptance Criteria
 
-1. **Given** the bmad-ui project has no E2E testing infrastructure, **When** Story 7.1 is implemented, **Then** Playwright is installed as a dev dependency with `@playwright/test` **And** a `playwright.config.ts` exists at the bmad-ui package root with headless mode by default and a headed flag (`--headed`) **And** a `tests/` directory exists with at least one test file **And** `pnpm exec playwright test` runs successfully from `_bmad-custom/bmad-ui` **And** a `check:e2e` script is added to package.json.
+1. **Given** the bmad-ui project has no E2E testing infrastructure, **When** Story 7.1 is implemented, **Then** Playwright is installed as a dev dependency with `@playwright/test` **And** a `playwright.config.ts` exists at the bmad-ui package root with headless mode by default and a headed flag (`--headed`) **And** a `tests/` directory exists with at least one test file **And** `pnpm exec playwright test` runs successfully from `_bmad-ui` **And** a `check:e2e` script is added to package.json.
 
 2. **Given** the dev server is running, **When** the first smoke test executes, **Then** it navigates to the home page (`/`) and verifies the page renders without JavaScript errors **And** it verifies the main navigation links (Home, Sessions, Workflow, Analytics) are present in the DOM **And** each navigation link can be clicked and the target route renders without errors.
 
@@ -21,12 +21,12 @@ so that I have a working E2E test foundation I can run locally with a single com
 ## Tasks / Subtasks
 
 - [x] Task 1: Install Playwright (AC: #1)
-  - [x] Install `@playwright/test` as a devDependency in `_bmad-custom/bmad-ui`
+  - [x] Install `@playwright/test` as a devDependency in `_bmad-ui`
   - [x] Install Playwright browsers: `pnpm exec playwright install chromium`
   - [x] Add `check:e2e` script to `package.json`: `"check:e2e": "playwright test"`
   - [x] Add `tests/` and `test-results/` and `playwright-report/` to `.gitignore`
 - [x] Task 2: Create `playwright.config.ts` (AC: #1, #3)
-  - [x] Create `playwright.config.ts` at `_bmad-custom/bmad-ui/playwright.config.ts`
+  - [x] Create `playwright.config.ts` at `_bmad-ui/playwright.config.ts`
   - [x] Configure `webServer` to start dev server automatically (`pnpm run dev`, port 5173)
   - [x] Set `testDir: "./tests"` and `testMatch: "**/*.spec.ts"`
   - [x] Set headless by default (headless mode runs unless `--headed` flag is passed)
@@ -47,16 +47,16 @@ so that I have a working E2E test foundation I can run locally with a single com
 
 ### Review Findings
 
-- [x] [Review][Patch] Capture both `pageerror` and `console.error` events for JavaScript error checks [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:13`]
-- [x] [Review][Patch] Scope navigation link locators to `aria-label="Main navigation"` to avoid duplicate-link ambiguity [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:39`]
-- [x] [Review][Patch] Use exact URL matching for route assertions to prevent partial-match false positives [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:50`]
-- [x] [Review][Patch] Cover home/brand link in click-navigation smoke flow for full AC parity [`_bmad-custom/bmad-ui/tests/smoke.spec.ts:59`]
+- [x] [Review][Patch] Capture both `pageerror` and `console.error` events for JavaScript error checks [`_bmad-ui/tests/smoke.spec.ts:13`]
+- [x] [Review][Patch] Scope navigation link locators to `aria-label="Main navigation"` to avoid duplicate-link ambiguity [`_bmad-ui/tests/smoke.spec.ts:39`]
+- [x] [Review][Patch] Use exact URL matching for route assertions to prevent partial-match false positives [`_bmad-ui/tests/smoke.spec.ts:50`]
+- [x] [Review][Patch] Cover home/brand link in click-navigation smoke flow for full AC parity [`_bmad-ui/tests/smoke.spec.ts:59`]
 
 ## Dev Notes
 
 ### Architecture: E2E Test Location
 
-E2E tests live in `_bmad-custom/bmad-ui/tests/` — separate from unit tests. This is intentional:
+E2E tests live in `_bmad-ui/tests/` — separate from unit tests. This is intentional:
 - **Unit tests** (`*.test.ts`, `*.test.tsx`): co-located with source in `src/`, run by Vitest
 - **E2E tests** (`*.spec.ts`): in `tests/`, run by Playwright
 
@@ -125,7 +125,7 @@ Add to `scripts`:
 
 ### .gitignore Additions
 
-Add these entries to `_bmad-custom/bmad-ui/.gitignore`:
+Add these entries to `_bmad-ui/.gitignore`:
 ```
 # Playwright
 test-results/
@@ -170,10 +170,10 @@ Playwright's `webServer` config should start the same `pnpm run dev` command. Th
 
 | File | Action |
 |---|---|
-| `_bmad-custom/bmad-ui/playwright.config.ts` | Create — Playwright configuration |
-| `_bmad-custom/bmad-ui/tests/smoke.spec.ts` | Create — home page and navigation smoke tests |
-| `_bmad-custom/bmad-ui/package.json` | Modify — add `check:e2e` script and `@playwright/test` devDependency |
-| `_bmad-custom/bmad-ui/.gitignore` | Modify — add Playwright output directories |
+| `_bmad-ui/playwright.config.ts` | Create — Playwright configuration |
+| `_bmad-ui/tests/smoke.spec.ts` | Create — home page and navigation smoke tests |
+| `_bmad-ui/package.json` | Modify — add `check:e2e` script and `@playwright/test` devDependency |
+| `_bmad-ui/.gitignore` | Modify — add Playwright output directories |
 
 ### Verification
 
@@ -187,8 +187,8 @@ After completing:
 
 ### Project Structure Notes
 
-- Playwright config lives at `_bmad-custom/bmad-ui/playwright.config.ts` (package root, same level as `vite.config.ts`)
-- E2E test files live in `_bmad-custom/bmad-ui/tests/` (separate from `src/` unit tests)
+- Playwright config lives at `_bmad-ui/playwright.config.ts` (package root, same level as `vite.config.ts`)
+- E2E test files live in `_bmad-ui/tests/` (separate from `src/` unit tests)
 - Test artifacts (results, reports) are gitignored and generated at runtime
 - No changes to `src/` directory — this story is infrastructure-only plus test files
 
@@ -240,9 +240,9 @@ None — clean implementation, no issues.
 
 ### File List
 
-- `_bmad-custom/bmad-ui/package.json` — added `check:e2e` script and `@playwright/test` devDependency
-- `_bmad-custom/bmad-ui/pnpm-lock.yaml` — lockfile updated
-- `_bmad-custom/bmad-ui/.gitignore` — added Playwright output directories
-- `_bmad-custom/bmad-ui/playwright.config.ts` — new Playwright configuration
-- `_bmad-custom/bmad-ui/tests/smoke.spec.ts` — new smoke tests
-- `_bmad-custom/bmad-ui/vite.config.ts` — added Vitest `test.exclude` to prevent spec file conflict
+- `_bmad-ui/package.json` — added `check:e2e` script and `@playwright/test` devDependency
+- `_bmad-ui/pnpm-lock.yaml` — lockfile updated
+- `_bmad-ui/.gitignore` — added Playwright output directories
+- `_bmad-ui/playwright.config.ts` — new Playwright configuration
+- `_bmad-ui/tests/smoke.spec.ts` — new smoke tests
+- `_bmad-ui/vite.config.ts` — added Vitest `test.exclude` to prevent spec file conflict

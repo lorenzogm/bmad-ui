@@ -36,11 +36,11 @@ so that I can understand project execution without reading raw orchestration log
   - [x] Epic detail: show a graceful message when no stories exist in the epic
 
 - [x] Run quality gate and verify no regressions (AC: #1, #2, #3)
-  - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with zero errors
+  - [x] `cd _bmad-ui && pnpm check` passes with zero errors
 
 ### Review Findings
 
-- [x] [Review][Patch] Active sprint summary now includes epic completion percentage in addition to done/total stories [`_bmad-custom/bmad-ui/src/routes/home.tsx`]
+- [x] [Review][Patch] Active sprint summary now includes epic completion percentage in addition to done/total stories [`_bmad-ui/src/routes/home.tsx`]
 
 ## Dev Notes
 
@@ -119,7 +119,7 @@ For `sessions.tsx`, when the filtered list is empty:
 
 ### Project Structure Notes
 
-All edits are in `_bmad-custom/bmad-ui/src/routes/`. Files to touch:
+All edits are in `_bmad-ui/src/routes/`. Files to touch:
 
 | File | Change |
 |---|---|
@@ -189,9 +189,9 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/src/routes/home.tsx` — Added `LoadingState`, `ErrorState`, `ActiveSprintSummary` components; replaced static description with dynamic sprint summary; added epic empty state
-- `_bmad-custom/bmad-ui/src/routes/sessions.tsx` — Added `LoadingState`, `ErrorState` components; replaced bare loading/error returns; improved sessions empty state with filter-aware message
-- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx` — Replaced bare loading string with styled panel; improved empty stories table row styling
-- `_bmad-custom/bmad-ui/src/routes/story.$storyId.tsx` — Replaced bare loading/error states with styled panels matching dark theme
+- `_bmad-ui/src/routes/home.tsx` — Added `LoadingState`, `ErrorState`, `ActiveSprintSummary` components; replaced static description with dynamic sprint summary; added epic empty state
+- `_bmad-ui/src/routes/sessions.tsx` — Added `LoadingState`, `ErrorState` components; replaced bare loading/error returns; improved sessions empty state with filter-aware message
+- `_bmad-ui/src/routes/epic.$epicId.tsx` — Replaced bare loading string with styled panel; improved empty stories table row styling
+- `_bmad-ui/src/routes/story.$storyId.tsx` — Replaced bare loading/error states with styled panels matching dark theme
 - `_bmad-output/implementation-artifacts/8-1-deliver-core-workflow-visibility-views.md` — Story file updated
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` — Story status updated to review

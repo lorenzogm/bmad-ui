@@ -1,7 +1,7 @@
 import path from "node:path";
 import { projectRoot } from "../paths.js";
 
-export const linksFile = path.join(projectRoot, "_bmad-custom", "links.yaml");
+export const linksFile = path.join(projectRoot, "_bmad-ui", "links.yaml");
 
 export type LinkItem = {
   title: string;

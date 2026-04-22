@@ -7,7 +7,7 @@
     ],
     "project": {
       "name": "bmad-ui",
-      "root_directory": "_bmad-custom/bmad-ui",
+      "root_directory": "_bmad-ui",
       "build_command": "pnpm run build",
       "install_command": "pnpm install",
       "output_directory": "dist",

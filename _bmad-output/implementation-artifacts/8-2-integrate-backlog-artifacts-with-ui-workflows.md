@@ -14,7 +14,7 @@ So that planning outputs and execution views stay connected.
 2. **Given** an epic has a mix of tracked and planned-only stories, **When** the user clicks "Plan all stories", **Then** only genuinely unplanned stories are submitted — already-created stories (whose `bmad-create-story` step is not "not-started") are excluded from the batch
 3. **Given** a bmad workflow updates planning/implementation artifacts on disk, **When** the UI refetches (via TanStack Query polling at 5-second interval), **Then** users see the latest state without a manual page reload
 4. **Given** epics.md or sprint-status.yaml is malformed or missing, **When** affected views load, **Then** the UI shows an actionable error or empty-state message instead of crashing
-5. **Given** all fixes are in place, **When** `pnpm check` is run from `_bmad-custom/bmad-ui`, **Then** lint + types + tests + build all pass with zero errors
+5. **Given** all fixes are in place, **When** `pnpm check` is run from `_bmad-ui`, **Then** lint + types + tests + build all pass with zero errors
 
 ## Tasks / Subtasks
 
@@ -28,7 +28,7 @@ So that planning outputs and execution views stay connected.
   - [x] Verify: if story 8.2 has `bmad-create-story` = "completed", it is NOT submitted when "Plan all stories" is clicked
 
 - [x] Task 3 — Validate end-to-end and run quality gate (AC: 3, 4, 5)
-  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass with zero errors
+  - [x] Run `cd _bmad-ui && pnpm check` — lint + types + tests + build must pass with zero errors
   - [x] Confirm no TypeScript errors in the updated memos/callbacks
 
 ### Review Findings
@@ -46,7 +46,7 @@ Story 7.2 delivered the core backlog artifact integration (server-side `getPlann
 
 Story 8.2 exists to close these two gaps and validate the complete integration meets Epic 8's phase-readiness bar (FR30: "Use bmad-ui with backlog artifacts from bmad").
 
-### Key File: `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
+### Key File: `_bmad-ui/src/routes/epic.$epicId.tsx`
 
 This is the only file that needs changes. Both fixes are isolated useMemo/useCallback updates.
 
@@ -156,10 +156,10 @@ const storiesToPlan = [
 ### References
 
 - Story 7.2 unresolved review findings: [Source: _bmad-output/implementation-artifacts/7-2-integrate-backlog-artifacts-with-ui-workflows.md#Review-Findings]
-- `filteredStories` implementation: [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#324]
-- `storiesNeedingPlan` implementation: [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#363]
-- `handlePlanAllStories` implementation: [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#377]
-- `parseStoryTicket` helper: [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#98]
+- `filteredStories` implementation: [Source: _bmad-ui/src/routes/epic.$epicId.tsx#324]
+- `storiesNeedingPlan` implementation: [Source: _bmad-ui/src/routes/epic.$epicId.tsx#363]
+- `handlePlanAllStories` implementation: [Source: _bmad-ui/src/routes/epic.$epicId.tsx#377]
+- `parseStoryTicket` helper: [Source: _bmad-ui/src/routes/epic.$epicId.tsx#98]
 - Epic 8 Story 8.2 acceptance criteria: [Source: _bmad-output/planning-artifacts/epics.md#Story-8.2]
 - Project context rules: [Source: _bmad-output/project-context.md]
 
@@ -181,7 +181,7 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
+- `_bmad-ui/src/routes/epic.$epicId.tsx`
 - `_bmad-output/implementation-artifacts/8-2-integrate-backlog-artifacts-with-ui-workflows.md`
 
 ## Change Log

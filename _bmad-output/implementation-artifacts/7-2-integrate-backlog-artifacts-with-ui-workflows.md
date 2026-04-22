@@ -35,7 +35,7 @@ So that planning outputs and execution views stay connected.
   - [x] On parse errors (e.g. story markdown malformed), the server already catches and ignores — verify the UI handles `plannedStories: []` gracefully without crashing
 
 - [x] Task 5 — Verify end-to-end with pnpm check (AC: 1, 2, 3)
-  - [x] Run `pnpm check` from `_bmad-custom/bmad-ui` — lint, types, tests, build must all pass
+  - [x] Run `pnpm check` from `_bmad-ui` — lint, types, tests, build must all pass
 
 ### Review Findings
 
@@ -152,13 +152,13 @@ if (epicError) {
 ### References
 
 - Epic 8 Story 8.2 acceptance criteria: [Source: _bmad-output/planning-artifacts/epics.md#Story-8.2]
-- EpicDetailResponse type: [Source: _bmad-custom/bmad-ui/src/types.ts#161]
-- plannedStories UI usage: [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#365]
-- Server epic detail endpoint: [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts#4157]
-- getStoryContentFromEpics pattern: [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts#1974]
-- useEffect data fetching violation: [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx#210]
+- EpicDetailResponse type: [Source: _bmad-ui/src/types.ts#161]
+- plannedStories UI usage: [Source: _bmad-ui/src/routes/epic.$epicId.tsx#365]
+- Server epic detail endpoint: [Source: _bmad-ui/scripts/agent-server.ts#4157]
+- getStoryContentFromEpics pattern: [Source: _bmad-ui/scripts/agent-server.ts#1974]
+- useEffect data fetching violation: [Source: _bmad-ui/src/routes/epic.$epicId.tsx#210]
 - No useEffect rule: [Source: _bmad-output/project-context.md#57]
-- vite-plugin-static-data epic emission: [Source: _bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts#55]
+- vite-plugin-static-data epic emission: [Source: _bmad-ui/scripts/vite-plugin-static-data.ts#55]
 
 ## Dev Agent Record
 
@@ -185,10 +185,10 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/scripts/agent-server.ts`
-- `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
-- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx`
-- `_bmad-custom/bmad-ui/src/types.ts`
+- `_bmad-ui/scripts/agent-server.ts`
+- `_bmad-ui/scripts/vite-plugin-static-data.ts`
+- `_bmad-ui/src/routes/epic.$epicId.tsx`
+- `_bmad-ui/src/types.ts`
 - `_bmad-output/implementation-artifacts/7-2-integrate-backlog-artifacts-with-ui-workflows.md`
 
 ## Change Log

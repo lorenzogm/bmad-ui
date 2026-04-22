@@ -25,7 +25,7 @@ import {
 } from "./agent-server";
 
 /**
- * Vite plugin that reads project data from _bmad-output and _bmad-custom at
+ * Vite plugin that reads project data from _bmad-output and _bmad-ui at
  * build time and emits static JSON directly into dist/data/ — no intermediate
  * files on disk.
  */

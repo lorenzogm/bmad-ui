@@ -36,34 +36,34 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
-          package_json_file: _bmad-custom/bmad-ui/package.json
+          package_json_file: _bmad-ui/package.json
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+          cache-dependency-path: _bmad-ui/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: _bmad-custom/bmad-ui
+        working-directory: _bmad-ui
 
       - name: Lint
         run: pnpm check:lint
-        working-directory: _bmad-custom/bmad-ui
+        working-directory: _bmad-ui
 
       - name: Type check
         run: pnpm check:types
-        working-directory: _bmad-custom/bmad-ui
+        working-directory: _bmad-ui
 
       - name: Tests
         run: pnpm check:tests
-        working-directory: _bmad-custom/bmad-ui
+        working-directory: _bmad-ui
 
       - name: Build
         run: pnpm build
-        working-directory: _bmad-custom/bmad-ui
+        working-directory: _bmad-ui
 
       - name: Resolve environment
         id: resolve-env
@@ -102,7 +102,7 @@ jobs:
           else
             echo "infra-changed=false" >> $GITHUB_OUTPUT
           fi
-          if git diff --name-only "$BASE_SHA" "$TARGET_SHA" -- _bmad-custom/bmad-ui/ package.json pnpm-lock.yaml | grep -q .; then
+          if git diff --name-only "$BASE_SHA" "$TARGET_SHA" -- _bmad-ui/ package.json pnpm-lock.yaml | grep -q .; then
             echo "app-changed=true" >> $GITHUB_OUTPUT
           else
             echo "app-changed=false" >> $GITHUB_OUTPUT
@@ -141,14 +141,14 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
-          package_json_file: _bmad-custom/bmad-ui/package.json
+          package_json_file: _bmad-ui/package.json
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+          cache-dependency-path: _bmad-ui/pnpm-lock.yaml
 
       - name: Load secrets from encrypted .env
         run: |
@@ -308,14 +308,14 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
-          package_json_file: _bmad-custom/bmad-ui/package.json
+          package_json_file: _bmad-ui/package.json
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+          cache-dependency-path: _bmad-ui/pnpm-lock.yaml
 
       - name: Load secrets from encrypted .env
         run: |
@@ -415,14 +415,14 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
-          package_json_file: _bmad-custom/bmad-ui/package.json
+          package_json_file: _bmad-ui/package.json
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+          cache-dependency-path: _bmad-ui/pnpm-lock.yaml
 
       - name: Load secrets from encrypted .env
         run: |
@@ -485,7 +485,7 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          VERSION=$(node -p "require('./_bmad-custom/bmad-ui/package.json').version" 2>/dev/null || echo "unknown")
+          VERSION=$(node -p "require('./_bmad-ui/package.json').version" 2>/dev/null || echo "unknown")
           echo "## ✅ Production Deployment" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY

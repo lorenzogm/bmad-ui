@@ -29,7 +29,7 @@ so that onboarding gaps can be fixed quickly.
 - [x] Update `.github/pull_request_template.md` to reflect docs-only PRs (AC: #2)
   - [x] Add a `Documentation update` type checkbox (already has the slot — just add the item)
   - [x] Add a docs-only fast-path note: "For documentation-only changes, Testing section can be marked N/A"
-- [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #1)
+- [x] Verify no regressions: `cd _bmad-ui && pnpm run check` (AC: #1)
 
 ### Review Findings
 
@@ -125,7 +125,7 @@ The checklist line:
 ```
 Should be replaced with:
 ```
-- [ ] I have run `cd _bmad-custom/bmad-ui && pnpm run check` and all checks pass (or N/A for docs-only PRs)
+- [ ] I have run `cd _bmad-ui && pnpm run check` and all checks pass (or N/A for docs-only PRs)
 ```
 
 ### Key Constraints
@@ -149,7 +149,7 @@ After completing:
 2. Confirm the section defines what counts as a docs-only PR
 3. Confirm lightweight review criteria are listed (no build/lint required)
 4. Confirm CONTRIBUTING.md no longer references `pnpm run check:types` / `pnpm run check:tests` in the step-by-step instructions
-5. `cd _bmad-custom/bmad-ui && pnpm run check` passes cleanly — no regressions
+5. `cd _bmad-ui && pnpm run check` passes cleanly — no regressions
 
 ### Project Structure Notes
 

@@ -55,7 +55,7 @@ so that I can visually identify which workflows succeed autonomously and which r
   - [ ] Add `{ label: "Quality", to: "/analytics/quality" }` to `ANALYTICS_SUBMENU` after "Models"
 
 - [ ] Task 6: Run quality gate (AC: all)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` passes with zero errors
+  - [ ] `cd _bmad-ui && pnpm check` passes with zero errors
 
 ## Dev Notes
 
@@ -253,7 +253,7 @@ Reuse existing `StatCard` component from `analytics-utils.tsx`:
 
 ### Project Structure Notes
 
-- `analytics-quality.tsx` goes in `_bmad-custom/bmad-ui/src/routes/` — same folder as all other analytics routes
+- `analytics-quality.tsx` goes in `_bmad-ui/src/routes/` — same folder as all other analytics routes
 - Import from `analytics-utils.tsx` using relative path (same folder): `"./analytics-utils"`
 - Import types from `src/types.ts` using `@/` alias: `import type { ... } from "@/types"`
 - Import `analyticsLayoutRoute` from `"./analytics"` (relative, same folder)

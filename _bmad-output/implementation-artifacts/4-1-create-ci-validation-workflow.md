@@ -22,13 +22,13 @@ so that code quality is automatically validated before integration.
   - [x] Add `pull_request` trigger (types: opened, synchronize, reopened) targeting `main`
   - [x] Add `push` trigger on `main` branch for post-merge validation
   - [x] Add `workflow_dispatch` trigger for manual runs
-  - [x] Configure `pnpm/action-setup@v5` with `package_json_file: _bmad-custom/bmad-ui/package.json`
-  - [x] Configure `actions/setup-node@v6` with `node-version: "24"`, `cache: "pnpm"`, `cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml`
-  - [x] Add "Install dependencies" step: `pnpm install --frozen-lockfile` in `_bmad-custom/bmad-ui`
-  - [x] Add "Lint" step: `pnpm check:lint` in `_bmad-custom/bmad-ui`
-  - [x] Add "Type check" step: `pnpm check:types` in `_bmad-custom/bmad-ui`
-  - [x] Add "Tests" step: `pnpm check:tests` in `_bmad-custom/bmad-ui`
-  - [x] Add "Build" step: `pnpm build` in `_bmad-custom/bmad-ui`
+  - [x] Configure `pnpm/action-setup@v5` with `package_json_file: _bmad-ui/package.json`
+  - [x] Configure `actions/setup-node@v6` with `node-version: "24"`, `cache: "pnpm"`, `cache-dependency-path: _bmad-ui/pnpm-lock.yaml`
+  - [x] Add "Install dependencies" step: `pnpm install --frozen-lockfile` in `_bmad-ui`
+  - [x] Add "Lint" step: `pnpm check:lint` in `_bmad-ui`
+  - [x] Add "Type check" step: `pnpm check:types` in `_bmad-ui`
+  - [x] Add "Tests" step: `pnpm check:tests` in `_bmad-ui`
+  - [x] Add "Build" step: `pnpm build` in `_bmad-ui`
 - [x] Verify workflow runs on an open PR or via `workflow_dispatch` (AC: #1, #3)
 - [x] Confirm that a lockfile mismatch causes install to fail (AC: #2)
 
@@ -47,7 +47,7 @@ This is the **first story in Epic 4**. No CI workflow for PRs exists yet. The ex
 `.github/workflows/deploy.yml`:
 - Triggers on `push` to `main` and `workflow_dispatch`
 - Already runs `pnpm check` (lint + types + tests + build) in the `check-changes` job
-- Uses pnpm v10, Node 24, cache on `_bmad-custom/bmad-ui/pnpm-lock.yaml`
+- Uses pnpm v10, Node 24, cache on `_bmad-ui/pnpm-lock.yaml`
 - Does NOT run on pull requests
 
 ### New CI Workflow Requirements
@@ -65,26 +65,26 @@ on:
   workflow_dispatch:
 ```
 
-**Working directory**: all pnpm commands run in `_bmad-custom/bmad-ui/`.
+**Working directory**: all pnpm commands run in `_bmad-ui/`.
 
 **pnpm setup** (must match deploy.yml exactly to ensure consistency):
 ```yaml
 - uses: pnpm/action-setup@v5
   with:
-    package_json_file: _bmad-custom/bmad-ui/package.json
+    package_json_file: _bmad-ui/package.json
 
 - uses: actions/setup-node@v6
   with:
     node-version: "24"
     cache: "pnpm"
-    cache-dependency-path: _bmad-custom/bmad-ui/pnpm-lock.yaml
+    cache-dependency-path: _bmad-ui/pnpm-lock.yaml
 ```
 
 **Install with lockfile enforcement**:
 ```yaml
 - name: Install dependencies
   run: pnpm install --frozen-lockfile
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 ```
 
 > `--frozen-lockfile` causes pnpm to exit non-zero if the lockfile needs updating, satisfying AC #2.
@@ -93,22 +93,22 @@ on:
 ```yaml
 - name: Lint
   run: pnpm check:lint
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 
 - name: Type check
   run: pnpm check:types
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 
 - name: Tests
   run: pnpm check:tests
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 
 - name: Build
   run: pnpm build
-  working-directory: _bmad-custom/bmad-ui
+  working-directory: _bmad-ui
 ```
 
-### Available pnpm Scripts (from `_bmad-custom/bmad-ui/package.json`)
+### Available pnpm Scripts (from `_bmad-ui/package.json`)
 
 | Script | Command |
 |---|---|
@@ -140,14 +140,14 @@ permissions:
 
 ### Project Structure Notes
 
-- New file location: `.github/workflows/ci.yml` (repo root level, not inside `_bmad-custom/`)
+- New file location: `.github/workflows/ci.yml` (repo root level, not inside `_bmad-ui/`)
 - Infrastructure and CI config are explicitly repo-level concerns [Source: architecture.md — "Infrastructure and CI config should remain repo-level, not hidden inside frontend source directories"]
-- Do not touch `_bmad-custom/bmad-ui/` package.json or any source files
+- Do not touch `_bmad-ui/` package.json or any source files
 
 ### References
 
 - Existing deployment workflow: `.github/workflows/deploy.yml`
-- Package scripts: `_bmad-custom/bmad-ui/package.json#scripts`
+- Package scripts: `_bmad-ui/package.json#scripts`
 - FR16 (trigger automated validation on repo changes), FR18 (standard pnpm workflow in CI), FR21 (contributors validate against same checks as maintainers): [Source: epics.md#Epic-4]
 - NFR2: CI validation completes within 15 minutes [Source: prd.md]
 - Architecture constraint: "GitHub Actions is the authoritative CI enforcement layer" [Source: architecture.md]

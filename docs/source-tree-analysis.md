@@ -5,7 +5,7 @@
 ```text
 bmad-ui/
 ├── _bmad/                         # BMAD core/config module assets
-├── _bmad-custom/
+├── _bmad-ui/
 │   ├── bmad-ui/                   # Part: Web dashboard application
 │   │   ├── index.html             # Vite app HTML shell
 │   │   ├── package.json           # Frontend scripts/deps
@@ -28,12 +28,12 @@ bmad-ui/
 ```
 
 ## Critical Folders
-- _bmad-custom/bmad-ui/src/routes: Route-level UI modules and API consumers.
-- _bmad-custom/bmad-ui/src: Entry point, stateful dashboard logic, and shared types.
-- _bmad-custom/bmad-orchestrator: CLI/runtime orchestration source and telemetry outputs.
+- _bmad-ui/src/routes: Route-level UI modules and API consumers.
+- _bmad-ui/src: Entry point, stateful dashboard logic, and shared types.
+- _bmad-ui/bmad-orchestrator: CLI/runtime orchestration source and telemetry outputs.
 - _bmad-output: Cross-step artifacts read by dashboard and orchestrator.
 
 ## Integration Notes
 - Dashboard UI consumes orchestrator and sprint data via /api/* endpoints.
 - Orchestrator writes runtime files and logs that are surfaced by the dashboard.
-- Both parts are coordinated by shared BMAD artifact directories under _bmad-output and _bmad-custom.
+- Both parts are coordinated by shared BMAD artifact directories under _bmad-output and _bmad-ui.

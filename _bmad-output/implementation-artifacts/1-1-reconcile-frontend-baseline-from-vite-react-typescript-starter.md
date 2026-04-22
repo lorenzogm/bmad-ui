@@ -337,7 +337,7 @@ Create handoff notes for Phase 1B:
 ### Project Structure Overview
 
 ```
-_bmad-custom/bmad-ui/
+_bmad-ui/
 ├── index.html                    # Vite entrypoint
 ├── package.json                  # Dependencies (React, TypeScript, Vite, Router, Tailwind, Query)
 ├── tsconfig.json                 # TypeScript config (extends @repo/configs/typescript/react.json)
@@ -433,13 +433,13 @@ This story **only**:
 
 | File | Change Type | Notes |
 |---|---|---|
-| `_bmad-custom/bmad-ui/package.json` | Modified | Fixed biome devDependency (`biome` → `@biomejs/biome@^1.9.3`); added `lint` script |
-| `_bmad-custom/bmad-ui/biome.json` | Modified | Fixed invalid rule keys for Biome v1.9.4; fixed deprecated `indentSize` → `indentWidth` |
-| `_bmad-custom/bmad-ui/src/main.tsx` | Modified | Removed unused biome-ignore suppression comment; reformatted by biome |
-| `_bmad-custom/bmad-ui/src/app.tsx` | Modified | Added biome-ignore for useSemanticElements on session-actions div; reformatted |
-| `_bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx` | Modified | Added biome-ignore for useSemanticElements on session-actions div; reformatted |
-| `_bmad-custom/bmad-ui/src/routes/*.tsx` | Modified | All route files reformatted by biome (import order, trailing commas, semicolons) |
-| `_bmad-custom/bmad-ui/package-lock.json` | Modified | Updated with @biomejs/biome installation |
+| `_bmad-ui/package.json` | Modified | Fixed biome devDependency (`biome` → `@biomejs/biome@^1.9.3`); added `lint` script |
+| `_bmad-ui/biome.json` | Modified | Fixed invalid rule keys for Biome v1.9.4; fixed deprecated `indentSize` → `indentWidth` |
+| `_bmad-ui/src/main.tsx` | Modified | Removed unused biome-ignore suppression comment; reformatted by biome |
+| `_bmad-ui/src/app.tsx` | Modified | Added biome-ignore for useSemanticElements on session-actions div; reformatted |
+| `_bmad-ui/src/routes/session.$sessionId.tsx` | Modified | Added biome-ignore for useSemanticElements on session-actions div; reformatted |
+| `_bmad-ui/src/routes/*.tsx` | Modified | All route files reformatted by biome (import order, trailing commas, semicolons) |
+| `_bmad-ui/package-lock.json` | Modified | Updated with @biomejs/biome installation |
 | `_bmad-output/implementation-artifacts/1-1-reconcile-frontend-baseline-from-vite-react-typescript-starter.md` | Modified | Story tasks marked complete, dev agent record updated |
 | `_bmad-output/implementation-artifacts/sprint-status.yaml` | Modified | Story 1-1 → done, story 1-2 → ready-for-dev |
 
@@ -447,11 +447,11 @@ This story **only**:
 
 | File | Status |
 |---|---|
-| `_bmad-custom/bmad-ui/tsconfig.json` | ✅ Correct — path aliases, strict mode, ES2022 |
-| `_bmad-custom/bmad-ui/vite.config.ts` | ✅ Correct — React + Tailwind plugins, `@` alias, fs.allow |
-| `_bmad-custom/bmad-ui/index.html` | ✅ Correct — `<script type="module" src="/src/main.tsx">` |
-| `_bmad-custom/bmad-ui/src/types.ts` | ✅ Centralized shared types |
-| `_bmad-custom/bmad-ui/src/routes/route-tree.ts` | ✅ 14 routes manually registered |
+| `_bmad-ui/tsconfig.json` | ✅ Correct — path aliases, strict mode, ES2022 |
+| `_bmad-ui/vite.config.ts` | ✅ Correct — React + Tailwind plugins, `@` alias, fs.allow |
+| `_bmad-ui/index.html` | ✅ Correct — `<script type="module" src="/src/main.tsx">` |
+| `_bmad-ui/src/types.ts` | ✅ Centralized shared types |
+| `_bmad-ui/src/routes/route-tree.ts` | ✅ 14 routes manually registered |
 | `.github/CODEOWNERS` | ✅ Present |
 | `.github/pull_request_template.md` | ✅ Present |
 | `.github/ISSUE_TEMPLATE/bug_report.md` | ✅ Present |

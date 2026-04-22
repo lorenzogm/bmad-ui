@@ -25,18 +25,18 @@ so that I can inspect the related artifacts and understand what each workflow sk
 ## Tasks / Subtasks
 
 - [x] Add a workflow-step detail response contract and payload builder (AC: 3, 4, 5)
-  - [x] Add a dedicated response type in `_bmad-custom/bmad-ui/src/types.ts` for workflow step details covering phase metadata, step metadata, artifact state, artifact markdown content, skill summary, question-summary bullets, and source-file references.
-  - [x] Add a dedicated dev-server endpoint in `_bmad-custom/bmad-ui/scripts/agent-server.ts` for the supported detail views only: `planning/prd`, `planning/ux`, and `solutioning/architecture`.
-  - [x] Mirror the same payloads in `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts` so production emits matching static JSON for the new detail routes.
+  - [x] Add a dedicated response type in `_bmad-ui/src/types.ts` for workflow step details covering phase metadata, step metadata, artifact state, artifact markdown content, skill summary, question-summary bullets, and source-file references.
+  - [x] Add a dedicated dev-server endpoint in `_bmad-ui/scripts/agent-server.ts` for the supported detail views only: `planning/prd`, `planning/ux`, and `solutioning/architecture`.
+  - [x] Mirror the same payloads in `_bmad-ui/scripts/vite-plugin-static-data.ts` so production emits matching static JSON for the new detail routes.
   - [x] Keep the implementation deliberately scoped to these three steps; do not build a generic parser or UI for every BMAD skill in this story.
 
 - [x] Add Planning/Solutioning detail navigation in the workflow UI (AC: 1, 2)
-  - [x] Extend the workflow step model in `_bmad-custom/bmad-ui/src/app.tsx` only as needed so supported steps can expose a detail target.
-  - [x] Update `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` to render a `Details` link or button for PRD, UX Design, and Architecture rows while preserving the existing play, skip, unskip, and session actions.
-  - [x] Add and manually register a dedicated route for the detail page in `_bmad-custom/bmad-ui/src/routes/route-tree.ts`.
+  - [x] Extend the workflow step model in `_bmad-ui/src/app.tsx` only as needed so supported steps can expose a detail target.
+  - [x] Update `_bmad-ui/src/routes/workflow.$phaseId.tsx` to render a `Details` link or button for PRD, UX Design, and Architecture rows while preserving the existing play, skip, unskip, and session actions.
+  - [x] Add and manually register a dedicated route for the detail page in `_bmad-ui/src/routes/route-tree.ts`.
 
 - [x] Build the step detail page (AC: 1, 2, 3, 4, 5)
-  - [x] Create a dedicated workflow-step detail route component under `_bmad-custom/bmad-ui/src/routes/` that uses TanStack Query plus `apiUrl()` to fetch the payload.
+  - [x] Create a dedicated workflow-step detail route component under `_bmad-ui/src/routes/` that uses TanStack Query plus `apiUrl()` to fetch the payload.
   - [x] Render a summary section describing what the skill does and what kinds of questions it asks.
   - [x] Render a readable markdown artifact preview when content exists.
   - [x] Provide a graceful empty or skipped state for the UX detail view when only `ux.skipped` exists or no UX markdown file is present.
@@ -49,13 +49,13 @@ so that I can inspect the related artifacts and understand what each workflow sk
   - [x] Include the specific source step-file paths in the payload or page so the summary remains traceable to the underlying skill definitions.
 
 - [x] Verify end-to-end behavior (AC: 1, 2, 3, 4, 5)
-  - [x] Extend `_bmad-custom/bmad-ui/tests/smoke.spec.ts` or add a focused Playwright case that opens the new detail views and verifies they render without JavaScript errors.
-  - [x] Run `cd _bmad-custom/bmad-ui && pnpm check`.
+  - [x] Extend `_bmad-ui/tests/smoke.spec.ts` or add a focused Playwright case that opens the new detail views and verifies they render without JavaScript errors.
+  - [x] Run `cd _bmad-ui && pnpm check`.
   - [x] Manually verify `/workflow/planning`, `/workflow/solutioning`, and the new detail routes in the browser.
 
 ### Review Findings
 
-- [x] [Review][Patch] Validate detail slug route params before rendering the link [_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx:16] — fixed by parsing `detailSlug` with a strict `phase/step` guard so malformed slugs do not generate invalid route params.
+- [x] [Review][Patch] Validate detail slug route params before rendering the link [_bmad-ui/src/routes/workflow.$phaseId.tsx:16] — fixed by parsing `detailSlug` with a strict `phase/step` guard so malformed slugs do not generate invalid route params.
 
 ## Dev Notes
 
@@ -65,10 +65,10 @@ This is a focused workflow-page UX story. Do not broaden it into a generic artif
 
 ### Relevant Current Implementation
 
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` currently renders workflow step rows with run, skip, unskip, and session actions only. There is no artifact-detail navigation today.
-- `_bmad-custom/bmad-ui/src/app.tsx` creates workflow step metadata through `makeStep()` and `detectWorkflowStatus()`. Any detail-link support should hook into that flow with minimal shape changes.
-- `_bmad-custom/bmad-ui/scripts/agent-server.ts` currently exposes artifact file listing (`/api/artifacts/files`) plus overview, epic, story, story-preview, and session APIs. There is no existing workflow-step detail endpoint.
-- `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts` already mirrors overview, epic, story, story-preview, and session payloads into `dist/data`. Any new workflow-step detail endpoint must be emitted here too to preserve the dev/prod dual-mode contract.
+- `_bmad-ui/src/routes/workflow.$phaseId.tsx` currently renders workflow step rows with run, skip, unskip, and session actions only. There is no artifact-detail navigation today.
+- `_bmad-ui/src/app.tsx` creates workflow step metadata through `makeStep()` and `detectWorkflowStatus()`. Any detail-link support should hook into that flow with minimal shape changes.
+- `_bmad-ui/scripts/agent-server.ts` currently exposes artifact file listing (`/api/artifacts/files`) plus overview, epic, story, story-preview, and session APIs. There is no existing workflow-step detail endpoint.
+- `_bmad-ui/scripts/vite-plugin-static-data.ts` already mirrors overview, epic, story, story-preview, and session payloads into `dist/data`. Any new workflow-step detail endpoint must be emitted here too to preserve the dev/prod dual-mode contract.
 
 ### Artifact Availability to Handle
 
@@ -123,12 +123,12 @@ Source files:
 - Prefer a small, source-backed metadata helper for these three skills over a generic runtime parser for every file in `.github/skills/`.
 - Do not overload `/api/artifacts/files`; add a dedicated structured endpoint for workflow step details.
 - Keep `WorkflowStep` changes minimal. A simple optional detail slug or boolean plus route params is enough.
-- Any new route must be manually registered in `_bmad-custom/bmad-ui/src/routes/route-tree.ts`.
+- Any new route must be manually registered in `_bmad-ui/src/routes/route-tree.ts`.
 - Preserve the existing styling language and CSS-variable usage. Do not add new one-off hardcoded colors.
 
 ### Previous Story Intelligence
 
-- Story 7.2 demonstrated that new workflow-facing data must be updated in both `_bmad-custom/bmad-ui/scripts/agent-server.ts` and `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`; implementing only one side will break either local mode or production mode.
+- Story 7.2 demonstrated that new workflow-facing data must be updated in both `_bmad-ui/scripts/agent-server.ts` and `_bmad-ui/scripts/vite-plugin-static-data.ts`; implementing only one side will break either local mode or production mode.
 - Story 7.2 also established TanStack Query as the correct data-fetching pattern for workflow and epic routes. Follow that pattern here rather than adding `useEffect` fetch code.
 - Story 7.3 validated that workflow views are part of the self-referential delivery loop, so new detail pages must degrade gracefully against real artifact state instead of assuming perfect inputs.
 
@@ -146,18 +146,18 @@ These changes reinforce the current pattern: keep workflow-route changes paired 
 
 | File | Change |
 | --- | --- |
-| `_bmad-custom/bmad-ui/src/app.tsx` | Extend workflow-step metadata only as needed for detail links |
-| `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` | Add detail-link actions to PRD, UX Design, and Architecture rows |
-| `_bmad-custom/bmad-ui/src/routes/route-tree.ts` | Register the new workflow-step detail route |
-| `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (or equivalent) | New route component for the step detail page |
-| `_bmad-custom/bmad-ui/src/types.ts` | Add the workflow-step detail response type |
-| `_bmad-custom/bmad-ui/scripts/agent-server.ts` | Build and serve workflow-step detail payloads |
-| `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts` | Emit static JSON for the new workflow-step detail routes |
-| `_bmad-custom/bmad-ui/tests/smoke.spec.ts` | Add coverage for the new detail links and routes |
+| `_bmad-ui/src/app.tsx` | Extend workflow-step metadata only as needed for detail links |
+| `_bmad-ui/src/routes/workflow.$phaseId.tsx` | Add detail-link actions to PRD, UX Design, and Architecture rows |
+| `_bmad-ui/src/routes/route-tree.ts` | Register the new workflow-step detail route |
+| `_bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (or equivalent) | New route component for the step detail page |
+| `_bmad-ui/src/types.ts` | Add the workflow-step detail response type |
+| `_bmad-ui/scripts/agent-server.ts` | Build and serve workflow-step detail payloads |
+| `_bmad-ui/scripts/vite-plugin-static-data.ts` | Emit static JSON for the new workflow-step detail routes |
+| `_bmad-ui/tests/smoke.spec.ts` | Add coverage for the new detail links and routes |
 
 ### Project Structure Notes
 
-- Route files live in `_bmad-custom/bmad-ui/src/routes/`, and manual registration in `route-tree.ts` is mandatory.
+- Route files live in `_bmad-ui/src/routes/`, and manual registration in `route-tree.ts` is mandatory.
 - `apiUrl()` maps `/api/...` paths to `/data/...json` in production, so nested API paths are acceptable as long as the build emits matching nested JSON files.
 - There are no existing implementation story files for Epic 9 yet, so keep this story self-contained and do not depend on unpublished Epic 9 implementation artifacts.
 
@@ -174,10 +174,10 @@ These changes reinforce the current pattern: keep workflow-route changes paired 
 - [Source: _bmad-output/planning-artifacts/architecture.md] — dual-mode architecture, file-backed data, route and API adapter constraints
 - [Source: _bmad-output/project-context.md] — route registration, TanStack Query, `apiUrl()`, and code-quality rules
 - [Source: _bmad-output/planning-artifacts/implementation-readiness-report-2026-04-15.md#UX Alignment Assessment] — missing UX artifact context and recommendation
-- [Source: _bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx] — current workflow phase detail UI
-- [Source: _bmad-custom/bmad-ui/src/app.tsx] — `WorkflowStep`, `makeStep()`, and `detectWorkflowStatus()`
-- [Source: _bmad-custom/bmad-ui/src/lib/mode.ts] — dev/prod API path mapping
-- [Source: _bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts] — static JSON emission pattern
+- [Source: _bmad-ui/src/routes/workflow.$phaseId.tsx] — current workflow phase detail UI
+- [Source: _bmad-ui/src/app.tsx] — `WorkflowStep`, `makeStep()`, and `detectWorkflowStatus()`
+- [Source: _bmad-ui/src/lib/mode.ts] — dev/prod API path mapping
+- [Source: _bmad-ui/scripts/vite-plugin-static-data.ts] — static JSON emission pattern
 
 ## Dev Agent Record
 
@@ -208,14 +208,14 @@ claude-sonnet-4.6
 - `_bmad-output/planning-artifacts/epics.md`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `_bmad-output/implementation-artifacts/9-7-add-planning-and-solutioning-step-detail-views.md`
-- `_bmad-custom/bmad-ui/src/types.ts`
-- `_bmad-custom/bmad-ui/src/app.tsx`
-- `_bmad-custom/bmad-ui/src/routes/route-tree.ts`
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx`
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (new)
-- `_bmad-custom/bmad-ui/scripts/agent-server.ts`
-- `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
-- `_bmad-custom/bmad-ui/tests/smoke.spec.ts`
+- `_bmad-ui/src/types.ts`
+- `_bmad-ui/src/app.tsx`
+- `_bmad-ui/src/routes/route-tree.ts`
+- `_bmad-ui/src/routes/workflow.$phaseId.tsx`
+- `_bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (new)
+- `_bmad-ui/scripts/agent-server.ts`
+- `_bmad-ui/scripts/vite-plugin-static-data.ts`
+- `_bmad-ui/tests/smoke.spec.ts`
 
 ## Change Log
 

@@ -23,7 +23,7 @@ So that I can instantly see what's happening without scanning through completed 
 ## Tasks / Subtasks
 
 - [x] Add "No active sessions" empty state to sidebar sessions submenu (AC: 2)
-  - [x] In `_bmad-custom/bmad-ui/src/routes/__root.tsx`, change the conditional `{recentSessions.length > 0 ? <div className="sidebar-submenu">...</div> : null}` to always render the submenu
+  - [x] In `_bmad-ui/src/routes/__root.tsx`, change the conditional `{recentSessions.length > 0 ? <div className="sidebar-submenu">...</div> : null}` to always render the submenu
   - [x] When `recentSessions.length === 0`, render a `<span className="sidebar-sessions-empty">No active sessions</span>` inside the submenu div
   - [x] When `recentSessions.length > 0`, keep the existing session link list as-is
 
@@ -34,21 +34,21 @@ So that I can instantly see what's happening without scanning through completed 
   - [x] Confirm Sessions sidebar link navigates to `/sessions`
 
 - [x] Run quality gate (AC: all)
-  - [x] `cd _bmad-custom/bmad-ui && pnpm check` must pass
+  - [x] `cd _bmad-ui && pnpm check` must pass
 
 ### Review Findings
 
-- [x] [Review][Patch] Show loading state while sidebar sessions query initializes [`_bmad-custom/bmad-ui/src/routes/__root.tsx:309`]
-- [x] [Review][Patch] Prevent retry click event from being forwarded into TanStack `refetch` options [`_bmad-custom/bmad-ui/src/lib/loading-states.tsx:57`]
-- [x] [Review][Patch] Replace shared loading-state inline styles with Tailwind/CSS-variable classes [`_bmad-custom/bmad-ui/src/lib/loading-states.tsx:1`]
-- [x] [Review][Patch] Keep home dashboard visible when epics are empty but other analytics data exists [`_bmad-custom/bmad-ui/src/routes/home.tsx:160`]
+- [x] [Review][Patch] Show loading state while sidebar sessions query initializes [`_bmad-ui/src/routes/__root.tsx:309`]
+- [x] [Review][Patch] Prevent retry click event from being forwarded into TanStack `refetch` options [`_bmad-ui/src/lib/loading-states.tsx:57`]
+- [x] [Review][Patch] Replace shared loading-state inline styles with Tailwind/CSS-variable classes [`_bmad-ui/src/lib/loading-states.tsx:1`]
+- [x] [Review][Patch] Keep home dashboard visible when epics are empty but other analytics data exists [`_bmad-ui/src/routes/home.tsx:160`]
 - [x] [Review][Defer] Story commit touched files beyond the planned single-file scope — deferred, pre-existing
 
 ## Dev Notes
 
 ### Current Implementation State
 
-Most of AC 1, 3, 4, 5 are **already implemented** in `_bmad-custom/bmad-ui/src/routes/__root.tsx`. The only gap is AC 2 — the "No active sessions" empty state.
+Most of AC 1, 3, 4, 5 are **already implemented** in `_bmad-ui/src/routes/__root.tsx`. The only gap is AC 2 — the "No active sessions" empty state.
 
 **What is already in place (do not re-implement):**
 
@@ -91,7 +91,7 @@ Must become:
 
 ### CSS Classes to Use
 
-The `.sidebar-sessions-empty` class is already defined in `_bmad-custom/bmad-ui/src/styles.css` (line ~234):
+The `.sidebar-sessions-empty` class is already defined in `_bmad-ui/src/styles.css` (line ~234):
 
 ```css
 .sidebar-sessions-empty {
@@ -106,7 +106,7 @@ Use this class — do NOT add inline styles or new CSS.
 
 ### Project Structure Notes
 
-- All changes are confined to a single file: `_bmad-custom/bmad-ui/src/routes/__root.tsx`
+- All changes are confined to a single file: `_bmad-ui/src/routes/__root.tsx`
 - No new routes, types, API endpoints, or server-side changes are needed
 - The `SessionAnalytics` type (`src/types.ts` line ~277) and `AnalyticsResponse` type (line ~303) are already imported and used — no type changes needed
 
@@ -122,8 +122,8 @@ Use this class — do NOT add inline styles or new CSS.
 
 - [Source: _bmad-output/planning-artifacts/epics.md#Story 9.6] — Acceptance criteria and implementation notes
 - [Source: _bmad-output/implementation-artifacts/spec-sidebar-running-sessions.md] — One-shot spec that partially implemented this feature
-- [Source: _bmad-custom/bmad-ui/src/routes/__root.tsx] — Current sidebar implementation (the only file to change)
-- [Source: _bmad-custom/bmad-ui/src/styles.css#L234] — `.sidebar-sessions-empty` CSS class
+- [Source: _bmad-ui/src/routes/__root.tsx] — Current sidebar implementation (the only file to change)
+- [Source: _bmad-ui/src/styles.css#L234] — `.sidebar-sessions-empty` CSS class
 - [Source: _bmad-output/project-context.md] — TanStack Query rules, Biome, named functions, no default exports
 
 ## Dev Agent Record
@@ -143,10 +143,10 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/src/routes/__root.tsx` — sidebar empty-state change (primary story change)
-- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` — fixed import order (pre-existing issue)
-- `_bmad-custom/bmad-ui/src/routes/analytics-stories.tsx` — fixed import order (pre-existing issue)
-- `_bmad-custom/bmad-ui/src/routes/analytics-story-detail.tsx` — added missing loading-states imports (pre-existing issue)
+- `_bmad-ui/src/routes/__root.tsx` — sidebar empty-state change (primary story change)
+- `_bmad-ui/src/routes/analytics-sessions.tsx` — fixed import order (pre-existing issue)
+- `_bmad-ui/src/routes/analytics-stories.tsx` — fixed import order (pre-existing issue)
+- `_bmad-ui/src/routes/analytics-story-detail.tsx` — added missing loading-states imports (pre-existing issue)
 
 ## Change Log
 

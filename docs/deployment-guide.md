@@ -73,7 +73,7 @@ The workflow (`.github/workflows/deploy.yml`, name: `bmad-ui-deploy`) runs four 
 
 | Job | Condition | Purpose |
 |-----|-----------|---------|
-| `check-changes` | Always | Runs quality checks (lint, types, tests, build); detects which paths changed (`infra/vercel/` or `_bmad-custom/bmad-ui/`); resolves target environment |
+| `check-changes` | Always | Runs quality checks (lint, types, tests, build); detects which paths changed (`infra/vercel/` or `_bmad-ui/`); resolves target environment |
 | `infra-deploy` | Only if `infra/vercel/` changed (or `workflow_dispatch`) | Runs `terraform apply` to provision/update the Vercel project and GitHub repo via Terraform; needs both `DOTENV_PRIVATE_KEY` and `TERRAFORM_STATE_ENCRYPT_KEY` |
 | `deploy` | Only if app or infra changed (and `infra-deploy` did not fail) | Builds the app; calls `vercel deploy --prod` to get a preview URL |
 | `deploy-production` | Only if `environment == production` AND `deploy` succeeded | Calls `vercel deploy --prod` again with the `production` GitHub Environment gate; outputs the final production URL |

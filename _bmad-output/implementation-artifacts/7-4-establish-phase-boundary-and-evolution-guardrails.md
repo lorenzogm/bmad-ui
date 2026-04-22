@@ -25,7 +25,7 @@ so that the project can evolve without destabilizing foundational workflows.
   - [x] Add a simple decision tree or checklist for classifying proposed changes
 
 - [x] Audit and update `_bmad-output/project-context.md` for baseline accuracy (AC: #3)
-  - [x] Verify all library versions match `_bmad-custom/bmad-ui/package.json`
+  - [x] Verify all library versions match `_bmad-ui/package.json`
   - [x] Confirm all rule sections reflect actual enforced patterns (no contradictions)
   - [x] Remove or mark any rules that are aspirational vs. actively enforced
 
@@ -34,7 +34,7 @@ so that the project can evolve without destabilizing foundational workflows.
   - [x] Ensure phase boundary statements are accurate relative to what was shipped
   - [x] Add a "Phase 1 Delivered" summary section if missing
 
-- [x] Verify no regressions: `cd _bmad-custom/bmad-ui && pnpm run check` (AC: #3)
+- [x] Verify no regressions: `cd _bmad-ui && pnpm run check` (AC: #3)
 
 ### Review Findings
 
@@ -45,7 +45,7 @@ so that the project can evolve without destabilizing foundational workflows.
 
 ### Story Nature
 
-This is primarily a **documentation and artifact maintenance** story — no source code changes in `src/`. All work is limited to markdown files in `_bmad-output/` and optionally `docs/`. Do NOT touch `_bmad-custom/bmad-ui/src/`.
+This is primarily a **documentation and artifact maintenance** story — no source code changes in `src/`. All work is limited to markdown files in `_bmad-output/` and optionally `docs/`. Do NOT touch `_bmad-ui/src/`.
 
 ### Deliverable: Phase 1 Completion Summary
 
@@ -111,7 +111,7 @@ Decision tree (simple):
 
 #### project-context.md Audit
 
-Key things to verify against `_bmad-custom/bmad-ui/package.json`:
+Key things to verify against `_bmad-ui/package.json`:
 - React version (currently 19.2.x in project-context; verify exact semver)
 - TypeScript, Vite, TanStack Router, TanStack Query, ECharts, Biome versions
 - Node.js and pnpm minimum versions
@@ -149,7 +149,7 @@ As of Epic 7 stories completion:
 
 ### Key Constraints
 
-- **No source code changes** — do not touch anything in `_bmad-custom/bmad-ui/src/`
+- **No source code changes** — do not touch anything in `_bmad-ui/src/`
 - **No rewriting** of architecture.md or project-context.md from scratch — surgical additions and corrections only
 - Preserve all existing sections and structure in existing files
 - The `deferred-work.md` file is append-only; do not clean or restructure it

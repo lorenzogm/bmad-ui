@@ -53,7 +53,7 @@ so that the Copilot CLI log interpretation logic — the core of the observabili
   - [ ] Remove the now-dead definitions from `agent-server.ts`
 
 - [ ] Run quality gate (AC: 2)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must pass
+  - [ ] `cd _bmad-ui && pnpm check` — lint + types + tests + build must pass
 
 ## Dev Notes
 
@@ -63,7 +63,7 @@ so that the Copilot CLI log interpretation logic — the core of the observabili
 
 ### Project Root
 
-The project lives at `_bmad-custom/bmad-ui/`. All commands must be run from there:
+The project lives at `_bmad-ui/`. All commands must be run from there:
 - `scripts/agent-server.ts` — the monolith (~5,420 lines at story creation)
 - `scripts/server/` — target folder for all extracted domain modules (created by Story 11.1)
 
@@ -216,10 +216,10 @@ After moving to the logs domain, add them back to the `export { ... }` block at 
 - Story requirements: [Source: _bmad-output/planning-artifacts/epics.md#Story 11.4]
 - Epic decomposition principles: [Source: _bmad-output/planning-artifacts/epics.md#Epic 11]
 - Three-boundary architecture: [Source: _bmad-output/planning-artifacts/architecture.md]
-- Source monolith: `_bmad-custom/bmad-ui/scripts/agent-server.ts` (5,420 lines)
+- Source monolith: `_bmad-ui/scripts/agent-server.ts` (5,420 lines)
 - Previous story pattern: `_bmad-output/implementation-artifacts/11-1-extract-runtime-domain.md`
-- Consumer: `_bmad-custom/bmad-ui/scripts/vite-plugin-static-data.ts`
-- Consumer: `_bmad-custom/bmad-ui/vite.config.ts`
+- Consumer: `_bmad-ui/scripts/vite-plugin-static-data.ts`
+- Consumer: `_bmad-ui/vite.config.ts`
 
 ## Dev Agent Record
 

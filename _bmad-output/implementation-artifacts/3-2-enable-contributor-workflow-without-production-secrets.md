@@ -63,7 +63,7 @@ Encrypted variables currently in `.env`:
 | `VERCEL_ORG_ID` | **Production** | Vercel org for deployment |
 | `VERCEL_TOKEN` | **Production** | Vercel API token for deployment |
 
-**Key insight:** Every secret in `.env` is infra/deploy-only. The app has **zero secret dependencies** at any level — dev, test, build, or preview. `pnpm dev`, `pnpm build`, and `pnpm run check` inside `_bmad-custom/bmad-ui/` require no `.env`, no credentials, nothing. Secrets are consumed exclusively by:
+**Key insight:** Every secret in `.env` is infra/deploy-only. The app has **zero secret dependencies** at any level — dev, test, build, or preview. `pnpm dev`, `pnpm build`, and `pnpm run check` inside `_bmad-ui/` require no `.env`, no credentials, nothing. Secrets are consumed exclusively by:
 - `.github/workflows/deploy.yml` (CI/CD pipeline — maintainers only)
 - `infra/*/src/` Terraform modules (maintainers only)
 
@@ -119,7 +119,7 @@ Add a new "Secrets & Credentials" section to `.github/CONTRIBUTING.md`. Insert i
 The following commands work immediately after `pnpm install` — no environment variables needed:
 
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm dev           # Start dev server
 pnpm run check     # Lint + typecheck + tests + build
 pnpm run build     # Production build
@@ -184,7 +184,7 @@ No additional error-handling code is needed. The documentation work is the deliv
 
 ### Project Structure Notes
 
-- `.env.example` must be at **repository root** (same level as `.env`) — not inside `_bmad-custom/bmad-ui/`
+- `.env.example` must be at **repository root** (same level as `.env`) — not inside `_bmad-ui/`
 - `.env.example` is conventionally committed to source control (not gitignored)
 - Confirm `.gitignore` does not accidentally exclude `.env.example` (currently only `.env.keys` is excluded)
 - CONTRIBUTING.md lives at `.github/CONTRIBUTING.md` (already exists from Story 1-4)

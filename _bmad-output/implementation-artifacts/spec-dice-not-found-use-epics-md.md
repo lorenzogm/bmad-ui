@@ -17,16 +17,16 @@ route: 'one-shot'
 ## Suggested Review Order
 
 - Verify canonical epics source path and parser entrypoints.
-  [vite.config.ts:150](../../_bmad-custom/bmad-ui/vite.config.ts#L150)
+  [vite.config.ts:150](../../_bmad-ui/vite.config.ts#L150)
 
 - Confirm robust story/epic markdown heading matching.
-  [vite.config.ts:226](../../_bmad-custom/bmad-ui/vite.config.ts#L226)
+  [vite.config.ts:226](../../_bmad-ui/vite.config.ts#L226)
 
 - Check fallback synthesis from `epics.md` into sprint overview objects.
-  [vite.config.ts:463](../../_bmad-custom/bmad-ui/vite.config.ts#L463)
+  [vite.config.ts:463](../../_bmad-ui/vite.config.ts#L463)
 
 - Ensure all API overview/detail flows share the same fallback loader.
-  [vite.config.ts:644](../../_bmad-custom/bmad-ui/vite.config.ts#L644)
+  [vite.config.ts:644](../../_bmad-ui/vite.config.ts#L644)
 
 - Validate TypeScript lib target supports modern APIs used by current code.
-  [tsconfig.json:3](../../_bmad-custom/bmad-ui/tsconfig.json#L3)
+  [tsconfig.json:3](../../_bmad-ui/tsconfig.json#L3)

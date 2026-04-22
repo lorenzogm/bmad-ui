@@ -41,7 +41,7 @@ so that the complex sprint aggregation logic — how workflow progress is comput
   - [ ] Remove all moved code — no duplicates
 
 - [ ] Task 5: Verify quality gate (AC: 6, 7)
-  - [ ] Run `cd _bmad-custom/bmad-ui && pnpm check`
+  - [ ] Run `cd _bmad-ui && pnpm check`
   - [ ] Fix any type errors from broken imports in consuming code
 
 ## Dev Notes
@@ -53,12 +53,12 @@ This story depends on the runtime domain being extracted. Before starting:
 - `scripts/server/paths.ts` must exist exporting `projectRoot` and `artifactsRoot`
 - `zod` must be installed (`pnpm add zod` was done in 11.1)
 
-Check: `ls _bmad-custom/bmad-ui/scripts/server/` should show `paths.ts` and `runtime/`
+Check: `ls _bmad-ui/scripts/server/` should show `paths.ts` and `runtime/`
 
 ### Target File Structure
 
 ```
-_bmad-custom/bmad-ui/scripts/server/sprint/
+_bmad-ui/scripts/server/sprint/
 ├── index.ts       — re-exports from overview.ts and summarize.ts
 ├── overview.ts    — SprintOverview type + (see buildOverviewPayload note below)
 └── summarize.ts   — all types, constants, and sprint computation functions
@@ -175,8 +175,8 @@ Note: **`.js` extension required** — this is an ES Modules project (`"type": "
 
 ### Project Structure Notes
 
-- New files land at: `_bmad-custom/bmad-ui/scripts/server/sprint/`
-- This mirrors the already-existing `_bmad-custom/bmad-ui/scripts/server/runtime/` from Story 11.1
+- New files land at: `_bmad-ui/scripts/server/sprint/`
+- This mirrors the already-existing `_bmad-ui/scripts/server/runtime/` from Story 11.1
 - `scripts/server/paths.ts` already exports `projectRoot` and `artifactsRoot` — use it instead of re-deriving them
 
 ### Code Quality Rules (project-context.md)
@@ -191,10 +191,10 @@ Note: **`.js` extension required** — this is an ES Modules project (`"type": "
 ### References
 
 - [Source: _bmad-output/planning-artifacts/epics.md#Story 11.2] — acceptance criteria + target structure
-- [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts#lines 26–45] — types to extract
-- [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts#lines 184–200] — WORKFLOW_STEPS constants
-- [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts#lines 972–1414] — sprint domain functions
-- [Source: _bmad-custom/bmad-ui/scripts/agent-server.ts#lines 2011–2356] — helper + summarize functions
+- [Source: _bmad-ui/scripts/agent-server.ts#lines 26–45] — types to extract
+- [Source: _bmad-ui/scripts/agent-server.ts#lines 184–200] — WORKFLOW_STEPS constants
+- [Source: _bmad-ui/scripts/agent-server.ts#lines 972–1414] — sprint domain functions
+- [Source: _bmad-ui/scripts/agent-server.ts#lines 2011–2356] — helper + summarize functions
 - [Source: _bmad-output/project-context.md] — code quality rules, ES module `.js` imports
 
 ## Dev Agent Record

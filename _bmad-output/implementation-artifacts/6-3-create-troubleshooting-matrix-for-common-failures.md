@@ -27,7 +27,7 @@ so that I can diagnose and resolve issues quickly.
 - [x] Link `docs/troubleshooting.md` from `README.md` Support section (AC: #1)
   - [x] Add or update the support/troubleshooting link in README.md
 - [x] Verify `docs/development-guide-bmad-ui.md` Troubleshooting section links to new file for CI/deployment topics (AC: #1)
-- [x] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions
+- [x] Run `cd _bmad-ui && pnpm run check` to confirm no regressions
 
 ### Review Findings
 
@@ -54,14 +54,14 @@ Known issues from `docs/development-guide-bmad-ui.md`:
 - TypeScript aliases not resolving → set `"typescript.tsdk"` in `.vscode/settings.json`
 
 Critical new issue (Story 6.1 context):
-- `pnpm install` fails from repo root → must run `cd _bmad-custom/bmad-ui` first; `package.json` and `pnpm-lock.yaml` live there, NOT at root
-- `pnpm dev` / `pnpm run check` from root → "Missing script" error; same fix: `cd _bmad-custom/bmad-ui`
+- `pnpm install` fails from repo root → must run `cd _bmad-ui` first; `package.json` and `pnpm-lock.yaml` live there, NOT at root
+- `pnpm dev` / `pnpm run check` from root → "Missing script" error; same fix: `cd _bmad-ui`
 
 **Category 2: CI Validation Failures** (from `.github/workflows/ci.yml`)
 
 CI runs these steps in order: Lint → Type check → Tests → Build. Each can fail independently.
 
-- **Lint step fails** (`pnpm check:lint`) → Biome found violations; see the step logs for file/line; fix locally with `pnpm check:lint --fix` in `_bmad-custom/bmad-ui`
+- **Lint step fails** (`pnpm check:lint`) → Biome found violations; see the step logs for file/line; fix locally with `pnpm check:lint --fix` in `_bmad-ui`
 - **Type check fails** (`pnpm check:types` = `tsc --noEmit`) → TypeScript errors; run locally; common: missing `import type`, wrong path alias, type mismatch
 - **Tests fail** (`pnpm check:tests` = `vitest run --passWithNoTests`) → currently passes with no tests; fails only if a test file has broken imports or failing assertions
 - **Build fails** (`pnpm build` = `tsc --noEmit && vite build`) → TypeScript must pass first; then Vite bundling; check for missing assets or circular imports
@@ -69,7 +69,7 @@ CI runs these steps in order: Lint → Type check → Tests → Build. Each can 
 
 To reproduce any CI failure locally:
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm run check   # runs all four steps; stops on first failure
 ```
 
@@ -138,13 +138,13 @@ After completing:
 1. `docs/troubleshooting.md` exists and covers all 4 failure categories + escalation section
 2. Each entry has symptom, cause, resolution, and evidence-to-collect fields
 3. `README.md` has a link to `docs/troubleshooting.md`
-4. `cd _bmad-custom/bmad-ui && pnpm run check` passes cleanly — no regressions
+4. `cd _bmad-ui && pnpm run check` passes cleanly — no regressions
 
 ### Project Structure Notes
 
 - `docs/` is at the **repository root** alongside `README.md`
 - `docs/development-guide-bmad-ui.md` covers local dev (keep as-is); new `docs/troubleshooting.md` covers CI, secrets, deployment, and summaries of local issues
-- App source is in `_bmad-custom/bmad-ui/src/` — do not touch
+- App source is in `_bmad-ui/src/` — do not touch
 - CI workflow files are in `.github/workflows/ci.yml` and `.github/workflows/deploy.yml` — do not touch
 
 ### References

@@ -36,7 +36,7 @@ BMAD UI is a React-based web application that provides real-time visibility into
 
 ```bash
 # Move into the app workspace
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 
 # Install dependencies
 pnpm install
@@ -64,7 +64,7 @@ pnpm run check   # lint + types + tests + build (run before every commit)
 ## Project Structure
 
 ```
-_bmad-custom/bmad-ui/
+_bmad-ui/
 ├── src/
 │   ├── main.tsx           # React app entry point
 │   ├── app.tsx            # Root component
@@ -113,7 +113,7 @@ We welcome contributions! Here's how you can help:
 1. Fork the repository
 2. Create a branch from `main`: `git checkout -b feature/your-feature`
 3. Make your changes and commit with clear messages
-4. Run quality checks: `cd _bmad-custom/bmad-ui && pnpm run check:types && pnpm run check:tests`
+4. Run quality checks: `cd _bmad-ui && pnpm run check:types && pnpm run check:tests`
 5. Push to your fork and open a PR against `main`
 6. Ensure all CI checks pass before requesting review
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for detailed guidelines.

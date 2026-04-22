@@ -43,7 +43,7 @@ so that I can identify the best model for each skill and make data-driven decisi
   - [ ] Show "Insufficient data" when no model meets the threshold
 
 - [ ] Create `src/routes/analytics-quality.tsx` route (AC: 1–5)
-  - [ ] New route file: `analytics-quality.tsx` under `_bmad-custom/bmad-ui/src/routes/`
+  - [ ] New route file: `analytics-quality.tsx` under `_bmad-ui/src/routes/`
   - [ ] Use `useAnalyticsData()` from `analytics-utils.tsx` (already fetches `/api/analytics`)
   - [ ] Render effectiveness matrix section and best-model table below existing quality charts (Story 10.3)
   - [ ] Guard with empty state when `data.quality?.bySkillModel` is empty or absent
@@ -54,7 +54,7 @@ so that I can identify the best model for each skill and make data-driven decisi
   - [ ] Add to `analyticsLayoutRoute.addChildren([...])` array
 
 - [ ] Run quality gate (AC: all)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` must pass (lint + types + tests + build)
+  - [ ] `cd _bmad-ui && pnpm check` must pass (lint + types + tests + build)
 
 ## Dev Notes
 
@@ -229,7 +229,7 @@ function getBestModel(cells: SkillModelQualityCell[], skill: string) {
 
 ### Project Structure Notes
 
-- All new code goes in `_bmad-custom/bmad-ui/src/routes/analytics-quality.tsx` (or extending it if 10.3 created it)
+- All new code goes in `_bmad-ui/src/routes/analytics-quality.tsx` (or extending it if 10.3 created it)
 - No new CSS classes — use Tailwind utility classes
 - No `src/ui/` directory yet (Phase 2 planned) — collocate everything in `src/routes/`
 - Named functions for components (not arrow function consts): `function EffectivenessMatrix(...)` not `const EffectivenessMatrix = ...`
@@ -238,11 +238,11 @@ function getBestModel(cells: SkillModelQualityCell[], skill: string) {
 
 - Story 10.4 definition: `_bmad-output/planning-artifacts/epics.md` §"Story 10.4: Skill × Model Effectiveness Matrix" (lines ~1344–1371)
 - Story 10.2 definition (API contract): `_bmad-output/planning-artifacts/epics.md` §"Story 10.2" (lines ~1273–1308)
-- ECharts heatmap reference: `_bmad-custom/bmad-ui/src/routes/analytics-utils.tsx` `buildActivityHeatmapOption()` (lines ~394–471)
-- Route registration: `_bmad-custom/bmad-ui/src/routes/route-tree.ts`
+- ECharts heatmap reference: `_bmad-ui/src/routes/analytics-utils.tsx` `buildActivityHeatmapOption()` (lines ~394–471)
+- Route registration: `_bmad-ui/src/routes/route-tree.ts`
 - CSS variables: `_bmad-output/project-context.md` §"CSS Variables"
-- `AnalyticsResponse` type: `_bmad-custom/bmad-ui/src/types.ts` line ~303
-- `SessionAnalyticsData` (server-side): `_bmad-custom/bmad-ui/scripts/agent-server.ts` line ~2947
+- `AnalyticsResponse` type: `_bmad-ui/src/types.ts` line ~303
+- `SessionAnalyticsData` (server-side): `_bmad-ui/scripts/agent-server.ts` line ~2947
 
 ## Dev Agent Record
 

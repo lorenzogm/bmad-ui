@@ -51,14 +51,14 @@ so that broken `Plan all stories`, `Develop all stories`, story-sync, and sessio
   - [x] Extract a shared `mockApi(page, route, fixture)` helper in `tests/helpers/mock-api.ts` to reduce boilerplate
   - [x] Add minimal fixture JSON files in `tests/fixtures/` for epic response, overview response, session detail response variants
 
-- [x] Verify full suite passes CI: `cd _bmad-custom/bmad-ui && pnpm run check:e2e` (AC: #1, #5)
+- [x] Verify full suite passes CI: `cd _bmad-ui && pnpm run check:e2e` (AC: #1, #5)
   - [x] All new tests pass headless with Chromium
   - [x] Existing `smoke.spec.ts` tests still pass (no regressions)
   - [x] CI YAML already includes E2E from Story 7.4 — no CI config changes needed
 
 ### Review Findings
 
-- [x] [Review][Patch] Synchronize non-409 Develop-all error test with workflow POST response [`_bmad-custom/bmad-ui/tests/workflow-actions.spec.ts:201`]
+- [x] [Review][Patch] Synchronize non-409 Develop-all error test with workflow POST response [`_bmad-ui/tests/workflow-actions.spec.ts:201`]
 
 ## Dev Notes
 
@@ -169,22 +169,22 @@ No new scripts needed. Use existing `pnpm run check:e2e` which runs `pnpm exec p
 
 ### Project Structure Notes
 
-- Test files live in `_bmad-custom/bmad-ui/tests/` — same directory as `smoke.spec.ts`
-- Playwright config (`playwright.config.ts`) already exists at `_bmad-custom/bmad-ui/` root
-- `pnpm exec playwright test` from `_bmad-custom/bmad-ui/` discovers all `*.spec.ts` under `tests/`
+- Test files live in `_bmad-ui/tests/` — same directory as `smoke.spec.ts`
+- Playwright config (`playwright.config.ts`) already exists at `_bmad-ui/` root
+- `pnpm exec playwright test` from `_bmad-ui/` discovers all `*.spec.ts` under `tests/`
 - `baseURL` is `http://localhost:5173` (Vite dev server)
 - Chromium only in CI (`projects: [{ name: "chromium" }]`)
 
 ### References
 
 - [Source: epics.md#Story-7.5] — User story, acceptance criteria, FR47, FR50, FR51, FR52
-- [Source: _bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx] — Plan all stories / Develop all stories logic, orchestration state, `storiesNeedingPlan`, `showDevelopAllButton`, `bulkError`, HTTP 409 handling
-- [Source: _bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx] — `parseLogIntoEntries`, `logExists`, `isRunning`, `summary` rendering states, `.chat-empty-state` / `.chat-log-collapse` / `.chat-typing-indicator`
-- [Source: _bmad-custom/bmad-ui/src/routes/sessions.tsx] — Sessions list query using `/api/analytics`, `AnalyticsResponse` shape
-- [Source: _bmad-custom/bmad-ui/src/lib/mode.ts] — `IS_LOCAL_MODE = import.meta.env.DEV` (true in test runs)
-- [Source: _bmad-custom/bmad-ui/src/types.ts] — `EpicDetailResponse`, `SessionDetailResponse`, `AnalyticsResponse`, `StoryStatus`, `RuntimeSession`
-- [Source: _bmad-custom/bmad-ui/playwright.config.ts] — Test config: baseURL, webServer, chromium only
-- [Source: _bmad-custom/bmad-ui/tests/smoke.spec.ts] — Existing patterns: `captureConsoleErrors`, `page.goto`, `expect(page.locator(...)).toBeVisible()`
+- [Source: _bmad-ui/src/routes/epic.$epicId.tsx] — Plan all stories / Develop all stories logic, orchestration state, `storiesNeedingPlan`, `showDevelopAllButton`, `bulkError`, HTTP 409 handling
+- [Source: _bmad-ui/src/routes/session.$sessionId.tsx] — `parseLogIntoEntries`, `logExists`, `isRunning`, `summary` rendering states, `.chat-empty-state` / `.chat-log-collapse` / `.chat-typing-indicator`
+- [Source: _bmad-ui/src/routes/sessions.tsx] — Sessions list query using `/api/analytics`, `AnalyticsResponse` shape
+- [Source: _bmad-ui/src/lib/mode.ts] — `IS_LOCAL_MODE = import.meta.env.DEV` (true in test runs)
+- [Source: _bmad-ui/src/types.ts] — `EpicDetailResponse`, `SessionDetailResponse`, `AnalyticsResponse`, `StoryStatus`, `RuntimeSession`
+- [Source: _bmad-ui/playwright.config.ts] — Test config: baseURL, webServer, chromium only
+- [Source: _bmad-ui/tests/smoke.spec.ts] — Existing patterns: `captureConsoleErrors`, `page.goto`, `expect(page.locator(...)).toBeVisible()`
 - [Source: _bmad-output/implementation-artifacts/7-1-set-up-playwright-infrastructure-and-first-smoke-tests.md] — Playwright setup decisions
 - [Source: _bmad-output/project-context.md] — Tech stack, testing rules, named constants, Biome rules
 

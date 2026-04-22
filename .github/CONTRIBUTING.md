@@ -12,7 +12,7 @@ Thank you for your interest in contributing to bmad-ui! We welcome contributions
 
 ```bash
 # Move to the app workspace
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 
 # Install dependencies
 pnpm install
@@ -45,7 +45,7 @@ Always branch from `main`: `git checkout -b feature/your-feature`
 2. Make focused, well-scoped changes
 3. Run all checks before committing:
    ```bash
-   cd _bmad-custom/bmad-ui
+   cd _bmad-ui
    pnpm run check   # lint + types + tests + build
    ```
 4. Commit with clear, descriptive messages
@@ -115,7 +115,7 @@ See [Project Context](../_bmad-output/project-context.md) for detailed coding ru
 The following commands work immediately after `pnpm install` — no environment variables needed:
 
 ```bash
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm dev           # Start dev server
 pnpm run check     # Lint + typecheck + tests + build
 pnpm run build     # Production build

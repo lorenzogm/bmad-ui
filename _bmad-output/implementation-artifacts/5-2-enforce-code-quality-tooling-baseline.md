@@ -12,7 +12,7 @@ so that contributors follow consistent formatting and typing rules.
 
 ## Acceptance Criteria
 
-1. **Given** source files under `_bmad-custom/bmad-ui/src/`, **When** `pnpm check:lint` runs, **Then** Biome rules are applied consistently and no violations are reported.
+1. **Given** source files under `_bmad-ui/src/`, **When** `pnpm check:lint` runs, **Then** Biome rules are applied consistently and no violations are reported.
 
 2. **Given** TypeScript validation via `pnpm check:types`, **When** typecheck runs, **Then** `strict: true`, `noUnusedLocals: true`, `noUnusedParameters: true`, and the `@/*` → `./src/*` path alias are all active — tsc exits 0 with no errors.
 
@@ -20,7 +20,7 @@ so that contributors follow consistent formatting and typing rules.
 
 4. **Given** the `pnpm check` script, **When** a contributor runs it locally, **Then** it runs lint → types → tests → build in order and exits non-zero on first failure.
 
-5. **Given** the `README.md` inside `_bmad-custom/bmad-ui/`, **When** a new contributor reads it, **Then** the quality check commands (`pnpm check`, `pnpm check:lint`, `pnpm check:types`) are documented.
+5. **Given** the `README.md` inside `_bmad-ui/`, **When** a new contributor reads it, **Then** the quality check commands (`pnpm check`, `pnpm check:lint`, `pnpm check:types`) are documented.
 
 ## Tasks / Subtasks
 
@@ -44,7 +44,7 @@ so that contributors follow consistent formatting and typing rules.
   - [x] Confirm script order in `package.json`: `check:lint && check:types && check:tests && build`
 
 - [x] Update README with quality commands (AC: #5)
-  - [x] Add a "Development" or "Quality Checks" section to `_bmad-custom/bmad-ui/README.md`
+  - [x] Add a "Development" or "Quality Checks" section to `_bmad-ui/README.md`
   - [x] Document: `pnpm check` (all checks), `pnpm check:lint`, `pnpm check:types`, `pnpm check:tests`, `pnpm build`
 
 ## Dev Notes
@@ -91,8 +91,8 @@ Do NOT change `extends` or add a standalone `tsconfig.json` at a different level
 
 ### CI Workflow — `.github/workflows/ci.yml`
 
-The CI runs from repo root but executes from `_bmad-custom/bmad-ui` working directory. Key characteristics:
-- Uses `pnpm/action-setup@v5` with `package_json_file: _bmad-custom/bmad-ui/package.json`
+The CI runs from repo root but executes from `_bmad-ui` working directory. Key characteristics:
+- Uses `pnpm/action-setup@v5` with `package_json_file: _bmad-ui/package.json`
 - Node 24 (`node-version: "24"`)
 - Steps in order: Checkout → Setup pnpm → Setup Node → Install → Lint → Type check → Tests → Build → Summary
 - Summary step uses `if: always()` and outputs `${{ job.status }}`
@@ -102,14 +102,14 @@ Do NOT modify the CI workflow unless a specific step is missing or broken.
 
 ### README Documentation Target
 
-`_bmad-custom/bmad-ui/README.md` needs a new section. Suggested format:
+`_bmad-ui/README.md` needs a new section. Suggested format:
 
 ```markdown
 ## Development
 
 ```bash
 # Install dependencies
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 pnpm install
 
 # Run all quality checks (lint + types + tests + build)
@@ -135,36 +135,36 @@ The epic goal mentions "Contributors can install, run, lint, type-check, and bui
 
 | File | Change |
 |---|---|
-| `_bmad-custom/bmad-ui/README.md` | Add "Development" section with quality commands |
-| `_bmad-custom/bmad-ui/biome.json` | Add any missing rules (verify first — likely no change needed) |
-| `_bmad-custom/bmad-ui/tsconfig.json` | Verify only — likely no change needed |
+| `_bmad-ui/README.md` | Add "Development" section with quality commands |
+| `_bmad-ui/biome.json` | Add any missing rules (verify first — likely no change needed) |
+| `_bmad-ui/tsconfig.json` | Verify only — likely no change needed |
 | `.github/workflows/ci.yml` | Verify only — likely no change needed |
 
 ### Files NOT To Modify
 
-- `_bmad-custom/bmad-ui/src/**` — no source code changes
-- `_bmad-custom/bmad-ui/package.json` — scripts already correct
-- `_bmad-custom/bmad-ui/vite.config.ts` — no changes
+- `_bmad-ui/src/**` — no source code changes
+- `_bmad-ui/package.json` — scripts already correct
+- `_bmad-ui/vite.config.ts` — no changes
 - `infra/`, `scripts/` — out of scope
 
 ### Verification Commands
 
 ```bash
 # Run all checks (must pass before commit)
-cd _bmad-custom/bmad-ui && pnpm check
+cd _bmad-ui && pnpm check
 
 # Individual checks
-cd _bmad-custom/bmad-ui && pnpm check:lint
-cd _bmad-custom/bmad-ui && pnpm check:types
-cd _bmad-custom/bmad-ui && pnpm check:tests
-cd _bmad-custom/bmad-ui && pnpm build
+cd _bmad-ui && pnpm check:lint
+cd _bmad-ui && pnpm check:types
+cd _bmad-ui && pnpm check:tests
+cd _bmad-ui && pnpm build
 ```
 
 ### Project Structure Notes
 
-- App source: `_bmad-custom/bmad-ui/` — all quality config lives here
+- App source: `_bmad-ui/` — all quality config lives here
 - CI workflow: `.github/workflows/ci.yml` — repo-root level
-- The two are connected by `working-directory: _bmad-custom/bmad-ui` in the CI job
+- The two are connected by `working-directory: _bmad-ui` in the CI job
 
 ### References
 
@@ -191,11 +191,11 @@ claude-sonnet-4.6
 - Verified `tsconfig.json` has `strict: true`, `noUnusedLocals: true`, `noUnusedParameters: true`, `noFallthroughCasesInSwitch: true`, `paths: { "@/*": ["./src/*"] }`, `module: "ESNext"`, `moduleResolution: "bundler"`, `noEmit: true`, `include: ["src", "vite.config.ts", "src/vite-env.d.ts"]`. `pnpm check:types` exits 0.
 - Verified `.github/workflows/ci.yml` runs Lint → Type check → Tests → Build in order, triggers on push/PR to main and workflow_dispatch, Summary step uses `if: always()` with branch/commit context. No changes required.
 - Verified `pnpm check` script runs `check:lint && check:types && check:tests && build` in order. `pnpm check` exits 0.
-- Added "Development" section to `_bmad-custom/bmad-ui/README.md` documenting `pnpm check`, `pnpm check:lint`, `pnpm check:types`, `pnpm check:tests`, `pnpm build`.
+- Added "Development" section to `_bmad-ui/README.md` documenting `pnpm check`, `pnpm check:lint`, `pnpm check:types`, `pnpm check:tests`, `pnpm build`.
 
 ### File List
 
-- `_bmad-custom/bmad-ui/README.md` — added Development section with quality commands
+- `_bmad-ui/README.md` — added Development section with quality commands
 
 ## Change Log
 

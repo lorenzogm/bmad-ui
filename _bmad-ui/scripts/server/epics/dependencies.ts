@@ -7,7 +7,7 @@ import type { EpicStatus, SprintOverview, StoryStatus } from "../sprint/index.js
 
 export const storyDependenciesFile = path.join(
 	projectRoot,
-	"_bmad-custom",
+	"_bmad-ui",
 	"story-dependencies.yaml",
 );
 

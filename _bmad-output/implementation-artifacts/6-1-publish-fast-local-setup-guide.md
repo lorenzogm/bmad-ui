@@ -12,14 +12,14 @@ so that I can run bmad-ui in under 15 minutes.
 
 1. **Given** the repository README, **When** a new user follows quickstart steps, **Then** local setup is completable without undocumented prerequisites.
 
-2. **Given** quickstart steps, **When** executed, **Then** required commands, environment preparation, and verification checks are explicit (including the `cd _bmad-custom/bmad-ui` working directory step).
+2. **Given** quickstart steps, **When** executed, **Then** required commands, environment preparation, and verification checks are explicit (including the `cd _bmad-ui` working directory step).
 
 3. **Given** a setup failure, **When** encountered, **Then** quickstart links to troubleshooting guidance for recovery.
 
 ## Tasks / Subtasks
 
 - [ ] Fix README.md Quick Start section (AC: #1, #2)
-  - [ ] Add explicit `cd _bmad-custom/bmad-ui` as the first command (currently missing — users who run `pnpm install` from the repo root get confused)
+  - [ ] Add explicit `cd _bmad-ui` as the first command (currently missing — users who run `pnpm install` from the repo root get confused)
   - [ ] Add a verification step: open `http://localhost:5173` and confirm the BMAD UI loads
   - [ ] Add a "No secrets required" callout — contributors can run the full app without env vars
   - [ ] Remove or de-emphasize individual `pnpm run check:types` / `pnpm run check:tests` commands from Quick Start — the canonical command is `pnpm run check` (runs all checks at once)
@@ -29,7 +29,7 @@ so that I can run bmad-ui in under 15 minutes.
   - [ ] Confirm no leftover `npm` commands (Story 5.3 fixed these — verify they stay fixed)
   - [ ] Confirm Prerequisites section lists Node.js (LTS) and pnpm 10.16+
   - [ ] Confirm Troubleshooting section covers: Biome not formatting, pnpm not found, port conflict, TypeScript aliases
-- [ ] Run `cd _bmad-custom/bmad-ui && pnpm run check` to confirm no regressions (AC: #1)
+- [ ] Run `cd _bmad-ui && pnpm run check` to confirm no regressions (AC: #1)
 
 ## Dev Notes
 
@@ -37,17 +37,17 @@ so that I can run bmad-ui in under 15 minutes.
 
 **`README.md` Quick Start — has a critical bug:**
 ```bash
-# Install dependencies   ← WRONG: missing `cd _bmad-custom/bmad-ui` before this
+# Install dependencies   ← WRONG: missing `cd _bmad-ui` before this
 pnpm install
 
 # Start development server
 pnpm dev
 ```
-Running `pnpm install` from the repository root fails because `package.json` and `pnpm-lock.yaml` live in `_bmad-custom/bmad-ui/`, not the root. New users hit this immediately.
+Running `pnpm install` from the repository root fails because `package.json` and `pnpm-lock.yaml` live in `_bmad-ui/`, not the root. New users hit this immediately.
 
 **`docs/development-guide-bmad-ui.md`** — comprehensive and accurate after Story 5.3. Its Troubleshooting section covers the four most common issues. Keep it as-is; just verify accuracy.
 
-**`.github/CONTRIBUTING.md`** — already correct: starts with `cd _bmad-custom/bmad-ui`. Use this as the reference for the README fix.
+**`.github/CONTRIBUTING.md`** — already correct: starts with `cd _bmad-ui`. Use this as the reference for the README fix.
 
 ### README.md Quick Start — Correct Version
 
@@ -67,7 +67,7 @@ Replace the current Quick Start with:
 
 ```bash
 # Move into the app workspace
-cd _bmad-custom/bmad-ui
+cd _bmad-ui
 
 # Install dependencies
 pnpm install
@@ -92,7 +92,7 @@ pnpm run check   # lint + types + tests + build (run before every commit)
 - This is a **documentation-only** story — do NOT modify any source code in `src/`, configs in `vite.config.ts`, `tsconfig.json`, `biome.json`, or CI workflows.
 - Do NOT modify `docs/development-guide-bmad-ui.md` unless a specific inaccuracy is found (it is accurate after Story 5.3).
 - Do NOT modify `.github/CONTRIBUTING.md` — it is already correct.
-- The README lives at the **repository root** (`/README.md`), not inside `_bmad-custom/bmad-ui/`.
+- The README lives at the **repository root** (`/README.md`), not inside `_bmad-ui/`.
 
 ### Files to Create/Modify
 
@@ -105,16 +105,16 @@ No other files should be changed unless a specific verified inaccuracy is found.
 ### Verification
 
 After completing:
-1. Read `README.md` Quick Start — confirm `cd _bmad-custom/bmad-ui` is the first command
+1. Read `README.md` Quick Start — confirm `cd _bmad-ui` is the first command
 2. Confirm a troubleshooting link exists in Quick Start
 3. Confirm `pnpm run check` is the canonical validation command shown (not individual sub-commands)
-4. `cd _bmad-custom/bmad-ui && pnpm run check` passes cleanly — no regressions
+4. `cd _bmad-ui && pnpm run check` passes cleanly — no regressions
 
 ### Project Structure Notes
 
 - `README.md` is at the **repository root** — this is what GitHub shows on the project homepage
 - `docs/development-guide-bmad-ui.md` is the deeper reference; README links to it
-- `_bmad-custom/bmad-ui/` is where all app source and scripts live — the working directory for all `pnpm` commands
+- `_bmad-ui/` is where all app source and scripts live — the working directory for all `pnpm` commands
 - There IS a `package.json` at the repository root, but it is for the `bmad-method-ui` npm installer CLI (no dev scripts, no `pnpm-lock.yaml` at root) — running `pnpm dev` or `pnpm run check` from root fails with "Missing script"
 
 ### References
@@ -122,7 +122,7 @@ After completing:
 - [Source: epics.md#Story-6.1] — User story, acceptance criteria, FR33 mapping
 - [Source: .github/CONTRIBUTING.md#local-setup] — Correct setup steps reference
 - [Source: docs/development-guide-bmad-ui.md] — Detailed dev guide (accurate after Story 5.3)
-- [Source: README.md#quick-start] — Current broken Quick Start (missing `cd _bmad-custom/bmad-ui`)
+- [Source: README.md#quick-start] — Current broken Quick Start (missing `cd _bmad-ui`)
 - [Source: prd.md] — NFR: new users complete local setup in under 15 minutes
 
 ## Dev Agent Record
@@ -135,7 +135,7 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
-- Replaced README.md Quick Start with correct version: added `cd _bmad-custom/bmad-ui` as first command, added "No secrets required" callout, added `http://localhost:5173` verification step, replaced individual check commands with canonical `pnpm run check`, and added troubleshooting link.
+- Replaced README.md Quick Start with correct version: added `cd _bmad-ui` as first command, added "No secrets required" callout, added `http://localhost:5173` verification step, replaced individual check commands with canonical `pnpm run check`, and added troubleshooting link.
 - Verified `docs/development-guide-bmad-ui.md` is accurate: no npm commands, has Node.js LTS + pnpm 10.16+ prerequisites, and Troubleshooting section covers all four required topics.
 - `pnpm run check` passed with exit code 0 (lint + types + tests + build).
 

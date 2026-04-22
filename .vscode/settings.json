@@ -13,7 +13,7 @@
   "[css]": { "editor.defaultFormatter": "biomejs.biome" },
 
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.tsdk": "_bmad-custom/bmad-ui/node_modules/typescript/lib",
+  "typescript.tsdk": "_bmad-ui/node_modules/typescript/lib",
 
   "tailwindCSS.experimental.configFile": null,
   "tailwindCSS.includeLanguages": {

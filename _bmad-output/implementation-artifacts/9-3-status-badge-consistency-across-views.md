@@ -63,19 +63,19 @@ so that I can quickly scan status without decoding inconsistent label styles.
   - [x] `src/routes/improvement-workflow.tsx` — replace inline ternary badge pattern (running icon kept as special span)
 
 - [x] Verify quality gate (AC: 1, 2, 3, 4)
-  - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with no lint, type, or build errors
+  - [x] `cd _bmad-ui && pnpm check` passes with no lint, type, or build errors
   - [x] No remaining inline `step-badge step-done` / `step-badge step-${rawValue}` patterns without `StatusBadge` wrapper (run `grep -r 'step-badge' src/` to confirm)
   - [x] Confirm `<StatusBadge>` renders meaningful text labels (not "in-progress", "not-started" as literal text) in browser dev build
 
 ### Review Findings
 
-- [x] [Review][Patch] Use `StatusBadge` for workflow phase detail step badges (non-running states) [`_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx:259`]
-- [x] [Review][Patch] Use `StatusBadge` for BMAD workflow step badges (non-running states) in the overview flow [`_bmad-custom/bmad-ui/src/app.tsx:964`]
-- [x] [Review][Patch] Use `StatusBadge` for non-`All` session status filter badges while preserving raw selected filter labels [`_bmad-custom/bmad-ui/src/app.tsx:455`]
-- [x] [Review][Defer] Story markdown status regex in server ingestion is brittle to markdown formatting variations [`_bmad-custom/bmad-ui/scripts/agent-server.ts:384`] — deferred, pre-existing
-- [x] [Review][Defer] Markdown status sync logic prevents status regressions needed for explicit resets/reopens [`_bmad-custom/bmad-ui/scripts/agent-server.ts:1284`] — deferred, pre-existing
-- [x] [Review][Defer] Story scan silently returns on implementation-artifacts read errors, masking operational failures [`_bmad-custom/bmad-ui/scripts/agent-server.ts:1328`] — deferred, pre-existing
-- [x] [Review][Defer] Story detail step-state derivation may diverge from story-level status when review sessions are inactive [`_bmad-custom/bmad-ui/scripts/agent-server.ts:4587`] — deferred, pre-existing
+- [x] [Review][Patch] Use `StatusBadge` for workflow phase detail step badges (non-running states) [`_bmad-ui/src/routes/workflow.$phaseId.tsx:259`]
+- [x] [Review][Patch] Use `StatusBadge` for BMAD workflow step badges (non-running states) in the overview flow [`_bmad-ui/src/app.tsx:964`]
+- [x] [Review][Patch] Use `StatusBadge` for non-`All` session status filter badges while preserving raw selected filter labels [`_bmad-ui/src/app.tsx:455`]
+- [x] [Review][Defer] Story markdown status regex in server ingestion is brittle to markdown formatting variations [`_bmad-ui/scripts/agent-server.ts:384`] — deferred, pre-existing
+- [x] [Review][Defer] Markdown status sync logic prevents status regressions needed for explicit resets/reopens [`_bmad-ui/scripts/agent-server.ts:1284`] — deferred, pre-existing
+- [x] [Review][Defer] Story scan silently returns on implementation-artifacts read errors, masking operational failures [`_bmad-ui/scripts/agent-server.ts:1328`] — deferred, pre-existing
+- [x] [Review][Defer] Story detail step-state derivation may diverge from story-level status when review sessions are inactive [`_bmad-ui/scripts/agent-server.ts:4587`] — deferred, pre-existing
 
 ## Dev Notes
 
@@ -179,7 +179,7 @@ export function StatusBadge(props: { status: string }) {
 
 ### References
 
-- Existing `.step-badge` CSS: `_bmad-custom/bmad-ui/src/styles.css` lines ~1800–1874
+- Existing `.step-badge` CSS: `_bmad-ui/src/styles.css` lines ~1800–1874
 - Current badge usage audit: `src/app.tsx` lines 153, 163, 186, 392, 807, 813, 902, 927, 989, 992
 - Routes with inline badges: `src/routes/epic.$epicId.tsx:979,1011,1054,1081,1108`, `src/routes/sessions.tsx:193`, `src/routes/session.$sessionId.tsx:536`, `src/routes/analytics-*.tsx`, `src/routes/workflow.$phaseId.tsx:250,383,387`, `src/routes/story.$storyId.tsx:168,265`
 - Local helpers to consolidate: `epic.$epicId.tsx` lines 71–94 (`STORY_STATUS_LABELS`, `storyStatusLabel`, `STORY_STATUS_BADGE_CLASS`, `storyStatusBadgeClass`)
@@ -205,17 +205,17 @@ claude-sonnet-4.6
 
 ### File List
 
-- `_bmad-custom/bmad-ui/src/app.tsx` (modified — added StatusBadge, statusBadgeClass, statusLabel, STATUS_BADGE_CLASS, STATUS_LABEL)
-- `_bmad-custom/bmad-ui/src/routes/home.tsx` (modified — StatusBadge import + 2 badge replacements)
-- `_bmad-custom/bmad-ui/src/routes/sessions.tsx` (modified — StatusBadge import + badge replacement)
-- `_bmad-custom/bmad-ui/src/routes/session.$sessionId.tsx` (modified — StatusBadge import + badge replacement)
-- `_bmad-custom/bmad-ui/src/routes/analytics-sessions.tsx` (modified — StatusBadge import + badge replacement)
-- `_bmad-custom/bmad-ui/src/routes/analytics-model-detail.tsx` (modified — StatusBadge import + badge replacement)
-- `_bmad-custom/bmad-ui/src/routes/analytics-story-detail.tsx` (modified — StatusBadge import + badge replacement)
-- `_bmad-custom/bmad-ui/src/routes/story.$storyId.tsx` (modified — StatusBadge import + 2 badge replacements)
-- `_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx` (modified — StatusBadge import, removed 4 local helpers, replaced 10 badges)
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx` (modified — StatusBadge import + 2 epic badge replacements)
-- `_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (modified — StatusBadge import, removed local statusLabel var, replaced artifact badge)
-- `_bmad-custom/bmad-ui/src/routes/workflow-index.tsx` (modified — StatusBadge import + badge replacement)
-- `_bmad-custom/bmad-ui/src/routes/improvement-workflow.tsx` (modified — StatusBadge import, replaced ternary badge with conditional rendering)
+- `_bmad-ui/src/app.tsx` (modified — added StatusBadge, statusBadgeClass, statusLabel, STATUS_BADGE_CLASS, STATUS_LABEL)
+- `_bmad-ui/src/routes/home.tsx` (modified — StatusBadge import + 2 badge replacements)
+- `_bmad-ui/src/routes/sessions.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-ui/src/routes/session.$sessionId.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-ui/src/routes/analytics-sessions.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-ui/src/routes/analytics-model-detail.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-ui/src/routes/analytics-story-detail.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-ui/src/routes/story.$storyId.tsx` (modified — StatusBadge import + 2 badge replacements)
+- `_bmad-ui/src/routes/epic.$epicId.tsx` (modified — StatusBadge import, removed 4 local helpers, replaced 10 badges)
+- `_bmad-ui/src/routes/workflow.$phaseId.tsx` (modified — StatusBadge import + 2 epic badge replacements)
+- `_bmad-ui/src/routes/workflow.$phaseId.$stepId.tsx` (modified — StatusBadge import, removed local statusLabel var, replaced artifact badge)
+- `_bmad-ui/src/routes/workflow-index.tsx` (modified — StatusBadge import + badge replacement)
+- `_bmad-ui/src/routes/improvement-workflow.tsx` (modified — StatusBadge import, replaced ternary badge with conditional rendering)
 - `_bmad-output/implementation-artifacts/9-3-status-badge-consistency-across-views.md` (modified — status + tasks updated)

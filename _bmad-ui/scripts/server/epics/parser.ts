@@ -9,7 +9,7 @@ const __epicParserDirname =
 		? __dirname
 		: fileURLToPath(new URL(".", import.meta.url));
 
-const projectRoot = path.resolve(__epicParserDirname, "..", "..", "..", "..", "..");
+const projectRoot = path.resolve(__epicParserDirname, "..", "..", "..", "..");
 const artifactsRoot = path.join(projectRoot, "_bmad-output");
 
 export type ParsedEpicMarkdownRow = {

@@ -64,7 +64,7 @@ so that adding or debugging any API endpoint no longer requires navigating a 1,5
   - [ ] `routes/index.ts` — create `attachApi` coordinator that delegates to all route modules; add `// biome-ignore lint/performance/noBarrelFile: attachApi coordinator — not a pure re-export barrel`
 
 - [ ] Add Zod validation to request body parsing (AC: 3)
-  - [ ] Confirm `zod` is installed (added in Story 11.1 via `pnpm add zod`); if not, run `pnpm add zod` in `_bmad-custom/bmad-ui/`
+  - [ ] Confirm `zod` is installed (added in Story 11.1 via `pnpm add zod`); if not, run `pnpm add zod` in `_bmad-ui/`
   - [ ] In each route handler with POST/PUT/DELETE body, define a `z.object(...)` schema and call `.parse()` instead of `parseJsonBody<T>()` assertions
   - [ ] Key bodies to validate (see agent-server.ts lines ~4050, ~4345, ~4791, ~4821, ~4902, ~5116, ~5155–5161):
     - Session input: `z.object({ message: z.string().optional() })`
@@ -81,7 +81,7 @@ so that adding or debugging any API endpoint no longer requires navigating a 1,5
   - [ ] Verify all exports still exist via the new domain modules
 
 - [ ] Run full quality gate (AC: 5)
-  - [ ] `cd _bmad-custom/bmad-ui && pnpm check` — lint + types + tests + build must all pass
+  - [ ] `cd _bmad-ui && pnpm check` — lint + types + tests + build must all pass
 
 ## Dev Notes
 
@@ -114,7 +114,7 @@ If any prior stories are in `backlog` or `ready-for-dev` status, implement them 
 
 ### Key Files in Current `agent-server.ts`
 
-All source material is in `_bmad-custom/bmad-ui/scripts/agent-server.ts` (5,420 lines):
+All source material is in `_bmad-ui/scripts/agent-server.ts` (5,420 lines):
 
 | Content | Lines (approx) |
 |---------|----------------|
@@ -136,7 +136,7 @@ const YAML_COMMENT_REGEX = /#.*$/
 const LAST_UPDATED_COMMENT_REGEX = /^#\s*last_updated:\s*.*$/m
 
 // Path (line ~181):
-const linksFile = path.join(projectRoot, "_bmad-custom", "links.yaml")
+const linksFile = path.join(projectRoot, "_bmad-ui", "links.yaml")
 
 // Type:
 type LinkItem = { title: string; subtitle: string; url: string; icon: string }
@@ -150,7 +150,7 @@ function serializeLinksYaml(links: LinkItem[]): string
 **`scripts/server/links-notes/notes.ts`** extracts:
 ```ts
 // Path (line ~182):
-const notesFile = path.join(projectRoot, "_bmad-custom", "notes.json")
+const notesFile = path.join(projectRoot, "_bmad-ui", "notes.json")
 
 // Type (from inline usage in notes handlers ~5235–5371):
 type NoteItem = { id: string; text: string; color: string; createdAt: string }
@@ -241,7 +241,7 @@ These files import from `agent-server.ts` and must NOT break:
 | `scripts/vite.config.ts` (or vite config) | `attachApi` |
 | `scripts/vite-plugin-static-data.ts` | Various — check imports |
 
-Run `grep -n "from.*agent-server" _bmad-custom/bmad-ui/scripts/*.ts` to confirm all consumers and ensure the export block in the trimmed `agent-server.ts` still exports all required symbols (re-exporting from domain modules).
+Run `grep -n "from.*agent-server" _bmad-ui/scripts/*.ts` to confirm all consumers and ensure the export block in the trimmed `agent-server.ts` still exports all required symbols (re-exporting from domain modules).
 
 Current export block (lines 5394–5420) exports:
 ```
@@ -286,8 +286,8 @@ Key enforced rules (`biome.json`):
 
 ### Project Structure Notes
 
-- Target location for new files: `_bmad-custom/bmad-ui/scripts/server/links-notes/` and `_bmad-custom/bmad-ui/scripts/server/routes/`
-- `agent-server.ts` stays at `_bmad-custom/bmad-ui/scripts/agent-server.ts` — it's the public surface imported by vite config
+- Target location for new files: `_bmad-ui/scripts/server/links-notes/` and `_bmad-ui/scripts/server/routes/`
+- `agent-server.ts` stays at `_bmad-ui/scripts/agent-server.ts` — it's the public surface imported by vite config
 - No changes to any `src/` files — this is purely a server-side refactor
 - No `index.ts` files in domain folders — direct imports only
 - The only exception is `routes/index.ts` (coordinator) with biome-ignore comment
@@ -303,8 +303,8 @@ After implementation, verify manually (if dev server is available):
 
 - Story 11.6 definition: `_bmad-output/planning-artifacts/epics.md` §"Story 11.6" (~lines 1598–1638)
 - Epic 11 target structure: `_bmad-output/planning-artifacts/epics.md` §"Epic 11: Agent Server Modularization" (~lines 1435–1476)
-- `agent-server.ts` (source of all logic to decompose): `_bmad-custom/bmad-ui/scripts/agent-server.ts`
-- `biome.json` (linting rules): `_bmad-custom/bmad-ui/biome.json`
+- `agent-server.ts` (source of all logic to decompose): `_bmad-ui/scripts/agent-server.ts`
+- `biome.json` (linting rules): `_bmad-ui/biome.json`
 - Project rules: `_bmad-output/project-context.md` §"Critical Don't-Miss Rules"
 - Previous story patterns: `_bmad-output/implementation-artifacts/10-4-skill-model-effectiveness-matrix.md` (example of well-formed story)
 - `scripts/server/paths.ts` (created in Story 11.1 — import `projectRoot` from here)

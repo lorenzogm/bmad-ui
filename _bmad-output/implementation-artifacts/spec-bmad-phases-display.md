@@ -51,14 +51,14 @@ context: []
 
 ## Code Map
 
-- `_bmad-custom/bmad-ui/src/app.tsx` -- Contains OrchestratorControlsSection component (lines 926-988) and its usage in DashboardPage (lines 1397-1407); will replace with BMADWorkflowSection
+- `_bmad-ui/src/app.tsx` -- Contains OrchestratorControlsSection component (lines 926-988) and its usage in DashboardPage (lines 1397-1407); will replace with BMADWorkflowSection
 - `_bmad-output/planning-artifacts/` -- Directory to check for artifact files to determine workflow completion status
 
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] `_bmad-custom/bmad-ui/src/app.tsx` -- Create BMADWorkflowSection component that displays BMAD workflow steps with icons, status badges, and a single play button on the next action -- Replaces OrchestratorControlsSection with workflow step tracking
-- [ ] `_bmad-custom/bmad-ui/src/app.tsx` -- Update DashboardPage to call BMADWorkflowSection instead of OrchestratorControlsSection, passing artifact detection logic -- Integrates new component into dashboard layout
+- [ ] `_bmad-ui/src/app.tsx` -- Create BMADWorkflowSection component that displays BMAD workflow steps with icons, status badges, and a single play button on the next action -- Replaces OrchestratorControlsSection with workflow step tracking
+- [ ] `_bmad-ui/src/app.tsx` -- Update DashboardPage to call BMADWorkflowSection instead of OrchestratorControlsSection, passing artifact detection logic -- Integrates new component into dashboard layout
 - [ ] Implement file existence detection for workflow step tracking -- Verify correct steps are marked complete based on artifact presence
 
 **Acceptance Criteria:**
@@ -96,7 +96,7 @@ Styling uses existing `.panel`, `.reveal`, `.delay-*` classes from the old secti
 ## Verification
 
 **Commands:**
-- `npm run build` in `_bmad-custom/bmad-ui/` -- expected: No TypeScript or build errors
+- `npm run build` in `_bmad-ui/` -- expected: No TypeScript or build errors
 - Visual inspection in browser after build -- expected: BMADWorkflowSection displays correctly with step progress
 
 **Manual checks (if no CLI):**

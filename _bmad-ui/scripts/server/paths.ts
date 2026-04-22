@@ -6,9 +6,9 @@ const __serverDirname =
     ? __dirname
     : fileURLToPath(new URL(".", import.meta.url))
 
-export const projectRoot = path.resolve(__serverDirname, "..", "..", "..", "..")
+export const projectRoot = path.resolve(__serverDirname, "..", "..", "..")
 export const artifactsRoot = path.join(projectRoot, "_bmad-output")
-export const agentsDir = path.join(projectRoot, "_bmad-custom", "agents")
+export const agentsDir = path.join(projectRoot, "_bmad-ui", "agents")
 export const sprintStatusFile = path.join(
   artifactsRoot,
   "implementation-artifacts",

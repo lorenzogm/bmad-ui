@@ -5,20 +5,20 @@
       "part_id": "bmad-ui",
       "project_type_id": "web",
       "display_name": "BMAD UI",
-      "root_path": "_bmad-custom/bmad-ui",
+      "root_path": "_bmad-ui",
       "primary_language": "TypeScript",
       "entry_points": [
-        "_bmad-custom/bmad-ui/src/main.tsx"
+        "_bmad-ui/src/main.tsx"
       ]
     },
     {
       "part_id": "bmad-orchestrator",
       "project_type_id": "cli",
       "display_name": "BMAD Orchestrator",
-      "root_path": "_bmad-custom/bmad-orchestrator",
+      "root_path": "_bmad-ui/bmad-orchestrator",
       "primary_language": "JavaScript",
       "entry_points": [
-        "_bmad-custom/bmad-orchestrator/orchestrator.mjs"
+        "_bmad-ui/bmad-orchestrator/orchestrator.mjs"
       ]
     }
   ],
