@@ -111,9 +111,9 @@ development_status:
   epic-10: in-progress
   10-1-enrich-session-sync-daemon-with-outcome-and-complexity-metrics: ready-for-dev
   10-2-analytics-api-session-quality-aggregation-endpoint: ready-for-dev
-  10-3-session-quality-dashboard-effectiveness-charts: backlog
+  10-3-session-quality-dashboard-effectiveness-charts: ready-for-dev
   10-4-skill-model-effectiveness-matrix: ready-for-dev
-  10-5-autonomous-workflow-configuration-generator: backlog
+  10-5-autonomous-workflow-configuration-generator: ready-for-dev
   epic-10-retrospective: optional
 
   epic-11: backlog
