@@ -80,6 +80,10 @@ function titleCase(s: string): string {
     .join(" ")
 }
 
+function normalizeStatusToken(status: string): string {
+  return status.toLowerCase().replace(/[^a-z0-9-]+/g, "-")
+}
+
 export function statusBadgeClass(status: string): string {
   return STATUS_BADGE_CLASS[status] ?? status
 }
@@ -88,10 +92,16 @@ export function statusLabel(status: string): string {
   return STATUS_LABEL[status] ?? titleCase(status)
 }
 
-export function StatusBadge(props: { status: string }) {
-  const cls = STATUS_BADGE_CLASS[props.status] ?? props.status
-  const label = STATUS_LABEL[props.status] ?? titleCase(props.status)
-  return <span className={`step-badge step-${cls}`}>{label}</span>
+export function StatusBadge(props: { status: string; label?: string; title?: string }) {
+  const rawStatus = typeof props.status === "string" ? props.status.trim() : "unknown"
+  const safeStatus = rawStatus.length > 0 ? rawStatus : "unknown"
+  const cls = normalizeStatusToken(STATUS_BADGE_CLASS[safeStatus] ?? safeStatus)
+  const label = props.label ?? STATUS_LABEL[safeStatus] ?? titleCase(safeStatus)
+  return (
+    <span className={`step-badge step-${cls}`} title={props.title}>
+      {label}
+    </span>
+  )
 }
 
 function formatDate(value: string | null): string {
@@ -446,7 +456,11 @@ export function AgentSessionsSection(props: {
               onClick={() => toggleStatusFilter(status)}
               type="button"
             >
-              <span className={`step-badge ${isAll ? "step-all" : `step-${status}`}`}>{label}</span>
+              {isAll ? (
+                <span className="step-badge step-all">{label}</span>
+              ) : (
+                <StatusBadge status={status} label={label} />
+              )}
             </button>
           )
         })}
@@ -880,20 +894,11 @@ function BMADWorkflowSection(props: {
                     const isRunning = step.skill === effectiveActiveSkill
                     const shouldShowEpics = phase.id === "implementation" && step.id === "sprint"
                     const hasSprintWarning = shouldShowEpics && epicConsistency.hasMismatch
-                    const stepStatusClassName = isRunning
-                      ? "step-running"
-                      : hasSprintWarning
-                        ? "step-warning"
-                        : step.isCompleted
-                          ? "step-done"
-                          : "step-not-started"
-                    const stepStatusLabel = isRunning
-                      ? "running"
-                      : hasSprintWarning
-                        ? "warning"
-                        : step.isCompleted
-                          ? "done"
-                          : "pending"
+                    const stepStatus = hasSprintWarning
+                      ? "warning"
+                      : step.isCompleted
+                        ? "done"
+                        : "pending"
                     const sprintWarningMessage =
                       epicConsistency.warning ?? SPRINT_WARNING_FALLBACK_MESSAGE
 
@@ -955,21 +960,22 @@ function BMADWorkflowSection(props: {
                             </Link>
                           ) : null
                         })()}
-                        <span
-                          className={`step-badge ${stepStatusClassName}`}
-                          title={hasSprintWarning ? sprintWarningMessage : undefined}
-                        >
-                          {isRunning ? (
-                            <>
-                              <span aria-hidden="true" className="agent-icon">
-                                ⬡
-                              </span>
-                              {" running"}
-                            </>
-                          ) : (
-                            stepStatusLabel
-                          )}
-                        </span>
+                        {isRunning ? (
+                          <span
+                            className="step-badge step-running"
+                            title={hasSprintWarning ? sprintWarningMessage : undefined}
+                          >
+                            <span aria-hidden="true" className="agent-icon">
+                              ⬡
+                            </span>
+                            {" running"}
+                          </span>
+                        ) : (
+                          <StatusBadge
+                            status={stepStatus}
+                            title={hasSprintWarning ? sprintWarningMessage : undefined}
+                          />
+                        )}
                       </div>
                     )
                   })}

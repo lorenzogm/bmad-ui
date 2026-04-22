@@ -2181,6 +2181,8 @@ a:hover {
   font-size: 0.72rem;
   font-family: "IBM Plex Mono", monospace;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .session-id {

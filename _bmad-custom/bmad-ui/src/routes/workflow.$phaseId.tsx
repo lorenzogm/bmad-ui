@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { createRoute, Link, useNavigate, useParams } from "@tanstack/react-router"
 import { useCallback, useMemo, useState } from "react"
 import type { WorkflowPhase, WorkflowStep } from "../app"
-import { detectWorkflowStatus, StatusBadge, storyStepLabel } from "../app"
+import { detectWorkflowStatus, StatusBadge } from "../app"
 import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
 import type { OverviewResponse, RuntimeSession } from "../types"
@@ -256,22 +256,18 @@ function WorkflowPhaseDetailPage() {
                     </td>
                     <td>{step.isOptional ? "Yes" : "No"}</td>
                     <td style={{ whiteSpace: "nowrap" }}>
-                      <span
-                        className={`step-badge step-${isRunning ? "running" : step.isSkipped ? "skipped" : step.isCompleted ? "done" : "not-started"}`}
-                      >
-                        {isRunning ? (
-                          <>
-                            <span aria-hidden="true" className="agent-icon">
-                              ⬡
-                            </span>
-                            {" running"}
-                          </>
-                        ) : step.isSkipped ? (
-                          "skipped"
-                        ) : (
-                          storyStepLabel(step.isCompleted ? "completed" : "not-started")
-                        )}
-                      </span>
+                      {isRunning ? (
+                        <span className="step-badge step-running">
+                          <span aria-hidden="true" className="agent-icon">
+                            ⬡
+                          </span>
+                          {" running"}
+                        </span>
+                      ) : step.isSkipped ? (
+                        <StatusBadge status="skipped" />
+                      ) : (
+                        <StatusBadge status={step.isCompleted ? "completed" : "not-started"} />
+                      )}
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
                       <div className="improvement-actions">

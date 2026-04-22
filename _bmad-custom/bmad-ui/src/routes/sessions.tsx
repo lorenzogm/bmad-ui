@@ -163,22 +163,28 @@ function SessionsPage() {
             <tbody>
               {filteredSessions.map((session) => (
                 <tr key={session.sessionId}>
-                  <td>
-                    <span className="skill-chip">{session.skill ?? "—"}</span>
-                    <Link
-                      className={`session-link-icon${session.status === "running" ? " session-link-running" : ""}${session.status === "failed" ? " session-link-failed" : ""}`}
-                      params={{ sessionId: session.sessionId }}
-                      title={`View session: ${session.sessionId}`}
-                      to="/session/$sessionId"
-                    >
-                      ◉
-                    </Link>
+                  <td className="max-w-[16rem]">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="skill-chip max-w-full truncate" title={session.skill ?? "—"}>
+                        {session.skill ?? "—"}
+                      </span>
+                      <Link
+                        className={`session-link-icon shrink-0${session.status === "running" ? " session-link-running" : ""}${session.status === "failed" ? " session-link-failed" : ""}`}
+                        params={{ sessionId: session.sessionId }}
+                        title={`View session: ${session.sessionId}`}
+                        to="/session/$sessionId"
+                      >
+                        ◉
+                      </Link>
+                    </div>
                   </td>
                   <td>
                     <span className="mono muted">{session.model}</span>
                   </td>
                   <td className="max-w-[12rem]">
-                    <span className="mono muted block truncate">{session.storyId ?? "—"}</span>
+                    <span className="mono muted block truncate" title={session.storyId ?? "—"}>
+                      {session.storyId ?? "—"}
+                    </span>
                   </td>
                   <td>
                     <StatusBadge status={session.status} />

@@ -101,10 +101,10 @@ development_status:
   epic-9: in-progress
   9-1-improve-empty-states-and-loading-feedback: done
   9-2-navigation-and-active-route-clarity: done
-  9-3-status-badge-consistency-across-views: ready-for-dev
-  9-4-responsive-layout-and-spacing-refinements: ready-for-dev
+  9-3-status-badge-consistency-across-views: done
+  9-4-responsive-layout-and-spacing-refinements: done
   9-5-session-detail-back-navigation: done
-  9-6-sidebar-running-sessions-panel: review
+  9-6-sidebar-running-sessions-panel: done
   9-7-add-planning-and-solutioning-step-detail-views: done
   epic-9-retrospective: optional
 

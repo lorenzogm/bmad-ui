@@ -809,9 +809,14 @@ function EpicDetailPage() {
                   return (
                     <tr key={story.id} style={{ opacity: 0.55 }}>
                       <td className="max-w-0">
-                        <span className="block truncate" style={{ color: "var(--muted)" }}>
-                          {storyDisplayLabel(story.id).trim()}{" "}
-                          <span style={{ fontSize: "0.8em" }}>(planned)</span>
+                        <span
+                          className="flex min-w-0 items-center gap-1"
+                          style={{ color: "var(--muted)" }}
+                        >
+                          <span className="block truncate">
+                            {storyDisplayLabel(story.id).trim()}
+                          </span>
+                          <span className="shrink-0 text-[0.8em]">(planned)</span>
                         </span>
                       </td>
                       <td>

@@ -1,6 +1,6 @@
 # Story 9.4: Responsive Layout and Spacing Refinements
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -38,6 +38,15 @@ so that the app is comfortable to use for extended monitoring sessions.
 - [x] Validate, check quality gate, and commit (all ACs)
   - [x] Run `cd _bmad-custom/bmad-ui && pnpm check` — must pass before marking done
   - [x] Visually verify at 1280px viewport: home, sessions, epic detail, and session list pages
+
+### Review Findings
+
+- [x] [Review][Patch] Add safe normalization in `StatusBadge` for unknown status tokens [_bmad-custom/bmad-ui/src/app.tsx:91]
+- [x] [Review][Patch] Prevent `Skill / Name` cell overflow with truncation container in sessions table [_bmad-custom/bmad-ui/src/routes/sessions.tsx:166]
+- [x] [Review][Patch] Keep `(planned)` marker visible when story ID truncates [_bmad-custom/bmad-ui/src/routes/epic.$epicId.tsx:811]
+- [x] [Review][Patch] Add tooltip to truncated session story ID cell [_bmad-custom/bmad-ui/src/routes/sessions.tsx:180]
+- [x] [Review][Defer] Story scope drift (StatusBadge refactor in this commit) [_bmad-custom/bmad-ui/src/app.tsx:25] — deferred, pre-existing
+- [x] [Review][Defer] Status copy semantics changed beyond layout scope [_bmad-custom/bmad-ui/src/app.tsx:43] — deferred, pre-existing
 
 ## Dev Notes
 

@@ -1,6 +1,6 @@
 # Story 9.3: Status Badge Consistency Across Views
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -66,6 +66,16 @@ so that I can quickly scan status without decoding inconsistent label styles.
   - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with no lint, type, or build errors
   - [x] No remaining inline `step-badge step-done` / `step-badge step-${rawValue}` patterns without `StatusBadge` wrapper (run `grep -r 'step-badge' src/` to confirm)
   - [x] Confirm `<StatusBadge>` renders meaningful text labels (not "in-progress", "not-started" as literal text) in browser dev build
+
+### Review Findings
+
+- [x] [Review][Patch] Use `StatusBadge` for workflow phase detail step badges (non-running states) [`_bmad-custom/bmad-ui/src/routes/workflow.$phaseId.tsx:259`]
+- [x] [Review][Patch] Use `StatusBadge` for BMAD workflow step badges (non-running states) in the overview flow [`_bmad-custom/bmad-ui/src/app.tsx:964`]
+- [x] [Review][Patch] Use `StatusBadge` for non-`All` session status filter badges while preserving raw selected filter labels [`_bmad-custom/bmad-ui/src/app.tsx:455`]
+- [x] [Review][Defer] Story markdown status regex in server ingestion is brittle to markdown formatting variations [`_bmad-custom/bmad-ui/scripts/agent-server.ts:384`] — deferred, pre-existing
+- [x] [Review][Defer] Markdown status sync logic prevents status regressions needed for explicit resets/reopens [`_bmad-custom/bmad-ui/scripts/agent-server.ts:1284`] — deferred, pre-existing
+- [x] [Review][Defer] Story scan silently returns on implementation-artifacts read errors, masking operational failures [`_bmad-custom/bmad-ui/scripts/agent-server.ts:1328`] — deferred, pre-existing
+- [x] [Review][Defer] Story detail step-state derivation may diverge from story-level status when review sessions are inactive [`_bmad-custom/bmad-ui/scripts/agent-server.ts:4587`] — deferred, pre-existing
 
 ## Dev Notes
 
