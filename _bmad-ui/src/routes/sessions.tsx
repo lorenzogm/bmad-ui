@@ -156,6 +156,7 @@ function SessionsPage() {
                 <th>Model</th>
                 <th>Story</th>
                 <th>Status</th>
+                <th>Outcome</th>
                 <th>Started</th>
                 <th>Duration</th>
               </tr>
@@ -188,6 +189,9 @@ function SessionsPage() {
                   </td>
                   <td>
                     <StatusBadge status={session.status} />
+                  </td>
+                  <td>
+                    <span className="mono muted">{session.outcome ?? "—"}</span>
                   </td>
                   <td className="muted">{formatDate(session.startedAt)}</td>
                   <td className="muted">{formatDuration(session.startedAt, session.endedAt)}</td>

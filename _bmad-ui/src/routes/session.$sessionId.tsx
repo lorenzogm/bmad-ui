@@ -621,6 +621,18 @@ function SessionDetailPage() {
                   <th>Duration</th>
                   <td>{formatDuration(session.startedAt, session.endedAt)}</td>
                 </tr>
+                {session.agentActiveMinutes != null ? (
+                  <tr>
+                    <th>Active Time</th>
+                    <td className="agent-active-minutes">{session.agentActiveMinutes}m</td>
+                  </tr>
+                ) : null}
+                {session.outcome != null ? (
+                  <tr>
+                    <th>Outcome</th>
+                    <td className="session-outcome">{session.outcome}</td>
+                  </tr>
+                ) : null}
                 <tr>
                   <th>Exit Code</th>
                   <td>{session.exitCode ?? "-"}</td>

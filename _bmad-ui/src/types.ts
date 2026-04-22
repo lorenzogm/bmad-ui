@@ -49,6 +49,13 @@ export type RuntimeSession = {
     text: string
     sentAt: string
   }>
+  // Rich outcome & complexity metrics (populated for copilot-cli sessions)
+  outcome?: string
+  agentActiveMinutes?: number
+  humanTurns?: number
+  agentTurns?: number
+  gitCommits?: number
+  gitPushes?: number
 }
 
 export type RuntimeState = {
@@ -284,6 +291,13 @@ export type SessionAnalytics = {
   startedAt: string
   endedAt: string | null
   usage: TokenUsage
+  // Rich outcome & complexity metrics populated by the sync daemon
+  outcome?: string | null
+  agentActiveMinutes?: number
+  humanTurns?: number
+  agentTurns?: number
+  gitCommits?: number
+  gitPushes?: number
 }
 
 export type StoryAnalytics = {
@@ -300,10 +314,49 @@ export type EpicAnalytics = {
   usage: TokenUsage
 }
 
+export type SkillQualityBucket = {
+  sessions: number
+  oneShot: number
+  corrected: number
+  aborted: number
+}
+
+export type ModelQualityBucket = {
+  sessions: number
+  oneShot: number
+}
+
+export type SkillModelQualityCell = {
+  skill: string
+  model: string
+  sessions: number
+  oneShot: number
+  oneShotRate: number
+  delivered?: number
+  corrected?: number
+  aborted?: number
+  avgDurationMin?: number
+  avgAgentTurns?: number
+  avgHumanTurns?: number
+}
+
+export type AnalyticsQuality = {
+  overall: {
+    sessions: number
+    delivered: number
+    aborted: number
+    oneShot: number
+  }
+  bySkill: Record<string, SkillQualityBucket>
+  byModel: Record<string, ModelQualityBucket>
+  bySkillModel?: Record<string, SkillModelQualityCell>
+}
+
 export type AnalyticsResponse = {
   sessions: SessionAnalytics[]
   stories: StoryAnalytics[]
   epics: EpicAnalytics[]
   project: TokenUsage
   costing: AnalyticsCosting
+  quality?: AnalyticsQuality
 }
