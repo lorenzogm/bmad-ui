@@ -1,6 +1,6 @@
 # Story 11.2: Extract Sprint & Overview Domain
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
