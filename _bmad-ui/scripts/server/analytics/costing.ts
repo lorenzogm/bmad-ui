@@ -45,6 +45,12 @@ export type SessionAnalyticsData = {
   exitCode?: number | null
   error?: string | null
   userMessages?: Array<{ id: string; text: string; sentAt: string }>
+  // Quality fields — populated by story 10-1 sync daemon; absent for pre-10-1 data
+  human_turns?: number | null
+  agent_turns?: number | null
+  outcome?: string | null
+  aborted?: boolean | null
+  duration_minutes?: number | null
 }
 
 export type AnalyticsRatesUsdData = {

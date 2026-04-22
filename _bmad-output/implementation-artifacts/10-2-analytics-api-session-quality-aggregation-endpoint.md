@@ -1,6 +1,6 @@
 # Story 10.2: Analytics API — Session Quality Aggregation Endpoint
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -40,33 +40,33 @@ So that the frontend can render effectiveness charts without client-side data cr
 
 ## Tasks / Subtasks
 
-- [ ] Add `SessionOutcome` type and quality field types to `src/types.ts` (AC: 1)
-  - [ ] Add `SessionOutcome = "pushed" | "committed" | "delivered" | "aborted" | "error" | "no-output"` union type
-  - [ ] Add `QualityMetrics` type (sessions, delivered, oneShot, corrected, aborted, avgDurationMin, avgAgentTurns, avgHumanTurns)
-  - [ ] Add `QualityBySkillModel` extending `QualityMetrics` with `oneShotRate: number`
-  - [ ] Add `AnalyticsQuality` type: `{ bySkill: Record<string, QualityMetrics>; byModel: Record<string, QualityMetrics>; bySkillModel: Record<string, QualityBySkillModel>; overall: QualityMetrics }`
-  - [ ] Extend `AnalyticsResponse` with `quality: AnalyticsQuality`
+- [x] Add `SessionOutcome` type and quality field types to `src/types.ts` (AC: 1)
+  - [x] Add `SessionOutcome = "pushed" | "committed" | "delivered" | "aborted" | "error" | "no-output"` union type
+  - [x] Add `QualityMetrics` type (sessions, delivered, oneShot, corrected, aborted, avgDurationMin, avgAgentTurns, avgHumanTurns)
+  - [x] Add `QualityBySkillModel` extending `QualityMetrics` with `oneShotRate: number`
+  - [x] Add `AnalyticsQuality` type: `{ bySkill: Record<string, QualityMetrics>; byModel: Record<string, QualityMetrics>; bySkillModel: Record<string, QualityBySkillModel>; overall: QualityMetrics }`
+  - [x] Extend `AnalyticsResponse` with `quality: AnalyticsQuality`
 
-- [ ] Extend `SessionAnalyticsData` type in `scripts/agent-server.ts` with optional quality fields (AC: 2, 3, 4, 6)
-  - [ ] Add optional fields: `human_turns?: number | null`, `agent_turns?: number | null`, `outcome?: string | null`, `aborted?: boolean | null`, `duration_minutes?: number | null`
-  - [ ] These fields are populated by story 10-1 sync daemon; they are optional here so pre-10-1 data is handled gracefully
+- [x] Extend `SessionAnalyticsData` type in `scripts/agent-server.ts` with optional quality fields (AC: 2, 3, 4, 6)
+  - [x] Add optional fields: `human_turns?: number | null`, `agent_turns?: number | null`, `outcome?: string | null`, `aborted?: boolean | null`, `duration_minutes?: number | null`
+  - [x] These fields are populated by story 10-1 sync daemon; they are optional here so pre-10-1 data is handled gracefully
 
-- [ ] Implement `buildQualityAggregation()` pure function in `scripts/agent-server.ts` (AC: 1–6)
-  - [ ] Define `DELIVERED_OUTCOMES` const: `["pushed", "committed", "delivered"]`
-  - [ ] For each session: determine `isDelivered`, `isOneShot`, `isCorrected`, `isAborted` using optional chaining
-  - [ ] Accumulate counts per skill key, model key, and `${skill}::${model}` combo key
-  - [ ] Accumulate totals for `duration_minutes`, `agent_turns`, `human_turns` for averaging (only count sessions where the value is present)
-  - [ ] Compute averages only where denominator > 0 (avoid division by zero)
-  - [ ] Compute `oneShotRate = oneShot / sessions` per bySkillModel entry
-  - [ ] Build `overall` bucket across all sessions
+- [x] Implement `buildQualityAggregation()` pure function in `scripts/agent-server.ts` (AC: 1–6)
+  - [x] Define `DELIVERED_OUTCOMES` const: `["pushed", "committed", "delivered"]`
+  - [x] For each session: determine `isDelivered`, `isOneShot`, `isCorrected`, `isAborted` using optional chaining
+  - [x] Accumulate counts per skill key, model key, and `${skill}::${model}` combo key
+  - [x] Accumulate totals for `duration_minutes`, `agent_turns`, `human_turns` for averaging (only count sessions where the value is present)
+  - [x] Compute averages only where denominator > 0 (avoid division by zero)
+  - [x] Compute `oneShotRate = oneShot / sessions` per bySkillModel entry
+  - [x] Build `overall` bucket across all sessions
 
-- [ ] Call `buildQualityAggregation()` inside `buildAnalyticsPayload()` and include `quality` in return (AC: 1)
-  - [ ] Pass `sessionAnalytics` (the validated, deduplicated array) to `buildQualityAggregation()`
-  - [ ] Add `quality` to the return object of `buildAnalyticsPayload()`
-  - [ ] **Important:** The function is `buildAnalyticsPayload()` — NOT `buildAnalyticsResponse()` as stated in the epics (the epics contain a naming error)
+- [x] Call `buildQualityAggregation()` inside `buildAnalyticsPayload()` and include `quality` in return (AC: 1)
+  - [x] Pass `sessionAnalytics` (the validated, deduplicated array) to `buildQualityAggregation()`
+  - [x] Add `quality` to the return object of `buildAnalyticsPayload()`
+  - [x] **Important:** The function is `buildAnalyticsPayload()` — NOT `buildAnalyticsResponse()` as stated in the epics (the epics contain a naming error)
 
-- [ ] Run quality gate (AC: all)
-  - [ ] `cd _bmad-ui && pnpm check` must pass with zero errors
+- [x] Run quality gate (AC: all)
+  - [x] `cd _bmad-ui && pnpm check` must pass with zero errors
 
 ## Dev Notes
 
@@ -224,6 +224,25 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+- Existing `types.ts` had partial quality types (`QualityMetric`) in wrong format — replaced with story-spec types (`QualityMetrics`, `QualityBySkillModel`, `AnalyticsQuality`)
+- `aggregation.ts` is actually in `scripts/server/analytics/aggregation.ts` (not the single large file as story notes mention — the codebase was refactored into modules)
+- `SessionAnalyticsData` is in `scripts/server/analytics/costing.ts`
+- Pre-existing chart functions in `analytics-utils.tsx` referenced `.oneShotRate` on `bySkill`/`byModel` entries — fixed to compute it as `oneShot/sessions`
+- Pre-existing lint/format errors in `src/` files fixed with `biome check --write`
+
 ### Completion Notes List
 
+- Implemented `buildQualityAggregation()` as a pure O(n) synchronous function in `scripts/server/analytics/aggregation.ts`
+- Uses accumulator pattern to avoid multiple passes; computes all 4 buckets (bySkill, byModel, bySkillModel, overall) in a single loop
+- Key separator is `::` (e.g. `"bmad-dev-story::claude-sonnet-4.6"`)
+- Pre-10-1 sessions without `outcome` are counted in `sessions` total only (not in delivered/oneShot/corrected/aborted)
+- All quality averages default to 0 if no data available (no division by zero)
+- `pnpm check` passes: lint ✅, types ✅, tests ✅, build ✅
+
 ### File List
+
+- `_bmad-ui/scripts/server/analytics/costing.ts` — added optional quality fields to `SessionAnalyticsData`
+- `_bmad-ui/scripts/server/analytics/aggregation.ts` — implemented `buildQualityAggregation()` + updated `buildAnalyticsPayload()` return
+- `_bmad-ui/src/types.ts` — replaced `QualityMetric` with `QualityMetrics`/`QualityBySkillModel`/`SessionOutcome`; added `SkillModelQualityCell`; made `quality` required in `AnalyticsResponse`
+- `_bmad-ui/src/routes/analytics-utils.tsx` — fixed chart functions to compute `oneShotRate` from `oneShot/sessions` instead of accessing missing property
+- `_bmad-ui/src/routes/analytics-quality.tsx` — fixed `overall.oneShotRate` reference; removed unused imports

@@ -198,6 +198,146 @@ export function validateRunningStatus(
 	});
 }
 
+const DELIVERED_OUTCOMES = ["pushed", "committed", "delivered"] as const;
+
+type QualityMetricsAccumulator = {
+	sessions: number;
+	delivered: number;
+	oneShot: number;
+	corrected: number;
+	aborted: number;
+	durationSum: number;
+	durationCount: number;
+	agentTurnsSum: number;
+	agentTurnsCount: number;
+	humanTurnsSum: number;
+	humanTurnsCount: number;
+};
+
+type QualityMetricsOut = {
+	sessions: number;
+	delivered: number;
+	oneShot: number;
+	corrected: number;
+	aborted: number;
+	avgDurationMin: number;
+	avgAgentTurns: number;
+	avgHumanTurns: number;
+};
+
+type QualityBySkillModelOut = QualityMetricsOut & { oneShotRate: number };
+
+function zeroQualityAccumulator(): QualityMetricsAccumulator {
+	return {
+		sessions: 0,
+		delivered: 0,
+		oneShot: 0,
+		corrected: 0,
+		aborted: 0,
+		durationSum: 0,
+		durationCount: 0,
+		agentTurnsSum: 0,
+		agentTurnsCount: 0,
+		humanTurnsSum: 0,
+		humanTurnsCount: 0,
+	};
+}
+
+function finalizeMetrics(acc: QualityMetricsAccumulator): QualityMetricsOut {
+	return {
+		sessions: acc.sessions,
+		delivered: acc.delivered,
+		oneShot: acc.oneShot,
+		corrected: acc.corrected,
+		aborted: acc.aborted,
+		avgDurationMin: acc.durationCount > 0 ? acc.durationSum / acc.durationCount : 0,
+		avgAgentTurns: acc.agentTurnsCount > 0 ? acc.agentTurnsSum / acc.agentTurnsCount : 0,
+		avgHumanTurns: acc.humanTurnsCount > 0 ? acc.humanTurnsSum / acc.humanTurnsCount : 0,
+	};
+}
+
+function finalizeSkillModel(acc: QualityMetricsAccumulator): QualityBySkillModelOut {
+	const base = finalizeMetrics(acc);
+	return { ...base, oneShotRate: base.sessions > 0 ? base.oneShot / base.sessions : 0 };
+}
+
+function accumulateSession(
+	acc: QualityMetricsAccumulator,
+	session: SessionAnalyticsData,
+): void {
+	acc.sessions++;
+
+	const outcome = session.outcome ?? null;
+	const isDelivered =
+		outcome !== null && (DELIVERED_OUTCOMES as readonly string[]).includes(outcome);
+	const isAbortedOutcome = outcome === "aborted";
+
+	if (isDelivered) {
+		acc.delivered++;
+		if (session.human_turns === 1 && session.aborted !== true) {
+			acc.oneShot++;
+		} else if (typeof session.human_turns === "number" && session.human_turns > 1) {
+			acc.corrected++;
+		}
+	}
+	if (isAbortedOutcome) {
+		acc.aborted++;
+	}
+
+	if (typeof session.duration_minutes === "number" && session.duration_minutes >= 0) {
+		acc.durationSum += session.duration_minutes;
+		acc.durationCount++;
+	}
+	if (typeof session.agent_turns === "number" && session.agent_turns >= 0) {
+		acc.agentTurnsSum += session.agent_turns;
+		acc.agentTurnsCount++;
+	}
+	if (typeof session.human_turns === "number" && session.human_turns >= 0) {
+		acc.humanTurnsSum += session.human_turns;
+		acc.humanTurnsCount++;
+	}
+}
+
+export function buildQualityAggregation(sessions: SessionAnalyticsData[]): {
+	bySkill: Record<string, QualityMetricsOut>;
+	byModel: Record<string, QualityMetricsOut>;
+	bySkillModel: Record<string, QualityBySkillModelOut>;
+	overall: QualityMetricsOut;
+} {
+	const bySkill: Record<string, QualityMetricsAccumulator> = {};
+	const byModel: Record<string, QualityMetricsAccumulator> = {};
+	const bySkillModel: Record<string, QualityMetricsAccumulator> = {};
+	const overall = zeroQualityAccumulator();
+
+	for (const session of sessions) {
+		const skill = session.skill || "unknown";
+		const model = session.model || "unknown";
+		const comboKey = `${skill}::${model}`;
+
+		if (!bySkill[skill]) bySkill[skill] = zeroQualityAccumulator();
+		if (!byModel[model]) byModel[model] = zeroQualityAccumulator();
+		if (!bySkillModel[comboKey]) bySkillModel[comboKey] = zeroQualityAccumulator();
+
+		accumulateSession(bySkill[skill], session);
+		accumulateSession(byModel[model], session);
+		accumulateSession(bySkillModel[comboKey], session);
+		accumulateSession(overall, session);
+	}
+
+	return {
+		bySkill: Object.fromEntries(
+			Object.entries(bySkill).map(([k, v]) => [k, finalizeMetrics(v)]),
+		),
+		byModel: Object.fromEntries(
+			Object.entries(byModel).map(([k, v]) => [k, finalizeMetrics(v)]),
+		),
+		bySkillModel: Object.fromEntries(
+			Object.entries(bySkillModel).map(([k, v]) => [k, finalizeSkillModel(v)]),
+		),
+		overall: finalizeMetrics(overall),
+	};
+}
+
 export async function buildAnalyticsPayload() {
 	// Backfill any sessions/logs not yet in the store (idempotent)
 	await backfillAnalyticsStore();
@@ -311,5 +451,6 @@ export async function buildAnalyticsPayload() {
 		epics: epicAnalytics,
 		project: projectUsage,
 		costing,
+		quality: buildQualityAggregation(sessionAnalytics),
 	};
 }
