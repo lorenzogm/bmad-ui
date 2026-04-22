@@ -1,6 +1,6 @@
 # Story 11.6: Decompose API Routes by Domain with Zod Validation
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
