@@ -1,6 +1,6 @@
 # Story 9.1: Improve Empty States and Loading Feedback
 
-Status: review
+Status: done
 
 ## Story
 
@@ -63,6 +63,10 @@ So that I never see a blank screen or raw spinner without context.
 
 - [x] Verify quality gate (AC: all)
   - [x] `cd _bmad-custom/bmad-ui && pnpm check` passes with exit code 0
+
+### Review Findings
+
+- [x] [Review][Patch] Filtered sessions empty state did not use the shared `EmptyState` UX [src/routes/sessions.tsx:101]
 
 ## Dev Notes
 

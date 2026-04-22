@@ -98,6 +98,17 @@ function SessionsPage() {
     )
   }
 
+  if (filteredSessions.length === 0) {
+    return (
+      <EmptyState
+        icon="🔎"
+        title="No sessions found"
+        description={`No sessions match the "${statusFilter}" filter. Adjust the filter or run the sync daemon to collect more sessions.`}
+        action={{ label: "Show all sessions", onClick: () => handleFilterChange(ALL_FILTER) }}
+      />
+    )
+  }
+
   return (
     <main className="screen">
       <section className="panel reveal">
@@ -137,57 +148,48 @@ function SessionsPage() {
           </select>
         </div>
 
-        {filteredSessions.length === 0 ? (
-          <div className="py-8 text-center" style={{ color: "var(--muted)" }}>
-            <p>
-              No sessions found
-              {statusFilter !== ALL_FILTER ? ` with status "${statusFilter}"` : ""}.
-            </p>
-          </div>
-        ) : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Skill / Name</th>
-                  <th>Model</th>
-                  <th>Story</th>
-                  <th>Status</th>
-                  <th>Started</th>
-                  <th>Duration</th>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Skill / Name</th>
+                <th>Model</th>
+                <th>Story</th>
+                <th>Status</th>
+                <th>Started</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredSessions.map((session) => (
+                <tr key={session.sessionId}>
+                  <td>
+                    <span className="skill-chip">{session.skill ?? "—"}</span>
+                    <Link
+                      className={`session-link-icon${session.status === "running" ? " session-link-running" : ""}${session.status === "failed" ? " session-link-failed" : ""}`}
+                      params={{ sessionId: session.sessionId }}
+                      title={`View session: ${session.sessionId}`}
+                      to="/session/$sessionId"
+                    >
+                      ◉
+                    </Link>
+                  </td>
+                  <td>
+                    <span className="mono muted">{session.model}</span>
+                  </td>
+                  <td className="max-w-[12rem]">
+                    <span className="mono muted block truncate">{session.storyId ?? "—"}</span>
+                  </td>
+                  <td>
+                    <StatusBadge status={session.status} />
+                  </td>
+                  <td className="muted">{formatDate(session.startedAt)}</td>
+                  <td className="muted">{formatDuration(session.startedAt, session.endedAt)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredSessions.map((session) => (
-                  <tr key={session.sessionId}>
-                    <td>
-                      <span className="skill-chip">{session.skill ?? "—"}</span>
-                      <Link
-                        className={`session-link-icon${session.status === "running" ? " session-link-running" : ""}${session.status === "failed" ? " session-link-failed" : ""}`}
-                        params={{ sessionId: session.sessionId }}
-                        title={`View session: ${session.sessionId}`}
-                        to="/session/$sessionId"
-                      >
-                        ◉
-                      </Link>
-                    </td>
-                    <td>
-                      <span className="mono muted">{session.model}</span>
-                    </td>
-                    <td className="max-w-[12rem]">
-                      <span className="mono muted block truncate">{session.storyId ?? "—"}</span>
-                    </td>
-                    <td>
-                      <StatusBadge status={session.status} />
-                    </td>
-                    <td className="muted">{formatDate(session.startedAt)}</td>
-                    <td className="muted">{formatDuration(session.startedAt, session.endedAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   )

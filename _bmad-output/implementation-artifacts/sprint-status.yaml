@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-22T00:15:46Z
+last_updated: 2026-04-22T12:25:47Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -99,7 +99,7 @@ development_status:
   epic-8-retrospective: optional
 
   epic-9: in-progress
-  9-1-improve-empty-states-and-loading-feedback: ready-for-dev
+  9-1-improve-empty-states-and-loading-feedback: done
   9-2-navigation-and-active-route-clarity: ready-for-dev
   9-3-status-badge-consistency-across-views: ready-for-dev
   9-4-responsive-layout-and-spacing-refinements: ready-for-dev
