@@ -116,11 +116,16 @@ jobs:
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
           echo "| Event | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Branch | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Environment | ${{ steps.resolve-env.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Infra changed | ${{ steps.check.outputs.infra-changed }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| App changed | ${{ steps.check.outputs.app-changed }} |" >> $GITHUB_STEP_SUMMARY
+          BRANCH="${{ github.ref_name }}"
+          SHA="${{ github.sha }}"
+          ENVIRONMENT="${{ steps.resolve-env.outputs.environment }}"
+          INFRA_CHANGED="${{ steps.check.outputs.infra-changed }}"
+          APP_CHANGED="${{ steps.check.outputs.app-changed }}"
+          echo "| Branch | \`${BRANCH}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${ENVIRONMENT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${SHA}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Infra changed | ${INFRA_CHANGED} |" >> $GITHUB_STEP_SUMMARY
+          echo "| App changed | ${APP_CHANGED} |" >> $GITHUB_STEP_SUMMARY
 
   infra-deploy:
     needs: check-changes
@@ -390,8 +395,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Environment | ${{ needs.check-changes.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          SHA="${{ github.sha }}"
+          ENVIRONMENT="${{ needs.check-changes.outputs.environment }}"
+          echo "| Commit | \`${SHA}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${ENVIRONMENT} |" >> $GITHUB_STEP_SUMMARY
 
   deploy-production:
     needs: [check-changes, infra-deploy, deploy]
@@ -486,12 +493,15 @@ jobs:
         if: always()
         run: |
           VERSION=$(node -p "require('./_bmad-ui/package.json').version" 2>/dev/null || echo "unknown")
+          ENVIRONMENT="${{ needs.check-changes.outputs.environment }}"
+          PROD_URL="${{ steps.production-deploy.outputs.url }}"
+          SHA="${{ github.sha }}"
           echo "## ✅ Production Deployment" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| Environment | ${{ needs.check-changes.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| URL | ${{ steps.production-deploy.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${ENVIRONMENT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | ${PROD_URL} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${SHA}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Version | $VERSION |" >> $GITHUB_STEP_SUMMARY
-          echo "::notice::Deployed to production: ${{ steps.production-deploy.outputs.url }}"
+          echo "::notice::Deployed to production: ${PROD_URL}"

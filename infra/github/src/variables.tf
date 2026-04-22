@@ -36,6 +36,14 @@ variable "branch_protections" {
     require_conversation_resolution      = bool
   }))
   default = []
+
+  validation {
+    condition = alltrue([
+      for bp in var.branch_protections :
+      !bp.require_status_checks || length(bp.required_status_check_contexts) > 0
+    ])
+    error_message = "required_status_check_contexts must be non-empty when require_status_checks is true."
+  }
 }
 
 variable "labels" {

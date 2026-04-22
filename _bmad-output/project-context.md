@@ -175,6 +175,10 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Always use `apiUrl()` from `src/lib/mode.ts` for fetch URLs — never hardcode `/api/` paths
 - Static JSON data is pre-built at build time by `vite-plugin-static-data.ts` — production has no live API
 
+### GitHub Actions / dotenvx Security
+
+- **Any GitHub Actions workflow step that writes a dotenvx-decrypted value to `$GITHUB_ENV` must immediately precede that write with `echo "::add-mask::$VALUE"`.** Without this, the decrypted secret will appear in plain text in the workflow run log. Example: before `echo "MY_TOKEN=$VALUE" >> $GITHUB_ENV`, add `echo "::add-mask::$VALUE"`.
+
 ---
 
 ## Usage Guidelines
@@ -193,4 +197,4 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Review quarterly for outdated rules
 - Remove rules that become obvious over time
 
-Last Updated: 2026-04-21 (Story 7-4: aspirational Phase 2 rules marked, current structure documented)
+Last Updated: 2026-04-23 (Epic 12 retro debt: dotenvx auto-mask caveat added; 12-epic carry resolved)

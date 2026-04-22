@@ -147,8 +147,16 @@ Edit values in the `repository` object inside `src/config.json`, then plan + app
 
 ### Updating branch protection rules
 
-Edit the `branch_protections` array in `src/config.json`.  
-After CI workflows have run at least once, Terraform will detect the check names automatically on the next `plan`.
+Edit the `branch_protections` array in `src/config.json`.
+
+**Important:** `required_status_check_contexts` must be set explicitly — it is **not** auto-detected by Terraform. You must provide the exact context string (format: `<workflow name> / <job name>`, e.g., `bmad-ui-ci / Validate`) that GitHub registers after the CI workflow runs at least once.
+
+To discover the context string:
+1. Ensure the CI workflow has run at least once on a PR or via `workflow_dispatch`
+2. Go to GitHub → Settings → Branches → Edit `main` protection rule → "Status checks" search
+3. The registered context will appear — copy it exactly into `required_status_check_contexts`
+
+> **Note on infra scope:** The `infra-deploy` job in `deploy.yml` manages **Vercel infrastructure only** (`infra/vercel/`). GitHub repository settings (branch protection, labels, etc.) are managed by **local `terraform apply`** from `infra/github/src/`. Do not expect GitHub infra changes to apply automatically via the deploy workflow.
 
 ---
 
