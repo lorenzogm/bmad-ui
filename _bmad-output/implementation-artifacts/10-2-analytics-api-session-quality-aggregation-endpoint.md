@@ -1,6 +1,6 @@
 # Story 10.2: Analytics API — Session Quality Aggregation Endpoint
 
-Status: review
+Status: done
 
 ## Story
 
@@ -67,6 +67,10 @@ So that the frontend can render effectiveness charts without client-side data cr
 
 - [x] Run quality gate (AC: all)
   - [x] `cd _bmad-ui && pnpm check` must pass with zero errors
+
+### Review Findings
+
+- [x] [Review][Patch] Align frontend analytics quality types with API payload contract and acceptance criteria [`_bmad-ui/src/types.ts`]
 
 ## Dev Notes
 

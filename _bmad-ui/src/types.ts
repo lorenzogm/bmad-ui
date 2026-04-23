@@ -314,42 +314,39 @@ export type EpicAnalytics = {
   usage: TokenUsage
 }
 
-export type SkillQualityBucket = {
+export type SessionOutcome =
+  | "pushed"
+  | "committed"
+  | "delivered"
+  | "aborted"
+  | "error"
+  | "no-output"
+
+export type QualityMetrics = {
   sessions: number
+  delivered: number
   oneShot: number
   corrected: number
   aborted: number
+  avgDurationMin: number
+  avgAgentTurns: number
+  avgHumanTurns: number
 }
 
-export type ModelQualityBucket = {
-  sessions: number
-  oneShot: number
+export type QualityBySkillModel = QualityMetrics & {
+  oneShotRate: number
 }
 
-export type SkillModelQualityCell = {
+export type SkillModelQualityCell = QualityBySkillModel & {
   skill: string
   model: string
-  sessions: number
-  oneShot: number
-  oneShotRate: number
-  delivered?: number
-  corrected?: number
-  aborted?: number
-  avgDurationMin?: number
-  avgAgentTurns?: number
-  avgHumanTurns?: number
 }
 
 export type AnalyticsQuality = {
-  overall: {
-    sessions: number
-    delivered: number
-    aborted: number
-    oneShot: number
-  }
-  bySkill: Record<string, SkillQualityBucket>
-  byModel: Record<string, ModelQualityBucket>
-  bySkillModel?: Record<string, SkillModelQualityCell>
+  bySkill: Record<string, QualityMetrics>
+  byModel: Record<string, QualityMetrics>
+  bySkillModel: Record<string, QualityBySkillModel>
+  overall: QualityMetrics
 }
 
 export type AnalyticsResponse = {
@@ -358,5 +355,5 @@ export type AnalyticsResponse = {
   epics: EpicAnalytics[]
   project: TokenUsage
   costing: AnalyticsCosting
-  quality?: AnalyticsQuality
+  quality: AnalyticsQuality
 }
