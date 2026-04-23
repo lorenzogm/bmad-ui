@@ -1,4 +1,6 @@
 const MIN_SESSIONS_FOR_CONFIDENCE = 3;
+const PRIMARY_SKILL_MODEL_SEPARATOR = "|||";
+const LEGACY_SKILL_MODEL_SEPARATOR = "::";
 
 type SkillModelQuality = {
 	sessions: number;
@@ -12,6 +14,15 @@ type QualityPayloadLike = {
 	sessions?: unknown[];
 };
 
+function quoteYamlString(value: string): string {
+	const escaped = value.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"");
+	return `"${escaped}"`;
+}
+
+function quoteYamlKey(value: string): string {
+	return quoteYamlString(value);
+}
+
 export type QualityConfigResult = {
 	yaml: string;
 	metadata: {
@@ -20,6 +31,21 @@ export type QualityConfigResult = {
 		dataCoverage: number;
 	};
 };
+
+function parseSkillModelKey(key: string): { skill: string; model: string } | null {
+	const separators = [PRIMARY_SKILL_MODEL_SEPARATOR, LEGACY_SKILL_MODEL_SEPARATOR];
+	for (const separator of separators) {
+		const sepIdx = key.indexOf(separator);
+		if (sepIdx === -1) {
+			continue;
+		}
+		return {
+			skill: key.slice(0, sepIdx),
+			model: key.slice(sepIdx + separator.length),
+		};
+	}
+	return null;
+}
 
 function buildSkillsFromBySkillModel(
 	bySkillModel: Record<string, SkillModelQuality>,
@@ -34,10 +60,9 @@ function buildSkillsFromBySkillModel(
 		Array<{ model: string; metric: SkillModelQuality }>
 	>();
 	for (const [key, metric] of Object.entries(bySkillModel)) {
-		const sepIdx = key.indexOf("|||");
-		if (sepIdx === -1) continue;
-		const skill = key.slice(0, sepIdx);
-		const model = key.slice(sepIdx + 3);
+		const parsed = parseSkillModelKey(key);
+		if (!parsed) continue;
+		const { skill, model } = parsed;
 		const existing = skillMap.get(skill);
 		if (existing) {
 			existing.push({ model, metric });
@@ -50,7 +75,10 @@ function buildSkillsFromBySkillModel(
 	let skillsWithConfidence = 0;
 	const totalSkills = skillMap.size;
 
-	for (const [skill, entries] of skillMap.entries()) {
+	const sortedSkills = [...skillMap.entries()].sort(([left], [right]) =>
+		left.localeCompare(right),
+	);
+	for (const [skill, entries] of sortedSkills) {
 		// Filter to models with enough sessions and sort by oneShotRate desc
 		const qualified = entries
 			.filter((e) => e.metric.sessions >= MIN_SESSIONS_FOR_CONFIDENCE)
@@ -62,18 +90,18 @@ function buildSkillsFromBySkillModel(
 				(a, b) => b.metric.sessions - a.metric.sessions,
 			)[0];
 			const sessionCount = best?.metric.sessions ?? 0;
-			skillLines.push(`  ${skill}:`);
+			skillLines.push(`  ${quoteYamlKey(skill)}:`);
 			skillLines.push(`    model: "default"`);
-			skillLines.push(`    confidence: insufficient-data`);
+			skillLines.push(`    confidence: "insufficient-data"`);
 			skillLines.push(`    sessions: ${sessionCount}`);
 		} else {
 			skillsWithConfidence += 1;
 			const recommended = qualified[0];
 			const fallback = qualified[1] ?? null;
-			skillLines.push(`  ${skill}:`);
-			skillLines.push(`    model: ${recommended.model}`);
+			skillLines.push(`  ${quoteYamlKey(skill)}:`);
+			skillLines.push(`    model: ${quoteYamlString(recommended.model)}`);
 			if (fallback) {
-				skillLines.push(`    fallback: ${fallback.model}`);
+				skillLines.push(`    fallback: ${quoteYamlString(fallback.model)}`);
 			}
 			skillLines.push(
 				`    one_shot_rate: ${Number.parseFloat(recommended.metric.oneShotRate.toFixed(2))}`,

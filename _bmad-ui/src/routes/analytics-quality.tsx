@@ -1,4 +1,7 @@
+import { useQuery } from "@tanstack/react-query"
 import { createRoute } from "@tanstack/react-router"
+import { marked } from "marked"
+import { apiUrl } from "../lib/mode"
 import type { AnalyticsQuality, SkillModelQualityCell } from "../types"
 import { analyticsLayoutRoute } from "./analytics"
 import {
@@ -12,17 +15,39 @@ import {
 
 const MIN_CONFIDENCE_SESSIONS = 3
 const CELL_SEPARATOR = "|||"
+const LEGACY_CELL_SEPARATOR = "::"
 const RATE_PCT_MULTIPLIER = 100
+const WORKFLOW_CONFIG_FILENAME = "autonomous-workflow-config.yaml"
+
+type QualityConfigResponse = {
+  yaml: string
+  metadata: {
+    generatedAt: string
+    totalSessions: number
+    dataCoverage: number
+  }
+}
+
+function parseSkillModelKey(key: string): { skill: string; model: string } | null {
+  const separators = [CELL_SEPARATOR, LEGACY_CELL_SEPARATOR]
+  for (const separator of separators) {
+    const sepIdx = key.indexOf(separator)
+    if (sepIdx === -1) continue
+    return {
+      skill: key.slice(0, sepIdx),
+      model: key.slice(sepIdx + separator.length),
+    }
+  }
+  return null
+}
 
 function parseCells(
   bySkillModel: NonNullable<AnalyticsQuality["bySkillModel"]>
 ): SkillModelQualityCell[] {
   return Object.entries(bySkillModel).flatMap(([key, metric]) => {
-    const sepIdx = key.indexOf(CELL_SEPARATOR)
-    if (sepIdx === -1) return []
-    const skill = key.slice(0, sepIdx)
-    const model = key.slice(sepIdx + CELL_SEPARATOR.length)
-    return [{ ...metric, skill, model }]
+    const parsed = parseSkillModelKey(key)
+    if (!parsed) return []
+    return [{ ...metric, skill: parsed.skill, model: parsed.model }]
   })
 }
 
@@ -222,6 +247,82 @@ function BestModelTable({ cells }: { cells: SkillModelQualityCell[] }) {
   )
 }
 
+async function fetchQualityConfig(): Promise<QualityConfigResponse> {
+  const response = await fetch(apiUrl("/api/analytics/quality-config"))
+  if (!response.ok) {
+    throw new Error(`Failed to load quality config (${response.status})`)
+  }
+  return (await response.json()) as QualityConfigResponse
+}
+
+function downloadYaml(yaml: string) {
+  const blob = new Blob([yaml], { type: "text/yaml" })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement("a")
+  anchor.href = url
+  anchor.download = WORKFLOW_CONFIG_FILENAME
+  anchor.click()
+  URL.revokeObjectURL(url)
+}
+
+function WorkflowConfigSection() {
+  const qualityConfigQuery = useQuery({
+    queryKey: ["analytics", "quality-config"],
+    queryFn: fetchQualityConfig,
+    enabled: false,
+  })
+
+  const yaml = qualityConfigQuery.data?.yaml ?? ""
+  const renderedYaml = yaml ? String(marked.parse(`\`\`\`yaml\n${yaml}\n\`\`\``)) : ""
+  const hasInsufficientData = qualityConfigQuery.data?.metadata.totalSessions === 0
+
+  return (
+    <section className="panel reveal delay-3">
+      <h3>Autonomous Workflow Configuration</h3>
+      <p className="subtitle">
+        Generate a recommended model-per-skill YAML configuration from historical session
+        effectiveness data.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button className="cta" onClick={() => void qualityConfigQuery.refetch()} type="button">
+          Generate Config
+        </button>
+        {yaml && (
+          <>
+            <button
+              className="ghost"
+              onClick={() => void navigator.clipboard.writeText(yaml)}
+              type="button"
+            >
+              Copy
+            </button>
+            <button className="ghost" onClick={() => downloadYaml(yaml)} type="button">
+              Download
+            </button>
+          </>
+        )}
+      </div>
+      {qualityConfigQuery.isError && (
+        <p className="mt-3 text-sm text-[var(--muted)]">
+          Failed to generate configuration. Please try again.
+        </p>
+      )}
+      {hasInsufficientData && (
+        <p className="mt-3 text-sm text-[var(--muted)]">
+          Not enough quality data yet. Run more sessions to build recommendations.
+        </p>
+      )}
+      {yaml && (
+        <div
+          className="story-markdown mt-4 rounded border border-[var(--panel-border)] bg-[rgba(2,10,16,0.66)] p-4 text-[var(--text)]"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: rendered from trusted local analytics payload
+          dangerouslySetInnerHTML={{ __html: renderedYaml }}
+        />
+      )}
+    </section>
+  )
+}
+
 function AnalyticsQualityPage() {
   const { data, loading, error } = useAnalyticsData()
 
@@ -309,6 +410,8 @@ function AnalyticsQualityPage() {
           <BestModelTable cells={matrixCells} />
         </section>
       )}
+
+      <WorkflowConfigSection />
     </main>
   )
 }

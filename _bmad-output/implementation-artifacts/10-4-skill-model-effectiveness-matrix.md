@@ -1,6 +1,6 @@
 # Story 10.4: Skill × Model Effectiveness Matrix
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -55,6 +55,11 @@ so that I can identify the best model for each skill and make data-driven decisi
 
 - [x] Run quality gate (AC: all)
   - [x] `cd _bmad-ui && pnpm check` must pass (lint + types + tests + build)
+
+### Review Findings
+
+- [x] [Review][Patch] Parse `bySkillModel` entries with both `|||` and `::` separators to avoid dropping all matrix cells when analytics data uses legacy keys [`_bmad-ui/src/routes/analytics-quality.tsx:17`]
+- [x] [Review][Patch] Parse both key separators when generating quality config so model recommendations continue to work with existing analytics payloads [`_bmad-ui/scripts/server/analytics/quality-config.ts:26`]
 
 ## Dev Notes
 
