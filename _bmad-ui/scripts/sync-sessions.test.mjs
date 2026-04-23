@@ -134,6 +134,27 @@ describe("parseCLISessionContent — git_commits and git_pushes", () => {
 		expect(result.git_pushes).toBe(1);
 		expect(result.outcome).toBe("pushed");
 	});
+
+	it("does not treat generic git -c commands as commits", () => {
+		const content = makeSession([
+			baseStart(),
+			{
+				type: "tool.execution_start",
+				data: {
+					toolName: "bash",
+					arguments: { command: "git -c core.pager=cat status --short" },
+				},
+			},
+			{
+				type: "assistant.turn_end",
+				timestamp: "2026-04-01T10:02:00.000Z",
+			},
+		]);
+
+		const result = parseCLISessionContent("test-sid", content, NON_COMMITTING);
+		expect(result.git_commits).toBe(0);
+		expect(result.outcome).toBe("no-output");
+	});
 });
 
 describe("parseCLISessionContent — abort event", () => {

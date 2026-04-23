@@ -114,6 +114,9 @@ const MIN_HUMAN_CONTENT_LEN = 10;
 /** Regex to strip auto-injected XML wrappers from user messages. */
 const AUTO_INJECTED_XML_RE =
 	/<(?:skill-context|reminder|context|current_datetime|invoked_skills|userRequest|system_notification|summary|available_skills|plan_mode)[^>]*>[\s\S]*?<\/(?:skill-context|reminder|context|current_datetime|invoked_skills|userRequest|system_notification|summary|available_skills|plan_mode)>/g;
+const GIT_COMMIT_RE =
+	/\bgit(?:\s+-c\s+(?:"[^"]*"|'[^']*'|\S+))*\s+commit\b/i;
+const GIT_PUSH_RE = /\bgit(?:\s+-c\s+(?:"[^"]*"|'[^']*'|\S+))*\s+push\b/i;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -303,11 +306,12 @@ export function parseCLISessionContent(sessionId, content, nonCommittingSkills) 
 				break;
 			case "tool.execution_start": {
 				const toolName = obj.data?.toolName ?? "";
-				const args = JSON.stringify(obj.data?.arguments ?? "");
+				const command = obj.data?.arguments?.command;
 				if (toolName === "bash" || toolName === "shell") {
-					if (args.includes("git commit") || args.includes("git -c"))
-						gitCommits++;
-					if (args.includes("git push")) gitPushes++;
+					if (typeof command === "string") {
+						if (GIT_COMMIT_RE.test(command)) gitCommits++;
+						if (GIT_PUSH_RE.test(command)) gitPushes++;
+					}
 				}
 				break;
 			}

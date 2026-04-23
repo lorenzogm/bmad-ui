@@ -1,6 +1,6 @@
 # Story 10.1: Enrich Session Sync Daemon with Outcome & Complexity Metrics
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -108,6 +108,11 @@ so that agent-sessions.json contains complete, accurate quality data for every p
   - [x] Verify `pnpm test:e2e` passes with zero failures
 
 - [x] Run `cd _bmad-ui && pnpm check` to verify quality gate passes
+
+### Review Findings
+
+- [x] [Review][Patch] Avoid false-positive `git_commits` counting from generic `git -c` commands in `tool.execution_start` parsing [`_bmad-ui/scripts/sync-sessions.mjs`]
+- [x] [Review][Patch] Add regression coverage to ensure non-commit `git -c` invocations do not change outcome classification [`_bmad-ui/scripts/sync-sessions.test.mjs`]
 
 ## Dev Notes
 
