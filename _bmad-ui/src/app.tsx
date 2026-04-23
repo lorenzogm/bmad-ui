@@ -714,6 +714,15 @@ export function detectWorkflowStatus(
 					planningFiles,
 					(f) => f.some((x) => x.includes("nfr")),
 				),
+				makeStep(
+					"trace-baseline",
+					"Traceability Baseline",
+					"Establish baseline requirements-to-test coverage before new work begins (brownfield only).",
+					"bmad-testarch-trace",
+					true,
+					allFiles,
+					(f) => f.some((x) => x.includes("traceability")),
+				),
 			],
 		},
 		{
@@ -752,15 +761,6 @@ export function detectWorkflowStatus(
 					false,
 					planningFiles,
 					(f) => f.some((x) => x.toLowerCase().includes("epics")),
-				),
-				makeStep(
-					"test-design",
-					"Test Design",
-					"Create system-level test plans covering strategy, scope, risk assessment, and coverage targets.",
-					"bmad-testarch-test-design",
-					true,
-					planningFiles,
-					(f) => f.some((x) => x.includes("test-design")),
 				),
 				makeStep(
 					"framework",
