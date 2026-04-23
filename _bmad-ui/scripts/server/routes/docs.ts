@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, existsSync } from "node:fs"
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs"
 import type { IncomingMessage, ServerResponse } from "node:http"
 import path from "node:path"
 import { projectRoot } from "../paths.js"
@@ -8,6 +8,13 @@ export type DocListEntry = {
   name: string
   path: string
   description: string
+}
+
+export type DocTreeNode = {
+  name: string
+  type: "file" | "folder"
+  doc?: DocListEntry
+  children?: DocTreeNode[]
 }
 
 const DOCS_DIR = path.join(projectRoot, "docs")
@@ -24,22 +31,71 @@ function slugToName(slug: string): string {
 
 function extractTitleAndDescription(
   content: string,
-  filename: string,
+  filename: string
 ): { name: string; description: string } {
   const headingMatch = FIRST_HEADING_REGEX.exec(content)
-  const name = headingMatch
-    ? headingMatch[1].trim()
-    : slugToName(filename.replace(/\.md$/, ""))
+  const name = headingMatch ? headingMatch[1].trim() : slugToName(filename.replace(/\.md$/, ""))
 
   const paragraphMatch = FIRST_PARAGRAPH_REGEX.exec(
-    content.slice(headingMatch ? (headingMatch.index + headingMatch[0].length) : 0),
+    content.slice(headingMatch ? headingMatch.index + headingMatch[0].length : 0)
   )
   const description = paragraphMatch ? paragraphMatch[1].trim() : ""
 
   return { name, description }
 }
 
-export function buildDocsListPayload(): { docs: DocListEntry[] } {
+function scanDocsRecursive(dir: string, relativeBase: string): DocListEntry[] {
+  const entries: DocListEntry[] = []
+  if (!existsSync(dir)) return entries
+
+  const items = readdirSync(dir).sort()
+  for (const item of items) {
+    const fullPath = path.join(dir, item)
+    const stat = statSync(fullPath)
+
+    if (stat.isDirectory()) {
+      entries.push(...scanDocsRecursive(fullPath, `${relativeBase}/${item}`))
+    } else if (item.endsWith(".md")) {
+      const relativePath = `${relativeBase}/${item}`
+      const id = relativePath.slice(1).replace(/\.md$/, "").replaceAll("/", "--")
+      const content = readFileSync(fullPath, "utf8")
+      const { name, description } = extractTitleAndDescription(content, item)
+      entries.push({ id, name, path: relativePath.slice(1), description })
+    }
+  }
+
+  return entries
+}
+
+function buildTreeFromDocs(docs: DocListEntry[]): DocTreeNode[] {
+  const root: DocTreeNode[] = []
+
+  for (const doc of docs) {
+    const parts = doc.path.split("/")
+
+    if (parts.length === 1) {
+      root.push({ name: doc.name, type: "file", doc })
+      continue
+    }
+
+    let currentLevel = root
+    for (let i = 0; i < parts.length - 1; i++) {
+      const folderName = slugToName(parts[i])
+      let folder = currentLevel.find((n) => n.type === "folder" && n.name === folderName)
+      if (!folder) {
+        folder = { name: folderName, type: "folder", children: [] }
+        currentLevel.push(folder)
+      }
+      currentLevel = folder.children ?? []
+    }
+
+    currentLevel.push({ name: doc.name, type: "file", doc })
+  }
+
+  return root
+}
+
+export function buildDocsListPayload(): { docs: DocListEntry[]; tree: DocTreeNode[] } {
   const docs: DocListEntry[] = []
 
   // README.md at project root
@@ -50,26 +106,15 @@ export function buildDocsListPayload(): { docs: DocListEntry[] } {
     docs.push({ id: "README", name, path: "README.md", description })
   }
 
-  // All .md files in docs/
-  if (existsSync(DOCS_DIR)) {
-    const files = readdirSync(DOCS_DIR)
-      .filter((f) => f.endsWith(".md"))
-      .sort()
+  // All .md files in docs/ (recursive)
+  docs.push(...scanDocsRecursive(DOCS_DIR, "/docs"))
 
-    for (const file of files) {
-      const id = file.replace(/\.md$/, "")
-      const filePath = path.join(DOCS_DIR, file)
-      const content = readFileSync(filePath, "utf8")
-      const { name, description } = extractTitleAndDescription(content, file)
-      docs.push({ id, name, path: `docs/${file}`, description })
-    }
-  }
-
-  return { docs }
+  const tree = buildTreeFromDocs(docs)
+  return { docs, tree }
 }
 
 export function buildDocDetailPayload(
-  docId: string,
+  docId: string
 ): { doc: DocListEntry; content: string } | null {
   const { docs } = buildDocsListPayload()
   const doc = docs.find((d) => d.id === docId)
@@ -85,7 +130,7 @@ export function buildDocDetailPayload(
 export async function handleDocsRoutes(
   requestUrl: URL,
   req: IncomingMessage,
-  res: ServerResponse,
+  res: ServerResponse
 ): Promise<boolean> {
   // GET /api/docs — list all docs
   if (requestUrl.pathname === "/api/docs" && req.method === "GET") {

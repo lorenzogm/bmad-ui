@@ -49,19 +49,21 @@ function DocDetailPage() {
 
   return (
     <main className="screen">
-      <section className="panel reveal">
+      <section className="panel reveal" style={{ padding: "2rem 2.5rem" }}>
         <Link className="epic-back-link" to="/docs">
           ← Back to Docs
         </Link>
         <p className="eyebrow mt-4">Documentation</p>
-        <h1 className="text-2xl font-bold mb-6" style={{ color: "var(--text)" }}>
+        <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
           {doc?.name ?? docId}
         </h1>
+        {doc?.path ? (
+          <p className="mb-6 text-xs text-(--muted) opacity-60 font-mono">{doc.path}</p>
+        ) : null}
         <div
-          className="prose"
+          className="doc-prose"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering trusted local markdown files
           dangerouslySetInnerHTML={{ __html: htmlContent }}
-          style={{ color: "var(--text)", maxWidth: "72ch", lineHeight: 1.75 }}
         />
       </section>
     </main>

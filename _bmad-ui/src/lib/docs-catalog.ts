@@ -5,8 +5,16 @@ export type DocEntry = {
   description: string
 }
 
+export type DocTreeNode = {
+  name: string
+  type: "file" | "folder"
+  doc?: DocEntry
+  children?: DocTreeNode[]
+}
+
 export type DocsListResponse = {
   docs: DocEntry[]
+  tree: DocTreeNode[]
 }
 
 export type DocDetailResponse = {
