@@ -226,13 +226,11 @@ function RootLayout() {
   const location = useLocation()
   const currentPath = location.pathname.replace(TRAILING_SLASH_REGEX, "") || "/"
   const isHomeActive = currentPath === "/"
-  const isDiscoverDefineActive =
-    currentPath.startsWith("/discover-define") ||
+  const isSetupActive =
+    currentPath.startsWith("/setup") ||
     currentPath.startsWith("/workflow/analysis") ||
     currentPath.startsWith("/workflow/planning") ||
-    currentPath.startsWith("/workflow/solutioning")
-  const isDevelopDeliverActive =
-    currentPath.startsWith("/develop-deliver") ||
+    currentPath.startsWith("/workflow/solutioning") ||
     currentPath.startsWith("/workflow/implementation") ||
     currentPath.startsWith("/epic.") ||
     currentPath.startsWith("/story.")
@@ -276,20 +274,12 @@ function RootLayout() {
             Home
           </Link>
 
-          {/* Discover & Define */}
+          {/* Setup */}
           <Link
-            className={`sidebar-link sidebar-link-section ${isDiscoverDefineActive ? "is-section-active" : ""}`}
-            to="/discover-define"
+            className={`sidebar-link sidebar-link-section ${isSetupActive ? "is-section-active" : ""}`}
+            to="/setup"
           >
-            Discover &amp; Define
-          </Link>
-
-          {/* Develop & Deliver */}
-          <Link
-            className={`sidebar-link sidebar-link-section ${isDevelopDeliverActive ? "is-section-active" : ""}`}
-            to="/develop-deliver"
-          >
-            Develop &amp; Deliver
+            Setup
           </Link>
 
           {/* Documentation */}
