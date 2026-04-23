@@ -1,23 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
+import { StatusBadge } from "../app"
 import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
-import type { OverviewResponse, StoryStatus } from "../types"
+import type { OverviewResponse } from "../types"
 import { rootRoute } from "./__root"
-
-type BoardColumn = {
-  status: StoryStatus
-  label: string
-  cssVar: string
-}
-
-const BOARD_COLUMNS: BoardColumn[] = [
-  { status: "backlog", label: "To Do", cssVar: "var(--status-backlog)" },
-  { status: "ready-for-dev", label: "Ready", cssVar: "var(--status-ready)" },
-  { status: "in-progress", label: "In Progress", cssVar: "var(--status-progress)" },
-  { status: "review", label: "In Review", cssVar: "var(--status-review)" },
-  { status: "done", label: "Done", cssVar: "var(--status-done)" },
-]
 
 function storyEpicNumber(storyId: string): number {
   return Number.parseInt(storyId.split("-")[0], 10)
@@ -67,6 +54,9 @@ function BoardPage() {
 
   const epicNameMap = new Map(epics.map((e) => [e.number, e.name]))
 
+  // Group stories by epic number, preserving epic order
+  const epicNumbers = [...new Set(stories.map((s) => storyEpicNumber(s.id)))].sort((a, b) => a - b)
+
   return (
     <main className="screen">
       <section className="panel reveal" style={{ marginBottom: "1.5rem" }}>
@@ -80,118 +70,64 @@ function BoardPage() {
         </p>
       </section>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${String(BOARD_COLUMNS.length)}, minmax(200px, 1fr))`,
-          gap: "1rem",
-          overflowX: "auto",
-          paddingBottom: "1rem",
-        }}
-      >
-        {BOARD_COLUMNS.map((column) => {
-          const columnStories = stories.filter((s) => s.status === column.status)
-          return (
-            <div key={column.status}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  marginBottom: "0.75rem",
-                  padding: "0.5rem 0.75rem",
-                  borderBottom: `2px solid ${column.cssVar}`,
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "0.8rem",
-                    fontWeight: 700,
-                    color: column.cssVar,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  {column.label}
-                </span>
-                <span
-                  style={{
-                    fontSize: "0.7rem",
-                    color: "var(--muted)",
-                    background: "rgba(151, 177, 205, 0.12)",
-                    borderRadius: "9999px",
-                    padding: "0.1rem 0.5rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  {columnStories.length}
-                </span>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {columnStories.map((story) => {
-                  const epicNum = storyEpicNumber(story.id)
-                  const epicName = epicNameMap.get(epicNum)
-                  return (
-                    <Link
-                      key={story.id}
-                      params={{ storyId: story.id }}
-                      style={{
-                        display: "block",
-                        padding: "0.75rem",
-                        background: "rgba(2, 10, 16, 0.66)",
-                        border: "1px solid rgba(151, 177, 205, 0.22)",
-                        borderRadius: "0.375rem",
-                        textDecoration: "none",
-                        color: "var(--text)",
-                        transition: "border-color 0.15s",
-                      }}
-                      to="/story/$storyId"
-                    >
-                      <div
-                        style={{
-                          fontSize: "0.8rem",
-                          fontWeight: 700,
-                          color: "var(--highlight)",
-                          marginBottom: "0.25rem",
-                        }}
-                      >
-                        {storyLabel(story.id)}
-                      </div>
-                      {epicName ? (
-                        <div
-                          style={{
-                            fontSize: "0.7rem",
-                            color: "var(--muted)",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          Epic {String(epicNum)}: {epicName}
-                        </div>
-                      ) : null}
-                    </Link>
-                  )
-                })}
-                {columnStories.length === 0 ? (
-                  <div
+      {epicNumbers.map((epicNum) => {
+        const epicStories = stories.filter((s) => storyEpicNumber(s.id) === epicNum)
+        const epicName = epicNameMap.get(epicNum)
+        const doneCount = epicStories.filter((s) => s.status === "done").length
+        return (
+          <section className="panel reveal" key={epicNum} style={{ marginBottom: "1rem" }}>
+            <details open>
+              <summary style={{ cursor: "pointer", listStyle: "none" }}>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="eyebrow" style={{ margin: 0 }}>
+                    Epic {String(epicNum)}
+                  </span>
+                  <span style={{ color: "var(--text)", fontWeight: 700, fontSize: "1rem" }}>
+                    {epicName ?? `Epic ${String(epicNum)}`}
+                  </span>
+                  <span
                     style={{
-                      padding: "1rem 0.75rem",
-                      textAlign: "center",
-                      color: "var(--muted)",
                       fontSize: "0.75rem",
-                      opacity: 0.5,
+                      color: "var(--muted)",
+                      marginLeft: "auto",
                     }}
                   >
-                    No stories
-                  </div>
-                ) : null}
+                    {doneCount}/{epicStories.length} done
+                  </span>
+                </div>
+              </summary>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Story</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {epicStories.map((story) => (
+                      <tr key={story.id}>
+                        <td>
+                          <Link
+                            params={{ storyId: story.id }}
+                            style={{ color: "var(--highlight)", textDecoration: "none" }}
+                            to="/story/$storyId"
+                          >
+                            {storyLabel(story.id)}
+                          </Link>
+                        </td>
+                        <td>
+                          <StatusBadge status={story.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>
-          )
-        })}
-      </div>
+            </details>
+          </section>
+        )
+      })}
     </main>
   )
 }
