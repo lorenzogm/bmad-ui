@@ -45,8 +45,8 @@ Resolution (2026-04-16): both items were implemented and closed in `.github/work
 
 ## Deferred from: UI fixes batch plan (2026-04-23)
 
-- **Spec B — Docs browser fix:** Docs listing page shows wrong docs (hardcoded `KNOWN_DOCS` catalog in `src/lib/docs-catalog.ts` doesn't match actual `docs/` folder contents); docs detail page fetches wrong content. Root cause: stale 4-entry catalog vs 17+ real doc files.
-- **Spec C — Develop & Deliver sprint board:** Transform `/develop-deliver` from a simple epics progress list into a Jira-like backlog board view showing story status columns (To Do, In Progress, In Review, Done) per sprint.
+- **Spec B — Docs browser fix:** ~~Docs listing page shows wrong docs (hardcoded `KNOWN_DOCS` catalog in `src/lib/docs-catalog.ts` doesn't match actual `docs/` folder contents); docs detail page fetches wrong content. Root cause: stale 4-entry catalog vs 17+ real doc files.~~ Resolved: replaced hardcoded catalog with dynamic API-driven docs listing (`/api/docs` endpoint + static data plugin).
+- **Spec C — Sprint board:** ~~Transform `/develop-deliver` from a simple epics progress list into a Jira-like backlog board view showing story status columns (To Do, In Progress, In Review, Done) per sprint.~~ Resolved: added `/board` route with Kanban-style sprint board and "Board" nav link in sidebar.
 
 ## Deferred from: code review of spec-homepage-dd-epic-fixes (2026-04-23)
 

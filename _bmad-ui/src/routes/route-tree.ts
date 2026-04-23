@@ -10,6 +10,7 @@ import { analyticsQualityRoute } from "./analytics-quality"
 import { analyticsSessionsRoute } from "./analytics-sessions"
 import { analyticsStoriesRoute } from "./analytics-stories"
 import { analyticsStoryDetailRoute } from "./analytics-story-detail"
+import { boardRoute } from "./board"
 import { docsRoute } from "./docs"
 import { docDetailRoute } from "./docs.$docId"
 import { epicDetailRoute } from "./epic.$epicId"
@@ -34,6 +35,7 @@ export const routeTree = rootRoute.addChildren([
   storyDetailRoute,
   sessionDetailRoute,
   setupRoute,
+  boardRoute,
   docsRoute,
   docDetailRoute,
   agentsRoute,

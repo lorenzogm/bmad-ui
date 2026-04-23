@@ -6,6 +6,8 @@ import {
 	STORY_WORKFLOW_STEPS,
 	analyticsToRuntimeSession,
 	buildAnalyticsPayload,
+	buildDocDetailPayload,
+	buildDocsListPayload,
 	buildOverviewPayload,
 	buildSessionDetailPayload,
 	buildWorkflowStepDetailPayload,
@@ -166,6 +168,16 @@ function staticDataPlugin(): Plugin {
 				links = parseSimpleYamlList(raw, "links");
 			}
 			emit("links.json", { links });
+
+			// ── Docs ──────────────────────────────────────────────
+			const docsPayload = buildDocsListPayload();
+			emit("docs.json", docsPayload);
+			for (const doc of docsPayload.docs) {
+				const detail = buildDocDetailPayload(doc.id);
+				if (detail) {
+					emit(`docs/${doc.id}.json`, detail);
+				}
+			}
 
 			// ── Workflow step details ──────────────────────────────
 			const workflowStepKeys = [

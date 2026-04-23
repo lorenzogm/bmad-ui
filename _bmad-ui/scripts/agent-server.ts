@@ -8,6 +8,8 @@ export {
 export { artifactsRoot } from "./server/paths.js";
 export {
 	attachApi,
+	buildDocDetailPayload,
+	buildDocsListPayload,
 	buildOverviewPayload,
 	buildWorkflowStepDetailPayload,
 } from "./server/routes/index.js";

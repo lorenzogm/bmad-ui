@@ -234,6 +234,7 @@ function RootLayout() {
     currentPath.startsWith("/workflow/implementation") ||
     currentPath.startsWith("/epic.") ||
     currentPath.startsWith("/story.")
+  const isBoardActive = currentPath.startsWith("/board")
   const isDocsActive = currentPath.startsWith("/docs")
   const isAgentsActive =
     currentPath.startsWith("/agents") ||
@@ -280,6 +281,14 @@ function RootLayout() {
             to="/setup"
           >
             Setup
+          </Link>
+
+          {/* Board */}
+          <Link
+            className={`sidebar-link sidebar-link-section ${isBoardActive ? "is-section-active" : ""}`}
+            to="/board"
+          >
+            Board
           </Link>
 
           {/* Documentation */}

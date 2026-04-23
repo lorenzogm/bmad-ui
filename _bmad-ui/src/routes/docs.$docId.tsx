@@ -1,78 +1,51 @@
 import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link, useParams } from "@tanstack/react-router"
 import { marked } from "marked"
-import { KNOWN_DOCS } from "../lib/docs-catalog"
+import type { DocDetailResponse } from "../lib/docs-catalog"
 import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
-import { IS_LOCAL_MODE } from "../lib/mode"
+import { apiUrl } from "../lib/mode"
 import { rootRoute } from "./__root"
 
 function DocDetailPage() {
   const { docId } = useParams({ from: "/docs/$docId" as const })
 
-  const doc = KNOWN_DOCS.find((d) => d.id === docId)
-
-  const {
-    data: content,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery<string>({
+  const { data, isLoading, error, refetch } = useQuery<DocDetailResponse>({
     queryKey: ["doc-content", docId],
-    enabled: !!doc && IS_LOCAL_MODE,
     queryFn: async () => {
-      if (!doc) throw new Error("Unknown document")
-      const response = await fetch(doc.path)
+      const response = await fetch(apiUrl(`/api/docs/${encodeURIComponent(docId)}`))
       if (!response.ok) {
         throw new Error(`Failed to load document: ${response.status}`)
       }
-      return response.text()
+      return (await response.json()) as DocDetailResponse
     },
   })
-
-  if (!doc) {
-    return (
-      <main className="screen">
-        <section className="panel reveal">
-          <Link className="epic-back-link" to="/docs">
-            ← Back to Docs
-          </Link>
-          <h1 className="text-2xl font-bold mt-4 mb-2" style={{ color: "var(--text)" }}>
-            Document not found
-          </h1>
-          <p className="subtitle">No document matches the ID: {docId}</p>
-        </section>
-      </main>
-    )
-  }
-
-  if (!IS_LOCAL_MODE) {
-    return (
-      <main className="screen">
-        <section className="panel reveal">
-          <Link className="epic-back-link" to="/docs">
-            ← Back to Docs
-          </Link>
-          <p className="eyebrow mt-4">Documentation</p>
-          <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
-            {doc.name}
-          </h1>
-          <p className="subtitle">
-            Inline document rendering is only available in local development mode.
-          </p>
-        </section>
-      </main>
-    )
-  }
 
   if (isLoading) {
     return <PageSkeleton />
   }
 
   if (error) {
+    const isNotFound = String(error).includes("404")
+    if (isNotFound) {
+      return (
+        <main className="screen">
+          <section className="panel reveal">
+            <Link className="epic-back-link" to="/docs">
+              ← Back to Docs
+            </Link>
+            <h1 className="text-2xl font-bold mt-4 mb-2" style={{ color: "var(--text)" }}>
+              Document not found
+            </h1>
+            <p className="subtitle">No document matches the ID: {docId}</p>
+          </section>
+        </main>
+      )
+    }
     return <QueryErrorState message={String(error)} onRetry={refetch} />
   }
 
-  const htmlContent = content ? String(marked.parse(content)) : ""
+  const doc = data?.doc
+  const htmlContent = data?.content ? String(marked.parse(data.content)) : ""
 
   return (
     <main className="screen">
@@ -82,7 +55,7 @@ function DocDetailPage() {
         </Link>
         <p className="eyebrow mt-4">Documentation</p>
         <h1 className="text-2xl font-bold mb-6" style={{ color: "var(--text)" }}>
-          {doc.name}
+          {doc?.name ?? docId}
         </h1>
         <div
           className="prose"

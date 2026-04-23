@@ -1,6 +1,8 @@
+import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
-import type { DocEntry } from "../lib/docs-catalog"
-import { KNOWN_DOCS } from "../lib/docs-catalog"
+import type { DocEntry, DocsListResponse } from "../lib/docs-catalog"
+import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
+import { apiUrl } from "../lib/mode"
 import { rootRoute } from "./__root"
 
 function DocCard(props: { doc: DocEntry }) {
@@ -45,6 +47,27 @@ function DocCard(props: { doc: DocEntry }) {
 }
 
 function DocsPage() {
+  const { data, isLoading, error, refetch } = useQuery<DocsListResponse>({
+    queryKey: ["docs-list"],
+    queryFn: async () => {
+      const response = await fetch(apiUrl("/api/docs"))
+      if (!response.ok) {
+        throw new Error(`docs request failed: ${response.status}`)
+      }
+      return (await response.json()) as DocsListResponse
+    },
+  })
+
+  if (isLoading) {
+    return <PageSkeleton />
+  }
+
+  if (error) {
+    return <QueryErrorState message={String(error)} onRetry={refetch} />
+  }
+
+  const docs = data?.docs ?? []
+
   return (
     <div style={{ padding: "2rem" }}>
       <p className="eyebrow">Documentation</p>
@@ -68,8 +91,8 @@ function DocsPage() {
           gap: "1rem",
         }}
       >
-        {KNOWN_DOCS.map((doc) => (
-          <DocCard doc={doc} key={doc.path} />
+        {docs.map((doc) => (
+          <DocCard doc={doc} key={doc.id} />
         ))}
       </div>
     </div>

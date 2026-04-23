@@ -7,6 +7,7 @@ import { handleStoriesRoutes } from "./stories.js";
 import { handleEpicsRoutes } from "./epics.js";
 import { handleAnalyticsRoutes } from "./analytics.js";
 import { handleWorkflowRoutes } from "./workflow.js";
+import { handleDocsRoutes } from "./docs.js";
 import { handleLinksRoutes } from "./links.js";
 import { handleNotesRoutes } from "./notes.js";
 
@@ -27,6 +28,7 @@ export function attachApi(server: ViteDevServer): void {
       if (await handleEpicsRoutes(requestUrl, req, res)) return;
       if (await handleAnalyticsRoutes(requestUrl, req, res)) return;
       if (await handleWorkflowRoutes(requestUrl, req, res)) return;
+      if (await handleDocsRoutes(requestUrl, req, res)) return;
       if (await handleLinksRoutes(requestUrl, req, res)) return;
       if (await handleNotesRoutes(requestUrl, req, res)) return;
 
@@ -42,5 +44,6 @@ export function attachApi(server: ViteDevServer): void {
   });
 }
 
+export { buildDocDetailPayload, buildDocsListPayload } from "./docs.js";
 export { buildOverviewPayload } from "./overview.js";
 export { buildWorkflowStepDetailPayload } from "./workflow.js";
