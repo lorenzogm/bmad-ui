@@ -643,6 +643,15 @@ export function detectWorkflowStatus(
           (f) => f.some((x) => x.toLowerCase().includes("ux")),
           "planning/ux"
         ),
+        makeStep(
+          "nfr",
+          "NFR Assessment",
+          "Assess non-functional requirements — performance, security, reliability — to define acceptance criteria early.",
+          "bmad-testarch-nfr",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("nfr"))
+        ),
       ],
     },
     {
@@ -674,6 +683,33 @@ export function detectWorkflowStatus(
           (f) => f.some((x) => x.toLowerCase().includes("epics"))
         ),
         makeStep(
+          "test-design",
+          "Test Design",
+          "Create system-level test plans covering strategy, scope, risk assessment, and coverage targets.",
+          "bmad-testarch-test-design",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("test-design"))
+        ),
+        makeStep(
+          "framework",
+          "Test Framework",
+          "Initialize test framework (Playwright or Cypress) with project-specific configuration and fixtures.",
+          "bmad-testarch-framework",
+          true,
+          allFiles,
+          (f) => f.some((x) => x.includes("playwright.config") || x.includes("cypress.config"))
+        ),
+        makeStep(
+          "ci",
+          "CI Quality Pipeline",
+          "Scaffold CI/CD quality pipeline with test execution, coverage gates, and artifact retention.",
+          "bmad-testarch-ci",
+          true,
+          allFiles,
+          (f) => f.some((x) => x.includes("ci") && x.includes(".yml"))
+        ),
+        makeStep(
           "readiness",
           "Implementation Readiness",
           "Gate check — validate that PRD, UX, Architecture, and Epics are complete and aligned before starting implementation.",
@@ -681,24 +717,6 @@ export function detectWorkflowStatus(
           false,
           planningFiles,
           (f) => f.some((x) => x.toLowerCase().includes("readiness"))
-        ),
-        makeStep(
-          "test-design",
-          "Test Design",
-          "Create system-level or epic-level test plans covering strategy, scope, and coverage targets.",
-          "bmad-testarch-test-design",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("test-design"))
-        ),
-        makeStep(
-          "nfr",
-          "NFR Assessment",
-          "Assess non-functional requirements — performance, security, reliability — before implementation begins.",
-          "bmad-testarch-nfr",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("nfr"))
         ),
       ],
     },
@@ -719,6 +737,42 @@ export function detectWorkflowStatus(
           false,
           allFiles,
           (f) => f.some((x) => x.toLowerCase().includes("sprint-status"))
+        ),
+        makeStep(
+          "atdd",
+          "Acceptance Tests (ATDD)",
+          "Generate red-phase acceptance test scaffolds from story criteria using the TDD cycle.",
+          "bmad-testarch-atdd",
+          true,
+          allFiles,
+          (f) => f.some((x) => x.includes("atdd"))
+        ),
+        makeStep(
+          "automate",
+          "Test Automation",
+          "Expand test automation coverage — fill gaps identified by test design and traceability analysis.",
+          "bmad-testarch-automate",
+          true,
+          allFiles,
+          (f) => f.some((x) => x.includes("automate"))
+        ),
+        makeStep(
+          "test-review",
+          "Test Review",
+          "Audit test quality against best practices — target score >80 per epic, >85 at release.",
+          "bmad-testarch-test-review",
+          true,
+          allFiles,
+          (f) => f.some((x) => x.includes("test-review"))
+        ),
+        makeStep(
+          "trace",
+          "Traceability Matrix",
+          "Generate requirements-to-test traceability matrix and quality gate decision with evidence.",
+          "bmad-testarch-trace",
+          true,
+          allFiles,
+          (f) => f.some((x) => x.includes("traceability"))
         ),
       ],
     },
