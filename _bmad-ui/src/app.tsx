@@ -1,1283 +1,1418 @@
-import { Link, useNavigate } from "@tanstack/react-router"
-import { useEffect, useMemo, useState } from "react"
-import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "./lib/mode"
-import type { AgentRunGroup, AgentSession, OverviewResponse, RuntimeSession } from "./types"
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "./lib/mode";
+import type {
+	AgentRunGroup,
+	AgentSession,
+	OverviewResponse,
+	RuntimeSession,
+} from "./types";
 
-const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
-const SECONDS_PER_MINUTE = 60
-const SECONDS_PER_HOUR = 3600
-const SECONDS_PER_DAY = 86_400
-const MILLISECONDS_PER_SECOND = 1000
-const STALE_SESSION_THRESHOLD_MS = 30 * 60 * 1000
-const SESSION_STATUS_FILTER_STORAGE_KEY = "bmad-ui-agent-sessions-status-filters-v1"
-const ALL_SESSION_STATUS_FILTER = "__all__"
-const SESSION_TABLE_PAGE_SIZE = 25
+const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/;
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = 3600;
+const SECONDS_PER_DAY = 86_400;
+const MILLISECONDS_PER_SECOND = 1000;
+const STALE_SESSION_THRESHOLD_MS = 30 * 60 * 1000;
+const SESSION_STATUS_FILTER_STORAGE_KEY =
+	"bmad-ui-agent-sessions-status-filters-v1";
+const ALL_SESSION_STATUS_FILTER = "__all__";
+const SESSION_TABLE_PAGE_SIZE = 25;
 const DEFAULT_SESSION_STATUS_FILTERS = [
-  "planned",
-  "running",
-  "completed",
-  "failed",
-  "cancelled",
-] as const
+	"planned",
+	"running",
+	"completed",
+	"failed",
+	"cancelled",
+] as const;
 const SPRINT_WARNING_FALLBACK_MESSAGE =
-  "epics.md and sprint-status.yaml are inconsistent. Re-run Sprint Planning."
+	"epics.md and sprint-status.yaml are inconsistent. Re-run Sprint Planning.";
 
 const STATUS_BADGE_CLASS: Record<string, string> = {
-  done: "done",
-  completed: "done",
-  skipped: "done",
-  "in-progress": "in-progress",
-  running: "running",
-  "ready-for-dev": "in-progress",
-  review: "review",
-  backlog: "not-started",
-  "not-started": "not-started",
-  pending: "not-started",
-  planned: "planned",
-  failed: "failed",
-  cancelled: "cancelled",
-  stale: "stale",
-  warning: "warning",
-}
+	done: "done",
+	completed: "done",
+	skipped: "done",
+	"in-progress": "in-progress",
+	running: "running",
+	"ready-for-dev": "in-progress",
+	review: "review",
+	backlog: "not-started",
+	"not-started": "not-started",
+	pending: "not-started",
+	planned: "planned",
+	failed: "failed",
+	cancelled: "cancelled",
+	stale: "stale",
+	warning: "warning",
+};
 
 const STATUS_LABEL: Record<string, string> = {
-  done: "Done",
-  completed: "Done",
-  skipped: "Skipped",
-  "in-progress": "In Progress",
-  running: "Running",
-  "ready-for-dev": "Ready",
-  review: "In Review",
-  backlog: "To Do",
-  "not-started": "To Do",
-  pending: "Pending",
-  planned: "Planned",
-  failed: "Failed",
-  cancelled: "Cancelled",
-  stale: "Stale",
-  warning: "Warning",
-}
+	done: "Done",
+	completed: "Done",
+	skipped: "Skipped",
+	"in-progress": "In Progress",
+	running: "Running",
+	"ready-for-dev": "Ready",
+	review: "In Review",
+	backlog: "To Do",
+	"not-started": "To Do",
+	pending: "Pending",
+	planned: "Planned",
+	failed: "Failed",
+	cancelled: "Cancelled",
+	stale: "Stale",
+	warning: "Warning",
+};
 
-type OverviewEpic = OverviewResponse["sprintOverview"]["epics"][number]
-type OverviewEpicConsistency = OverviewResponse["epicConsistency"]
-type SessionActionKind = "start" | "abort"
+type OverviewEpic = OverviewResponse["sprintOverview"]["epics"][number];
+type OverviewEpicConsistency = OverviewResponse["epicConsistency"];
+type SessionActionKind = "start" | "abort";
 
 export type SessionActionState = {
-  sessionId: string
-  action: SessionActionKind
-} | null
+	sessionId: string;
+	action: SessionActionKind;
+} | null;
 
 export function storyStepLabel(state: string): string {
-  if (state === "running") return "in-progress"
-  if (state === "not-started") return "to do"
-  return state
+	if (state === "running") return "in-progress";
+	if (state === "not-started") return "to do";
+	return state;
 }
 
 function titleCase(s: string): string {
-  return s
-    .split(/[-_\s]+/)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ")
+	return s
+		.split(/[-_\s]+/)
+		.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+		.join(" ");
 }
 
 function normalizeStatusToken(status: string): string {
-  return status.toLowerCase().replace(/[^a-z0-9-]+/g, "-")
+	return status.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
 }
 
 export function statusBadgeClass(status: string): string {
-  return STATUS_BADGE_CLASS[status] ?? status
+	return STATUS_BADGE_CLASS[status] ?? status;
 }
 
 export function statusLabel(status: string): string {
-  return STATUS_LABEL[status] ?? titleCase(status)
+	return STATUS_LABEL[status] ?? titleCase(status);
 }
 
-export function StatusBadge(props: { status: string; label?: string; title?: string }) {
-  const rawStatus = typeof props.status === "string" ? props.status.trim() : "unknown"
-  const safeStatus = rawStatus.length > 0 ? rawStatus : "unknown"
-  const cls = normalizeStatusToken(STATUS_BADGE_CLASS[safeStatus] ?? safeStatus)
-  const label = props.label ?? STATUS_LABEL[safeStatus] ?? titleCase(safeStatus)
-  return (
-    <span className={`step-badge step-${cls}`} title={props.title}>
-      {label}
-    </span>
-  )
+export function StatusBadge(props: {
+	status: string;
+	label?: string;
+	title?: string;
+}) {
+	const rawStatus =
+		typeof props.status === "string" ? props.status.trim() : "unknown";
+	const safeStatus = rawStatus.length > 0 ? rawStatus : "unknown";
+	const cls = normalizeStatusToken(
+		STATUS_BADGE_CLASS[safeStatus] ?? safeStatus,
+	);
+	const label =
+		props.label ?? STATUS_LABEL[safeStatus] ?? titleCase(safeStatus);
+	return (
+		<span className={`step-badge step-${cls}`} title={props.title}>
+			{label}
+		</span>
+	);
 }
 
 function formatDate(value: string | null): string {
-  if (!value) {
-    return "-"
-  }
-  return new Date(value).toLocaleString()
+	if (!value) {
+		return "-";
+	}
+	return new Date(value).toLocaleString();
 }
 
 function resolveDisplayStatus(
-  status: string,
-  startedAt: string | null | undefined,
-  endedAt: string | null | undefined
+	status: string,
+	startedAt: string | null | undefined,
+	endedAt: string | null | undefined,
 ): string {
-  if (status !== "running" || endedAt) return status
-  if (!startedAt) return status
-  const startMs = Date.parse(startedAt)
-  if (Number.isNaN(startMs)) return status
-  return Date.now() - startMs > STALE_SESSION_THRESHOLD_MS ? "stale" : status
+	if (status !== "running" || endedAt) return status;
+	if (!startedAt) return status;
+	const startMs = Date.parse(startedAt);
+	if (Number.isNaN(startMs)) return status;
+	return Date.now() - startMs > STALE_SESSION_THRESHOLD_MS ? "stale" : status;
 }
 
-function formatDuration(startedAt: string | null, endedAt: string | null): string {
-  if (!startedAt) {
-    return "-"
-  }
+function formatDuration(
+	startedAt: string | null,
+	endedAt: string | null,
+): string {
+	if (!startedAt) {
+		return "-";
+	}
 
-  const startedMs = Date.parse(startedAt)
-  if (Number.isNaN(startedMs)) {
-    return "-"
-  }
+	const startedMs = Date.parse(startedAt);
+	if (Number.isNaN(startedMs)) {
+		return "-";
+	}
 
-  const endMs = endedAt ? Date.parse(endedAt) : Date.now()
-  if (Number.isNaN(endMs)) {
-    return "-"
-  }
+	const endMs = endedAt ? Date.parse(endedAt) : Date.now();
+	if (Number.isNaN(endMs)) {
+		return "-";
+	}
 
-  const totalSeconds = Math.max(0, Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND))
-  const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
-  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
-  const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE)
-  const seconds = totalSeconds % SECONDS_PER_MINUTE
+	const totalSeconds = Math.max(
+		0,
+		Math.floor((endMs - startedMs) / MILLISECONDS_PER_SECOND),
+	);
+	const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
+	const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
+	const minutes = Math.floor(
+		(totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE,
+	);
+	const seconds = totalSeconds % SECONDS_PER_MINUTE;
 
-  const parts: string[] = []
-  if (days > 0) {
-    parts.push(`${days}d`)
-  }
-  if (hours > 0 || days > 0) {
-    parts.push(`${hours}h`)
-  }
-  if (minutes > 0 || hours > 0 || days > 0) {
-    parts.push(`${minutes}m`)
-  }
-  parts.push(`${seconds}s`)
+	const parts: string[] = [];
+	if (days > 0) {
+		parts.push(`${days}d`);
+	}
+	if (hours > 0 || days > 0) {
+		parts.push(`${hours}h`);
+	}
+	if (minutes > 0 || hours > 0 || days > 0) {
+		parts.push(`${minutes}m`);
+	}
+	parts.push(`${seconds}s`);
 
-  return parts.join(" ")
+	return parts.join(" ");
 }
 
 function parseStoryTicket(storyId: string): { epic: number; story: number } {
-  const match = storyId.match(STORY_TICKET_REGEX)
-  if (!match) {
-    return { epic: Number.POSITIVE_INFINITY, story: Number.POSITIVE_INFINITY }
-  }
-  return {
-    epic: Number(match[1]),
-    story: Number(match[2]),
-  }
+	const match = storyId.match(STORY_TICKET_REGEX);
+	if (!match) {
+		return { epic: Number.POSITIVE_INFINITY, story: Number.POSITIVE_INFINITY };
+	}
+	return {
+		epic: Number(match[1]),
+		story: Number(match[2]),
+	};
 }
 
 function toShortStoryId(storyId: string | null): string {
-  if (!storyId) {
-    return "-"
-  }
+	if (!storyId) {
+		return "-";
+	}
 
-  const ticket = parseStoryTicket(storyId)
-  const hasValidTicket = Number.isFinite(ticket.epic) && Number.isFinite(ticket.story)
-  if (!hasValidTicket) {
-    return storyId
-  }
+	const ticket = parseStoryTicket(storyId);
+	const hasValidTicket =
+		Number.isFinite(ticket.epic) && Number.isFinite(ticket.story);
+	if (!hasValidTicket) {
+		return storyId;
+	}
 
-  return `${ticket.epic}-${ticket.story}`
+	return `${ticket.epic}-${ticket.story}`;
 }
 
 type NormalizedSession =
-  | { source: "runtime"; data: RuntimeSession }
-  | { source: "copilot"; data: AgentSession }
+	| { source: "runtime"; data: RuntimeSession }
+	| { source: "copilot"; data: AgentSession };
 
 function SessionsTable(props: { sessions: NormalizedSession[] }) {
-  const { sessions } = props
-  return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Skill / Name</th>
-            <th>Name</th>
-            <th>Model</th>
-            <th>Story</th>
-            <th>Status</th>
-            <th>Started</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sessions.map((row) => {
-            if (row.source === "runtime") {
-              const session = row.data
-              const displayStatus = resolveDisplayStatus(
-                session.status,
-                session.startedAt,
-                session.endedAt
-              )
+	const { sessions } = props;
+	return (
+		<div className="table-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th>Skill / Name</th>
+						<th>Name</th>
+						<th>Model</th>
+						<th>Story</th>
+						<th>Status</th>
+						<th>Started</th>
+						<th>Duration</th>
+					</tr>
+				</thead>
+				<tbody>
+					{sessions.map((row) => {
+						if (row.source === "runtime") {
+							const session = row.data;
+							const displayStatus = resolveDisplayStatus(
+								session.status,
+								session.startedAt,
+								session.endedAt,
+							);
 
-              return (
-                <tr key={session.id}>
-                  <td>
-                    <span className="step-badge step-done">{session.skill ?? "—"}</span>
-                  </td>
-                  <td>
-                    <Link params={{ sessionId: session.id }} to="/session/$sessionId">
-                      {session.id.slice(0, 8)}…
-                    </Link>
-                  </td>
-                  <td>{session.model}</td>
-                  <td>{toShortStoryId(session.storyId)}</td>
-                  <td>
-                    <StatusBadge status={displayStatus} />
-                  </td>
-                  <td>{formatDate(session.startedAt)}</td>
-                  <td>{formatDuration(session.startedAt, session.endedAt)}</td>
-                </tr>
-              )
-            }
+							return (
+								<tr key={session.id}>
+									<td>
+										<span className="step-badge step-done">
+											{session.skill ?? "—"}
+										</span>
+									</td>
+									<td>
+										<Link
+											params={{ sessionId: session.id }}
+											to="/session/$sessionId"
+										>
+											{session.id.slice(0, 8)}…
+										</Link>
+									</td>
+									<td>{session.model}</td>
+									<td>{toShortStoryId(session.storyId)}</td>
+									<td>
+										<StatusBadge status={displayStatus} />
+									</td>
+									<td>{formatDate(session.startedAt)}</td>
+									<td>{formatDuration(session.startedAt, session.endedAt)}</td>
+								</tr>
+							);
+						}
 
-            const session = row.data
-            const displayStatus = resolveDisplayStatus(
-              session.status,
-              session.start_date,
-              session.end_date
-            )
-            return (
-              <tr key={session.session_id ?? session.start_date}>
-                <td>
-                  <span className="step-badge step-done">{session.agent ?? "—"}</span>
-                </td>
-                <td>{session.session_id ? `${session.session_id.slice(0, 8)}…` : "—"}</td>
-                <td>{session.model}</td>
-                <td>{toShortStoryId(session.storyId ?? null)}</td>
-                <td>
-                  <StatusBadge status={displayStatus} />
-                </td>
-                <td>{formatDate(session.start_date)}</td>
-                <td>{formatDuration(session.start_date, session.end_date)}</td>
-              </tr>
-            )
-          })}
-          {sessions.length === 0 ? (
-            <tr>
-              <td colSpan={7}>No sessions for selected filters</td>
-            </tr>
-          ) : null}
-        </tbody>
-      </table>
-    </div>
-  )
+						const session = row.data;
+						const displayStatus = resolveDisplayStatus(
+							session.status,
+							session.start_date,
+							session.end_date,
+						);
+						return (
+							<tr key={session.session_id ?? session.start_date}>
+								<td>
+									<span className="step-badge step-done">
+										{session.agent ?? "—"}
+									</span>
+								</td>
+								<td>
+									{session.session_id
+										? `${session.session_id.slice(0, 8)}…`
+										: "—"}
+								</td>
+								<td>{session.model}</td>
+								<td>{toShortStoryId(session.storyId ?? null)}</td>
+								<td>
+									<StatusBadge status={displayStatus} />
+								</td>
+								<td>{formatDate(session.start_date)}</td>
+								<td>{formatDuration(session.start_date, session.end_date)}</td>
+							</tr>
+						);
+					})}
+					{sessions.length === 0 ? (
+						<tr>
+							<td colSpan={7}>No sessions for selected filters</td>
+						</tr>
+					) : null}
+				</tbody>
+			</table>
+		</div>
+	);
 }
 
 export function AgentSessionsSection(props: {
-  runGroups: AgentRunGroup[]
-  agentSessions: AgentSession[]
+	runGroups: AgentRunGroup[];
+	agentSessions: AgentSession[];
 }) {
-  const { runGroups, agentSessions } = props
-  const [page, setPage] = useState(0)
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([ALL_SESSION_STATUS_FILTER])
+	const { runGroups, agentSessions } = props;
+	const [page, setPage] = useState(0);
+	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([
+		ALL_SESSION_STATUS_FILTER,
+	]);
 
-  const allSessions = useMemo<NormalizedSession[]>(() => {
-    const runtime: NormalizedSession[] = runGroups
-      .flatMap((group) => group.sessions)
-      .map((s) => ({ source: "runtime", data: s }))
-    const copilot: NormalizedSession[] = agentSessions.map((s) => ({
-      source: "copilot",
-      data: s,
-    }))
-    const merged = [...runtime, ...copilot]
-    merged.sort((a, b) => {
-      const aDate = a.source === "runtime" ? a.data.startedAt : a.data.start_date
-      const bDate = b.source === "runtime" ? b.data.startedAt : b.data.start_date
-      return (bDate ?? "").localeCompare(aDate ?? "")
-    })
-    return merged
-  }, [runGroups, agentSessions])
+	const allSessions = useMemo<NormalizedSession[]>(() => {
+		const runtime: NormalizedSession[] = runGroups
+			.flatMap((group) => group.sessions)
+			.map((s) => ({ source: "runtime", data: s }));
+		const copilot: NormalizedSession[] = agentSessions.map((s) => ({
+			source: "copilot",
+			data: s,
+		}));
+		const merged = [...runtime, ...copilot];
+		merged.sort((a, b) => {
+			const aDate =
+				a.source === "runtime" ? a.data.startedAt : a.data.start_date;
+			const bDate =
+				b.source === "runtime" ? b.data.startedAt : b.data.start_date;
+			return (bDate ?? "").localeCompare(aDate ?? "");
+		});
+		return merged;
+	}, [runGroups, agentSessions]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
 
-    try {
-      const raw = window.localStorage.getItem(SESSION_STATUS_FILTER_STORAGE_KEY)
-      if (!raw) {
-        return
-      }
+		try {
+			const raw = window.localStorage.getItem(
+				SESSION_STATUS_FILTER_STORAGE_KEY,
+			);
+			if (!raw) {
+				return;
+			}
 
-      const parsed = JSON.parse(raw)
-      if (!Array.isArray(parsed)) {
-        return
-      }
+			const parsed = JSON.parse(raw);
+			if (!Array.isArray(parsed)) {
+				return;
+			}
 
-      const next = parsed.filter((item): item is string => typeof item === "string")
-      if (next.length > 0) {
-        setSelectedStatuses(next)
-      }
-    } catch {
-      // Ignore malformed persisted filters.
-    }
-  }, [])
+			const next = parsed.filter(
+				(item): item is string => typeof item === "string",
+			);
+			if (next.length > 0) {
+				setSelectedStatuses(next);
+			}
+		} catch {
+			// Ignore malformed persisted filters.
+		}
+	}, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
 
-    window.localStorage.setItem(SESSION_STATUS_FILTER_STORAGE_KEY, JSON.stringify(selectedStatuses))
-  }, [selectedStatuses])
+		window.localStorage.setItem(
+			SESSION_STATUS_FILTER_STORAGE_KEY,
+			JSON.stringify(selectedStatuses),
+		);
+	}, [selectedStatuses]);
 
-  const availableStatuses = useMemo(() => {
-    const known = [...DEFAULT_SESSION_STATUS_FILTERS]
-    const discovered = allSessions
-      .map((row) => (row.source === "runtime" ? row.data.status : row.data.status))
-      .filter((status) => !known.includes(status as (typeof known)[number]))
-      .sort((a, b) => a.localeCompare(b))
+	const availableStatuses = useMemo(() => {
+		const known = [...DEFAULT_SESSION_STATUS_FILTERS];
+		const discovered = allSessions
+			.map((row) =>
+				row.source === "runtime" ? row.data.status : row.data.status,
+			)
+			.filter((status) => !known.includes(status as (typeof known)[number]))
+			.sort((a, b) => a.localeCompare(b));
 
-    return [...known, ...discovered]
-  }, [allSessions])
+		return [...known, ...discovered];
+	}, [allSessions]);
 
-  useEffect(() => {
-    setSelectedStatuses((current) => {
-      if (current.includes(ALL_SESSION_STATUS_FILTER)) {
-        return [ALL_SESSION_STATUS_FILTER]
-      }
+	useEffect(() => {
+		setSelectedStatuses((current) => {
+			if (current.includes(ALL_SESSION_STATUS_FILTER)) {
+				return [ALL_SESSION_STATUS_FILTER];
+			}
 
-      const normalized = current.filter((status) => availableStatuses.includes(status))
+			const normalized = current.filter((status) =>
+				availableStatuses.includes(status),
+			);
 
-      if (normalized.length === 0) {
-        return [ALL_SESSION_STATUS_FILTER]
-      }
+			if (normalized.length === 0) {
+				return [ALL_SESSION_STATUS_FILTER];
+			}
 
-      if (normalized.length !== current.length) {
-        return normalized
-      }
+			if (normalized.length !== current.length) {
+				return normalized;
+			}
 
-      return current
-    })
-  }, [availableStatuses])
+			return current;
+		});
+	}, [availableStatuses]);
 
-  const isAllSelected = selectedStatuses.includes(ALL_SESSION_STATUS_FILTER)
+	const isAllSelected = selectedStatuses.includes(ALL_SESSION_STATUS_FILTER);
 
-  const filteredSessions = useMemo(() => {
-    if (isAllSelected) {
-      return allSessions
-    }
+	const filteredSessions = useMemo(() => {
+		if (isAllSelected) {
+			return allSessions;
+		}
 
-    return allSessions.filter((row) => {
-      const status = row.source === "runtime" ? row.data.status : row.data.status
-      return selectedStatuses.includes(status)
-    })
-  }, [allSessions, isAllSelected, selectedStatuses])
+		return allSessions.filter((row) => {
+			const status =
+				row.source === "runtime" ? row.data.status : row.data.status;
+			return selectedStatuses.includes(status);
+		});
+	}, [allSessions, isAllSelected, selectedStatuses]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredSessions.length / SESSION_TABLE_PAGE_SIZE))
+	const totalPages = Math.max(
+		1,
+		Math.ceil(filteredSessions.length / SESSION_TABLE_PAGE_SIZE),
+	);
 
-  useEffect(() => {
-    setPage((current) => {
-      const maxPage = Math.max(0, totalPages - 1)
-      return current > maxPage ? maxPage : current
-    })
-  }, [totalPages])
+	useEffect(() => {
+		setPage((current) => {
+			const maxPage = Math.max(0, totalPages - 1);
+			return current > maxPage ? maxPage : current;
+		});
+	}, [totalPages]);
 
-  const paginatedSessions = useMemo(() => {
-    const start = page * SESSION_TABLE_PAGE_SIZE
-    return filteredSessions.slice(start, start + SESSION_TABLE_PAGE_SIZE)
-  }, [filteredSessions, page])
+	const paginatedSessions = useMemo(() => {
+		const start = page * SESSION_TABLE_PAGE_SIZE;
+		return filteredSessions.slice(start, start + SESSION_TABLE_PAGE_SIZE);
+	}, [filteredSessions, page]);
 
-  const toggleStatusFilter = (status: string) => {
-    setSelectedStatuses((current) => {
-      if (status === ALL_SESSION_STATUS_FILTER) {
-        return [ALL_SESSION_STATUS_FILTER]
-      }
+	const toggleStatusFilter = (status: string) => {
+		setSelectedStatuses((current) => {
+			if (status === ALL_SESSION_STATUS_FILTER) {
+				return [ALL_SESSION_STATUS_FILTER];
+			}
 
-      if (current.includes(ALL_SESSION_STATUS_FILTER)) {
-        return [status]
-      }
+			if (current.includes(ALL_SESSION_STATUS_FILTER)) {
+				return [status];
+			}
 
-      if (current.includes(status)) {
-        if (current.length === 1) {
-          return [ALL_SESSION_STATUS_FILTER]
-        }
-        return current.filter((item) => item !== status)
-      }
+			if (current.includes(status)) {
+				if (current.length === 1) {
+					return [ALL_SESSION_STATUS_FILTER];
+				}
+				return current.filter((item) => item !== status);
+			}
 
-      return [...current, status]
-    })
-  }
+			return [...current, status];
+		});
+	};
 
-  return (
-    <section className="panel reveal delay-2">
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "0.5rem",
-          marginBottom: "0.5rem",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>Agent Sessions</h2>
-        {filteredSessions.length > SESSION_TABLE_PAGE_SIZE ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <button
-              className="ghost"
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              type="button"
-            >
-              ← Newer
-            </button>
-            <span className="eyebrow">
-              Page {page + 1} / {totalPages}
-            </span>
-            <button
-              className="ghost"
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              type="button"
-            >
-              Older →
-            </button>
-          </div>
-        ) : null}
-      </div>
+	return (
+		<section className="panel reveal delay-2">
+			<div
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "space-between",
+					flexWrap: "wrap",
+					gap: "0.5rem",
+					marginBottom: "0.5rem",
+				}}
+			>
+				<h2 style={{ margin: 0 }}>Agent Sessions</h2>
+				{filteredSessions.length > SESSION_TABLE_PAGE_SIZE ? (
+					<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+						<button
+							className="ghost"
+							disabled={page === 0}
+							onClick={() => setPage((p) => Math.max(0, p - 1))}
+							type="button"
+						>
+							← Newer
+						</button>
+						<span className="eyebrow">
+							Page {page + 1} / {totalPages}
+						</span>
+						<button
+							className="ghost"
+							disabled={page >= totalPages - 1}
+							onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+							type="button"
+						>
+							Older →
+						</button>
+					</div>
+				) : null}
+			</div>
 
-      <div className="session-status-filters">
-        <span className="session-status-filters-label">Status filters</span>
-        {[ALL_SESSION_STATUS_FILTER, ...availableStatuses].map((status) => {
-          const isAll = status === ALL_SESSION_STATUS_FILTER
-          const isSelected = isAll ? isAllSelected : selectedStatuses.includes(status)
-          const label = isAll ? "All" : status
-          return (
-            <button
-              aria-pressed={isSelected}
-              className={`session-status-filter-btn ${isSelected ? "is-active" : "is-inactive"}`}
-              key={status}
-              onClick={() => toggleStatusFilter(status)}
-              type="button"
-            >
-              {isAll ? (
-                <span className="step-badge step-all">{label}</span>
-              ) : (
-                <StatusBadge status={status} label={label} />
-              )}
-            </button>
-          )
-        })}
-      </div>
+			<div className="session-status-filters">
+				<span className="session-status-filters-label">Status filters</span>
+				{[ALL_SESSION_STATUS_FILTER, ...availableStatuses].map((status) => {
+					const isAll = status === ALL_SESSION_STATUS_FILTER;
+					const isSelected = isAll
+						? isAllSelected
+						: selectedStatuses.includes(status);
+					const label = isAll ? "All" : status;
+					return (
+						<button
+							aria-pressed={isSelected}
+							className={`session-status-filter-btn ${isSelected ? "is-active" : "is-inactive"}`}
+							key={status}
+							onClick={() => toggleStatusFilter(status)}
+							type="button"
+						>
+							{isAll ? (
+								<span className="step-badge step-all">{label}</span>
+							) : (
+								<StatusBadge status={status} label={label} />
+							)}
+						</button>
+					);
+				})}
+			</div>
 
-      {allSessions.length > 0 ? (
-        <>
-          <div
-            style={{
-              display: "flex",
-              gap: "1.5rem",
-              marginBottom: "0.75rem",
-              flexWrap: "wrap",
-            }}
-          >
-            <span className="eyebrow">Total: {filteredSessions.length} sessions</span>
-            <span className="eyebrow">Per page: {SESSION_TABLE_PAGE_SIZE}</span>
-          </div>
-          <SessionsTable sessions={paginatedSessions} />
-        </>
-      ) : (
-        <p className="subtitle">No sessions recorded yet.</p>
-      )}
-    </section>
-  )
+			{allSessions.length > 0 ? (
+				<>
+					<div
+						style={{
+							display: "flex",
+							gap: "1.5rem",
+							marginBottom: "0.75rem",
+							flexWrap: "wrap",
+						}}
+					>
+						<span className="eyebrow">
+							Total: {filteredSessions.length} sessions
+						</span>
+						<span className="eyebrow">Per page: {SESSION_TABLE_PAGE_SIZE}</span>
+					</div>
+					<SessionsTable sessions={paginatedSessions} />
+				</>
+			) : (
+				<p className="subtitle">No sessions recorded yet.</p>
+			)}
+		</section>
+	);
 }
 
 export type WorkflowStep = {
-  id: string
-  name: string
-  description: string
-  isOptional: boolean
-  isCompleted: boolean
-  isSkipped: boolean
-  skill: string
-  detailSlug: string | null
-}
+	id: string;
+	name: string;
+	description: string;
+	isOptional: boolean;
+	isCompleted: boolean;
+	isSkipped: boolean;
+	skill: string;
+	detailSlug: string | null;
+};
 
 export type WorkflowPhase = {
-  id: string
-  number: number
-  name: string
-  description: string
-  isOptional: boolean
-  isSequential: boolean
-  steps: WorkflowStep[]
-}
+	id: string;
+	number: number;
+	name: string;
+	description: string;
+	isOptional: boolean;
+	isSequential: boolean;
+	steps: WorkflowStep[];
+};
 
 export type WorkflowStatus = {
-  phases: WorkflowPhase[]
-  nextActionStep: WorkflowStep | null
-}
+	phases: WorkflowPhase[];
+	nextActionStep: WorkflowStep | null;
+};
 
 function makeStep(
-  id: string,
-  name: string,
-  description: string,
-  skill: string,
-  isOptional: boolean,
-  artifactFiles: string[],
-  matcher: (files: string[]) => boolean,
-  detailSlug: string | null = null
+	id: string,
+	name: string,
+	description: string,
+	skill: string,
+	isOptional: boolean,
+	artifactFiles: string[],
+	matcher: (files: string[]) => boolean,
+	detailSlug: string | null = null,
 ): WorkflowStep {
-  const nonSkippedFiles = artifactFiles.filter((f) => !f.endsWith(".skipped"))
-  return {
-    id,
-    name,
-    description,
-    isOptional,
-    isCompleted: matcher(nonSkippedFiles),
-    isSkipped: artifactFiles.some((f) => f === `${id}.skipped`),
-    skill,
-    detailSlug,
-  }
+	const nonSkippedFiles = artifactFiles.filter((f) => !f.endsWith(".skipped"));
+	return {
+		id,
+		name,
+		description,
+		isOptional,
+		isCompleted: matcher(nonSkippedFiles),
+		isSkipped: artifactFiles.some((f) => f === `${id}.skipped`),
+		skill,
+		detailSlug,
+	};
 }
 
-function hasCompletedSkillSession(sessions: RuntimeSession[], skill: string): boolean {
-  return sessions.some((s) => s.skill === skill && s.status === "completed" && s.exitCode === 0)
+function hasCompletedSkillSession(
+	sessions: RuntimeSession[],
+	skill: string,
+): boolean {
+	return sessions.some(
+		(s) => s.skill === skill && s.status === "completed" && s.exitCode === 0,
+	);
 }
 
 export function detectWorkflowStatus(
-  planningFiles: string[],
-  implementationFiles: string[],
-  runtimeSessions: RuntimeSession[] = []
+	planningFiles: string[],
+	implementationFiles: string[],
+	runtimeSessions: RuntimeSession[] = [],
 ): WorkflowStatus {
-  const allFiles = [...planningFiles, ...implementationFiles]
+	const allFiles = [...planningFiles, ...implementationFiles];
 
-  const phases: WorkflowPhase[] = [
-    {
-      id: "analysis",
-      number: 1,
-      name: "Analysis",
-      description:
-        "Optional research and ideation phase. Gather domain knowledge, explore the market, and shape your product idea before committing to a plan.",
-      isOptional: true,
-      isSequential: false,
-      steps: [
-        makeStep(
-          "brainstorming",
-          "Brainstorming",
-          "Facilitated creative ideation session — generate and refine ideas using diverse techniques.",
-          "bmad-brainstorming",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("brainstorm"))
-        ),
-        makeStep(
-          "market-research",
-          "Market Research",
-          "Analyze the competitive landscape, customer needs, and market trends to validate opportunity.",
-          "bmad-market-research",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("market"))
-        ),
-        makeStep(
-          "domain-research",
-          "Domain Research",
-          "Deep dive into industry domain, subject-matter expertise, and terminology.",
-          "bmad-domain-research",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("domain"))
-        ),
-        makeStep(
-          "technical-research",
-          "Technical Research",
-          "Evaluate technical feasibility, architecture options, and implementation approaches.",
-          "bmad-technical-research",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("technical-research"))
-        ),
-        makeStep(
-          "product-brief",
-          "Product Brief",
-          "Guided experience to nail down your product concept — a gentler approach when you're confident in your idea.",
-          "bmad-product-brief",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("brief"))
-        ),
-        makeStep(
-          "prfaq",
-          "PRFAQ",
-          "Working Backwards challenge — stress-test your product concept through a PR/FAQ gauntlet to ensure feasibility.",
-          "bmad-prfaq",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("prfaq"))
-        ),
-      ],
-    },
-    {
-      id: "planning",
-      number: 2,
-      name: "Planning",
-      description:
-        "Define what you're building and why. Create the Product Requirements Document (PRD) that anchors all downstream decisions.",
-      isOptional: false,
-      isSequential: false,
-      steps: [
-        makeStep(
-          "prd",
-          "Product Requirements (PRD)",
-          "Expert-led facilitation to produce your Product Requirements Document — the single source of truth for scope and goals.",
-          "bmad-create-prd",
-          false,
-          planningFiles,
-          (f) => f.some((x) => x.toLowerCase() === "prd.md"),
-          "planning/prd"
-        ),
-        makeStep(
-          "ux",
-          "UX Design",
-          "Plan UX patterns, user flows, and design specifications. Recommended if a UI is a primary piece of the project.",
-          "bmad-create-ux-design",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("ux")),
-          "planning/ux"
-        ),
-        makeStep(
-          "nfr",
-          "NFR Assessment",
-          "Assess non-functional requirements — performance, security, reliability — to define acceptance criteria early.",
-          "bmad-testarch-nfr",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("nfr"))
-        ),
-      ],
-    },
-    {
-      id: "solutioning",
-      number: 3,
-      name: "Solutioning",
-      description:
-        "Design the technical architecture, break requirements into epics and stories, and validate everything is aligned before building.",
-      isOptional: false,
-      isSequential: false,
-      steps: [
-        makeStep(
-          "architecture",
-          "Architecture",
-          "Document technical design decisions — stack, data models, APIs, and infrastructure — so AI agents stay consistent.",
-          "bmad-create-architecture",
-          false,
-          planningFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("architecture")),
-          "solutioning/architecture"
-        ),
-        makeStep(
-          "epics",
-          "Epics & Stories",
-          "Break the PRD into ordered epics with user stories, acceptance criteria, and dependency mapping.",
-          "bmad-create-epics-and-stories",
-          false,
-          planningFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("epics"))
-        ),
-        makeStep(
-          "test-design",
-          "Test Design",
-          "Create system-level test plans covering strategy, scope, risk assessment, and coverage targets.",
-          "bmad-testarch-test-design",
-          true,
-          planningFiles,
-          (f) => f.some((x) => x.includes("test-design"))
-        ),
-        makeStep(
-          "framework",
-          "Test Framework",
-          "Initialize test framework (Playwright or Cypress) with project-specific configuration and fixtures.",
-          "bmad-testarch-framework",
-          true,
-          allFiles,
-          (f) => f.some((x) => x.includes("playwright.config") || x.includes("cypress.config"))
-        ),
-        makeStep(
-          "ci",
-          "CI Quality Pipeline",
-          "Scaffold CI/CD quality pipeline with test execution, coverage gates, and artifact retention.",
-          "bmad-testarch-ci",
-          true,
-          allFiles,
-          (f) => f.some((x) => x.includes("ci") && x.includes(".yml"))
-        ),
-        makeStep(
-          "readiness",
-          "Implementation Readiness",
-          "Gate check — validate that PRD, UX, Architecture, and Epics are complete and aligned before starting implementation.",
-          "bmad-check-implementation-readiness",
-          false,
-          planningFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("readiness"))
-        ),
-      ],
-    },
-    {
-      id: "implementation",
-      number: 4,
-      name: "Implementation",
-      description:
-        "Build the product epic by epic, story by story. Each story goes through create → develop → code review → done.",
-      isOptional: false,
-      isSequential: false,
-      steps: [
-        makeStep(
-          "sprint",
-          "Sprint Planning",
-          "Generate the sprint plan that implementation agents follow — defines story order and dependencies.",
-          "bmad-sprint-planning",
-          false,
-          allFiles,
-          (f) => f.some((x) => x.toLowerCase().includes("sprint-status"))
-        ),
-        makeStep(
-          "atdd",
-          "Acceptance Tests (ATDD)",
-          "Generate red-phase acceptance test scaffolds from story criteria using the TDD cycle.",
-          "bmad-testarch-atdd",
-          true,
-          allFiles,
-          (f) => f.some((x) => x.includes("atdd"))
-        ),
-        makeStep(
-          "automate",
-          "Test Automation",
-          "Expand test automation coverage — fill gaps identified by test design and traceability analysis.",
-          "bmad-testarch-automate",
-          true,
-          allFiles,
-          (f) => f.some((x) => x.includes("automate"))
-        ),
-        makeStep(
-          "test-review",
-          "Test Review",
-          "Audit test quality against best practices — target score >80 per epic, >85 at release.",
-          "bmad-testarch-test-review",
-          true,
-          allFiles,
-          (f) => f.some((x) => x.includes("test-review"))
-        ),
-        makeStep(
-          "trace",
-          "Traceability Matrix",
-          "Generate requirements-to-test traceability matrix and quality gate decision with evidence.",
-          "bmad-testarch-trace",
-          true,
-          allFiles,
-          (f) => f.some((x) => x.includes("traceability"))
-        ),
-      ],
-    },
-    {
-      id: "improvement",
-      number: 5,
-      name: "Improvement",
-      description:
-        "When your project has evolved beyond its original plan — new features shipped, scope changed — use this workflow to bring docs back in sync and plan the next round of improvements.",
-      isOptional: true,
-      isSequential: true,
-      steps: IMPROVEMENT_STEPS.map((s) =>
-        makeStep(s.skill, s.name, s.description, s.skill, false, [], () =>
-          hasCompletedSkillSession(runtimeSessions, s.skill)
-        )
-      ),
-    },
-  ]
+	const phases: WorkflowPhase[] = [
+		{
+			id: "analysis",
+			number: 1,
+			name: "Analysis",
+			description:
+				"Optional research and ideation phase. Gather domain knowledge, explore the market, and shape your product idea before committing to a plan.",
+			isOptional: true,
+			isSequential: false,
+			steps: [
+				makeStep(
+					"brainstorming",
+					"Brainstorming",
+					"Facilitated creative ideation session — generate and refine ideas using diverse techniques.",
+					"bmad-brainstorming",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("brainstorm")),
+				),
+				makeStep(
+					"market-research",
+					"Market Research",
+					"Analyze the competitive landscape, customer needs, and market trends to validate opportunity.",
+					"bmad-market-research",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("market")),
+				),
+				makeStep(
+					"domain-research",
+					"Domain Research",
+					"Deep dive into industry domain, subject-matter expertise, and terminology.",
+					"bmad-domain-research",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("domain")),
+				),
+				makeStep(
+					"technical-research",
+					"Technical Research",
+					"Evaluate technical feasibility, architecture options, and implementation approaches.",
+					"bmad-technical-research",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("technical-research")),
+				),
+				makeStep(
+					"product-brief",
+					"Product Brief",
+					"Guided experience to nail down your product concept — a gentler approach when you're confident in your idea.",
+					"bmad-product-brief",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("brief")),
+				),
+				makeStep(
+					"prfaq",
+					"PRFAQ",
+					"Working Backwards challenge — stress-test your product concept through a PR/FAQ gauntlet to ensure feasibility.",
+					"bmad-prfaq",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("prfaq")),
+				),
+			],
+		},
+		{
+			id: "planning",
+			number: 2,
+			name: "Planning",
+			description:
+				"Define what you're building and why. Create the Product Requirements Document (PRD) that anchors all downstream decisions.",
+			isOptional: false,
+			isSequential: false,
+			steps: [
+				makeStep(
+					"prd",
+					"Product Requirements (PRD)",
+					"Expert-led facilitation to produce your Product Requirements Document — the single source of truth for scope and goals.",
+					"bmad-create-prd",
+					false,
+					planningFiles,
+					(f) => f.some((x) => x.toLowerCase() === "prd.md"),
+					"planning/prd",
+				),
+				makeStep(
+					"ux",
+					"UX Design",
+					"Plan UX patterns, user flows, and design specifications. Recommended if a UI is a primary piece of the project.",
+					"bmad-create-ux-design",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.toLowerCase().includes("ux")),
+					"planning/ux",
+				),
+				makeStep(
+					"nfr",
+					"NFR Assessment",
+					"Assess non-functional requirements — performance, security, reliability — to define acceptance criteria early.",
+					"bmad-testarch-nfr",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("nfr")),
+				),
+			],
+		},
+		{
+			id: "solutioning",
+			number: 3,
+			name: "Solutioning",
+			description:
+				"Design the technical architecture, break requirements into epics and stories, and validate everything is aligned before building.",
+			isOptional: false,
+			isSequential: false,
+			steps: [
+				makeStep(
+					"architecture",
+					"Architecture",
+					"Document technical design decisions — stack, data models, APIs, and infrastructure — so AI agents stay consistent.",
+					"bmad-create-architecture",
+					false,
+					planningFiles,
+					(f) => f.some((x) => x.toLowerCase().includes("architecture")),
+					"solutioning/architecture",
+				),
+				makeStep(
+					"test-design",
+					"Test Design",
+					"Create system-level test plans covering strategy, scope, risk assessment, and coverage targets.",
+					"bmad-testarch-test-design",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("test-design")),
+				),
+				makeStep(
+					"epics",
+					"Epics & Stories",
+					"Break the PRD into ordered epics with user stories, acceptance criteria, and dependency mapping.",
+					"bmad-create-epics-and-stories",
+					false,
+					planningFiles,
+					(f) => f.some((x) => x.toLowerCase().includes("epics")),
+				),
+				makeStep(
+					"test-design",
+					"Test Design",
+					"Create system-level test plans covering strategy, scope, risk assessment, and coverage targets.",
+					"bmad-testarch-test-design",
+					true,
+					planningFiles,
+					(f) => f.some((x) => x.includes("test-design")),
+				),
+				makeStep(
+					"framework",
+					"Test Framework",
+					"Initialize test framework (Playwright or Cypress) with project-specific configuration and fixtures.",
+					"bmad-testarch-framework",
+					true,
+					allFiles,
+					(f) =>
+						f.some(
+							(x) =>
+								x.includes("playwright.config") || x.includes("cypress.config"),
+						),
+				),
+				makeStep(
+					"ci",
+					"CI Quality Pipeline",
+					"Scaffold CI/CD quality pipeline with test execution, coverage gates, and artifact retention.",
+					"bmad-testarch-ci",
+					true,
+					allFiles,
+					(f) => f.some((x) => x.includes("ci") && x.includes(".yml")),
+				),
+				makeStep(
+					"readiness",
+					"Implementation Readiness",
+					"Gate check — validate that PRD, UX, Architecture, and Epics are complete and aligned before starting implementation.",
+					"bmad-check-implementation-readiness",
+					false,
+					planningFiles,
+					(f) => f.some((x) => x.toLowerCase().includes("readiness")),
+				),
+			],
+		},
+		{
+			id: "implementation",
+			number: 4,
+			name: "Implementation",
+			description:
+				"Build the product epic by epic, story by story. Each story goes through create → develop → code review → done.",
+			isOptional: false,
+			isSequential: false,
+			steps: [
+				makeStep(
+					"sprint",
+					"Sprint Planning",
+					"Generate the sprint plan that implementation agents follow — defines story order and dependencies.",
+					"bmad-sprint-planning",
+					false,
+					allFiles,
+					(f) => f.some((x) => x.toLowerCase().includes("sprint-status")),
+				),
+				makeStep(
+					"atdd",
+					"Acceptance Tests (ATDD)",
+					"Generate red-phase acceptance test scaffolds from story criteria using the TDD cycle.",
+					"bmad-testarch-atdd",
+					true,
+					allFiles,
+					(f) => f.some((x) => x.includes("atdd")),
+				),
+				makeStep(
+					"automate",
+					"Test Automation",
+					"Expand test automation coverage — fill gaps identified by test design and traceability analysis.",
+					"bmad-testarch-automate",
+					true,
+					allFiles,
+					(f) => f.some((x) => x.includes("automate")),
+				),
+				makeStep(
+					"test-review",
+					"Test Review",
+					"Audit test quality against best practices — target score >80 per epic, >85 at release.",
+					"bmad-testarch-test-review",
+					true,
+					allFiles,
+					(f) => f.some((x) => x.includes("test-review")),
+				),
+				makeStep(
+					"trace",
+					"Traceability Matrix",
+					"Generate requirements-to-test traceability matrix and quality gate decision with evidence.",
+					"bmad-testarch-trace",
+					true,
+					allFiles,
+					(f) => f.some((x) => x.includes("traceability")),
+				),
+			],
+		},
+		{
+			id: "improvement",
+			number: 5,
+			name: "Improvement",
+			description:
+				"When your project has evolved beyond its original plan — new features shipped, scope changed — use this workflow to bring docs back in sync and plan the next round of improvements.",
+			isOptional: true,
+			isSequential: true,
+			steps: IMPROVEMENT_STEPS.map((s) =>
+				makeStep(s.skill, s.name, s.description, s.skill, false, [], () =>
+					hasCompletedSkillSession(runtimeSessions, s.skill),
+				),
+			),
+		},
+	];
 
-  // Find the single next action: first incomplete non-optional step,
-  // or first incomplete optional step if no required steps are pending.
-  let nextActionStep: WorkflowStep | null = null
-  outer: for (const phase of phases) {
-    for (const step of phase.steps) {
-      if (!step.isCompleted && !step.isSkipped && !step.isOptional) {
-        nextActionStep = step
-        break outer
-      }
-    }
-  }
-  if (!nextActionStep) {
-    outer2: for (const phase of phases) {
-      for (const step of phase.steps) {
-        if (!step.isCompleted && !step.isSkipped) {
-          nextActionStep = step
-          break outer2
-        }
-      }
-    }
-  }
+	// Find the single next action: first incomplete non-optional step,
+	// or first incomplete optional step if no required steps are pending.
+	let nextActionStep: WorkflowStep | null = null;
+	outer: for (const phase of phases) {
+		for (const step of phase.steps) {
+			if (!step.isCompleted && !step.isSkipped && !step.isOptional) {
+				nextActionStep = step;
+				break outer;
+			}
+		}
+	}
+	if (!nextActionStep) {
+		outer2: for (const phase of phases) {
+			for (const step of phase.steps) {
+				if (!step.isCompleted && !step.isSkipped) {
+					nextActionStep = step;
+					break outer2;
+				}
+			}
+		}
+	}
 
-  return { phases, nextActionStep }
+	return { phases, nextActionStep };
 }
 
 function BMADWorkflowSection(props: {
-  planningFiles: string[]
-  implementationFiles: string[]
-  activeSkill: string | null
-  epics: OverviewEpic[]
-  epicLabels: Map<string, string>
-  epicConsistency: OverviewEpicConsistency
-  runtimeSessions: RuntimeSession[]
+	planningFiles: string[];
+	implementationFiles: string[];
+	activeSkill: string | null;
+	epics: OverviewEpic[];
+	epicLabels: Map<string, string>;
+	epicConsistency: OverviewEpicConsistency;
+	runtimeSessions: RuntimeSession[];
 }) {
-  const {
-    planningFiles,
-    implementationFiles,
-    activeSkill,
-    epics,
-    epicLabels,
-    epicConsistency,
-    runtimeSessions,
-  } = props
-  const navigate = useNavigate()
-  const { phases, nextActionStep } = detectWorkflowStatus(
-    planningFiles,
-    implementationFiles,
-    runtimeSessions
-  )
-  const sortedEpics = useMemo(() => [...epics].sort((a, b) => a.number - b.number), [epics])
+	const {
+		planningFiles,
+		implementationFiles,
+		activeSkill,
+		epics,
+		epicLabels,
+		epicConsistency,
+		runtimeSessions,
+	} = props;
+	const navigate = useNavigate();
+	const { phases, nextActionStep } = detectWorkflowStatus(
+		planningFiles,
+		implementationFiles,
+		runtimeSessions,
+	);
+	const sortedEpics = useMemo(
+		() => [...epics].sort((a, b) => a.number - b.number),
+		[epics],
+	);
 
-  const defaultOpenPhase =
-    phases.find((p) => p.id === "implementation") ?? phases[phases.length - 1]
-  const defaultOpen = new Set([defaultOpenPhase?.id].filter(Boolean) as string[])
-  const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen)
-  const [pendingActiveSkill, setPendingActiveSkill] = useState<string | null>(null)
+	const defaultOpenPhase =
+		phases.find((p) => p.id === "implementation") ?? phases[phases.length - 1];
+	const defaultOpen = new Set(
+		[defaultOpenPhase?.id].filter(Boolean) as string[],
+	);
+	const [openPhases, setOpenPhases] = useState<Set<string>>(defaultOpen);
+	const [pendingActiveSkill, setPendingActiveSkill] = useState<string | null>(
+		null,
+	);
 
-  // Once the server confirms the active skill via SSE, clear the optimistic state
-  useEffect(() => {
-    if (activeSkill !== null) {
-      setPendingActiveSkill(null)
-    }
-  }, [activeSkill])
+	// Once the server confirms the active skill via SSE, clear the optimistic state
+	useEffect(() => {
+		if (activeSkill !== null) {
+			setPendingActiveSkill(null);
+		}
+	}, [activeSkill]);
 
-  const effectiveActiveSkill = activeSkill ?? pendingActiveSkill
+	const effectiveActiveSkill = activeSkill ?? pendingActiveSkill;
 
-  const togglePhase = (id: string) => {
-    setOpenPhases((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
-  }
+	const togglePhase = (id: string) => {
+		setOpenPhases((prev) => {
+			const next = new Set(prev);
+			if (next.has(id)) {
+				next.delete(id);
+			} else {
+				next.add(id);
+			}
+			return next;
+		});
+	};
 
-  const handlePlayClick = async (step: WorkflowStep) => {
-    if (!IS_LOCAL_MODE) return
-    setPendingActiveSkill(step.skill)
-    try {
-      const response = await fetch("/api/workflow/run-skill", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ skill: step.skill }),
-      })
-      if (response.ok) {
-        const result = (await response.json()) as { sessionId: string }
-        if (result.sessionId) {
-          void navigate({
-            to: "/session/$sessionId",
-            params: { sessionId: result.sessionId },
-          })
-        }
-      }
-    } catch (_err) {
-      // ignore fetch errors — server will log
-    }
-  }
+	const handlePlayClick = async (step: WorkflowStep) => {
+		if (!IS_LOCAL_MODE) return;
+		setPendingActiveSkill(step.skill);
+		try {
+			const response = await fetch("/api/workflow/run-skill", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ skill: step.skill }),
+			});
+			if (response.ok) {
+				const result = (await response.json()) as { sessionId: string };
+				if (result.sessionId) {
+					void navigate({
+						to: "/session/$sessionId",
+						params: { sessionId: result.sessionId },
+					});
+				}
+			}
+		} catch (_err) {
+			// ignore fetch errors — server will log
+		}
+	};
 
-  return (
-    <section className="panel reveal delay-1">
-      <h2>BMAD Workflow</h2>
-      <p className="subtitle" style={{ marginBottom: "1rem" }}>
-        The BMAD Method guides your project from idea to shipped product through five phases. Each
-        phase produces artifacts that feed the next, keeping AI agents aligned and humans in
-        control.
-      </p>
+	return (
+		<section className="panel reveal delay-1">
+			<h2>BMAD Workflow</h2>
+			<p className="subtitle" style={{ marginBottom: "1rem" }}>
+				The BMAD Method guides your project from idea to shipped product through
+				five phases. Each phase produces artifacts that feed the next, keeping
+				AI agents aligned and humans in control.
+			</p>
 
-      <div className="workflow-phases">
-        {phases.map((phase) => {
-          const isOpen = openPhases.has(phase.id)
-          const hasNextAction = phase.steps.some((s) => s.id === nextActionStep?.id)
+			<div className="workflow-phases">
+				{phases.map((phase) => {
+					const isOpen = openPhases.has(phase.id);
+					const hasNextAction = phase.steps.some(
+						(s) => s.id === nextActionStep?.id,
+					);
 
-          // For the implementation phase, progress includes steps (Sprint Planning)
-          // plus all epics.
-          const isImplementationPhase = phase.id === "implementation"
-          const epicsDoneCount = sortedEpics.filter((e) => e.status === "done").length
-          const epicsTotal = sortedEpics.length
-          const stepsDone = phase.steps.filter((s) => s.isCompleted).length
+					// For the implementation phase, progress includes steps (Sprint Planning)
+					// plus all epics.
+					const isImplementationPhase = phase.id === "implementation";
+					const epicsDoneCount = sortedEpics.filter(
+						(e) => e.status === "done",
+					).length;
+					const epicsTotal = sortedEpics.length;
+					const stepsDone = phase.steps.filter((s) => s.isCompleted).length;
 
-          const progressDone =
-            isImplementationPhase && epicsTotal > 0 ? stepsDone + epicsDoneCount : stepsDone
-          const progressTotal =
-            isImplementationPhase && epicsTotal > 0
-              ? phase.steps.length + epicsTotal
-              : phase.steps.length
+					const progressDone =
+						isImplementationPhase && epicsTotal > 0
+							? stepsDone + epicsDoneCount
+							: stepsDone;
+					const progressTotal =
+						isImplementationPhase && epicsTotal > 0
+							? phase.steps.length + epicsTotal
+							: phase.steps.length;
 
-          return (
-            <div
-              id={phase.id}
-              key={phase.id}
-              className={`workflow-phase${isOpen ? " workflow-phase-open" : ""}${hasNextAction ? " workflow-phase-active" : ""}`}
-            >
-              <button
-                className="workflow-phase-header"
-                onClick={() => togglePhase(phase.id)}
-                type="button"
-                aria-expanded={isOpen}
-              >
-                <span className="workflow-phase-number">{phase.number}</span>
-                <span className="workflow-phase-name">{phase.name}</span>
-                {phase.isOptional && <span className="workflow-step-optional">optional</span>}
-                <span className="workflow-phase-progress">
-                  {progressDone}/{progressTotal}
-                </span>
-                {(() => {
-                  if (isImplementationPhase && epicsTotal > 0) {
-                    const allDone = progressDone === progressTotal
-                    const anyProgress =
-                      stepsDone > 0 ||
-                      epicsDoneCount > 0 ||
-                      sortedEpics.some((e) => e.status === "in-progress")
-                    const status = allDone ? "done" : anyProgress ? "in-progress" : "backlog"
-                    return <StatusBadge status={status} />
-                  }
-                  const allStepsDone =
-                    phase.steps.length > 0 && phase.steps.every((s) => s.isCompleted)
-                  const anyDone = phase.steps.some((s) => s.isCompleted)
-                  const status = allStepsDone ? "done" : anyDone ? "in-progress" : "pending"
-                  return <StatusBadge status={status} />
-                })()}
-                <span className="workflow-phase-chevron" aria-hidden="true">
-                  {isOpen ? "▲" : "▼"}
-                </span>
-              </button>
-              {isOpen && (
-                <div className="workflow-steps">
-                  <p className="workflow-phase-description">{phase.description}</p>
-                  {phase.steps.map((step, stepIndex) => {
-                    const isRunning = step.skill === effectiveActiveSkill
-                    const shouldShowEpics = phase.id === "implementation" && step.id === "sprint"
-                    const hasSprintWarning = shouldShowEpics && epicConsistency.hasMismatch
-                    const stepStatus = hasSprintWarning
-                      ? "warning"
-                      : step.isCompleted
-                        ? "done"
-                        : "pending"
-                    const sprintWarningMessage =
-                      epicConsistency.warning ?? SPRINT_WARNING_FALLBACK_MESSAGE
+					return (
+						<div
+							id={phase.id}
+							key={phase.id}
+							className={`workflow-phase${isOpen ? " workflow-phase-open" : ""}${hasNextAction ? " workflow-phase-active" : ""}`}
+						>
+							<button
+								className="workflow-phase-header"
+								onClick={() => togglePhase(phase.id)}
+								type="button"
+								aria-expanded={isOpen}
+							>
+								<span className="workflow-phase-number">{phase.number}</span>
+								<span className="workflow-phase-name">{phase.name}</span>
+								{phase.isOptional && (
+									<span className="workflow-step-optional">optional</span>
+								)}
+								<span className="workflow-phase-progress">
+									{progressDone}/{progressTotal}
+								</span>
+								{(() => {
+									if (isImplementationPhase && epicsTotal > 0) {
+										const allDone = progressDone === progressTotal;
+										const anyProgress =
+											stepsDone > 0 ||
+											epicsDoneCount > 0 ||
+											sortedEpics.some((e) => e.status === "in-progress");
+										const status = allDone
+											? "done"
+											: anyProgress
+												? "in-progress"
+												: "backlog";
+										return <StatusBadge status={status} />;
+									}
+									const allStepsDone =
+										phase.steps.length > 0 &&
+										phase.steps.every((s) => s.isCompleted);
+									const anyDone = phase.steps.some((s) => s.isCompleted);
+									const status = allStepsDone
+										? "done"
+										: anyDone
+											? "in-progress"
+											: "pending";
+									return <StatusBadge status={status} />;
+								})()}
+								<span className="workflow-phase-chevron" aria-hidden="true">
+									{isOpen ? "▲" : "▼"}
+								</span>
+							</button>
+							{isOpen && (
+								<div className="workflow-steps">
+									<p className="workflow-phase-description">
+										{phase.description}
+									</p>
+									{phase.steps.map((step, stepIndex) => {
+										const isRunning = step.skill === effectiveActiveSkill;
+										const shouldShowEpics =
+											phase.id === "implementation" && step.id === "sprint";
+										const hasSprintWarning =
+											shouldShowEpics && epicConsistency.hasMismatch;
+										const stepStatus = hasSprintWarning
+											? "warning"
+											: step.isCompleted
+												? "done"
+												: "pending";
+										const sprintWarningMessage =
+											epicConsistency.warning ??
+											SPRINT_WARNING_FALLBACK_MESSAGE;
 
-                    // For sequential phases, only the first not-started step is actionable
-                    const isSequentialNext =
-                      phase.isSequential &&
-                      !step.isCompleted &&
-                      stepIndex === phase.steps.findIndex((s) => !s.isCompleted)
-                    const isActionable =
-                      nextActionStep?.id === step.id || hasSprintWarning || isSequentialNext
+										// For sequential phases, only the first not-started step is actionable
+										const isSequentialNext =
+											phase.isSequential &&
+											!step.isCompleted &&
+											stepIndex ===
+												phase.steps.findIndex((s) => !s.isCompleted);
+										const isActionable =
+											nextActionStep?.id === step.id ||
+											hasSprintWarning ||
+											isSequentialNext;
 
-                    return (
-                      <div
-                        key={step.id}
-                        className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${isActionable ? " workflow-step-next" : ""}${isRunning ? " workflow-step-running" : ""}`}
-                      >
-                        <div className="workflow-step-body">
-                          <span className="workflow-step-name">{step.name}</span>
-                          {step.isOptional && (
-                            <span className="workflow-step-optional">optional</span>
-                          )}
-                          {hasSprintWarning ? (
-                            <span
-                              className="workflow-step-warning-indicator"
-                              title={sprintWarningMessage}
-                            >
-                              ⚠
-                            </span>
-                          ) : null}
-                        </div>
-                        {isActionable && !isRunning && (
-                          <button
-                            className="icon-button icon-button-play"
-                            disabled={!IS_LOCAL_MODE}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              void handlePlayClick(step)
-                            }}
-                            title={IS_LOCAL_MODE ? `Run ${step.skill}` : PROD_DISABLED_TITLE}
-                            type="button"
-                          >
-                            <span aria-hidden="true" className="icon-glyph">
-                              ▶
-                            </span>
-                          </button>
-                        )}
-                        {(() => {
-                          const matchingSession = runtimeSessions.find(
-                            (s) => s.skill === step.skill && s.status !== "planned"
-                          )
-                          return matchingSession ? (
-                            <Link
-                              className={`session-link-icon${matchingSession.status === "running" ? " session-link-running" : ""}${matchingSession.status === "failed" || matchingSession.status === "cancelled" ? " session-link-failed" : ""}`}
-                              params={{ sessionId: matchingSession.id }}
-                              title={`View session: ${matchingSession.id}`}
-                              to="/session/$sessionId"
-                            >
-                              ◉
-                            </Link>
-                          ) : null
-                        })()}
-                        {isRunning ? (
-                          <span
-                            className="step-badge step-running"
-                            title={hasSprintWarning ? sprintWarningMessage : undefined}
-                          >
-                            <span aria-hidden="true" className="agent-icon">
-                              ⬡
-                            </span>
-                            {" running"}
-                          </span>
-                        ) : (
-                          <StatusBadge
-                            status={stepStatus}
-                            title={hasSprintWarning ? sprintWarningMessage : undefined}
-                          />
-                        )}
-                      </div>
-                    )
-                  })}
-                  {phase.id === "implementation" &&
-                    sortedEpics.map((epic) => (
-                      <div className="workflow-step" key={epic.id}>
-                        <div className="workflow-step-body">
-                          <Link params={{ epicId: epic.id }} to="/epic/$epicId">
-                            {`Epic ${epic.number}: ${epicLabels.get(epic.id) ?? epic.id}`}
-                          </Link>
-                        </div>
-                        <StatusBadge status={epic.status} />
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-      <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
-        Testing phase coming soon via{" "}
-        <a
-          className="underline"
-          href="https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/"
-          rel="noopener noreferrer"
-          style={{ color: "var(--highlight)" }}
-          target="_blank"
-        >
-          TEA (Test Engineering Agent)
-        </a>
-        .
-      </p>
-    </section>
-  )
+										return (
+											<div
+												key={step.id}
+												className={`workflow-step${step.isCompleted ? " workflow-step-done" : ""}${isActionable ? " workflow-step-next" : ""}${isRunning ? " workflow-step-running" : ""}`}
+											>
+												<div className="workflow-step-body">
+													<span className="workflow-step-name">
+														{step.name}
+													</span>
+													{step.isOptional && (
+														<span className="workflow-step-optional">
+															optional
+														</span>
+													)}
+													{hasSprintWarning ? (
+														<span
+															className="workflow-step-warning-indicator"
+															title={sprintWarningMessage}
+														>
+															⚠
+														</span>
+													) : null}
+												</div>
+												{isActionable && !isRunning && (
+													<button
+														className="icon-button icon-button-play"
+														disabled={!IS_LOCAL_MODE}
+														onClick={(e) => {
+															e.stopPropagation();
+															void handlePlayClick(step);
+														}}
+														title={
+															IS_LOCAL_MODE
+																? `Run ${step.skill}`
+																: PROD_DISABLED_TITLE
+														}
+														type="button"
+													>
+														<span aria-hidden="true" className="icon-glyph">
+															▶
+														</span>
+													</button>
+												)}
+												{(() => {
+													const matchingSession = runtimeSessions.find(
+														(s) =>
+															s.skill === step.skill && s.status !== "planned",
+													);
+													return matchingSession ? (
+														<Link
+															className={`session-link-icon${matchingSession.status === "running" ? " session-link-running" : ""}${matchingSession.status === "failed" || matchingSession.status === "cancelled" ? " session-link-failed" : ""}`}
+															params={{ sessionId: matchingSession.id }}
+															title={`View session: ${matchingSession.id}`}
+															to="/session/$sessionId"
+														>
+															◉
+														</Link>
+													) : null;
+												})()}
+												{isRunning ? (
+													<span
+														className="step-badge step-running"
+														title={
+															hasSprintWarning
+																? sprintWarningMessage
+																: undefined
+														}
+													>
+														<span aria-hidden="true" className="agent-icon">
+															⬡
+														</span>
+														{" running"}
+													</span>
+												) : (
+													<StatusBadge
+														status={stepStatus}
+														title={
+															hasSprintWarning
+																? sprintWarningMessage
+																: undefined
+														}
+													/>
+												)}
+											</div>
+										);
+									})}
+									{phase.id === "implementation" &&
+										sortedEpics.map((epic) => (
+											<div className="workflow-step" key={epic.id}>
+												<div className="workflow-step-body">
+													<Link params={{ epicId: epic.id }} to="/epic/$epicId">
+														{`Epic ${epic.number}: ${epicLabels.get(epic.id) ?? epic.id}`}
+													</Link>
+												</div>
+												<StatusBadge status={epic.status} />
+											</div>
+										))}
+								</div>
+							)}
+						</div>
+					);
+				})}
+			</div>
+			<p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
+				Testing phase coming soon via{" "}
+				<a
+					className="underline"
+					href="https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/"
+					rel="noopener noreferrer"
+					style={{ color: "var(--highlight)" }}
+					target="_blank"
+				>
+					TEA (Test Engineering Agent)
+				</a>
+				.
+			</p>
+		</section>
+	);
 }
 
 export function EpicTableSection(props: {
-  filteredEpics: OverviewEpic[]
-  epicLabels: Map<string, string>
+	filteredEpics: OverviewEpic[];
+	epicLabels: Map<string, string>;
 }) {
-  const { filteredEpics, epicLabels } = props
+	const { filteredEpics, epicLabels } = props;
 
-  return (
-    <section className="panel reveal delay-3">
-      <h2>Epic Table</h2>
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Status</th>
-              <th>Retrospective</th>
-              <th>Stories</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredEpics.map((epic, index) => (
-              <tr key={epic.id}>
-                <td>
-                  <span
-                    className={`improvement-step-number${epic.status === "done" ? " improvement-step-number-done" : ""}`}
-                  >
-                    {index + 1}
-                  </span>
-                </td>
-                <td>
-                  <Link params={{ epicId: epic.id }} to="/epic/$epicId">
-                    {epicLabels.get(epic.id) ?? epic.id}
-                  </Link>
-                </td>
-                <td>
-                  <StatusBadge status={epic.status} />
-                </td>
-                <td>
-                  <StatusBadge status={epic.lifecycleSteps["bmad-retrospective"]} />
-                </td>
-                <td>{epic.storyCount}</td>
-              </tr>
-            ))}
-            {filteredEpics.length === 0 ? (
-              <tr>
-                <td colSpan={5}>No epics found in sprint status</td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  )
+	return (
+		<section className="panel reveal delay-3">
+			<h2>Epic Table</h2>
+			<div className="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Status</th>
+							<th>Retrospective</th>
+							<th>Stories</th>
+						</tr>
+					</thead>
+					<tbody>
+						{filteredEpics.map((epic, index) => (
+							<tr key={epic.id}>
+								<td>
+									<span
+										className={`improvement-step-number${epic.status === "done" ? " improvement-step-number-done" : ""}`}
+									>
+										{index + 1}
+									</span>
+								</td>
+								<td>
+									<Link params={{ epicId: epic.id }} to="/epic/$epicId">
+										{epicLabels.get(epic.id) ?? epic.id}
+									</Link>
+								</td>
+								<td>
+									<StatusBadge status={epic.status} />
+								</td>
+								<td>
+									<StatusBadge
+										status={epic.lifecycleSteps["bmad-retrospective"]}
+									/>
+								</td>
+								<td>{epic.storyCount}</td>
+							</tr>
+						))}
+						{filteredEpics.length === 0 ? (
+							<tr>
+								<td colSpan={5}>No epics found in sprint status</td>
+							</tr>
+						) : null}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	);
 }
 
 export function isEpicFullyFinished(epic: OverviewEpic) {
-  return epic.status === "done" && epic.lifecycleSteps["bmad-retrospective"] === "completed"
+	return (
+		epic.status === "done" &&
+		epic.lifecycleSteps["bmad-retrospective"] === "completed"
+	);
 }
 
 export const IMPROVEMENT_STEPS = [
-  {
-    number: 1,
-    name: "Correct Course",
-    skill: "bmad-correct-course",
-    code: "CC",
-    description:
-      "Assess what has changed since the last planning cycle. Compares your current codebase and features against the existing PRD, architecture, and epics to identify drift. Produces a structured change proposal listing which documents need updating and how.",
-  },
-  {
-    number: 2,
-    name: "Edit PRD",
-    skill: "bmad-edit-prd",
-    code: "EP",
-    description:
-      "Update the Product Requirements Document with new features, scope changes, and revised goals identified during Correct Course. Keeps the PRD as the single source of truth for what the product does and why.",
-  },
-  {
-    number: 3,
-    name: "Update Architecture",
-    skill: "bmad-create-architecture",
-    code: "CA",
-    description:
-      "Revise technical design decisions if new functionality introduced architectural changes — new data models, API patterns, state management, or infrastructure. Skip if Correct Course confirms architecture is still accurate.",
-  },
-  {
-    number: 4,
-    name: "Create Epics & Stories",
-    skill: "bmad-create-epics-and-stories",
-    code: "CE",
-    description:
-      "Add a new epic to the backlog with properly scoped user stories, acceptance criteria, and dependency mapping. This is where improvement ideas become actionable implementation work.",
-  },
-  {
-    number: 5,
-    name: "Check Implementation Readiness",
-    skill: "bmad-check-implementation-readiness",
-    code: "IR",
-    description:
-      "Gate check — validate that the updated PRD, architecture, and new epic are complete, consistent, and aligned before starting implementation. Catches mismatches early.",
-  },
-] as const
+	{
+		number: 1,
+		name: "Correct Course",
+		skill: "bmad-correct-course",
+		code: "CC",
+		description:
+			"Assess what has changed since the last planning cycle. Compares your current codebase and features against the existing PRD, architecture, and epics to identify drift. Produces a structured change proposal listing which documents need updating and how.",
+	},
+	{
+		number: 2,
+		name: "Edit PRD",
+		skill: "bmad-edit-prd",
+		code: "EP",
+		description:
+			"Update the Product Requirements Document with new features, scope changes, and revised goals identified during Correct Course. Keeps the PRD as the single source of truth for what the product does and why.",
+	},
+	{
+		number: 3,
+		name: "Update Architecture",
+		skill: "bmad-create-architecture",
+		code: "CA",
+		description:
+			"Revise technical design decisions if new functionality introduced architectural changes — new data models, API patterns, state management, or infrastructure. Skip if Correct Course confirms architecture is still accurate.",
+	},
+	{
+		number: 4,
+		name: "Create Epics & Stories",
+		skill: "bmad-create-epics-and-stories",
+		code: "CE",
+		description:
+			"Add a new epic to the backlog with properly scoped user stories, acceptance criteria, and dependency mapping. This is where improvement ideas become actionable implementation work.",
+	},
+	{
+		number: 5,
+		name: "Check Implementation Readiness",
+		skill: "bmad-check-implementation-readiness",
+		code: "IR",
+		description:
+			"Gate check — validate that the updated PRD, architecture, and new epic are complete, consistent, and aligned before starting implementation. Catches mismatches early.",
+	},
+] as const;
 
 export function HomePage() {
-  const [data, setData] = useState<OverviewResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  useEffect(() => {
-    let mounted = true
-    let eventSource: EventSource | null = null
+	const [data, setData] = useState<OverviewResponse | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	useEffect(() => {
+		let mounted = true;
+		let eventSource: EventSource | null = null;
 
-    const applyPayload = (payload: OverviewResponse) => {
-      if (!mounted) {
-        return
-      }
+		const applyPayload = (payload: OverviewResponse) => {
+			if (!mounted) {
+				return;
+			}
 
-      setData(payload)
-      setError(null)
-      setLoading(false)
-    }
+			setData(payload);
+			setError(null);
+			setLoading(false);
+		};
 
-    const load = async () => {
-      try {
-        const response = await fetch(apiUrl("/api/overview"))
-        if (!response.ok) {
-          throw new Error(`overview request failed: ${response.status}`)
-        }
-        applyPayload((await response.json()) as OverviewResponse)
-      } catch (fetchError) {
-        if (mounted) {
-          setError(String(fetchError))
-          setLoading(false)
-        }
-      }
-    }
+		const load = async () => {
+			try {
+				const response = await fetch(apiUrl("/api/overview"));
+				if (!response.ok) {
+					throw new Error(`overview request failed: ${response.status}`);
+				}
+				applyPayload((await response.json()) as OverviewResponse);
+			} catch (fetchError) {
+				if (mounted) {
+					setError(String(fetchError));
+					setLoading(false);
+				}
+			}
+		};
 
-    load()
+		load();
 
-    if (IS_LOCAL_MODE && typeof EventSource !== "undefined") {
-      eventSource = new EventSource("/api/events/overview")
-      eventSource.onmessage = (event) => {
-        try {
-          applyPayload(JSON.parse(event.data) as OverviewResponse)
-        } catch (parseError) {
-          if (mounted) {
-            setError(String(parseError))
-          }
-        }
-      }
-    }
+		if (IS_LOCAL_MODE && typeof EventSource !== "undefined") {
+			eventSource = new EventSource("/api/events/overview");
+			eventSource.onmessage = (event) => {
+				try {
+					applyPayload(JSON.parse(event.data) as OverviewResponse);
+				} catch (parseError) {
+					if (mounted) {
+						setError(String(parseError));
+					}
+				}
+			};
+		}
 
-    return () => {
-      mounted = false
-      eventSource?.close()
-    }
-  }, [])
+		return () => {
+			mounted = false;
+			eventSource?.close();
+		};
+	}, []);
 
-  const epicLabels = useMemo(
-    () => new Map((data?.dependencyTree.nodes ?? []).map((n) => [n.id, n.label])),
-    [data?.dependencyTree.nodes]
-  )
+	const epicLabels = useMemo(
+		() =>
+			new Map((data?.dependencyTree.nodes ?? []).map((n) => [n.id, n.label])),
+		[data?.dependencyTree.nodes],
+	);
 
-  if (loading || (error && !data)) {
-    return <main className="screen loading">{loading ? "Loading BMAD UI..." : error}</main>
-  }
+	if (loading || (error && !data)) {
+		return (
+			<main className="screen loading">
+				{loading ? "Loading BMAD UI..." : error}
+			</main>
+		);
+	}
 
-  return (
-    <main className="screen">
-      <section className="hero panel reveal">
-        <h1>BMAD UI</h1>
-        <p className="subtitle">
-          Live overview of sprint progression, active sessions, and key BMAD artifacts.
-        </p>
-      </section>
+	return (
+		<main className="screen">
+			<section className="hero panel reveal">
+				<h1>BMAD UI</h1>
+				<p className="subtitle">
+					Live overview of sprint progression, active sessions, and key BMAD
+					artifacts.
+				</p>
+			</section>
 
-      <BMADWorkflowSection
-        activeSkill={data?.activeWorkflowSkill ?? null}
-        epicLabels={epicLabels}
-        epicConsistency={
-          data?.epicConsistency ?? {
-            hasMismatch: false,
-            epicsMarkdownCount: 0,
-            sprintStatusCount: 0,
-            warning: null,
-          }
-        }
-        epics={data?.sprintOverview.epics ?? []}
-        implementationFiles={data?.implementationArtifactFiles ?? []}
-        planningFiles={data?.planningArtifactFiles ?? []}
-        runtimeSessions={data?.runtimeState?.sessions ?? []}
-      />
+			<BMADWorkflowSection
+				activeSkill={data?.activeWorkflowSkill ?? null}
+				epicLabels={epicLabels}
+				epicConsistency={
+					data?.epicConsistency ?? {
+						hasMismatch: false,
+						epicsMarkdownCount: 0,
+						sprintStatusCount: 0,
+						warning: null,
+					}
+				}
+				epics={data?.sprintOverview.epics ?? []}
+				implementationFiles={data?.implementationArtifactFiles ?? []}
+				planningFiles={data?.planningArtifactFiles ?? []}
+				runtimeSessions={data?.runtimeState?.sessions ?? []}
+			/>
 
-      {error ? <p className="error-banner">{error}</p> : null}
-    </main>
-  )
+			{error ? <p className="error-banner">{error}</p> : null}
+		</main>
+	);
 }
