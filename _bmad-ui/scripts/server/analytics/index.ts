@@ -2,3 +2,4 @@
 export * from "./costing.js";
 export * from "./store.js";
 export * from "./aggregation.js";
+export * from "./quality-config.js";

@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import type { Plugin } from "vite";
+import { generateQualityConfigYaml } from "./server/analytics/index.js";
 import {
 	STORY_WORKFLOW_STEPS,
 	analyticsToRuntimeSession,
@@ -51,6 +52,7 @@ function staticDataPlugin(): Plugin {
 			// ── Analytics ──────────────────────────────────────────
 			const analytics = await buildAnalyticsPayload();
 			emit("analytics.json", analytics);
+			emit("analytics/quality-config.json", generateQualityConfigYaml(analytics));
 
 			// ── Epic details ───────────────────────────────────────
 			const epicsContent = existsSync(epicsFile)

@@ -112,8 +112,8 @@ development_status:
   10-1-enrich-session-sync-daemon-with-outcome-and-complexity-metrics: ready-for-dev
   10-2-analytics-api-session-quality-aggregation-endpoint: ready-for-dev
   10-3-session-quality-dashboard-effectiveness-charts: done
-  10-4-skill-model-effectiveness-matrix: ready-for-dev
-  10-5-autonomous-workflow-configuration-generator: ready-for-dev
+  10-4-skill-model-effectiveness-matrix: done
+  10-5-autonomous-workflow-configuration-generator: done
   epic-10-retrospective: optional
 
   epic-11: done

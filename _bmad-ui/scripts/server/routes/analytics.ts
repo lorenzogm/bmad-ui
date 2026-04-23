@@ -3,6 +3,7 @@ import path from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import {
   buildAnalyticsPayload,
+  generateQualityConfigYaml,
   readAnalyticsStore,
 } from "../analytics/index.js";
 import {
@@ -23,6 +24,19 @@ export async function handleAnalyticsRoutes(
     } catch (analyticsError) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: String(analyticsError) }));
+    }
+    return true;
+  }
+
+  if (requestUrl.pathname === "/api/analytics/quality-config" && req.method === "GET") {
+    try {
+      const payload = await buildAnalyticsPayload();
+      const qualityConfig = generateQualityConfigYaml(payload);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(qualityConfig));
+    } catch (qualityConfigError) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: String(qualityConfigError) }));
     }
     return true;
   }

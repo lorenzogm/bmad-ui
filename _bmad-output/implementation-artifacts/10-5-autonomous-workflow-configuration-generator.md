@@ -1,6 +1,6 @@
 # Story 10.5: Autonomous Workflow Configuration Generator
 
-Status: review
+Status: done
 
 ## Story
 
@@ -52,6 +52,11 @@ so that I can configure an autonomous workflow runner to use the best-performing
 - [x] Task 5: Quality gate (AC: all)
   - [x] Run `cd _bmad-ui && pnpm check` — lint + types + tests + build pass
   - [x] No TypeScript errors, no Biome lint violations
+
+### Review Findings
+
+- [x] [Review][Patch] Restore `/api/analytics/quality-config` endpoint wiring and static build output [`_bmad-ui/scripts/server/routes/analytics.ts:30`]
+- [x] [Review][Patch] Re-export quality-config analytics helpers so route/static generation wiring resolves cleanly [`_bmad-ui/scripts/server/analytics/index.ts:5`]
 
 ## Dev Notes
 
