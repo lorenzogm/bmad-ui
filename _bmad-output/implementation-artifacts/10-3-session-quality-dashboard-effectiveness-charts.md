@@ -1,6 +1,6 @@
 # Story 10.3: Session Quality Dashboard — Effectiveness Charts
 
-Status: review
+Status: done
 
 ## Story
 
@@ -56,6 +56,10 @@ so that I can visually identify which workflows succeed autonomously and which r
 
 - [x] Task 6: Run quality gate (AC: all)
   - [x] `cd _bmad-ui && pnpm check` passes with zero errors
+
+### Review Findings
+
+- [x] [Review] ✅ Clean review — all layers passed (no decision-needed, patch, or defer findings)
 
 ## Dev Notes
 
