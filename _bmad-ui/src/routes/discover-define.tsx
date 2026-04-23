@@ -124,8 +124,9 @@ function PhaseAccordion(props: {
   onRunSkill: (skill: string) => void
 }) {
   const { phase, runtimeSessions, activeSkill, pendingSkill, onRunSkill } = props
-  const doneCount = phase.steps.filter((s) => s.isCompleted).length
-  const totalCount = phase.steps.length
+  const nonSkippedSteps = phase.steps.filter((s) => !s.isSkipped)
+  const doneCount = nonSkippedSteps.filter((s) => s.isCompleted).length
+  const totalCount = nonSkippedSteps.length
 
   return (
     <details
@@ -145,7 +146,7 @@ function PhaseAccordion(props: {
             {phase.name}
           </span>
           <span className="text-xs" style={{ color: "var(--muted)" }}>
-            {doneCount}/{totalCount} steps done
+            {totalCount > 0 ? `${doneCount}/${totalCount} steps done` : "All skipped"}
           </span>
         </div>
         <span className="text-xs" style={{ color: "var(--muted)" }}>

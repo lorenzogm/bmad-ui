@@ -682,6 +682,24 @@ export function detectWorkflowStatus(
           planningFiles,
           (f) => f.some((x) => x.toLowerCase().includes("readiness"))
         ),
+        makeStep(
+          "test-design",
+          "Test Design",
+          "Create system-level or epic-level test plans covering strategy, scope, and coverage targets.",
+          "bmad-testarch-test-design",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("test-design"))
+        ),
+        makeStep(
+          "nfr",
+          "NFR Assessment",
+          "Assess non-functional requirements — performance, security, reliability — before implementation begins.",
+          "bmad-testarch-nfr",
+          true,
+          planningFiles,
+          (f) => f.some((x) => x.includes("nfr"))
+        ),
       ],
     },
     {

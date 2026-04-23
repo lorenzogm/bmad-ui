@@ -42,3 +42,12 @@ Resolution (2026-04-16): both items were implemented and closed in `.github/work
 - Story status synchronization only updates when the incoming markdown status has a different order rank (`_bmad-ui/scripts/agent-server.ts:1284`), which can block intentional regressions for resets/reopens.
 - Story discovery silently returns when reading implementation-artifact directories fails (`_bmad-ui/scripts/agent-server.ts:1328`), obscuring operational failures.
 - Story detail step-state fallback can diverge from story-level status when no active review session exists (`_bmad-ui/scripts/agent-server.ts:4587`).
+
+## Deferred from: UI fixes batch plan (2026-04-23)
+
+- **Spec B — Docs browser fix:** Docs listing page shows wrong docs (hardcoded `KNOWN_DOCS` catalog in `src/lib/docs-catalog.ts` doesn't match actual `docs/` folder contents); docs detail page fetches wrong content. Root cause: stale 4-entry catalog vs 17+ real doc files.
+- **Spec C — Develop & Deliver sprint board:** Transform `/develop-deliver` from a simple epics progress list into a Jira-like backlog board view showing story status columns (To Do, In Progress, In Review, Done) per sprint.
+
+## Deferred from: code review of spec-homepage-dd-epic-fixes (2026-04-23)
+
+- Epic 13 entry in `epics.md` omits `**FRs reinforced:**` and `**NFRs reinforced:**` cross-references that all other epics include. Add FR/NFR mapping when epic 13 stories are formally planned.

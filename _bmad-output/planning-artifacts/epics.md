@@ -249,6 +249,9 @@ Users and contributors can work with a cleaner `_bmad-ui/` directory layout wher
 **FRs reinforced:** FR22, FR26, FR27, FR38
 **NFRs reinforced:** NFR16, NFR19
 
+### Epic 13: Navigation & Content Discovery
+Users navigate bmad-ui through a consolidated 5-section sidebar (Home, Discover & Define, Develop & Deliver, Documentation, Agents) with dedicated pages for browsing project documentation and viewing the agent catalog.
+
 ---
 
 ## Epic 1: Repository Bootstrap & Governance Scaffold

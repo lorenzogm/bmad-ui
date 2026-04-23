@@ -710,8 +710,8 @@ function EpicDetailPage() {
       ) : null}
       <section className="panel reveal epic-header">
         <div className="epic-header-top">
-          <Link className="epic-back-link" to="/">
-            ← Home
+          <Link className="epic-back-link" to="/develop-deliver">
+            ← Develop & Deliver
           </Link>
           <StatusBadge status={computedEpicStatus} />
         </div>

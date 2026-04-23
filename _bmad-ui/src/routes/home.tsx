@@ -3,7 +3,7 @@ import { createRoute, Link } from "@tanstack/react-router"
 import { type JSX, useState } from "react"
 import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
-import { ActiveSprintSummary, EpicsProgressList } from "../lib/sprint-summary"
+import { ActiveSprintSummary } from "../lib/sprint-summary"
 import type { AnalyticsResponse, OverviewResponse } from "../types"
 import { rootRoute } from "./__root"
 import { formatNumber, formatUsd } from "./analytics-utils"
@@ -247,15 +247,6 @@ function HomePage() {
               />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Epic Progress Detail */}
-      <section className="panel reveal delay-3">
-        <p className="eyebrow">Epic Breakdown</p>
-        <h2>Progress by Epic</h2>
-        <div className="mt-4">
-          <EpicsProgressList epics={epics} />
         </div>
       </section>
     </main>
