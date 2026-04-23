@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T16:46:25Z
-last_updated: 2026-04-22T17:41:52Z
+last_updated: 2026-04-23T07:39:27Z
 project: bmad-ui
 project_key: NOKEY
 tracking_system: file-system
@@ -131,8 +131,8 @@ development_status:
   12-3-fix-npx-bmad-method-ui-install-cli: done
   epic-12-retrospective: done
 
-  epic-13: done
-  13-1-restructure-sidebar-navigation-double-diamond: done
+  epic-13: in-progress
+  13-1-restructure-sidebar-navigation-double-diamond: ready-for-dev
   13-2-add-documentation-browser-route: done
   13-3-add-agents-catalog-route: done
   epic-13-retrospective: optional
