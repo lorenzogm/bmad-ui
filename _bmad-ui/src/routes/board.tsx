@@ -4,8 +4,10 @@ import { useState } from "react"
 import { StatusBadge } from "../app"
 import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl } from "../lib/mode"
-import type { OverviewResponse, StoryWorkflowStepSkill, WorkflowStepState } from "../types"
+import type { EpicStatus, OverviewResponse } from "../types"
 import { rootRoute } from "./__root"
+
+const DONE_STATUS = "done"
 
 function storyEpicNumber(storyId: string): number {
   return Number.parseInt(storyId.split("-")[0], 10)
@@ -13,22 +15,6 @@ function storyEpicNumber(storyId: string): number {
 
 function storyLabel(storyId: string): string {
   return storyId.toUpperCase().replace("-", ".")
-}
-
-const STEP_STATE_ICON: Record<WorkflowStepState, { symbol: string; color: string }> = {
-  completed: { symbol: "✓", color: "var(--status-done)" },
-  running: { symbol: "●", color: "var(--status-progress)" },
-  failed: { symbol: "✕", color: "var(--highlight-2)" },
-  "not-started": { symbol: "○", color: "var(--muted)" },
-}
-
-function StepIcon(props: { state: WorkflowStepState }) {
-  const { symbol, color } = STEP_STATE_ICON[props.state]
-  return (
-    <span style={{ color, fontSize: "0.85rem", fontWeight: 700 }} title={props.state}>
-      {symbol}
-    </span>
-  )
 }
 
 function BoardPage() {
@@ -49,6 +35,8 @@ function BoardPage() {
   })
 
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
+  const [hideDone, setHideDone] = useState(false)
+  const [expandedDone, setExpandedDone] = useState<Set<number>>(new Set())
 
   if (isLoading) {
     return <PageSkeleton />
@@ -60,7 +48,6 @@ function BoardPage() {
 
   const stories = overview?.sprintOverview.stories ?? []
   const epics = overview?.sprintOverview.epics ?? []
-  const stepDefs = overview?.steps ?? []
 
   if (stories.length === 0) {
     return (
@@ -72,20 +59,45 @@ function BoardPage() {
     )
   }
 
-  const epicNameMap = new Map(epics.map((e) => [e.number, e.name]))
+  const epicMap = new Map(epics.map((e) => [e.number, e]))
   const epicNumbers = [...new Set(stories.map((s) => storyEpicNumber(s.id)))].sort((a, b) => a - b)
 
-  function toggleEpic(epicNum: number) {
-    setCollapsed((prev) => {
-      const next = new Set(prev)
-      if (next.has(epicNum)) {
-        next.delete(epicNum)
-      } else {
-        next.add(epicNum)
-      }
-      return next
-    })
+  function isEpicCollapsed(epicNum: number): boolean {
+    if (collapsed.has(epicNum)) return true
+    // Done epics default to collapsed unless user explicitly expanded
+    const epic = epicMap.get(epicNum)
+    return epic?.status === DONE_STATUS && !expandedDone.has(epicNum)
   }
+
+  function toggleEpic(epicNum: number) {
+    const epic = epicMap.get(epicNum)
+    if (epic?.status === DONE_STATUS) {
+      setExpandedDone((prev) => {
+        const next = new Set(prev)
+        if (next.has(epicNum)) {
+          next.delete(epicNum)
+        } else {
+          next.add(epicNum)
+        }
+        return next
+      })
+    } else {
+      setCollapsed((prev) => {
+        const next = new Set(prev)
+        if (next.has(epicNum)) {
+          next.delete(epicNum)
+        } else {
+          next.add(epicNum)
+        }
+        return next
+      })
+    }
+  }
+
+  const visibleEpics = hideDone
+    ? epicNumbers.filter((n) => epicMap.get(n)?.status !== DONE_STATUS)
+    : epicNumbers
+  const doneEpicCount = epicNumbers.filter((n) => epicMap.get(n)?.status === DONE_STATUS).length
 
   let rowIndex = 0
 
@@ -96,10 +108,25 @@ function BoardPage() {
         <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
           Sprint Board
         </h1>
-        <p className="subtitle">
-          {stories.length} {stories.length === 1 ? "story" : "stories"} across {epics.length}{" "}
-          {epics.length === 1 ? "epic" : "epics"}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="subtitle" style={{ margin: 0 }}>
+            {stories.length} {stories.length === 1 ? "story" : "stories"} across {epics.length}{" "}
+            {epics.length === 1 ? "epic" : "epics"}
+          </p>
+          {doneEpicCount > 0 ? (
+            <label
+              className="flex items-center gap-2"
+              style={{ fontSize: "0.8rem", color: "var(--muted)", cursor: "pointer" }}
+            >
+              <input
+                checked={hideDone}
+                onChange={(e) => setHideDone(e.target.checked)}
+                type="checkbox"
+              />
+              Hide done epics ({doneEpicCount})
+            </label>
+          ) : null}
+        </div>
       </section>
 
       <div className="table-wrap">
@@ -109,18 +136,13 @@ function BoardPage() {
               <th style={{ width: "2rem", textAlign: "center" }}>#</th>
               <th>Story</th>
               <th>Status</th>
-              {stepDefs.map((step) => (
-                <th key={step.skill} style={{ textAlign: "center" }}>
-                  {step.label}
-                </th>
-              ))}
             </tr>
           </thead>
           <tbody>
-            {epicNumbers.map((epicNum) => {
+            {visibleEpics.map((epicNum) => {
               const epicStories = stories.filter((s) => storyEpicNumber(s.id) === epicNum)
-              const epicName = epicNameMap.get(epicNum)
-              const isCollapsed = collapsed.has(epicNum)
+              const epic = epicMap.get(epicNum)
+              const epicCollapsed = isEpicCollapsed(epicNum)
               return [
                 <tr
                   key={`epic-${String(epicNum)}`}
@@ -128,7 +150,7 @@ function BoardPage() {
                   style={{ cursor: "pointer" }}
                 >
                   <td
-                    colSpan={3 + stepDefs.length}
+                    colSpan={2}
                     style={{
                       background: "rgba(2, 10, 16, 0.44)",
                       borderBottom: "1px solid var(--panel-border)",
@@ -143,13 +165,23 @@ function BoardPage() {
                           display: "inline-block",
                           width: "1rem",
                           transition: "transform 0.15s",
-                          transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)",
+                          transform: epicCollapsed ? "rotate(-90deg)" : "rotate(0deg)",
                         }}
                       >
                         ▾
                       </span>
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          color: "var(--muted)",
+                          fontWeight: 600,
+                          fontFamily: "var(--font-mono, 'IBM Plex Mono', monospace)",
+                        }}
+                      >
+                        {String(epicNum)}
+                      </span>
                       <span style={{ fontWeight: 700, color: "var(--text)" }}>
-                        {epicName ?? `Epic ${String(epicNum)}`}
+                        {epic?.name ?? `Epic ${String(epicNum)}`}
                       </span>
                       <span
                         style={{
@@ -159,14 +191,23 @@ function BoardPage() {
                           borderRadius: "9999px",
                           padding: "0.05rem 0.5rem",
                           fontWeight: 600,
+                          marginLeft: "auto",
                         }}
                       >
                         {epicStories.length}
                       </span>
                     </div>
                   </td>
+                  <td
+                    style={{
+                      background: "rgba(2, 10, 16, 0.44)",
+                      borderBottom: "1px solid var(--panel-border)",
+                    }}
+                  >
+                    {epic ? <StatusBadge status={epic.status as EpicStatus} /> : null}
+                  </td>
                 </tr>,
-                ...(!isCollapsed
+                ...(!epicCollapsed
                   ? epicStories.map((story) => {
                       rowIndex += 1
                       return (
@@ -192,15 +233,6 @@ function BoardPage() {
                           <td>
                             <StatusBadge status={story.status} />
                           </td>
-                          {stepDefs.map((step) => (
-                            <td key={step.skill} style={{ textAlign: "center" }}>
-                              <StepIcon
-                                state={
-                                  story.steps[step.skill as StoryWorkflowStepSkill] ?? "not-started"
-                                }
-                              />
-                            </td>
-                          ))}
                         </tr>
                       )
                     })
