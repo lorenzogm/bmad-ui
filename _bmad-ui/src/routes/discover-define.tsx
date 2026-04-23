@@ -1,39 +1,132 @@
+import { useQuery } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
+import type { WorkflowPhase } from "../app"
+import { detectWorkflowStatus, StatusBadge } from "../app"
+import { PageSkeleton, QueryErrorState } from "../lib/loading-states"
+import { apiUrl, IS_LOCAL_MODE, PROD_DISABLED_TITLE } from "../lib/mode"
+import type { OverviewResponse, RuntimeSession } from "../types"
 import { rootRoute } from "./__root"
 
-type Phase = {
-  id: string
-  title: string
-  description: string
-  phaseId: string
+const DISCOVER_DEFINE_PHASE_IDS = ["analysis", "planning", "solutioning"] as const
+
+const HTTP_CONFLICT = 409
+
+function PhaseStepsTable(props: {
+  phase: WorkflowPhase
+  runtimeSessions: RuntimeSession[]
+  activeSkill: string | null
+  pendingSkill: string | null
+  onRunSkill: (skill: string) => void
+}) {
+  const { phase, runtimeSessions, activeSkill, pendingSkill, onRunSkill } = props
+  const effectiveActiveSkill = activeSkill ?? pendingSkill
+
+  if (phase.steps.length === 0) {
+    return (
+      <p className="text-sm py-2" style={{ color: "var(--muted)" }}>
+        No steps in this phase.
+      </p>
+    )
+  }
+
+  return (
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Skill</th>
+            <th>Optional</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {phase.steps.map((step, index) => {
+            const isRunning = step.skill === effectiveActiveSkill
+            const matchingSession = runtimeSessions.find(
+              (s) => s.skill === step.skill && s.status !== "planned"
+            )
+            return (
+              <tr key={step.id}>
+                <td>
+                  <span
+                    className={`improvement-step-number${step.isCompleted ? " improvement-step-number-done" : ""}`}
+                  >
+                    {index + 1}
+                  </span>
+                </td>
+                <td>
+                  <strong>{step.name}</strong>
+                </td>
+                <td>{step.description}</td>
+                <td>
+                  <code className="improvement-step-skill">{step.skill}</code>
+                </td>
+                <td>{step.isOptional ? "Yes" : "No"}</td>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  {isRunning ? (
+                    <span className="step-badge step-running">
+                      <span aria-hidden="true" className="agent-icon">
+                        ⬡
+                      </span>
+                      {" running"}
+                    </span>
+                  ) : step.isSkipped ? (
+                    <StatusBadge status="skipped" />
+                  ) : (
+                    <StatusBadge status={step.isCompleted ? "completed" : "not-started"} />
+                  )}
+                </td>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  <div className="improvement-actions">
+                    {!isRunning && !step.isSkipped && !step.isCompleted && (
+                      <button
+                        className="icon-button icon-button-play"
+                        disabled={!IS_LOCAL_MODE || pendingSkill !== null}
+                        onClick={() => onRunSkill(step.skill)}
+                        title={IS_LOCAL_MODE ? `Run ${step.skill}` : PROD_DISABLED_TITLE}
+                        type="button"
+                      >
+                        <span aria-hidden="true" className="icon-glyph">
+                          ▶
+                        </span>
+                      </button>
+                    )}
+                    {matchingSession ? (
+                      <Link
+                        className={`session-link-icon${matchingSession.status === "running" ? " session-link-running" : ""}${matchingSession.status === "failed" || matchingSession.status === "cancelled" ? " session-link-failed" : ""}`}
+                        params={{ sessionId: matchingSession.id }}
+                        title={`View session: ${matchingSession.id}`}
+                        to="/session/$sessionId"
+                      >
+                        ◉
+                      </Link>
+                    ) : null}
+                  </div>
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
-const DISCOVER_DEFINE_PHASES: readonly Phase[] = [
-  {
-    id: "analysis",
-    title: "Analysis",
-    description:
-      "Conduct domain and market research, competitive analysis, and user discovery. Build the knowledge foundation for the project.",
-    phaseId: "analysis",
-  },
-  {
-    id: "planning",
-    title: "Planning",
-    description:
-      "Create product requirements, define scope, and establish the product roadmap. Align stakeholders and clarify goals.",
-    phaseId: "planning",
-  },
-  {
-    id: "solutioning",
-    title: "Solutioning",
-    description:
-      "Design the technical architecture, UX patterns, and implementation blueprint. Prepare for development.",
-    phaseId: "solutioning",
-  },
-] as const
+function PhaseAccordion(props: {
+  phase: WorkflowPhase
+  runtimeSessions: RuntimeSession[]
+  activeSkill: string | null
+  pendingSkill: string | null
+  onRunSkill: (skill: string) => void
+}) {
+  const { phase, runtimeSessions, activeSkill, pendingSkill, onRunSkill } = props
+  const doneCount = phase.steps.filter((s) => s.isCompleted).length
+  const totalCount = phase.steps.length
 
-function PhaseAccordion(props: { phase: Phase }) {
-  const { phase } = props
   return (
     <details
       className="rounded-lg overflow-hidden"
@@ -47,36 +140,84 @@ function PhaseAccordion(props: { phase: Phase }) {
           userSelect: "none",
         }}
       >
-        <span className="text-base font-semibold" style={{ color: "var(--text)" }}>
-          {phase.title}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-base font-semibold" style={{ color: "var(--text)" }}>
+            {phase.name}
+          </span>
+          <span className="text-xs" style={{ color: "var(--muted)" }}>
+            {doneCount}/{totalCount} steps done
+          </span>
+        </div>
         <span className="text-xs" style={{ color: "var(--muted)" }}>
           ▸
         </span>
       </summary>
-      <div
-        className="px-5 py-4 flex flex-col gap-3"
-        style={{ background: "rgba(10, 19, 29, 0.6)" }}
-      >
-        <p className="text-sm" style={{ color: "var(--muted)", lineHeight: 1.7 }}>
+      <div className="px-5 py-4" style={{ background: "rgba(10, 19, 29, 0.6)" }}>
+        <p className="text-sm mb-4" style={{ color: "var(--muted)", lineHeight: 1.7 }}>
           {phase.description}
         </p>
-        <div>
-          <Link
-            className="text-sm"
-            params={{ phaseId: phase.phaseId }}
-            style={{ color: "var(--highlight)", textDecoration: "none" }}
-            to="/workflow/$phaseId"
-          >
-            Go to full view →
-          </Link>
-        </div>
+        <PhaseStepsTable
+          phase={phase}
+          runtimeSessions={runtimeSessions}
+          activeSkill={activeSkill}
+          pendingSkill={pendingSkill}
+          onRunSkill={onRunSkill}
+        />
       </div>
     </details>
   )
 }
 
 function DiscoverDefinePage() {
+  const { data, isLoading, error, refetch } = useQuery<OverviewResponse>({
+    queryKey: ["overview"],
+    queryFn: async () => {
+      const response = await fetch(apiUrl("/api/overview"))
+      if (!response.ok) {
+        throw new Error(`overview request failed: ${response.status}`)
+      }
+      return (await response.json()) as OverviewResponse
+    },
+  })
+
+  const runtimeSessions: RuntimeSession[] = data?.runtimeState?.sessions ?? []
+  const { phases } = detectWorkflowStatus(
+    data?.planningArtifactFiles ?? [],
+    data?.implementationArtifactFiles ?? [],
+    runtimeSessions
+  )
+
+  const discoverDefinePhases = phases.filter((p) =>
+    (DISCOVER_DEFINE_PHASE_IDS as readonly string[]).includes(p.id)
+  )
+
+  const handleRunSkill = async (skill: string) => {
+    if (!IS_LOCAL_MODE) return
+    try {
+      const response = await fetch("/api/workflow/run-skill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skill }),
+      })
+      if (response.status === HTTP_CONFLICT) {
+        throw new Error("Another workflow is already running.")
+      }
+      if (!response.ok) {
+        throw new Error(`workflow request failed: ${response.status}`)
+      }
+    } catch (_err) {
+      // ignore — server logs the error
+    }
+  }
+
+  if (isLoading) {
+    return <PageSkeleton />
+  }
+
+  if (error) {
+    return <QueryErrorState message={String(error)} onRetry={refetch} />
+  }
+
   return (
     <main className="screen">
       <section className="panel reveal">
@@ -88,8 +229,15 @@ function DiscoverDefinePage() {
           Explore the three phases that shape your product before development begins.
         </p>
         <div className="flex flex-col gap-3">
-          {DISCOVER_DEFINE_PHASES.map((phase) => (
-            <PhaseAccordion key={phase.id} phase={phase} />
+          {discoverDefinePhases.map((phase) => (
+            <PhaseAccordion
+              key={phase.id}
+              phase={phase}
+              runtimeSessions={runtimeSessions}
+              activeSkill={data?.activeWorkflowSkill ?? null}
+              pendingSkill={null}
+              onRunSkill={(skill) => void handleRunSkill(skill)}
+            />
           ))}
         </div>
       </section>
