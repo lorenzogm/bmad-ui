@@ -132,7 +132,7 @@ development_status:
   epic-12-retrospective: done
 
   epic-13: in-progress
-  13-1-restructure-sidebar-navigation-double-diamond: ready-for-dev
+  13-1-restructure-sidebar-navigation-double-diamond: review
   13-2-add-documentation-browser-route: done
   13-3-add-agents-catalog-route: done
   epic-13-retrospective: optional

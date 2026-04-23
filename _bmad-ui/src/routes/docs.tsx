@@ -1,80 +1,46 @@
-import { createRoute } from "@tanstack/react-router"
-import { IS_LOCAL_MODE } from "../lib/mode"
+import { createRoute, Link } from "@tanstack/react-router"
+import type { DocEntry } from "../lib/docs-catalog"
+import { KNOWN_DOCS } from "../lib/docs-catalog"
 import { rootRoute } from "./__root"
-
-type DocEntry = {
-  name: string
-  path: string
-  description: string
-}
-
-const KNOWN_DOCS: readonly DocEntry[] = [
-  { name: "README", path: "README.md", description: "Project overview and quick start" },
-  { name: "Setup Guide", path: "docs/setup.md", description: "Local development setup" },
-  {
-    name: "Deployment Guide",
-    path: "docs/deployment-guide.md",
-    description: "Deploy to Vercel",
-  },
-  {
-    name: "Contributing",
-    path: ".github/CONTRIBUTING.md",
-    description: "How to contribute",
-  },
-] as const
 
 function DocCard(props: { doc: DocEntry }) {
   const { doc } = props
-
-  if (IS_LOCAL_MODE) {
-    return (
-      <a
-        className="panel"
-        href={doc.path}
-        rel="noopener noreferrer"
-        style={{
-          display: "block",
-          padding: "1.25rem 1.5rem",
-          textDecoration: "none",
-          color: "var(--text)",
-          border: "1px solid var(--panel-border)",
-          borderRadius: "0.5rem",
-          transition: "border-color 0.15s",
-        }}
-        target="_blank"
-      >
-        <div style={{ fontWeight: 600, color: "var(--highlight)", marginBottom: "0.25rem" }}>
-          {doc.name}
-        </div>
-        <div style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{doc.description}</div>
-        <div
-          style={{ fontSize: "0.75rem", color: "var(--muted)", marginTop: "0.5rem", opacity: 0.7 }}
-        >
-          {doc.path}
-        </div>
-      </a>
-    )
-  }
-
   return (
-    <div
+    <Link
       className="panel"
+      params={{ docId: doc.id }}
       style={{
+        display: "block",
         padding: "1.25rem 1.5rem",
+        textDecoration: "none",
+        color: "var(--text)",
         border: "1px solid var(--panel-border)",
         borderRadius: "0.5rem",
+        transition: "border-color 0.15s",
       }}
+      to="/docs/$docId"
     >
-      <div style={{ fontWeight: 600, color: "var(--highlight)", marginBottom: "0.25rem" }}>
+      <div
+        style={{
+          fontWeight: 600,
+          color: "var(--highlight)",
+          marginBottom: "0.25rem",
+        }}
+      >
         {doc.name}
       </div>
       <div style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{doc.description}</div>
       <div
-        style={{ fontSize: "0.75rem", color: "var(--muted)", marginTop: "0.5rem", opacity: 0.7 }}
+        style={{
+          fontSize: "0.75rem",
+          color: "var(--muted)",
+          marginTop: "0.5rem",
+          opacity: 0.7,
+        }}
       >
         {doc.path}
       </div>
-    </div>
+    </Link>
   )
 }
 

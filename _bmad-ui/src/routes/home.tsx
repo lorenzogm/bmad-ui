@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createRoute, Link } from "@tanstack/react-router"
 import { type JSX, useState } from "react"
-import { StatusBadge } from "../app"
 import { EmptyState, PageSkeleton, QueryErrorState } from "../lib/loading-states"
 import { apiUrl, IS_LOCAL_MODE } from "../lib/mode"
+import { ActiveSprintSummary, EpicsProgressList } from "../lib/sprint-summary"
 import type { AnalyticsResponse, OverviewResponse } from "../types"
 import { rootRoute } from "./__root"
 import { formatNumber, formatUsd } from "./analytics-utils"
@@ -14,84 +14,6 @@ type NoteItem = { id: string; text: string; color: string; createdAt: string }
 const NOTE_COLORS = ["teal", "amber", "purple", "pink", "blue"] as const
 
 const COST_PER_REQUEST_USD = 0.04
-
-type ActiveSprintSummaryProps = {
-  epics: Array<{
-    id: string
-    name: string
-    status: string
-    storyCount: number
-    byStoryStatus: Record<string, number>
-  }>
-  inProgressStoriesCount: number
-  runningSessionsCount: number
-}
-
-function ActiveSprintSummary({
-  epics,
-  inProgressStoriesCount,
-  runningSessionsCount,
-}: ActiveSprintSummaryProps) {
-  const activeEpic = epics.find((e) => e.status === "in-progress")
-  const activeEpicDoneStories = activeEpic?.byStoryStatus?.done ?? 0
-  const activeEpicTotalStories = activeEpic?.storyCount ?? 0
-  const activeEpicCompletionPercent =
-    activeEpicTotalStories > 0
-      ? Math.round((activeEpicDoneStories / activeEpicTotalStories) * 100)
-      : 0
-  const hasActivity =
-    activeEpic !== undefined || inProgressStoriesCount > 0 || runningSessionsCount > 0
-
-  if (!hasActivity) {
-    return (
-      <p className="mt-3" style={{ color: "var(--muted)", lineHeight: 1.7 }}>
-        All caught up — no active epics, stories, or sessions running right now.
-      </p>
-    )
-  }
-
-  return (
-    <div className="mt-4 flex flex-col gap-3">
-      {activeEpic ? (
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className="eyebrow" style={{ marginBottom: 0 }}>
-            Active Epic
-          </span>
-          <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>
-            {activeEpic.name}
-          </span>
-          <span className="text-xs" style={{ color: "var(--muted)" }}>
-            {activeEpicDoneStories}/{activeEpicTotalStories} stories done (
-            {activeEpicCompletionPercent}%)
-          </span>
-          <StatusBadge status="in-progress" />
-        </div>
-      ) : null}
-      <div className="flex gap-6 flex-wrap">
-        <div className="flex items-center gap-2">
-          <span
-            className="inline-block rounded-full"
-            style={{ width: 8, height: 8, background: "var(--status-progress)" }}
-          />
-          <span className="text-sm" style={{ color: "var(--muted)" }}>
-            Stories in progress:{" "}
-            <strong style={{ color: "var(--text)" }}>{inProgressStoriesCount}</strong>
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className="inline-block rounded-full"
-            style={{ width: 8, height: 8, background: "var(--highlight)" }}
-          />
-          <span className="text-sm" style={{ color: "var(--muted)" }}>
-            Running sessions:{" "}
-            <strong style={{ color: "var(--text)" }}>{runningSessionsCount}</strong>
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function HomePage() {
   const {
@@ -192,7 +114,9 @@ function HomePage() {
 
         <div
           className="mt-6 grid gap-4"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          }}
         >
           {/* Epics Card */}
           <div className="panel" style={{ background: "rgba(2, 10, 16, 0.66)" }}>
@@ -214,7 +138,11 @@ function HomePage() {
             </p>
             <StatusBreakdown
               items={[
-                { label: "Done", count: epicsByStatus.done ?? 0, color: "var(--status-done)" },
+                {
+                  label: "Done",
+                  count: epicsByStatus.done ?? 0,
+                  color: "var(--status-done)",
+                },
                 {
                   label: "In Progress",
                   count: epicsByStatus["in-progress"] ?? 0,
@@ -247,7 +175,11 @@ function HomePage() {
             </p>
             <StatusBreakdown
               items={[
-                { label: "Done", count: storiesByStatus.done ?? 0, color: "var(--status-done)" },
+                {
+                  label: "Done",
+                  count: storiesByStatus.done ?? 0,
+                  color: "var(--status-done)",
+                },
                 {
                   label: "In Progress",
                   count: storiesByStatus["in-progress"] ?? 0,
@@ -322,64 +254,8 @@ function HomePage() {
       <section className="panel reveal delay-3">
         <p className="eyebrow">Epic Breakdown</p>
         <h2>Progress by Epic</h2>
-        <div className="mt-4 flex flex-col gap-3">
-          {epics.length === 0 ? (
-            <div className="py-8 text-center" style={{ color: "var(--muted)" }}>
-              <p>No epics found. Run sprint-planning to initialize.</p>
-            </div>
-          ) : (
-            [...epics]
-              .sort((a, b) => a.number - b.number)
-              .map((epic) => {
-                const done = epic.byStoryStatus?.done ?? 0
-                const total = epic.storyCount
-                const pct = total > 0 ? Math.round((done / total) * 100) : 0
-
-                return (
-                  <Link
-                    key={epic.id}
-                    to="/epic/$epicId"
-                    params={{ epicId: epic.id }}
-                    className="flex items-center gap-4 px-4 py-3 rounded-lg"
-                    style={{
-                      background: "rgba(2, 10, 16, 0.66)",
-                      border: "1px solid rgba(151, 177, 205, 0.12)",
-                    }}
-                  >
-                    <span
-                      className="text-sm font-mono font-bold shrink-0 w-8 text-center"
-                      style={{ color: "var(--highlight)" }}
-                    >
-                      {epic.number}
-                    </span>
-                    <span className="flex-1 text-sm truncate" style={{ color: "var(--text)" }}>
-                      {epic.name}
-                    </span>
-                    <span className="text-xs shrink-0" style={{ color: "var(--muted)" }}>
-                      {done}/{total} stories
-                    </span>
-                    <div
-                      className="shrink-0 rounded-full overflow-hidden"
-                      style={{
-                        width: 80,
-                        height: 6,
-                        background: "rgba(151, 177, 205, 0.15)",
-                      }}
-                    >
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${pct}%`,
-                          background: pct === 100 ? "var(--status-done)" : "var(--highlight)",
-                          transition: "width 0.3s ease",
-                        }}
-                      />
-                    </div>
-                    <StatusBadge status={epic.status} />
-                  </Link>
-                )
-              })
-          )}
+        <div className="mt-4">
+          <EpicsProgressList epics={epics} />
         </div>
       </section>
     </main>
@@ -471,7 +347,9 @@ function LinksSection() {
 
   const deleteLink = useMutation({
     mutationFn: async (index: number) => {
-      const res = await fetch(apiUrl(`/api/links?index=${index}`), { method: "DELETE" })
+      const res = await fetch(apiUrl(`/api/links?index=${index}`), {
+        method: "DELETE",
+      })
       if (!res.ok) throw new Error("failed to delete link")
     },
     onSuccess: () => {
@@ -629,9 +507,21 @@ const NOTE_COLOR_MAP: Record<string, { bg: string; border: string; text: string 
     border: "rgba(255, 159, 28, 0.3)",
     text: "var(--highlight-2)",
   },
-  purple: { bg: "rgba(168, 85, 247, 0.12)", border: "rgba(168, 85, 247, 0.3)", text: "#a855f7" },
-  pink: { bg: "rgba(236, 72, 153, 0.12)", border: "rgba(236, 72, 153, 0.3)", text: "#ec4899" },
-  blue: { bg: "rgba(59, 130, 246, 0.12)", border: "rgba(59, 130, 246, 0.3)", text: "#3b82f6" },
+  purple: {
+    bg: "rgba(168, 85, 247, 0.12)",
+    border: "rgba(168, 85, 247, 0.3)",
+    text: "#a855f7",
+  },
+  pink: {
+    bg: "rgba(236, 72, 153, 0.12)",
+    border: "rgba(236, 72, 153, 0.3)",
+    text: "#ec4899",
+  },
+  blue: {
+    bg: "rgba(59, 130, 246, 0.12)",
+    border: "rgba(59, 130, 246, 0.3)",
+    text: "#3b82f6",
+  },
 }
 
 function renderNoteText(text: string): JSX.Element {
@@ -735,7 +625,9 @@ function NotesSection() {
 
   const deleteNote = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(apiUrl(`/api/notes?id=${id}`), { method: "DELETE" })
+      const res = await fetch(apiUrl(`/api/notes?id=${id}`), {
+        method: "DELETE",
+      })
       if (!res.ok) throw new Error("failed to delete note")
     },
     onSuccess: () => {
@@ -832,7 +724,9 @@ function NotesSection() {
       {notes.length > 0 && (
         <div
           className="mt-4 grid gap-3"
-          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          }}
         >
           {notes.map((note) => {
             const colors = NOTE_COLOR_MAP[note.color] ?? NOTE_COLOR_MAP.teal
@@ -853,7 +747,11 @@ function NotesSection() {
                     onSubmit={(e) => {
                       e.preventDefault()
                       if (editText.trim())
-                        editNote.mutate({ id: note.id, text: editText.trim(), color: editColor })
+                        editNote.mutate({
+                          id: note.id,
+                          text: editText.trim(),
+                          color: editColor,
+                        })
                     }}
                   >
                     <textarea

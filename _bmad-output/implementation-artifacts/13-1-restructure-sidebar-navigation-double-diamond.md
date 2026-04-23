@@ -1,6 +1,6 @@
 # Story 13.1: Redesign Sidebar Navigation — 5-Section Consolidated Layout
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -30,17 +30,17 @@ so that I can navigate the app intuitively without the current fragmentation acr
 
 ## Tasks / Subtasks
 
-- [ ] Create `src/routes/discover-define.tsx` — single page with accordion (3 phases) (AC: 3)
-  - [ ] Accordion built with `<details>/<summary>` HTML or `useState` expand/collapse (no shadcn — Phase 1)
-  - [ ] Phase content: embed/re-export view from existing `workflow.$phaseId.tsx` or inline equivalent content
-- [ ] Create `src/routes/develop-deliver.tsx` — page with sprint planning + epics (AC: 4)
-  - [ ] Sprint planning panel: active epic, in-progress stories count, running sessions count (reuse `ActiveSprintSummary` from `home.tsx` or extract to shared component)
-  - [ ] Epics panel: full epics list with story progress bars (reuse epics display logic from `home.tsx`)
-- [ ] Update `src/routes/docs.tsx` — list page, cards link to `/docs/$docId` instead of `<a target="_blank">` (AC: 5)
-- [ ] Create `src/routes/docs.$docId.tsx` — detail page, fetch MD file and render with `marked` (AC: 6)
-- [ ] Update `src/routes/__root.tsx` — replace 4-Diamond nav with 5-section nav, add Agents submenu (AC: 1, 7, 8)
-- [ ] Update `src/routes/route-tree.ts` — register `discoverDefineRoute`, `developDeliverRoute`, `docDetailRoute` (AC: 9)
-- [ ] Run `pnpm check` and confirm zero lint/type/build errors
+- [x] Create `src/routes/discover-define.tsx` — single page with accordion (3 phases) (AC: 3)
+  - [x] Accordion built with `<details>/<summary>` HTML or `useState` expand/collapse (no shadcn — Phase 1)
+  - [x] Phase content: embed/re-export view from existing `workflow.$phaseId.tsx` or inline equivalent content
+- [x] Create `src/routes/develop-deliver.tsx` — page with sprint planning + epics (AC: 4)
+  - [x] Sprint planning panel: active epic, in-progress stories count, running sessions count (reuse `ActiveSprintSummary` from `home.tsx` or extract to shared component)
+  - [x] Epics panel: full epics list with story progress bars (reuse epics display logic from `home.tsx`)
+- [x] Update `src/routes/docs.tsx` — list page, cards link to `/docs/$docId` instead of `<a target="_blank">` (AC: 5)
+- [x] Create `src/routes/docs.$docId.tsx` — detail page, fetch MD file and render with `marked` (AC: 6)
+- [x] Update `src/routes/__root.tsx` — replace 4-Diamond nav with 5-section nav, add Agents submenu (AC: 1, 7, 8)
+- [x] Update `src/routes/route-tree.ts` — register `discoverDefineRoute`, `developDeliverRoute`, `docDetailRoute` (AC: 9)
+- [x] Run `pnpm check` and confirm zero lint/type/build errors
 
 ## Dev Notes
 
@@ -182,4 +182,21 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Extracted `ActiveSprintSummary` and new `EpicsProgressList` from `home.tsx` into `src/lib/sprint-summary.tsx` shared lib
+- Created `src/lib/docs-catalog.ts` to share `KNOWN_DOCS` and `DocEntry` type between `docs.tsx` and `docs.$docId.tsx`
+- All 5 sidebar nav items implemented with correct `is-section-active` logic per story spec
+- `docs.$docId.tsx` renders markdown with `marked.parse()` only in local mode; shows a note in production
+- Accordion in `discover-define.tsx` uses native `<details>/<summary>` elements with Tailwind styling
+- `pnpm check` passes with zero errors (lint, types, tests, build)
+
 ### File List
+
+- `_bmad-ui/src/lib/docs-catalog.ts` — new shared docs catalog
+- `_bmad-ui/src/lib/sprint-summary.tsx` — new shared ActiveSprintSummary + EpicsProgressList components
+- `_bmad-ui/src/routes/discover-define.tsx` — new Discover & Define page with accordion
+- `_bmad-ui/src/routes/develop-deliver.tsx` — new Develop & Deliver page with sprint + epics
+- `_bmad-ui/src/routes/docs.$docId.tsx` — new doc detail page with markdown rendering
+- `_bmad-ui/src/routes/docs.tsx` — updated to link cards to /docs/$docId
+- `_bmad-ui/src/routes/__root.tsx` — updated sidebar nav (5-section layout)
+- `_bmad-ui/src/routes/route-tree.ts` — registered 3 new routes
+- `_bmad-ui/src/routes/home.tsx` — updated to use shared ActiveSprintSummary and EpicsProgressList
