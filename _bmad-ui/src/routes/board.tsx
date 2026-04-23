@@ -9,6 +9,8 @@ import { rootRoute } from "./__root"
 
 const DONE_STATUS = "done"
 
+const STORY_TICKET_REGEX = /^(\d+)-(\d+)-/
+
 function storyEpicNumber(storyId: string): number {
   return Number.parseInt(storyId.split("-")[0], 10)
 }
@@ -16,6 +18,16 @@ function storyEpicNumber(storyId: string): number {
 function storyLabel(storyId: string): string {
   const [epic, story] = storyId.split("-")
   return `${epic}.${story}`
+}
+
+function storyName(storyId: string): string {
+  const match = STORY_TICKET_REGEX.exec(storyId)
+  if (!match) return storyId
+  const slug = storyId.slice(match[0].length)
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ")
 }
 
 function BoardPage() {
@@ -230,6 +242,9 @@ function BoardPage() {
                             >
                               {storyLabel(story.id)}
                             </Link>
+                            <span style={{ color: "var(--text)", marginLeft: "0.5rem" }}>
+                              {storyName(story.id)}
+                            </span>
                           </td>
                           <td>
                             <StatusBadge status={story.status} />
