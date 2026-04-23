@@ -14,7 +14,8 @@ function storyEpicNumber(storyId: string): number {
 }
 
 function storyLabel(storyId: string): string {
-  return storyId.toUpperCase().replace("-", ".")
+  const [epic, story] = storyId.split("-")
+  return `${epic}.${story}`
 }
 
 function BoardPage() {
