@@ -5,7 +5,7 @@
   "type": "module",
   "engines": { "node": ">=18" },
   "bin": { "bmad-method-ui": "bin/install.mjs" },
-  "files": ["bin/", "_bmad-ui/", "!_bmad-ui/agents/"],
+  "files": ["bin/", "_bmad-ui/", "!_bmad-ui/agents/", "!_bmad-ui/artifacts/"],
   "keywords": ["bmad", "ui", "installer"],
   "license": "MIT",
   "repository": {
