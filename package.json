@@ -3,10 +3,22 @@
   "version": "0.2.0",
   "description": "Install bmad-ui into any bmad project with a single command",
   "type": "module",
-  "engines": { "node": ">=18" },
-  "bin": { "bmad-method-ui": "bin/install.mjs" },
-  "files": ["bin/", "_bmad-ui/", "!_bmad-ui/agents/"],
-  "keywords": ["bmad", "ui", "installer"],
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "bmad-method-ui": "bin/install.mjs"
+  },
+  "files": [
+    "bin/",
+    "_bmad-ui/",
+    "!_bmad-ui/agents/"
+  ],
+  "keywords": [
+    "bmad",
+    "ui",
+    "installer"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
