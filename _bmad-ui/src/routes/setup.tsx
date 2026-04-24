@@ -9,6 +9,39 @@ import { rootRoute } from "./__root"
 
 const HTTP_CONFLICT = 409
 
+const STORY_LIFECYCLE_STEPS = [
+  {
+    name: "Create Story",
+    skill: "bmad-create-story",
+    description: "Generate a detailed story spec with all context needed for implementation.",
+  },
+  {
+    name: "Acceptance Tests (ATDD)",
+    skill: "bmad-testarch-atdd",
+    description: "Generate red-phase acceptance test scaffolds from story acceptance criteria.",
+  },
+  {
+    name: "Dev Story",
+    skill: "bmad-dev-story",
+    description: "Implement the story following the spec — code, tests, and documentation.",
+  },
+  {
+    name: "Code Review",
+    skill: "bmad-code-review",
+    description: "Adversarial code review with structured triage into actionable categories.",
+  },
+  {
+    name: "Test Automation",
+    skill: "bmad-testarch-automate",
+    description: "Expand test coverage — fill gaps identified by test design and traceability.",
+  },
+  {
+    name: "Test Review",
+    skill: "bmad-testarch-test-review",
+    description: "Audit test quality against best practices — target score >80 per story.",
+  },
+]
+
 function PhaseStepsTable(props: {
   phase: WorkflowPhase
   runtimeSessions: RuntimeSession[]
@@ -240,6 +273,41 @@ function SetupPage() {
               onRunSkill={(skill) => void handleRunSkill(skill)}
             />
           ))}
+        </div>
+      </section>
+
+      <section className="panel reveal delay-1">
+        <p className="eyebrow">Per-Story Lifecycle</p>
+        <p className="subtitle mb-4">
+          The recommended sequence of skills to run for each story during implementation.
+        </p>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Skill</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {STORY_LIFECYCLE_STEPS.map((step, index) => (
+                <tr key={step.skill}>
+                  <td>
+                    <span className="improvement-step-number">{index + 1}</span>
+                  </td>
+                  <td>
+                    <strong>{step.name}</strong>
+                  </td>
+                  <td>
+                    <code className="improvement-step-skill">{step.skill}</code>
+                  </td>
+                  <td>{step.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
     </main>
