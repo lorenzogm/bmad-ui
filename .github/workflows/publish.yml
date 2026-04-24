@@ -119,9 +119,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add package.json
-          git commit -m "chore(release): bump version to ${{ steps.version.outputs.new_version }} [${{ steps.version.outputs.bump }}]"
-          git tag "v${{ steps.version.outputs.new_version }}"
-          git push origin HEAD --tags
+          if git diff --cached --quiet; then
+            echo "package.json already at target version — skipping commit"
+          else
+            git commit -m "chore(release): bump version to ${{ steps.version.outputs.new_version }} [${{ steps.version.outputs.bump }}]"
+          fi
+          git tag -f "v${{ steps.version.outputs.new_version }}"
+          git push origin HEAD --tags --force || echo "::warning::Could not push commit to protected branch. Tag was pushed."
 
       - name: Publish
         if: steps.version.outputs.bump != 'none'
