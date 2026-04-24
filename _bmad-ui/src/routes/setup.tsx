@@ -8,6 +8,7 @@ import type { OverviewResponse, RuntimeSession } from "../types"
 import { rootRoute } from "./__root"
 
 const HTTP_CONFLICT = 409
+const IMPLEMENTATION_PHASE_ID = "implementation"
 
 const STORY_LIFECYCLE_STEPS = [
   {
@@ -195,6 +196,47 @@ function PhaseAccordion(props: {
           pendingSkill={pendingSkill}
           onRunSkill={onRunSkill}
         />
+        {phase.id === IMPLEMENTATION_PHASE_ID && (
+          <div className="mt-6 pt-5" style={{ borderTop: "1px solid rgba(151, 177, 205, 0.15)" }}>
+            <p
+              className="text-xs font-semibold uppercase tracking-wider mb-3"
+              style={{ color: "var(--highlight)" }}
+            >
+              Per-Story Lifecycle
+            </p>
+            <p className="text-sm mb-4" style={{ color: "var(--muted)", lineHeight: 1.7 }}>
+              The recommended sequence of skills to run for each story.
+            </p>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Skill</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {STORY_LIFECYCLE_STEPS.map((step, index) => (
+                    <tr key={step.skill}>
+                      <td>
+                        <span className="improvement-step-number">{index + 1}</span>
+                      </td>
+                      <td>
+                        <strong>{step.name}</strong>
+                      </td>
+                      <td>
+                        <code className="improvement-step-skill">{step.skill}</code>
+                      </td>
+                      <td>{step.description}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </details>
   )
@@ -273,41 +315,6 @@ function SetupPage() {
               onRunSkill={(skill) => void handleRunSkill(skill)}
             />
           ))}
-        </div>
-      </section>
-
-      <section className="panel reveal delay-1">
-        <p className="eyebrow">Per-Story Lifecycle</p>
-        <p className="subtitle mb-4">
-          The recommended sequence of skills to run for each story during implementation.
-        </p>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Skill</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {STORY_LIFECYCLE_STEPS.map((step, index) => (
-                <tr key={step.skill}>
-                  <td>
-                    <span className="improvement-step-number">{index + 1}</span>
-                  </td>
-                  <td>
-                    <strong>{step.name}</strong>
-                  </td>
-                  <td>
-                    <code className="improvement-step-skill">{step.skill}</code>
-                  </td>
-                  <td>{step.description}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </section>
     </main>
