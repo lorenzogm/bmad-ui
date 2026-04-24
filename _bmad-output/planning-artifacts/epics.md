@@ -252,6 +252,11 @@ Users and contributors can work with a cleaner `_bmad-ui/` directory layout wher
 ### Epic 13: Navigation & Content Discovery
 Users navigate bmad-ui through a consolidated 5-section sidebar (Home, Discover & Define, Develop & Deliver, Documentation, Agents) with dedicated pages for browsing project documentation and viewing the agent catalog.
 
+### Epic 14: NFR Remediation — Security, Performance & Reliability
+The three high-priority issues identified in the 2026-04-23 NFR assessment are resolved: unsanitised `marked` HTML output, missing E2E tests in the CI gate, and an oversized JS bundle with no code splitting.
+**FRs reinforced:** FR46, FR47, FR48
+**NFRs reinforced:** NFR3, NFR13, NFR25, NFR26, NFR27
+
 ---
 
 ## Epic 1: Repository Bootstrap & Governance Scaffold
@@ -1790,3 +1795,104 @@ So that I can add the UI dashboard to any bmad project with a single command.
 **Then** the version is bumped (at least `0.2.0`) in root `package.json`
 **And** `npm publish` succeeds
 **And** `npx bmad-method-ui@latest install` works in a fresh directory
+
+## Epic 14: NFR Remediation — Security, Performance & Reliability
+
+The three high-priority issues identified in the 2026-04-23 NFR assessment are resolved: unsanitised `marked` HTML output in four routes, E2E tests excluded from the CI gate, and an oversized JS bundle with no route-level code splitting. Also includes two quick-win dependency hygiene items: Dependabot automated updates and a CI bundle-size gate.
+
+**Source:** `_bmad-output/test-artifacts/nfr-assessment.md` (2026-04-23, ADR score 20/29)
+
+**Story to NFR mapping:**
+- Story 14.1 → NFR13, NFR27 (E2E in CI gate)
+- Story 14.2 → Security/XSS (`marked` sanitisation)
+- Story 14.3 → NFR3, NFR25 (bundle code splitting)
+- Story 14.4 → Security/Dependabot (dependency hygiene quick win)
+
+### Story 14.1: Add E2E Tests to the CI Quality Gate
+
+As a maintainer,
+I want Playwright E2E tests to run as part of the main CI `validate` job,
+So that smoke regressions are caught before any branch can be merged to main.
+
+**Acceptance Criteria:**
+
+**Given** the existing `ci.yml` `validate` job runs lint → types → unit tests → build,
+**When** Story 14.1 is complete,
+**Then** the `validate` job includes a `pnpm run check:e2e` step after build
+**And** a failing Playwright test blocks a PR merge
+**And** the Playwright `webServer` config re-uses the built `dist/` (preview mode) in CI to avoid a double-build
+**And** `pnpm check` locally still runs lint + types + unit tests + build (E2E remains optional locally via `pnpm check:e2e`)
+
+**Given** the CI job runs E2E tests,
+**When** all existing Playwright specs pass,
+**Then** the `validate` job exits 0 and CI is green on main
+
+**Given** a Playwright spec is intentionally broken,
+**When** a PR is opened,
+**Then** CI fails and the PR cannot be merged until the spec is fixed
+
+### Story 14.2: Add HTML Sanitisation to `marked` Rendering
+
+As a maintainer,
+I want all `marked`-rendered Markdown to be sanitised with DOMPurify before injection into the DOM,
+So that any malicious HTML or script tags in BMAD artifact files cannot execute in the browser.
+
+**Acceptance Criteria:**
+
+**Given** four routes currently pipe `marked.parse()` directly into `dangerouslySetInnerHTML`,
+**When** Story 14.2 is complete,
+**Then** `dompurify` and `@types/dompurify` are installed as a production dependency
+**And** a shared utility `src/lib/sanitise.ts` exports `sanitiseHtml(raw: string): string` wrapping `DOMPurify.sanitize`
+**And** the following four routes use `sanitiseHtml()` before `dangerouslySetInnerHTML`:
+  - `src/routes/workflow.$phaseId.$stepId.tsx`
+  - `src/routes/analytics-quality.tsx`
+  - `src/routes/prepare-story.$storyId.tsx`
+  - `src/routes/docs.$docId.tsx`
+**And** `pnpm check` passes with zero lint/type errors after the change
+**And** an existing Playwright smoke test confirms the affected routes still render their content correctly
+
+**Given** a Markdown file containing `<script>alert(1)</script>`,
+**When** that file is rendered in any of the four routes,
+**Then** the script tag is stripped and does not execute in the browser
+
+### Story 14.3: Implement Route-Level Code Splitting to Reduce Bundle Size
+
+As a user on a slow connection,
+I want the initial JavaScript payload to be small enough that the app renders within 3 seconds,
+So that the dashboard is usable without a fast network.
+
+**Acceptance Criteria:**
+
+**Given** the current `dist/assets/index-*.js` is 1,610 kB (gzip: 506 kB),
+**When** Story 14.3 is complete,
+**Then** all TanStack Router routes are loaded via dynamic `import()` (lazy route definitions)
+**And** the initial JS chunk is ≤600 kB unminified / ≤200 kB gzip
+**And** Vite no longer emits a chunk-size warning in the build output
+**And** `pnpm check` passes with zero regressions
+
+**Given** a user navigates directly to `/analytics/sessions`,
+**When** the page loads,
+**Then** only the root bundle + analytics-sessions chunk are downloaded (not the full route graph)
+
+**Given** the route-level split is in place,
+**When** `pnpm build` runs,
+**Then** there are at least 5 separate JS chunks (one per major route group: home, workflow, sessions/session, analytics, docs/agents/setup)
+
+### Story 14.4: Add Dependabot for Automated Dependency Updates
+
+As a maintainer,
+I want Dependabot to automatically open PRs for outdated npm dependencies,
+So that security patches and minor updates are applied regularly without manual tracking.
+
+**Acceptance Criteria:**
+
+**Given** no `.github/dependabot.yml` currently exists,
+**When** Story 14.4 is complete,
+**Then** `.github/dependabot.yml` exists and configures:
+  - `package-ecosystem: npm` with `directory: "/_bmad-ui"` on a weekly schedule (Monday)
+  - `package-ecosystem: github-actions` with `directory: "/"` on a weekly schedule
+
+**Given** the Dependabot config is merged,
+**When** Dependabot runs its first weekly check,
+**Then** PRs are opened for any outdated direct or dev dependencies in `_bmad-ui/package.json`
+**And** the CI `validate` job runs on Dependabot PRs and must pass before merge
