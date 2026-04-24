@@ -1,5 +1,39 @@
 {
   "sessions": {
+    "workflow-bmad-code-review-1776933961987-2": {
+      "sessionId": "workflow-bmad-code-review-1776933961987-2",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-code-review",
+      "model": "unknown",
+      "status": "completed",
+      "startedAt": "",
+      "endedAt": null,
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1700000,
+        "tokensOut": 10600,
+        "tokensCached": 1700000,
+        "totalTokens": 1710600
+      }
+    },
+    "workflow-bmad-code-review-1776933962024-5": {
+      "sessionId": "workflow-bmad-code-review-1776933962024-5",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-code-review",
+      "model": "unknown",
+      "status": "completed",
+      "startedAt": "",
+      "endedAt": null,
+      "usage": {
+        "requests": 1,
+        "tokensIn": 3100000,
+        "tokensOut": 16100,
+        "tokensCached": 3000000,
+        "totalTokens": 3116100
+      }
+    },
     "workflow-bmad-sprint-planning-1776265920497": {
       "sessionId": "workflow-bmad-sprint-planning-1776265920497",
       "storyId": null,
@@ -3532,6 +3566,50 @@
         "totalTokens": 391100
       }
     },
+    "012a1eeb-3017-4dfe-8ed8-103f48fcb3bf": {
+      "sessionId": "012a1eeb-3017-4dfe-8ed8-103f48fcb3bf",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T17:55:55.824Z",
+      "endedAt": "2026-04-22T18:02:02.085Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "012a1eeb-3017-4dfe-8ed8-103f48fcb3bf",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 28,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": true,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
+      "outcome": "aborted",
+      "start_date": "2026-04-22T17:55:55.824Z",
+      "end_date": "2026-04-22T18:02:02.085Z"
+    },
     "01525e55-7880-4902-8c07-7933ca0f2638": {
       "sessionId": "01525e55-7880-4902-8c07-7933ca0f2638",
       "storyId": null,
@@ -3571,10 +3649,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 717,
+      "agent_active_minutes": 0,
       "outcome": "aborted",
       "start_date": "2026-04-19T09:06:59.599Z",
-      "end_date": "2026-04-19T21:04:01.985Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:04:01.985Z"
+    },
+    "0246b1cb-bd02-4a57-b1c8-e28fc13ee955": {
+      "sessionId": "0246b1cb-bd02-4a57-b1c8-e28fc13ee955",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T21:39:22.193Z",
+      "endedAt": "2026-04-22T22:04:46.622Z",
+      "usage": {
+        "requests": 3,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "0246b1cb-bd02-4a57-b1c8-e28fc13ee955",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "human_turns": 1,
+      "agent_turns": 138,
+      "git_commits": 1,
+      "git_pushes": 1,
+      "aborted": true,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 25.4,
+      "agent_active_minutes": 0.1,
+      "outcome": "aborted",
+      "start_date": "2026-04-22T21:39:22.193Z",
+      "end_date": "2026-04-22T22:04:46.622Z"
     },
     "0402afbe-e006-4a89-a7bd-9e34d903225b": {
       "sessionId": "0402afbe-e006-4a89-a7bd-9e34d903225b",
@@ -3615,10 +3737,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:10:52.790Z",
-      "end_date": "2026-04-21T22:15:31.204Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:15:31.204Z"
+    },
+    "059ed632-25a6-4fc3-9a55-cdc3f122b56b": {
+      "sessionId": "059ed632-25a6-4fc3-9a55-cdc3f122b56b",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-epics-and-stories",
+      "model": "claude-opus-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T19:28:34.015Z",
+      "endedAt": "2026-04-22T21:39:04.176Z",
+      "usage": {
+        "requests": 5,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "059ed632-25a6-4fc3-9a55-cdc3f122b56b",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 5,
+      "premium_multiplier": 3,
+      "premium_cost_units": 15,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-epics-and-stories",
+      "turns": 5,
+      "human_turns": 1,
+      "agent_turns": 26,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 130.5,
+      "agent_active_minutes": 0.5,
+      "outcome": "no-output",
+      "start_date": "2026-04-22T19:28:34.015Z",
+      "end_date": "2026-04-22T21:39:04.176Z"
     },
     "05a2a071-0bdd-4db6-8c1a-2dcca669de3c": {
       "sessionId": "05a2a071-0bdd-4db6-8c1a-2dcca669de3c",
@@ -3659,10 +3825,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 22.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T14:19:13.972Z",
-      "end_date": "2026-04-21T14:41:45.134Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T14:41:45.134Z"
     },
     "0644526c-fd3c-48e4-bb03-4c0e83bec949": {
       "sessionId": "0644526c-fd3c-48e4-bb03-4c0e83bec949",
@@ -3703,10 +3869,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:10:52.836Z",
-      "end_date": "2026-04-21T22:13:52.207Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:13:52.207Z"
     },
     "06a78beb-e499-4750-a05f-021030816be1": {
       "sessionId": "06a78beb-e499-4750-a05f-021030816be1",
@@ -3747,10 +3913,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:03:15.903Z",
-      "end_date": "2026-04-18T18:05:53.699Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T18:05:53.699Z"
+    },
+    "06c1cb11-2a62-475a-8709-c5c81ff6a036": {
+      "sessionId": "06c1cb11-2a62-475a-8709-c5c81ff6a036",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-epics-and-stories",
+      "model": "claude-opus-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T18:01:52.782Z",
+      "endedAt": "2026-04-22T19:06:27.947Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "06c1cb11-2a62-475a-8709-c5c81ff6a036",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 3,
+      "premium_cost_units": 6,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-epics-and-stories",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 22,
+      "git_commits": 1,
+      "git_pushes": 1,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 64.6,
+      "agent_active_minutes": 0,
+      "outcome": "pushed",
+      "start_date": "2026-04-22T18:01:52.782Z",
+      "end_date": "2026-04-22T19:06:27.947Z"
     },
     "06ebc082-6770-44b4-b7f8-8b735c6f2be3": {
       "sessionId": "06ebc082-6770-44b4-b7f8-8b735c6f2be3",
@@ -3791,10 +4001,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-18T17:30:34.689Z",
-      "end_date": "2026-04-18T17:32:31.697Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T17:32:31.697Z"
     },
     "072b4de8-2366-49f5-92c6-2865e4800817": {
       "sessionId": "072b4de8-2366-49f5-92c6-2865e4800817",
@@ -3835,10 +4045,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.4,
+      "agent_active_minutes": 0.1,
       "outcome": "delivered",
       "start_date": "2026-04-15T14:41:49.369Z",
-      "end_date": "2026-04-15T14:44:11.733Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T14:44:11.733Z"
     },
     "089080fe-4755-46c3-95cb-73f382e3f56a": {
       "sessionId": "089080fe-4755-46c3-95cb-73f382e3f56a",
@@ -3879,10 +4089,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.2,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-15T22:21:41.835Z",
-      "end_date": "2026-04-15T22:23:53.738Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T22:23:53.738Z"
     },
     "08bc08a2-6bf8-4a15-bc7b-637f92da3ca9": {
       "sessionId": "08bc08a2-6bf8-4a15-bc7b-637f92da3ca9",
@@ -3923,10 +4133,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:03:09.117Z",
-      "end_date": "2026-04-18T13:05:05.031Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:05:05.031Z"
     },
     "08c47c57-840d-45b1-b3bc-4ed77229555b": {
       "sessionId": "08c47c57-840d-45b1-b3bc-4ed77229555b",
@@ -3967,10 +4177,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.7,
+      "agent_active_minutes": 0.2,
       "outcome": "no-output",
       "start_date": "2026-04-15T20:25:29.312Z",
-      "end_date": "2026-04-15T20:28:14.027Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T20:28:14.027Z"
     },
     "09db70e7-b166-417c-9f4e-26e6fa664a87": {
       "sessionId": "09db70e7-b166-417c-9f4e-26e6fa664a87",
@@ -4011,10 +4221,10 @@
       "subagent_tokens": 193450,
       "error_count": 0,
       "duration_minutes": 10.5,
+      "agent_active_minutes": 0.4,
       "outcome": "delivered",
       "start_date": "2026-04-15T22:01:39.768Z",
-      "end_date": "2026-04-15T22:12:08.336Z",
-      "agent_active_minutes": 0.4
+      "end_date": "2026-04-15T22:12:08.336Z"
     },
     "0ac963e5-f704-4298-8033-24e162f6c402": {
       "sessionId": "0ac963e5-f704-4298-8033-24e162f6c402",
@@ -4055,10 +4265,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.5,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-16T19:16:33.635Z",
-      "end_date": "2026-04-16T19:19:06.232Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-16T19:19:06.232Z"
     },
     "0d253828-7f38-433a-ba7b-aa3dc4ea7481": {
       "sessionId": "0d253828-7f38-433a-ba7b-aa3dc4ea7481",
@@ -4099,10 +4309,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.5,
+      "agent_active_minutes": 0.3,
       "outcome": "pushed",
       "start_date": "2026-04-16T15:55:24.838Z",
-      "end_date": "2026-04-16T15:58:55.349Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-16T15:58:55.349Z"
     },
     "0dc63793-68f7-4e47-9292-69fc3591ca6f": {
       "sessionId": "0dc63793-68f7-4e47-9292-69fc3591ca6f",
@@ -4143,10 +4353,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:13:29.753Z",
-      "end_date": "2026-04-19T21:17:20.967Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:17:20.967Z"
     },
     "0df8fbf6-1677-4102-9892-0465f5c0f0bc": {
       "sessionId": "0df8fbf6-1677-4102-9892-0465f5c0f0bc",
@@ -4187,10 +4397,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.9,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-16T21:13:38.595Z",
-      "end_date": "2026-04-16T21:17:35.335Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T21:17:35.335Z"
     },
     "0e9fafac-ef62-49e8-98f9-3ce6c4d517ab": {
       "sessionId": "0e9fafac-ef62-49e8-98f9-3ce6c4d517ab",
@@ -4231,10 +4441,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.9,
+      "agent_active_minutes": 0.3,
       "outcome": "delivered",
       "start_date": "2026-04-15T22:07:41.563Z",
-      "end_date": "2026-04-15T22:14:36.604Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-15T22:14:36.604Z"
     },
     "0efc5a21-af1e-44da-86ca-66149e869a51": {
       "sessionId": "0efc5a21-af1e-44da-86ca-66149e869a51",
@@ -4275,10 +4485,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.5,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-16T19:36:43.022Z",
-      "end_date": "2026-04-16T19:37:12.291Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T19:37:12.291Z"
     },
     "0f33a2f8-71f7-4d0b-b830-755ac045f632": {
       "sessionId": "0f33a2f8-71f7-4d0b-b830-755ac045f632",
@@ -4319,10 +4529,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 11.3,
+      "agent_active_minutes": 1.5,
       "outcome": "pushed",
       "start_date": "2026-04-16T15:21:18.833Z",
-      "end_date": "2026-04-16T15:32:37.533Z",
-      "agent_active_minutes": 1.5
+      "end_date": "2026-04-16T15:32:37.533Z"
     },
     "0fe90cc2-752d-48ec-879b-52455a8170c1": {
       "sessionId": "0fe90cc2-752d-48ec-879b-52455a8170c1",
@@ -4363,10 +4573,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.1,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-16T14:40:59.152Z",
-      "end_date": "2026-04-16T14:41:08.073Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T14:41:08.073Z"
+    },
+    "10051148-70c2-4481-afe9-451df8408d7c": {
+      "sessionId": "10051148-70c2-4481-afe9-451df8408d7c",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-code-review",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T19:11:21.096Z",
+      "endedAt": "2026-04-22T21:26:35.253Z",
+      "usage": {
+        "requests": 4,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "10051148-70c2-4481-afe9-451df8408d7c",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 1,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 4,
+      "human_turns": 2,
+      "agent_turns": 83,
+      "git_commits": 14,
+      "git_pushes": 5,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 11,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 135.2,
+      "agent_active_minutes": 0.5,
+      "outcome": "pushed",
+      "start_date": "2026-04-22T19:11:21.096Z",
+      "end_date": "2026-04-22T21:26:35.253Z"
     },
     "10942d91-1566-4403-a64e-5b098e7dc37f": {
       "sessionId": "10942d91-1566-4403-a64e-5b098e7dc37f",
@@ -4407,10 +4661,54 @@
       "subagent_tokens": 1539644,
       "error_count": 0,
       "duration_minutes": 7.1,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-15T21:38:08.008Z",
-      "end_date": "2026-04-15T21:45:16.691Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T21:45:16.691Z"
+    },
+    "123c983f-0827-4599-bb9b-b46376d977a0": {
+      "sessionId": "123c983f-0827-4599-bb9b-b46376d977a0",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T17:55:55.831Z",
+      "endedAt": "2026-04-22T18:02:02.100Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "123c983f-0827-4599-bb9b-b46376d977a0",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 21,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 1,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
+      "outcome": "no-output",
+      "start_date": "2026-04-22T17:55:55.831Z",
+      "end_date": "2026-04-22T18:02:02.100Z"
     },
     "128258b2-f548-465c-a2d5-54f212239cf7": {
       "sessionId": "128258b2-f548-465c-a2d5-54f212239cf7",
@@ -4451,10 +4749,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.7,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-18T19:21:53.156Z",
-      "end_date": "2026-04-18T19:24:34.826Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:24:34.826Z"
     },
     "12b76103-2117-4728-ad63-67b8adc534d7": {
       "sessionId": "12b76103-2117-4728-ad63-67b8adc534d7",
@@ -4495,10 +4793,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.1,
+      "agent_active_minutes": 0.2,
       "outcome": "no-output",
       "start_date": "2026-04-15T21:40:02.575Z",
-      "end_date": "2026-04-15T21:43:11.282Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T21:43:11.282Z"
     },
     "13fd2617-c2d5-43c7-a191-5fd184c0af55": {
       "sessionId": "13fd2617-c2d5-43c7-a191-5fd184c0af55",
@@ -4539,10 +4837,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.2,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-21T13:59:31.827Z",
-      "end_date": "2026-04-21T14:05:42.931Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T14:05:42.931Z"
     },
     "14014788-8ec5-4dda-9692-06df842c683f": {
       "sessionId": "14014788-8ec5-4dda-9692-06df842c683f",
@@ -4583,10 +4881,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:36:47.177Z",
-      "end_date": "2026-04-21T21:45:10.245Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:45:10.245Z"
     },
     "14e7faee-08e0-48d0-9d26-0eb21ef2365b": {
       "sessionId": "14e7faee-08e0-48d0-9d26-0eb21ef2365b",
@@ -4627,10 +4925,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 66.5,
+      "agent_active_minutes": 0.1,
       "outcome": "delivered",
       "start_date": "2026-04-21T14:27:29.267Z",
-      "end_date": "2026-04-21T15:33:59.181Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-21T15:33:59.181Z"
     },
     "1500dfb6-02f5-44dc-9e39-57fd71b767a0": {
       "sessionId": "1500dfb6-02f5-44dc-9e39-57fd71b767a0",
@@ -4671,10 +4969,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 10,
+      "agent_active_minutes": 0,
       "outcome": "aborted",
       "start_date": "2026-04-21T13:49:25.525Z",
-      "end_date": "2026-04-21T13:59:25.702Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T13:59:25.702Z"
     },
     "1577722b-47f7-4392-8080-9ac7deb6c4b5": {
       "sessionId": "1577722b-47f7-4392-8080-9ac7deb6c4b5",
@@ -4715,10 +5013,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:16:16.605Z",
-      "end_date": "2026-04-18T15:18:47.279Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T15:18:47.279Z"
     },
     "162d5550-8d2f-4ca7-a14f-ced876877490": {
       "sessionId": "162d5550-8d2f-4ca7-a14f-ced876877490",
@@ -4759,10 +5057,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:15:42.926Z",
-      "end_date": "2026-04-21T22:23:58.839Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:23:58.839Z"
     },
     "17ef6b03-c3f9-4cca-a6e4-5a3965d07723": {
       "sessionId": "17ef6b03-c3f9-4cca-a6e4-5a3965d07723",
@@ -4803,10 +5101,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 30.1,
+      "agent_active_minutes": 0.2,
       "outcome": "aborted",
       "start_date": "2026-04-18T12:26:21.280Z",
-      "end_date": "2026-04-18T12:56:28.699Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-18T12:56:28.699Z"
     },
     "18583c03-8438-4021-bb2b-02fcb945f1be": {
       "sessionId": "18583c03-8438-4021-bb2b-02fcb945f1be",
@@ -4847,10 +5145,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.5,
+      "agent_active_minutes": 0.2,
       "outcome": "no-output",
       "start_date": "2026-04-15T21:47:50.164Z",
-      "end_date": "2026-04-15T21:49:18.902Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T21:49:18.902Z"
     },
     "1a91578e-e5c3-4c98-8a21-265d7288799f": {
       "sessionId": "1a91578e-e5c3-4c98-8a21-265d7288799f",
@@ -4891,10 +5189,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 11.8,
+      "agent_active_minutes": 0.3,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:00:49.971Z",
-      "end_date": "2026-04-18T13:12:36.192Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-18T13:12:36.192Z"
+    },
+    "1ab356be-2ccc-42e9-8a7e-ec5e6af90793": {
+      "sessionId": "1ab356be-2ccc-42e9-8a7e-ec5e6af90793",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T17:55:56.004Z",
+      "endedAt": "2026-04-22T18:02:02.086Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "1ab356be-2ccc-42e9-8a7e-ec5e6af90793",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 34,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": true,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
+      "outcome": "aborted",
+      "start_date": "2026-04-22T17:55:56.004Z",
+      "end_date": "2026-04-22T18:02:02.086Z"
     },
     "1b5dc142-34fa-44ec-b1b8-7d0342927d17": {
       "sessionId": "1b5dc142-34fa-44ec-b1b8-7d0342927d17",
@@ -4935,10 +5277,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.2,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-15T22:37:59.283Z",
-      "end_date": "2026-04-15T22:42:10.424Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T22:42:10.424Z"
     },
     "1c821e39-f3e2-4e43-a355-d2d9860d2fe5": {
       "sessionId": "1c821e39-f3e2-4e43-a355-d2d9860d2fe5",
@@ -4979,10 +5321,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.8,
+      "agent_active_minutes": 0.2,
       "outcome": "aborted",
       "start_date": "2026-04-21T22:12:59.344Z",
-      "end_date": "2026-04-21T22:13:50.092Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-21T22:13:50.092Z"
     },
     "1d25079e-bd13-4387-9117-01b8a5aade61": {
       "sessionId": "1d25079e-bd13-4387-9117-01b8a5aade61",
@@ -5023,10 +5365,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-16T18:56:43.097Z",
-      "end_date": "2026-04-16T18:57:44.118Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T18:57:44.118Z"
     },
     "1fce5a31-d36d-42e2-b3df-ea89a5f43f81": {
       "sessionId": "1fce5a31-d36d-42e2-b3df-ea89a5f43f81",
@@ -5067,10 +5409,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.4,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-16T21:03:29.473Z",
-      "end_date": "2026-04-16T21:06:54.029Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T21:06:54.029Z"
     },
     "1fd73118-c73d-4d06-8699-9ff1c8319d99": {
       "sessionId": "1fd73118-c73d-4d06-8699-9ff1c8319d99",
@@ -5111,10 +5453,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:07:01.971Z",
-      "end_date": "2026-04-18T18:08:57.446Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T18:08:57.446Z"
     },
     "2068a695-6e27-4ea3-8db2-f12d0d6be891": {
       "sessionId": "2068a695-6e27-4ea3-8db2-f12d0d6be891",
@@ -5155,10 +5497,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 66.1,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-20T06:10:25.322Z",
-      "end_date": "2026-04-20T07:16:32.664Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-20T07:16:32.664Z"
     },
     "215b3f9c-fe12-403b-bd72-b507a365c114": {
       "sessionId": "215b3f9c-fe12-403b-bd72-b507a365c114",
@@ -5199,10 +5541,56 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T19:23:27.165Z",
-      "end_date": "2026-04-18T19:27:48.376Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:27:48.376Z"
+    },
+    "22954d18-4151-4c93-ae70-240872c24114": {
+      "sessionId": "22954d18-4151-4c93-ae70-240872c24114",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "auto",
+      "status": "failed",
+      "startedAt": "2026-04-23T05:44:34.366Z",
+      "endedAt": "2026-04-23T08:46:08.133Z",
+      "usage": {
+        "requests": 3,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
+      "session_id": "22954d18-4151-4c93-ae70-240872c24114",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "human_turns": 2,
+      "agent_turns": 62,
+      "git_commits": 2,
+      "git_pushes": 2,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 182.9,
+      "agent_active_minutes": 0.2,
+      "outcome": "pushed",
+      "start_date": "2026-04-23T05:44:34.366Z",
+      "end_date": "2026-04-23T08:47:25.406Z"
     },
     "22c01966-d5d3-4f1f-9f70-f0825c8e3329": {
       "sessionId": "22c01966-d5d3-4f1f-9f70-f0825c8e3329",
@@ -5243,10 +5631,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 9.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T13:59:45.498Z",
-      "end_date": "2026-04-21T14:08:52.249Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T14:08:52.249Z"
     },
     "24a17439-60c2-412d-ad47-e7caef351c39": {
       "sessionId": "24a17439-60c2-412d-ad47-e7caef351c39",
@@ -5287,10 +5675,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 24.2,
+      "agent_active_minutes": 1.2,
       "outcome": "delivered",
       "start_date": "2026-04-15T22:45:14.763Z",
-      "end_date": "2026-04-15T23:09:26.059Z",
-      "agent_active_minutes": 1.2
+      "end_date": "2026-04-15T23:09:26.059Z"
     },
     "24d9e431-97e7-4091-99ec-10532f4afb3d": {
       "sessionId": "24d9e431-97e7-4091-99ec-10532f4afb3d",
@@ -5298,9 +5686,9 @@
       "epicId": null,
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "failed",
+      "status": "completed",
       "startedAt": "2026-04-22T16:24:03.052Z",
-      "endedAt": "2026-04-22T17:55:57.300Z",
+      "endedAt": "2026-04-22T17:44:45.155Z",
       "usage": {
         "requests": 3,
         "tokensIn": 0,
@@ -5308,8 +5696,6 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
       "session_id": "24d9e431-97e7-4091-99ec-10532f4afb3d",
       "tool": "copilot-cli",
       "premium": true,
@@ -5333,10 +5719,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 80.7,
+      "agent_active_minutes": 0.1,
       "outcome": "error",
       "start_date": "2026-04-22T16:24:03.052Z",
-      "end_date": "2026-04-22T17:44:45.155Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-22T17:44:45.155Z"
     },
     "25bfec49-03ed-4224-8674-350e8082fa58": {
       "sessionId": "25bfec49-03ed-4224-8674-350e8082fa58",
@@ -5377,10 +5763,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 22.6,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:04:11.134Z",
-      "end_date": "2026-04-21T21:26:46.398Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-21T21:26:46.398Z"
     },
     "25fc64e8-7668-4a36-83c0-9807b6729346": {
       "sessionId": "25fc64e8-7668-4a36-83c0-9807b6729346",
@@ -5421,10 +5807,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.9,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-15T17:52:05.437Z",
-      "end_date": "2026-04-15T17:56:59.723Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T17:56:59.723Z"
     },
     "27a61a15-4c20-4272-967c-7c4fcf4b4496": {
       "sessionId": "27a61a15-4c20-4272-967c-7c4fcf4b4496",
@@ -5465,10 +5851,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:12:57.293Z",
-      "end_date": "2026-04-19T21:15:33.862Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:15:33.862Z"
     },
     "293dee7d-c4cb-4e0a-9cfe-511c546bd397": {
       "sessionId": "293dee7d-c4cb-4e0a-9cfe-511c546bd397",
@@ -5509,10 +5895,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:33:37.554Z",
-      "end_date": "2026-04-21T21:39:43.097Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:39:43.097Z"
     },
     "29574cd0-5d17-44cf-9a45-9cf0148a4fcf": {
       "sessionId": "29574cd0-5d17-44cf-9a45-9cf0148a4fcf",
@@ -5553,10 +5939,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 118.5,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:10:19.801Z",
-      "end_date": "2026-04-18T18:08:50.503Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-18T18:08:50.503Z"
     },
     "2ac79d3a-c66e-4881-9a51-3a9981c92b3f": {
       "sessionId": "2ac79d3a-c66e-4881-9a51-3a9981c92b3f",
@@ -5597,10 +5983,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.3,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-15T17:30:51.967Z",
-      "end_date": "2026-04-15T17:33:07.496Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T17:33:07.496Z"
     },
     "2b2b5977-68f1-4407-a494-332b055fefee": {
       "sessionId": "2b2b5977-68f1-4407-a494-332b055fefee",
@@ -5641,10 +6027,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:02:31.329Z",
-      "end_date": "2026-04-18T13:03:22.177Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:03:22.177Z"
     },
     "2b406a7d-f347-47b8-8089-5adccde202c0": {
       "sessionId": "2b406a7d-f347-47b8-8089-5adccde202c0",
@@ -5685,10 +6071,98 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T20:59:52.579Z",
-      "end_date": "2026-04-16T21:02:16.014Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T21:02:16.014Z"
+    },
+    "2b7acbc9-1a65-4a81-b2fb-6a36adb7ab0d": {
+      "sessionId": "2b7acbc9-1a65-4a81-b2fb-6a36adb7ab0d",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T17:55:55.827Z",
+      "endedAt": "2026-04-22T18:02:02.117Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "2b7acbc9-1a65-4a81-b2fb-6a36adb7ab0d",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 13,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 2,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
+      "outcome": "no-output",
+      "start_date": "2026-04-22T17:55:55.827Z",
+      "end_date": "2026-04-22T18:02:02.117Z"
+    },
+    "2c56e4aa-fa6b-482e-a6f2-391dc4c087ee": {
+      "sessionId": "2c56e4aa-fa6b-482e-a6f2-391dc4c087ee",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-story",
+      "model": "auto",
+      "status": "completed",
+      "startedAt": "2026-04-23T05:39:27.295Z",
+      "endedAt": "2026-04-23T05:43:46.107Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "2c56e4aa-fa6b-482e-a6f2-391dc4c087ee",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 17,
+      "git_commits": 1,
+      "git_pushes": 1,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 4.3,
+      "agent_active_minutes": 0,
+      "outcome": "pushed",
+      "start_date": "2026-04-23T05:39:27.295Z",
+      "end_date": "2026-04-23T05:43:46.107Z"
     },
     "2d6d9f4d-d615-4999-988a-c50c6626c4c2": {
       "sessionId": "2d6d9f4d-d615-4999-988a-c50c6626c4c2",
@@ -5729,10 +6203,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 16.9,
+      "agent_active_minutes": 0.6,
       "outcome": "committed",
       "start_date": "2026-04-15T18:02:41.074Z",
-      "end_date": "2026-04-15T18:19:35.072Z",
-      "agent_active_minutes": 0.6
+      "end_date": "2026-04-15T18:19:35.072Z"
     },
     "2dfadc96-6256-49b1-8dd1-f18f6c823d2d": {
       "sessionId": "2dfadc96-6256-49b1-8dd1-f18f6c823d2d",
@@ -5773,10 +6247,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T17:28:38.485Z",
-      "end_date": "2026-04-18T17:34:53.941Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T17:34:53.941Z"
     },
     "2ea1289f-a98a-456d-aca1-a3931b255e5b": {
       "sessionId": "2ea1289f-a98a-456d-aca1-a3931b255e5b",
@@ -5817,10 +6291,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T15:59:31.853Z",
-      "end_date": "2026-04-16T16:04:01.074Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T16:04:01.074Z"
     },
     "2eb5e08f-c650-4671-a246-83e46bf327ad": {
       "sessionId": "2eb5e08f-c650-4671-a246-83e46bf327ad",
@@ -5861,10 +6335,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.2,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T21:46:50.794Z",
-      "end_date": "2026-04-15T21:49:01.273Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T21:49:01.273Z"
     },
     "2f3aa3d5-469e-40ec-a246-028b097d3469": {
       "sessionId": "2f3aa3d5-469e-40ec-a246-028b097d3469",
@@ -5905,10 +6379,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.7,
+      "agent_active_minutes": 0.1,
       "outcome": "delivered",
       "start_date": "2026-04-15T23:03:21.068Z",
-      "end_date": "2026-04-15T23:10:00.772Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T23:10:00.772Z"
     },
     "2f8f0c24-e6ca-41d0-b0bb-e9c243fb0f4e": {
       "sessionId": "2f8f0c24-e6ca-41d0-b0bb-e9c243fb0f4e",
@@ -5949,10 +6423,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T19:58:55.510Z",
-      "end_date": "2026-04-16T20:02:15.180Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T20:02:15.180Z"
     },
     "2fe9e380-6b7d-469f-94b0-333a31986ea9": {
       "sessionId": "2fe9e380-6b7d-469f-94b0-333a31986ea9",
@@ -5993,10 +6467,10 @@
       "subagent_tokens": 546422,
       "error_count": 0,
       "duration_minutes": 25.2,
+      "agent_active_minutes": 0.5,
       "outcome": "delivered",
       "start_date": "2026-04-15T22:37:07.249Z",
-      "end_date": "2026-04-15T23:02:18.904Z",
-      "agent_active_minutes": 0.5
+      "end_date": "2026-04-15T23:02:18.904Z"
     },
     "312abefe-2007-4846-8321-c0fae995fc64": {
       "sessionId": "312abefe-2007-4846-8321-c0fae995fc64",
@@ -6037,10 +6511,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-16T19:37:59.317Z",
-      "end_date": "2026-04-16T19:38:59.448Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T19:38:59.448Z"
     },
     "32539c02-3217-4590-9d62-e53571a353c8": {
       "sessionId": "32539c02-3217-4590-9d62-e53571a353c8",
@@ -6081,10 +6555,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:44:58.101Z",
-      "end_date": "2026-04-19T21:47:49.441Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:47:49.441Z"
     },
     "3268a6fd-2655-4a66-8cfa-3618fa751456": {
       "sessionId": "3268a6fd-2655-4a66-8cfa-3618fa751456",
@@ -6125,10 +6599,10 @@
       "subagent_tokens": 588480,
       "error_count": 0,
       "duration_minutes": 12.7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T12:22:38.075Z",
-      "end_date": "2026-04-22T12:35:22.555Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T12:35:22.555Z"
     },
     "33f8d98e-46be-499b-8657-1060ab3e580b": {
       "sessionId": "33f8d98e-46be-499b-8657-1060ab3e580b",
@@ -6169,10 +6643,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:09:43.191Z",
-      "end_date": "2026-04-18T16:17:47.900Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T16:17:47.900Z"
     },
     "34138166-0e1f-4d82-b211-142f91e356a4": {
       "sessionId": "34138166-0e1f-4d82-b211-142f91e356a4",
@@ -6213,10 +6687,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T14:51:06.404Z",
-      "end_date": "2026-04-22T14:56:02.614Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T14:56:02.614Z"
     },
     "3538650c-39a8-4572-9aee-25fc6a5795c0": {
       "sessionId": "3538650c-39a8-4572-9aee-25fc6a5795c0",
@@ -6257,10 +6731,10 @@
       "subagent_tokens": 680355,
       "error_count": 0,
       "duration_minutes": 10.7,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-22T12:22:37.932Z",
-      "end_date": "2026-04-22T12:33:21.255Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T12:33:21.255Z"
     },
     "35e6275a-1bad-4a07-a518-d780d097ff4b": {
       "sessionId": "35e6275a-1bad-4a07-a518-d780d097ff4b",
@@ -6301,10 +6775,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:13:18.519Z",
-      "end_date": "2026-04-18T13:16:11.115Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:16:11.115Z"
     },
     "3726ab97-ebc9-4622-bd8a-3d84375ca465": {
       "sessionId": "3726ab97-ebc9-4622-bd8a-3d84375ca465",
@@ -6345,10 +6819,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:18:23.738Z",
-      "end_date": "2026-04-19T21:23:19.347Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:23:19.347Z"
     },
     "3742cccd-371a-468f-89a8-aee8554de5f9": {
       "sessionId": "3742cccd-371a-468f-89a8-aee8554de5f9",
@@ -6389,10 +6863,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 10.7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T14:48:10.103Z",
-      "end_date": "2026-04-22T14:58:54.096Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T14:58:54.096Z"
     },
     "374e343b-91e7-4a34-b96d-e4b7d7f094fa": {
       "sessionId": "374e343b-91e7-4a34-b96d-e4b7d7f094fa",
@@ -6433,10 +6907,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8.3,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:05:08.490Z",
-      "end_date": "2026-04-18T16:13:25.653Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-18T16:13:25.653Z"
     },
     "37aa4de4-6b56-4cba-8d09-30c792c682a8": {
       "sessionId": "37aa4de4-6b56-4cba-8d09-30c792c682a8",
@@ -6477,10 +6951,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:03:15.901Z",
-      "end_date": "2026-04-18T18:05:09.175Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T18:05:09.175Z"
+    },
+    "37b830d5-320c-4bc3-acab-f859ee084c8e": {
+      "sessionId": "37b830d5-320c-4bc3-acab-f859ee084c8e",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T21:39:22.193Z",
+      "endedAt": "2026-04-22T22:01:51.225Z",
+      "usage": {
+        "requests": 3,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "37b830d5-320c-4bc3-acab-f859ee084c8e",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "human_turns": 1,
+      "agent_turns": 126,
+      "git_commits": 2,
+      "git_pushes": 2,
+      "aborted": true,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 22.5,
+      "agent_active_minutes": 0.1,
+      "outcome": "aborted",
+      "start_date": "2026-04-22T21:39:22.193Z",
+      "end_date": "2026-04-22T22:01:51.225Z"
     },
     "391b7ac0-a4e7-4891-8f96-05db437dc7c6": {
       "sessionId": "391b7ac0-a4e7-4891-8f96-05db437dc7c6",
@@ -6521,10 +7039,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:12:57.293Z",
-      "end_date": "2026-04-19T21:20:38.489Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:20:38.489Z"
     },
     "3a9c52e2-4bcb-41d3-94dd-b760e469f55b": {
       "sessionId": "3a9c52e2-4bcb-41d3-94dd-b760e469f55b",
@@ -6565,10 +7083,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.7,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T20:30:05.682Z",
-      "end_date": "2026-04-15T20:30:49.027Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T20:30:49.027Z"
     },
     "3c725981-f99a-46e2-8909-bc9345afeabe": {
       "sessionId": "3c725981-f99a-46e2-8909-bc9345afeabe",
@@ -6609,10 +7127,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 33.5,
+      "agent_active_minutes": 0.5,
       "outcome": "aborted",
       "start_date": "2026-04-15T22:02:34.755Z",
-      "end_date": "2026-04-15T22:36:06.367Z",
-      "agent_active_minutes": 0.5
+      "end_date": "2026-04-15T22:36:06.367Z"
     },
     "3c847e08-a7c9-4691-b4f4-39d926057b51": {
       "sessionId": "3c847e08-a7c9-4691-b4f4-39d926057b51",
@@ -6653,10 +7171,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T09:03:31.977Z",
-      "end_date": "2026-04-19T09:06:57.913Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T09:06:57.913Z"
     },
     "3ed77174-f5e7-4774-aece-2961cdb5189a": {
       "sessionId": "3ed77174-f5e7-4774-aece-2961cdb5189a",
@@ -6697,10 +7215,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:14:06.978Z",
-      "end_date": "2026-04-21T22:20:07.691Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-21T22:20:07.691Z"
     },
     "3f7d7006-a97a-4110-a3bd-c04094e8ca4f": {
       "sessionId": "3f7d7006-a97a-4110-a3bd-c04094e8ca4f",
@@ -6741,10 +7259,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 149.6,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:07:44.732Z",
-      "end_date": "2026-04-18T15:37:20.519Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-18T15:37:20.519Z"
     },
     "3f8ccbb2-2d28-46e3-8232-fa8ef28bc22e": {
       "sessionId": "3f8ccbb2-2d28-46e3-8232-fa8ef28bc22e",
@@ -6785,10 +7303,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.7,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T22:46:25.855Z",
-      "end_date": "2026-04-15T22:48:06.618Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T22:48:06.618Z"
     },
     "426c9be0-40a3-4529-b7b9-e32b22a6288f": {
       "sessionId": "426c9be0-40a3-4529-b7b9-e32b22a6288f",
@@ -6829,10 +7347,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:43:23.625Z",
-      "end_date": "2026-04-19T21:46:28.932Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:46:28.932Z"
     },
     "429e136f-3ec9-4125-aad9-326f5206a8be": {
       "sessionId": "429e136f-3ec9-4125-aad9-326f5206a8be",
@@ -6873,10 +7391,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 32,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-16T21:14:57.318Z",
-      "end_date": "2026-04-16T21:47:00.228Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T21:47:00.228Z"
     },
     "42b9b168-57fe-43d8-ae59-a7f8febe97ac": {
       "sessionId": "42b9b168-57fe-43d8-ae59-a7f8febe97ac",
@@ -6884,9 +7402,9 @@
       "epicId": null,
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "failed",
+      "status": "completed",
       "startedAt": "2026-04-22T16:24:03.060Z",
-      "endedAt": "2026-04-22T17:55:57.308Z",
+      "endedAt": "2026-04-22T17:45:16.164Z",
       "usage": {
         "requests": 3,
         "tokensIn": 0,
@@ -6894,8 +7412,6 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
       "session_id": "42b9b168-57fe-43d8-ae59-a7f8febe97ac",
       "tool": "copilot-cli",
       "premium": true,
@@ -6919,10 +7435,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 81.2,
+      "agent_active_minutes": 0.1,
       "outcome": "error",
       "start_date": "2026-04-22T16:24:03.060Z",
-      "end_date": "2026-04-22T17:45:16.164Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-22T17:45:16.164Z"
     },
     "4334b1aa-c65d-435b-8577-db71ba1b631d": {
       "sessionId": "4334b1aa-c65d-435b-8577-db71ba1b631d",
@@ -6963,10 +7479,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.4,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-18T12:59:21.544Z",
-      "end_date": "2026-04-18T13:02:46.565Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:02:46.565Z"
     },
     "43e3c3c4-cf01-4cbc-83de-bef4e00fad09": {
       "sessionId": "43e3c3c4-cf01-4cbc-83de-bef4e00fad09",
@@ -7007,10 +7523,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:21:34.614Z",
-      "end_date": "2026-04-18T18:25:40.228Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T18:25:40.228Z"
     },
     "43fcbfa4-ba99-44c7-9882-9caa0f97b4be": {
       "sessionId": "43fcbfa4-ba99-44c7-9882-9caa0f97b4be",
@@ -7051,10 +7567,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T14:51:06.404Z",
-      "end_date": "2026-04-22T14:58:05.799Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T14:58:05.799Z"
     },
     "443a7ee7-ae50-47cf-939b-3af4df05370e": {
       "sessionId": "443a7ee7-ae50-47cf-939b-3af4df05370e",
@@ -7095,10 +7611,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:07:32.018Z",
-      "end_date": "2026-04-18T16:08:34.076Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T16:08:34.076Z"
     },
     "46474d39-e3ea-40f2-81fc-2601b84260dd": {
       "sessionId": "46474d39-e3ea-40f2-81fc-2601b84260dd",
@@ -7139,10 +7655,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.7,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-18T17:30:34.689Z",
-      "end_date": "2026-04-18T17:33:13.869Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T17:33:13.869Z"
     },
     "465c129d-b74c-48a1-8240-885030dc6ca6": {
       "sessionId": "465c129d-b74c-48a1-8240-885030dc6ca6",
@@ -7183,10 +7699,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1203.7,
+      "agent_active_minutes": 0,
       "outcome": "aborted",
       "start_date": "2026-04-18T13:04:20.164Z",
-      "end_date": "2026-04-19T09:07:59.297Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T09:07:59.297Z"
     },
     "47364fcb-29ec-454d-8d4e-2bb98fc9167e": {
       "sessionId": "47364fcb-29ec-454d-8d4e-2bb98fc9167e",
@@ -7227,10 +7743,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:44:26.947Z",
-      "end_date": "2026-04-19T21:47:40.520Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:47:40.520Z"
+    },
+    "4794edb7-75d7-45e9-843e-6b97b9db1c22": {
+      "sessionId": "4794edb7-75d7-45e9-843e-6b97b9db1c22",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T21:39:22.225Z",
+      "endedAt": "2026-04-22T21:52:27.730Z",
+      "usage": {
+        "requests": 3,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "4794edb7-75d7-45e9-843e-6b97b9db1c22",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "human_turns": 1,
+      "agent_turns": 68,
+      "git_commits": 1,
+      "git_pushes": 1,
+      "aborted": true,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 13.1,
+      "agent_active_minutes": 0.1,
+      "outcome": "aborted",
+      "start_date": "2026-04-22T21:39:22.225Z",
+      "end_date": "2026-04-22T21:52:27.730Z"
     },
     "479d9ca7-ad99-46ce-bcf3-08c7eb638016": {
       "sessionId": "479d9ca7-ad99-46ce-bcf3-08c7eb638016",
@@ -7271,10 +7831,10 @@
       "subagent_tokens": 304542,
       "error_count": 0,
       "duration_minutes": 4.8,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-16T20:53:45.647Z",
-      "end_date": "2026-04-16T20:58:31.425Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T20:58:31.425Z"
     },
     "47d3982e-50b0-4a73-bf4d-81f80164be7e": {
       "sessionId": "47d3982e-50b0-4a73-bf4d-81f80164be7e",
@@ -7315,10 +7875,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T21:23:44.182Z",
-      "end_date": "2026-04-16T21:28:55.914Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T21:28:55.914Z"
     },
     "493fa748-9c52-4f52-97b1-5c1b39434097": {
       "sessionId": "493fa748-9c52-4f52-97b1-5c1b39434097",
@@ -7359,10 +7919,10 @@
       "subagent_tokens": 919569,
       "error_count": 0,
       "duration_minutes": 12.7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T12:44:51.258Z",
-      "end_date": "2026-04-21T12:57:33.593Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T12:57:33.593Z"
     },
     "49a6583b-7da9-41be-a107-949a37147edf": {
       "sessionId": "49a6583b-7da9-41be-a107-949a37147edf",
@@ -7370,9 +7930,9 @@
       "epicId": null,
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "failed",
+      "status": "completed",
       "startedAt": "2026-04-22T16:24:03.051Z",
-      "endedAt": "2026-04-22T17:55:57.320Z",
+      "endedAt": "2026-04-22T17:41:59.220Z",
       "usage": {
         "requests": 3,
         "tokensIn": 0,
@@ -7380,8 +7940,6 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
       "session_id": "49a6583b-7da9-41be-a107-949a37147edf",
       "tool": "copilot-cli",
       "premium": true,
@@ -7405,10 +7963,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 77.9,
+      "agent_active_minutes": 0.2,
       "outcome": "error",
       "start_date": "2026-04-22T16:24:03.051Z",
-      "end_date": "2026-04-22T17:41:59.220Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-22T17:41:59.220Z"
     },
     "4d5aa2b7-3f8f-4502-8019-6bb91bcc54bd": {
       "sessionId": "4d5aa2b7-3f8f-4502-8019-6bb91bcc54bd",
@@ -7449,10 +8007,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T14:51:06.391Z",
-      "end_date": "2026-04-22T14:58:36.806Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T14:58:36.806Z"
     },
     "4da78f31-a9bb-4592-9d6e-849fc8531a22": {
       "sessionId": "4da78f31-a9bb-4592-9d6e-849fc8531a22",
@@ -7493,10 +8051,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:12:44.766Z",
-      "end_date": "2026-04-21T21:16:42.216Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:16:42.216Z"
     },
     "4e294cab-fcbc-4c0f-bcbc-c586b5ba6430": {
       "sessionId": "4e294cab-fcbc-4c0f-bcbc-c586b5ba6430",
@@ -7537,10 +8095,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:03:15.855Z",
-      "end_date": "2026-04-18T18:05:30.585Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T18:05:30.585Z"
     },
     "4e440854-c55d-49f0-9156-70fcf3cdb81b": {
       "sessionId": "4e440854-c55d-49f0-9156-70fcf3cdb81b",
@@ -7581,10 +8139,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.2,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-21T21:36:47.177Z",
-      "end_date": "2026-04-21T21:37:58.952Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:37:58.952Z"
     },
     "4ef8aebb-1e8f-434a-b847-1d6ed2349676": {
       "sessionId": "4ef8aebb-1e8f-434a-b847-1d6ed2349676",
@@ -7625,10 +8183,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.9,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-21T21:44:40.123Z",
-      "end_date": "2026-04-21T21:52:34.769Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:52:34.769Z"
     },
     "4fe0b124-641e-4eed-b83f-b18d2d6a25e1": {
       "sessionId": "4fe0b124-641e-4eed-b83f-b18d2d6a25e1",
@@ -7669,10 +8227,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 730.6,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-18T19:38:08.182Z",
-      "end_date": "2026-04-19T07:48:47.080Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-19T07:48:47.080Z"
     },
     "50454e00-6e60-45df-921b-2d3c833aacb3": {
       "sessionId": "50454e00-6e60-45df-921b-2d3c833aacb3",
@@ -7713,10 +8271,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.9,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-16T19:06:47.434Z",
-      "end_date": "2026-04-16T19:11:44.068Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T19:11:44.068Z"
     },
     "51945586-bfe0-43b1-9afd-34977c166cda": {
       "sessionId": "51945586-bfe0-43b1-9afd-34977c166cda",
@@ -7757,10 +8315,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 881.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:23:26.421Z",
-      "end_date": "2026-04-19T09:04:56.772Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T09:04:56.772Z"
     },
     "5247d9c2-b009-4ac1-88ee-858d16fe34a9": {
       "sessionId": "5247d9c2-b009-4ac1-88ee-858d16fe34a9",
@@ -7801,10 +8359,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.3,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-16T19:32:59.828Z",
-      "end_date": "2026-04-16T19:36:18.405Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T19:36:18.405Z"
     },
     "52b5ee1d-7f5e-400b-8419-324afd5a607c": {
       "sessionId": "52b5ee1d-7f5e-400b-8419-324afd5a607c",
@@ -7845,10 +8403,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.8,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-21T22:15:42.885Z",
-      "end_date": "2026-04-21T22:21:32.703Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:21:32.703Z"
     },
     "52c4e52a-38c1-49da-ae8e-241c8700b2e7": {
       "sessionId": "52c4e52a-38c1-49da-ae8e-241c8700b2e7",
@@ -7889,10 +8447,10 @@
       "subagent_tokens": 239213,
       "error_count": 0,
       "duration_minutes": 3.9,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-18T16:05:07.852Z",
-      "end_date": "2026-04-18T16:09:02.766Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T16:09:02.766Z"
     },
     "52fb136f-82fa-4b16-8de9-bc3bbbbc24ac": {
       "sessionId": "52fb136f-82fa-4b16-8de9-bc3bbbbc24ac",
@@ -7933,10 +8491,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:39:53.689Z",
-      "end_date": "2026-04-21T21:47:13.093Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:47:13.093Z"
     },
     "531d45a4-8fd4-4cdc-ac79-f7277a914b1f": {
       "sessionId": "531d45a4-8fd4-4cdc-ac79-f7277a914b1f",
@@ -7977,10 +8535,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T17:30:34.707Z",
-      "end_date": "2026-04-18T17:33:06.308Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T17:33:06.308Z"
     },
     "531fde8f-523d-4ce8-9e39-2742e78020c0": {
       "sessionId": "531fde8f-523d-4ce8-9e39-2742e78020c0",
@@ -8021,10 +8579,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.5,
+      "agent_active_minutes": 2.3,
       "outcome": "no-output",
       "start_date": "2026-04-15T21:58:14.760Z",
-      "end_date": "2026-04-15T22:05:42.826Z",
-      "agent_active_minutes": 2.3
+      "end_date": "2026-04-15T22:05:42.826Z"
     },
     "53b1874d-d932-43d4-a029-3cb94485263d": {
       "sessionId": "53b1874d-d932-43d4-a029-3cb94485263d",
@@ -8065,10 +8623,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8.3,
+      "agent_active_minutes": 0.2,
       "outcome": "committed",
       "start_date": "2026-04-15T18:26:02.658Z",
-      "end_date": "2026-04-15T18:34:21.732Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T18:34:21.732Z"
     },
     "53ba6e73-ba60-4dd0-b301-fdce13956678": {
       "sessionId": "53ba6e73-ba60-4dd0-b301-fdce13956678",
@@ -8109,10 +8667,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T12:55:11.682Z",
-      "end_date": "2026-04-18T12:57:24.140Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T12:57:24.140Z"
     },
     "562c637f-45f8-4500-97e2-763984e4e2f5": {
       "sessionId": "562c637f-45f8-4500-97e2-763984e4e2f5",
@@ -8153,10 +8711,10 @@
       "subagent_tokens": 296050,
       "error_count": 0,
       "duration_minutes": 3,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-16T23:07:46.574Z",
-      "end_date": "2026-04-16T23:10:48.314Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T23:10:48.314Z"
     },
     "574953c1-3108-4b6d-854d-e0d8ef441105": {
       "sessionId": "574953c1-3108-4b6d-854d-e0d8ef441105",
@@ -8197,10 +8755,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.6,
+      "agent_active_minutes": 0.1,
       "outcome": "committed",
       "start_date": "2026-04-15T21:53:47.279Z",
-      "end_date": "2026-04-15T22:01:24.220Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T22:01:24.220Z"
     },
     "57eb6a6e-6f11-4103-9bcb-f7c004019c3f": {
       "sessionId": "57eb6a6e-6f11-4103-9bcb-f7c004019c3f",
@@ -8241,10 +8799,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.4,
+      "agent_active_minutes": 0.3,
       "outcome": "no-output",
       "start_date": "2026-04-15T19:13:49.743Z",
-      "end_date": "2026-04-15T19:19:15.079Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-15T19:19:15.079Z"
     },
     "58023652-4c27-446b-87bb-4fa679669ea7": {
       "sessionId": "58023652-4c27-446b-87bb-4fa679669ea7",
@@ -8285,10 +8843,10 @@
       "subagent_tokens": 240957,
       "error_count": 0,
       "duration_minutes": 8.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T11:45:18.803Z",
-      "end_date": "2026-04-16T11:53:40.715Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T11:53:40.715Z"
     },
     "5955a102-69b6-4b5d-afd9-e547df958cd2": {
       "sessionId": "5955a102-69b6-4b5d-afd9-e547df958cd2",
@@ -8329,10 +8887,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T16:05:42.269Z",
-      "end_date": "2026-04-18T16:09:18.268Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T16:09:18.268Z"
     },
     "5a43dd7f-9511-49d0-be41-4468e47b9b53": {
       "sessionId": "5a43dd7f-9511-49d0-be41-4468e47b9b53",
@@ -8373,10 +8931,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:36:47.177Z",
-      "end_date": "2026-04-21T21:39:19.821Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:39:19.821Z"
     },
     "5b50fa79-76d1-42f2-bf1b-5f9647d99bed": {
       "sessionId": "5b50fa79-76d1-42f2-bf1b-5f9647d99bed",
@@ -8417,10 +8975,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 30.4,
+      "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-21T13:03:00.459Z",
-      "end_date": "2026-04-21T13:33:24.262Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-21T13:33:24.262Z"
     },
     "5ba5b6be-5f82-4417-a41d-931a1644ea09": {
       "sessionId": "5ba5b6be-5f82-4417-a41d-931a1644ea09",
@@ -8461,10 +9019,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 46.8,
+      "agent_active_minutes": 22.4,
       "outcome": "delivered",
       "start_date": "2026-04-21T13:02:03.846Z",
-      "end_date": "2026-04-21T13:48:49.584Z",
-      "agent_active_minutes": 22.4
+      "end_date": "2026-04-21T13:48:49.584Z"
     },
     "5be0c98b-4b13-458e-9902-27482817fcb0": {
       "sessionId": "5be0c98b-4b13-458e-9902-27482817fcb0",
@@ -8505,10 +9063,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.7,
+      "agent_active_minutes": 0.1,
       "outcome": "committed",
       "start_date": "2026-04-15T22:37:58.369Z",
-      "end_date": "2026-04-15T22:43:43.039Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T22:43:43.039Z"
     },
     "5bf06187-1ce9-45da-883f-833e65699f55": {
       "sessionId": "5bf06187-1ce9-45da-883f-833e65699f55",
@@ -8549,10 +9107,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.5,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-15T16:44:54.170Z",
-      "end_date": "2026-04-15T16:48:23.188Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T16:48:23.188Z"
     },
     "5c4b97a7-e1be-4b4d-a3f0-0a1add11069e": {
       "sessionId": "5c4b97a7-e1be-4b4d-a3f0-0a1add11069e",
@@ -8593,10 +9151,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.2,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-18T19:14:24.551Z",
-      "end_date": "2026-04-18T19:19:38.974Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:19:38.974Z"
+    },
+    "5c56366c-54f7-47db-a426-9eb1dc1c647e": {
+      "sessionId": "5c56366c-54f7-47db-a426-9eb1dc1c647e",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T17:55:55.831Z",
+      "endedAt": "2026-04-22T18:02:02.090Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "5c56366c-54f7-47db-a426-9eb1dc1c647e",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 18,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 1,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
+      "outcome": "no-output",
+      "start_date": "2026-04-22T17:55:55.831Z",
+      "end_date": "2026-04-22T18:02:02.090Z"
     },
     "5cdeac74-064e-4c20-8020-0ac69370592d": {
       "sessionId": "5cdeac74-064e-4c20-8020-0ac69370592d",
@@ -8637,10 +9239,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:10:52.817Z",
-      "end_date": "2026-04-21T22:14:02.060Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:14:02.060Z"
     },
     "5e96aef4-ae39-4441-a541-ef7a6ee19334": {
       "sessionId": "5e96aef4-ae39-4441-a541-ef7a6ee19334",
@@ -8681,10 +9283,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 11.1,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-16T20:03:18.954Z",
-      "end_date": "2026-04-16T20:14:22.230Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T20:14:22.230Z"
+    },
+    "5ea6d604-7e75-4ff9-a859-b0e530c72d84": {
+      "sessionId": "5ea6d604-7e75-4ff9-a859-b0e530c72d84",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T21:39:22.224Z",
+      "endedAt": "2026-04-22T22:07:24.316Z",
+      "usage": {
+        "requests": 3,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "5ea6d604-7e75-4ff9-a859-b0e530c72d84",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "human_turns": 1,
+      "agent_turns": 169,
+      "git_commits": 1,
+      "git_pushes": 1,
+      "aborted": true,
+      "context_compactions": 1,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 28,
+      "agent_active_minutes": 0.1,
+      "outcome": "aborted",
+      "start_date": "2026-04-22T21:39:22.224Z",
+      "end_date": "2026-04-22T22:07:24.316Z"
     },
     "5ed06ffa-1042-4d6b-9f39-66b68525b56c": {
       "sessionId": "5ed06ffa-1042-4d6b-9f39-66b68525b56c",
@@ -8725,10 +9371,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T16:52:45.356Z",
-      "end_date": "2026-04-16T16:55:31.407Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T16:55:31.407Z"
     },
     "5ee593d1-f179-44f7-b152-fb9e28d5f28c": {
       "sessionId": "5ee593d1-f179-44f7-b152-fb9e28d5f28c",
@@ -8769,10 +9415,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 89.4,
+      "agent_active_minutes": 2.4,
       "outcome": "pushed",
       "start_date": "2026-04-22T14:51:06.401Z",
-      "end_date": "2026-04-22T16:20:31.632Z",
-      "agent_active_minutes": 2.4
+      "end_date": "2026-04-22T16:20:31.632Z"
     },
     "615a62ed-15c7-4820-accf-99dba843fa72": {
       "sessionId": "615a62ed-15c7-4820-accf-99dba843fa72",
@@ -8813,10 +9459,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 16.4,
+      "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-16T22:03:54.206Z",
-      "end_date": "2026-04-16T22:20:21.123Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T22:20:21.123Z"
     },
     "61715d83-5ea3-4fde-870c-4bfb32c6c580": {
       "sessionId": "61715d83-5ea3-4fde-870c-4bfb32c6c580",
@@ -8857,10 +9503,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.6,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T14:44:10.731Z",
-      "end_date": "2026-04-15T14:44:49.538Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T14:44:49.538Z"
     },
     "62299541-d49e-4c42-bccc-31d463fb5a80": {
       "sessionId": "62299541-d49e-4c42-bccc-31d463fb5a80",
@@ -8901,10 +9547,10 @@
       "subagent_tokens": 1667017,
       "error_count": 0,
       "duration_minutes": 10.8,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-22T12:22:38.031Z",
-      "end_date": "2026-04-22T12:33:28.413Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T12:33:28.413Z"
     },
     "62b38573-16b0-46a2-88d7-b5eefb26f89a": {
       "sessionId": "62b38573-16b0-46a2-88d7-b5eefb26f89a",
@@ -8945,10 +9591,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T17:35:09.906Z",
-      "end_date": "2026-04-16T17:36:42.852Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T17:36:42.852Z"
     },
     "62bf2ee6-d5f6-4f6e-b658-b25a37fc684f": {
       "sessionId": "62bf2ee6-d5f6-4f6e-b658-b25a37fc684f",
@@ -8989,10 +9635,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T21:43:40.841Z",
-      "end_date": "2026-04-16T21:45:36.360Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T21:45:36.360Z"
     },
     "6430f1b5-8a63-488a-89cd-539c376b0f9a": {
       "sessionId": "6430f1b5-8a63-488a-89cd-539c376b0f9a",
@@ -9033,10 +9679,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T20:42:10.164Z",
-      "end_date": "2026-04-16T20:45:23.516Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T20:45:23.516Z"
     },
     "65797820-99d7-41a0-93a6-719f60097d00": {
       "sessionId": "65797820-99d7-41a0-93a6-719f60097d00",
@@ -9077,10 +9723,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T19:05:57.875Z",
-      "end_date": "2026-04-18T19:08:55.365Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:08:55.365Z"
     },
     "67796bdf-f4ea-4fa2-826c-93915a7982c7": {
       "sessionId": "67796bdf-f4ea-4fa2-826c-93915a7982c7",
@@ -9121,10 +9767,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.2,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-16T20:26:23.066Z",
-      "end_date": "2026-04-16T20:27:35.565Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T20:27:35.565Z"
     },
     "68a71137-a175-4366-aaa7-a56bf785dfc2": {
       "sessionId": "68a71137-a175-4366-aaa7-a56bf785dfc2",
@@ -9165,10 +9811,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 10,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:15:42.747Z",
-      "end_date": "2026-04-21T22:25:42.284Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:25:42.284Z"
     },
     "6bbcbd3c-1f7d-4630-b24a-6fef6c926b38": {
       "sessionId": "6bbcbd3c-1f7d-4630-b24a-6fef6c926b38",
@@ -9209,10 +9855,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-15T18:29:06.749Z",
-      "end_date": "2026-04-15T18:32:05.594Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T18:32:05.594Z"
     },
     "6bd8b3c6-559e-45aa-80d8-4b6ed1a66feb": {
       "sessionId": "6bd8b3c6-559e-45aa-80d8-4b6ed1a66feb",
@@ -9253,10 +9899,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.2,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-16T15:02:16.564Z",
-      "end_date": "2026-04-16T15:02:29.658Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T15:02:29.658Z"
     },
     "6be95500-e40f-4f83-a028-e725765e7972": {
       "sessionId": "6be95500-e40f-4f83-a028-e725765e7972",
@@ -9297,10 +9943,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-15T14:21:38.140Z",
-      "end_date": "2026-04-15T14:25:36.253Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T14:25:36.253Z"
     },
     "6c74e746-7f2e-4757-a1ce-a8be7aab457d": {
       "sessionId": "6c74e746-7f2e-4757-a1ce-a8be7aab457d",
@@ -9341,10 +9987,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T14:51:06.391Z",
-      "end_date": "2026-04-22T14:58:21.648Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T14:58:21.648Z"
     },
     "6d41e885-b7af-478b-a9ff-73390252a510": {
       "sessionId": "6d41e885-b7af-478b-a9ff-73390252a510",
@@ -9385,10 +10031,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.2,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-16T15:34:16.865Z",
-      "end_date": "2026-04-16T15:36:26.172Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-16T15:36:26.172Z"
     },
     "6e443c0a-c49a-4884-bced-89c3ddb1c94d": {
       "sessionId": "6e443c0a-c49a-4884-bced-89c3ddb1c94d",
@@ -9429,10 +10075,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 73.1,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-15T15:12:03.554Z",
-      "end_date": "2026-04-15T16:25:12.520Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T16:25:12.520Z"
     },
     "6f6e008d-d4fe-4975-a730-0687ed2f997a": {
       "sessionId": "6f6e008d-d4fe-4975-a730-0687ed2f997a",
@@ -9473,10 +10119,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:45:24.909Z",
-      "end_date": "2026-04-19T21:53:23.541Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:53:23.541Z"
     },
     "6f83bbc0-7b97-469a-a644-22671263cff5": {
       "sessionId": "6f83bbc0-7b97-469a-a644-22671263cff5",
@@ -9517,10 +10163,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:10:52.790Z",
-      "end_date": "2026-04-21T22:14:30.080Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:14:30.080Z"
     },
     "6ff57259-ebf2-48c4-b467-9303c1f5a3ea": {
       "sessionId": "6ff57259-ebf2-48c4-b467-9303c1f5a3ea",
@@ -9561,10 +10207,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:05:47.202Z",
-      "end_date": "2026-04-21T21:08:34.511Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:08:34.511Z"
     },
     "72abf871-b9b9-418f-8e26-7b2b3d23979e": {
       "sessionId": "72abf871-b9b9-418f-8e26-7b2b3d23979e",
@@ -9605,10 +10251,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.4,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-15T18:43:32.603Z",
-      "end_date": "2026-04-15T18:47:54.174Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T18:47:54.174Z"
     },
     "732f72ca-e965-4528-a362-10bce203308f": {
       "sessionId": "732f72ca-e965-4528-a362-10bce203308f",
@@ -9649,10 +10295,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 879.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:20:07.582Z",
-      "end_date": "2026-04-19T08:59:44.735Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T08:59:44.735Z"
     },
     "733c96ef-0aa6-4c3c-a8aa-750909da7270": {
       "sessionId": "733c96ef-0aa6-4c3c-a8aa-750909da7270",
@@ -9693,10 +10339,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.7,
+      "agent_active_minutes": 0.5,
       "outcome": "no-output",
       "start_date": "2026-04-15T19:58:21.181Z",
-      "end_date": "2026-04-15T20:05:05.957Z",
-      "agent_active_minutes": 0.5
+      "end_date": "2026-04-15T20:05:05.957Z"
     },
     "738ddfc9-8430-4441-8179-023351dcfb00": {
       "sessionId": "738ddfc9-8430-4441-8179-023351dcfb00",
@@ -9737,10 +10383,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.4,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-18T19:02:01.815Z",
-      "end_date": "2026-04-18T19:04:27.023Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:04:27.023Z"
     },
     "73a5ad80-7907-4584-b091-31b0e7f269c6": {
       "sessionId": "73a5ad80-7907-4584-b091-31b0e7f269c6",
@@ -9781,10 +10427,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:45:08.435Z",
-      "end_date": "2026-04-19T21:47:16.087Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:47:16.087Z"
     },
     "75aeaf0d-8ca4-447a-8329-8b3b02692984": {
       "sessionId": "75aeaf0d-8ca4-447a-8329-8b3b02692984",
@@ -9825,10 +10471,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 27.6,
+      "agent_active_minutes": 0.1,
       "outcome": "committed",
       "start_date": "2026-04-15T22:44:09.017Z",
-      "end_date": "2026-04-15T23:11:44.459Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T23:11:44.459Z"
     },
     "7686a524-dd4a-439e-98f8-66778dca2741": {
       "sessionId": "7686a524-dd4a-439e-98f8-66778dca2741",
@@ -9869,10 +10515,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:26:07.620Z",
-      "end_date": "2026-04-18T15:28:18.040Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T15:28:18.040Z"
     },
     "76c04c13-9bfd-4f32-a0dd-9dcdb12ba816": {
       "sessionId": "76c04c13-9bfd-4f32-a0dd-9dcdb12ba816",
@@ -9913,10 +10559,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T17:30:34.707Z",
-      "end_date": "2026-04-18T17:32:56.288Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T17:32:56.288Z"
     },
     "7738028f-dcfe-4f1c-bb68-654048f167c9": {
       "sessionId": "7738028f-dcfe-4f1c-bb68-654048f167c9",
@@ -9957,10 +10603,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:42:23.248Z",
-      "end_date": "2026-04-19T21:45:58.459Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:45:58.459Z"
     },
     "7789c9a7-82dc-4fb3-ab5d-0631662051a9": {
       "sessionId": "7789c9a7-82dc-4fb3-ab5d-0631662051a9",
@@ -10001,10 +10647,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T19:02:46.449Z",
-      "end_date": "2026-04-16T19:05:16.327Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T19:05:16.327Z"
+    },
+    "79fb66cc-10d7-4d73-865b-499d0ab2b3fb": {
+      "sessionId": "79fb66cc-10d7-4d73-865b-499d0ab2b3fb",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-create-story",
+      "model": "auto",
+      "status": "completed",
+      "startedAt": "2026-04-23T07:34:48.545Z",
+      "endedAt": "2026-04-23T07:43:57.680Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "79fb66cc-10d7-4d73-865b-499d0ab2b3fb",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-create-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 26,
+      "git_commits": 1,
+      "git_pushes": 1,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 9.2,
+      "agent_active_minutes": 0,
+      "outcome": "pushed",
+      "start_date": "2026-04-23T07:34:48.545Z",
+      "end_date": "2026-04-23T07:43:57.680Z"
     },
     "7ba26d9d-eced-4150-aeb1-c65fea2ae1b8": {
       "sessionId": "7ba26d9d-eced-4150-aeb1-c65fea2ae1b8",
@@ -10045,10 +10735,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.9,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-18T17:33:03.154Z",
-      "end_date": "2026-04-18T17:35:58.517Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-18T17:35:58.517Z"
     },
     "7c40209a-fc56-437a-aea7-8b02ff13018f": {
       "sessionId": "7c40209a-fc56-437a-aea7-8b02ff13018f",
@@ -10089,10 +10779,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:12:44.766Z",
-      "end_date": "2026-04-21T21:16:17.363Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:16:17.363Z"
     },
     "7c52d0fa-6022-4fc8-8084-93b94635abc1": {
       "sessionId": "7c52d0fa-6022-4fc8-8084-93b94635abc1",
@@ -10133,10 +10823,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.6,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T22:00:34.888Z",
-      "end_date": "2026-04-15T22:02:08.664Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T22:02:08.664Z"
     },
     "7c83bb54-0da3-4117-bda2-8856d617d9b0": {
       "sessionId": "7c83bb54-0da3-4117-bda2-8856d617d9b0",
@@ -10177,10 +10867,10 @@
       "subagent_tokens": 1916552,
       "error_count": 0,
       "duration_minutes": 6.4,
+      "agent_active_minutes": 0.1,
       "outcome": "delivered",
       "start_date": "2026-04-15T21:33:38.789Z",
-      "end_date": "2026-04-15T21:40:01.731Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T21:40:01.731Z"
     },
     "7fe9522f-1c95-4fa8-80c0-5595ccb3d94a": {
       "sessionId": "7fe9522f-1c95-4fa8-80c0-5595ccb3d94a",
@@ -10221,10 +10911,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-16T17:44:38.663Z",
-      "end_date": "2026-04-16T17:48:37.039Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T17:48:37.039Z"
     },
     "80a89f17-8ea7-4230-8668-1de1fecb0fb4": {
       "sessionId": "80a89f17-8ea7-4230-8668-1de1fecb0fb4",
@@ -10265,10 +10955,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 17,
+      "agent_active_minutes": 0.9,
       "outcome": "no-output",
       "start_date": "2026-04-15T21:20:33.945Z",
-      "end_date": "2026-04-15T21:37:34.367Z",
-      "agent_active_minutes": 0.9
+      "end_date": "2026-04-15T21:37:34.367Z"
     },
     "80bde2d3-b914-470c-84c7-b6ee19ede2d9": {
       "sessionId": "80bde2d3-b914-470c-84c7-b6ee19ede2d9",
@@ -10309,10 +10999,10 @@
       "subagent_tokens": 411357,
       "error_count": 0,
       "duration_minutes": 450.8,
+      "agent_active_minutes": 0.3,
       "outcome": "delivered",
       "start_date": "2026-04-15T23:11:43.531Z",
-      "end_date": "2026-04-16T06:42:31.065Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-16T06:42:31.065Z"
     },
     "80c9cafe-dc43-4c3f-9376-db4e823d9110": {
       "sessionId": "80c9cafe-dc43-4c3f-9376-db4e823d9110",
@@ -10320,9 +11010,9 @@
       "epicId": null,
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "failed",
+      "status": "completed",
       "startedAt": "2026-04-22T16:24:03.052Z",
-      "endedAt": "2026-04-22T17:55:57.331Z",
+      "endedAt": "2026-04-22T17:45:23.320Z",
       "usage": {
         "requests": 3,
         "tokensIn": 0,
@@ -10330,8 +11020,6 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
       "session_id": "80c9cafe-dc43-4c3f-9376-db4e823d9110",
       "tool": "copilot-cli",
       "premium": true,
@@ -10355,10 +11043,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 81.3,
+      "agent_active_minutes": 0.4,
       "outcome": "error",
       "start_date": "2026-04-22T16:24:03.052Z",
-      "end_date": "2026-04-22T17:45:23.320Z",
-      "agent_active_minutes": 0.4
+      "end_date": "2026-04-22T17:45:23.320Z"
     },
     "82be51b9-952a-456b-9a31-69efc11e9f5e": {
       "sessionId": "82be51b9-952a-456b-9a31-69efc11e9f5e",
@@ -10399,10 +11087,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T19:19:40.940Z",
-      "end_date": "2026-04-18T19:21:49.488Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:21:49.488Z"
     },
     "85193965-ffb2-4ae8-928f-6819b2bb3792": {
       "sessionId": "85193965-ffb2-4ae8-928f-6819b2bb3792",
@@ -10443,10 +11131,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 32.2,
+      "agent_active_minutes": 0.6,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:21:54.965Z",
-      "end_date": "2026-04-18T15:54:07.627Z",
-      "agent_active_minutes": 0.6
+      "end_date": "2026-04-18T15:54:07.627Z"
     },
     "87011037-9a08-424a-83c6-c6be134dbfcc": {
       "sessionId": "87011037-9a08-424a-83c6-c6be134dbfcc",
@@ -10487,10 +11175,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:12:57.292Z",
-      "end_date": "2026-04-19T21:17:41.508Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:17:41.508Z"
     },
     "8731a1fe-611c-4b58-ae27-6e902484e63d": {
       "sessionId": "8731a1fe-611c-4b58-ae27-6e902484e63d",
@@ -10531,10 +11219,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T18:55:21.595Z",
-      "end_date": "2026-04-16T19:03:19.112Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T19:03:19.112Z"
     },
     "8898848d-fee0-4100-9938-b3173d1b8a59": {
       "sessionId": "8898848d-fee0-4100-9938-b3173d1b8a59",
@@ -10575,10 +11263,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 31.6,
+      "agent_active_minutes": 0.3,
       "outcome": "committed",
       "start_date": "2026-04-15T18:14:59.153Z",
-      "end_date": "2026-04-15T18:46:35.406Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-15T18:46:35.406Z"
     },
     "897f8c68-43c1-4699-9753-379d2649ead3": {
       "sessionId": "897f8c68-43c1-4699-9753-379d2649ead3",
@@ -10619,10 +11307,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8.1,
+      "agent_active_minutes": 0.1,
       "outcome": "committed",
       "start_date": "2026-04-15T22:01:54.788Z",
-      "end_date": "2026-04-15T22:09:59.619Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T22:09:59.619Z"
     },
     "89f123c1-e96b-49c1-8984-565a3412998f": {
       "sessionId": "89f123c1-e96b-49c1-8984-565a3412998f",
@@ -10663,10 +11351,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:59:59.783Z",
-      "end_date": "2026-04-18T19:02:54.963Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:02:54.963Z"
     },
     "8a2877c9-7396-4a5a-a352-51d5d4038058": {
       "sessionId": "8a2877c9-7396-4a5a-a352-51d5d4038058",
@@ -10707,10 +11395,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:13:18.585Z",
-      "end_date": "2026-04-18T13:16:07.013Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:16:07.013Z"
+    },
+    "8aa410d0-24cd-42b3-b236-9c53f1e46f34": {
+      "sessionId": "8aa410d0-24cd-42b3-b236-9c53f1e46f34",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T17:55:55.814Z",
+      "endedAt": "2026-04-22T18:02:02.087Z",
+      "usage": {
+        "requests": 2,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "8aa410d0-24cd-42b3-b236-9c53f1e46f34",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 1,
+      "premium_cost_units": 2,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 17,
+      "git_commits": 0,
+      "git_pushes": 0,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
+      "outcome": "no-output",
+      "start_date": "2026-04-22T17:55:55.814Z",
+      "end_date": "2026-04-22T18:02:02.087Z"
     },
     "8acb16dd-c4d5-4987-9922-f58cce896200": {
       "sessionId": "8acb16dd-c4d5-4987-9922-f58cce896200",
@@ -10751,10 +11483,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 14.8,
+      "agent_active_minutes": 0.2,
       "outcome": "aborted",
       "start_date": "2026-04-15T17:34:43.854Z",
-      "end_date": "2026-04-15T17:49:33.510Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T17:49:33.510Z"
     },
     "8b517e4b-c843-41ec-8977-dcef0fdd93e9": {
       "sessionId": "8b517e4b-c843-41ec-8977-dcef0fdd93e9",
@@ -10795,10 +11527,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 14.1,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:25:38.321Z",
-      "end_date": "2026-04-18T15:39:41.794Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-18T15:39:41.794Z"
     },
     "8ce670f9-6084-49d8-a562-92e89caf6d45": {
       "sessionId": "8ce670f9-6084-49d8-a562-92e89caf6d45",
@@ -10839,10 +11571,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.3,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-16T20:23:32.520Z",
-      "end_date": "2026-04-16T20:25:47.756Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T20:25:47.756Z"
     },
     "8e1469ea-d228-4a2b-965e-d5f3ca3c51ea": {
       "sessionId": "8e1469ea-d228-4a2b-965e-d5f3ca3c51ea",
@@ -10883,10 +11615,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.5,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-18T12:56:18.431Z",
-      "end_date": "2026-04-18T12:59:50.412Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-18T12:59:50.412Z"
     },
     "8e9039b0-e379-4369-8280-5c645dbfcbb1": {
       "sessionId": "8e9039b0-e379-4369-8280-5c645dbfcbb1",
@@ -10927,10 +11659,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:14:16.248Z",
-      "end_date": "2026-04-18T13:16:03.854Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:16:03.854Z"
     },
     "8ee92294-f585-4563-af89-42b3c4dcd4d7": {
       "sessionId": "8ee92294-f585-4563-af89-42b3c4dcd4d7",
@@ -10971,10 +11703,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:44:34.131Z",
-      "end_date": "2026-04-18T15:48:27.416Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T15:48:27.416Z"
     },
     "8f69ab30-ba6d-4b57-924a-61c7eb65d40f": {
       "sessionId": "8f69ab30-ba6d-4b57-924a-61c7eb65d40f",
@@ -11015,10 +11747,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.3,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-15T22:37:47.351Z",
-      "end_date": "2026-04-15T22:42:05.424Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T22:42:05.424Z"
     },
     "936f266d-8f15-4c9a-b651-c6bdba177665": {
       "sessionId": "936f266d-8f15-4c9a-b651-c6bdba177665",
@@ -11059,10 +11791,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.6,
+      "agent_active_minutes": 0.5,
       "outcome": "no-output",
       "start_date": "2026-04-15T22:15:25.123Z",
-      "end_date": "2026-04-15T22:19:58.196Z",
-      "agent_active_minutes": 0.5
+      "end_date": "2026-04-15T22:19:58.196Z"
     },
     "939366ea-639f-42a3-ad63-f1c7626298d1": {
       "sessionId": "939366ea-639f-42a3-ad63-f1c7626298d1",
@@ -11103,10 +11835,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.3,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-18T18:19:08.243Z",
-      "end_date": "2026-04-18T18:23:23.417Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T18:23:23.417Z"
     },
     "93ad66fb-768c-43b3-9042-ee0c3286c116": {
       "sessionId": "93ad66fb-768c-43b3-9042-ee0c3286c116",
@@ -11114,9 +11846,9 @@
       "epicId": null,
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "failed",
+      "status": "completed",
       "startedAt": "2026-04-22T16:24:03.052Z",
-      "endedAt": "2026-04-22T17:55:57.343Z",
+      "endedAt": "2026-04-22T17:45:34.817Z",
       "usage": {
         "requests": 3,
         "tokensIn": 0,
@@ -11124,8 +11856,6 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
       "session_id": "93ad66fb-768c-43b3-9042-ee0c3286c116",
       "tool": "copilot-cli",
       "premium": true,
@@ -11149,10 +11879,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 81.5,
+      "agent_active_minutes": 1.1,
       "outcome": "error",
       "start_date": "2026-04-22T16:24:03.052Z",
-      "end_date": "2026-04-22T17:45:34.817Z",
-      "agent_active_minutes": 1.1
+      "end_date": "2026-04-22T17:45:34.817Z"
     },
     "94b6021e-b20c-41de-92fc-8ac9fec2bcbf": {
       "sessionId": "94b6021e-b20c-41de-92fc-8ac9fec2bcbf",
@@ -11193,10 +11923,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.1,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T20:28:24.662Z",
-      "end_date": "2026-04-15T20:29:29.670Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T20:29:29.670Z"
     },
     "96891488-0eb0-406c-9ce1-daf967b7b75a": {
       "sessionId": "96891488-0eb0-406c-9ce1-daf967b7b75a",
@@ -11237,10 +11967,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.2,
+      "agent_active_minutes": 0.8,
       "outcome": "no-output",
       "start_date": "2026-04-15T13:12:39.257Z",
-      "end_date": "2026-04-15T13:19:50.902Z",
-      "agent_active_minutes": 0.8
+      "end_date": "2026-04-15T13:19:50.902Z"
     },
     "972be42f-7fdb-4893-a39a-024de14af76c": {
       "sessionId": "972be42f-7fdb-4893-a39a-024de14af76c",
@@ -11281,10 +12011,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.2,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-16T19:41:37.525Z",
-      "end_date": "2026-04-16T19:42:51.499Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T19:42:51.499Z"
     },
     "973c6271-7ffa-4374-baac-ec366f110bed": {
       "sessionId": "973c6271-7ffa-4374-baac-ec366f110bed",
@@ -11325,10 +12055,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T17:30:34.706Z",
-      "end_date": "2026-04-18T17:32:21.958Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T17:32:21.958Z"
     },
     "98a2ec85-9f43-40bd-8681-a11f3fe14434": {
       "sessionId": "98a2ec85-9f43-40bd-8681-a11f3fe14434",
@@ -11369,10 +12099,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:44:23.037Z",
-      "end_date": "2026-04-19T21:49:25.271Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:49:25.271Z"
     },
     "99493e43-8991-4ea3-827e-8f94bbbfbe1c": {
       "sessionId": "99493e43-8991-4ea3-827e-8f94bbbfbe1c",
@@ -11413,10 +12143,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.7,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-16T21:25:44.167Z",
-      "end_date": "2026-04-16T21:27:28.379Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T21:27:28.379Z"
     },
     "9a68a50d-f14e-40c1-8c47-4e421c662d25": {
       "sessionId": "9a68a50d-f14e-40c1-8c47-4e421c662d25",
@@ -11457,10 +12187,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.8,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T18:38:09.057Z",
-      "end_date": "2026-04-15T18:39:59.637Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T18:39:59.637Z"
     },
     "9a88a0d4-91ca-488c-b4a2-9ec06cd14f9c": {
       "sessionId": "9a88a0d4-91ca-488c-b4a2-9ec06cd14f9c",
@@ -11501,10 +12231,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:43:02.228Z",
-      "end_date": "2026-04-19T21:47:15.446Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:47:15.446Z"
     },
     "9b73a7bc-24b9-42c0-a33b-f6bb41262f1d": {
       "sessionId": "9b73a7bc-24b9-42c0-a33b-f6bb41262f1d",
@@ -11545,10 +12275,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:43:28.792Z",
-      "end_date": "2026-04-19T21:50:22.961Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:50:22.961Z"
     },
     "9b7f579e-7b06-421f-b211-d19cd2a9fa9a": {
       "sessionId": "9b7f579e-7b06-421f-b211-d19cd2a9fa9a",
@@ -11589,10 +12319,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 14.6,
+      "agent_active_minutes": 0.1,
       "outcome": "error",
       "start_date": "2026-04-22T16:21:45.861Z",
-      "end_date": "2026-04-22T16:36:19.610Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-22T16:36:19.610Z"
     },
     "9bbedf71-31a5-4b57-b1c4-c033fbf0acf5": {
       "sessionId": "9bbedf71-31a5-4b57-b1c4-c033fbf0acf5",
@@ -11633,10 +12363,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.5,
+      "agent_active_minutes": 0.2,
       "outcome": "no-output",
       "start_date": "2026-04-15T18:37:09.457Z",
-      "end_date": "2026-04-15T18:40:38.831Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T18:40:38.831Z"
     },
     "9e10ecf8-1c2e-4efd-8edd-645daaca007e": {
       "sessionId": "9e10ecf8-1c2e-4efd-8edd-645daaca007e",
@@ -11677,10 +12407,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:01:51.337Z",
-      "end_date": "2026-04-18T13:02:54.113Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:02:54.113Z"
     },
     "9fe8f5a3-fae1-47b4-adfe-7264f17b6a90": {
       "sessionId": "9fe8f5a3-fae1-47b4-adfe-7264f17b6a90",
@@ -11721,10 +12451,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 10.1,
+      "agent_active_minutes": 0.4,
       "outcome": "no-output",
       "start_date": "2026-04-15T21:49:28.718Z",
-      "end_date": "2026-04-15T21:59:33.293Z",
-      "agent_active_minutes": 0.4
+      "end_date": "2026-04-15T21:59:33.293Z"
     },
     "a1619bc7-8021-49c5-967b-2e89252d5f4b": {
       "sessionId": "a1619bc7-8021-49c5-967b-2e89252d5f4b",
@@ -11765,10 +12495,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.4,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-18T15:38:32.344Z",
-      "end_date": "2026-04-18T15:41:53.607Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T15:41:53.607Z"
     },
     "a1857835-d7e3-4fb9-8bdd-e6a48945fa3b": {
       "sessionId": "a1857835-d7e3-4fb9-8bdd-e6a48945fa3b",
@@ -11809,10 +12539,10 @@
       "subagent_tokens": 444588,
       "error_count": 0,
       "duration_minutes": 5.7,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-19T21:46:34.275Z",
-      "end_date": "2026-04-19T21:52:18.060Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:52:18.060Z"
     },
     "a37d34d7-81a5-4533-a8f7-4574d1dd9adf": {
       "sessionId": "a37d34d7-81a5-4533-a8f7-4574d1dd9adf",
@@ -11853,10 +12583,10 @@
       "subagent_tokens": 547286,
       "error_count": 0,
       "duration_minutes": 7.1,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-21T14:14:18.073Z",
-      "end_date": "2026-04-21T14:21:25.531Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T14:21:25.531Z"
     },
     "a3ede345-8b6e-4033-ba97-7f1a5f43aece": {
       "sessionId": "a3ede345-8b6e-4033-ba97-7f1a5f43aece",
@@ -11864,9 +12594,9 @@
       "epicId": null,
       "skill": "bmad-create-story",
       "model": "claude-sonnet-4.6",
-      "status": "failed",
+      "status": "completed",
       "startedAt": "2026-04-22T16:24:03.051Z",
-      "endedAt": "2026-04-22T17:55:57.356Z",
+      "endedAt": "2026-04-22T17:44:46.262Z",
       "usage": {
         "requests": 3,
         "tokensIn": 0,
@@ -11874,8 +12604,6 @@
         "tokensCached": 0,
         "totalTokens": 0
       },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
       "session_id": "a3ede345-8b6e-4033-ba97-7f1a5f43aece",
       "tool": "copilot-cli",
       "premium": true,
@@ -11899,10 +12627,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 80.7,
+      "agent_active_minutes": 0.2,
       "outcome": "error",
       "start_date": "2026-04-22T16:24:03.051Z",
-      "end_date": "2026-04-22T17:44:46.262Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-22T17:44:46.262Z"
     },
     "a73dbe50-1b20-404a-9318-fa54f8f125ac": {
       "sessionId": "a73dbe50-1b20-404a-9318-fa54f8f125ac",
@@ -11943,10 +12671,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 114.5,
+      "agent_active_minutes": 0.5,
       "outcome": "committed",
       "start_date": "2026-04-15T19:29:55.140Z",
-      "end_date": "2026-04-15T21:24:27.442Z",
-      "agent_active_minutes": 0.5
+      "end_date": "2026-04-15T21:24:27.442Z"
     },
     "a7f45ea4-1a2f-4a78-badf-493e02a18db4": {
       "sessionId": "a7f45ea4-1a2f-4a78-badf-493e02a18db4",
@@ -11987,10 +12715,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T12:59:21.544Z",
-      "end_date": "2026-04-18T13:03:32.915Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:03:32.915Z"
     },
     "a83e3fb9-3f89-40d0-8aff-cf68d5bf912e": {
       "sessionId": "a83e3fb9-3f89-40d0-8aff-cf68d5bf912e",
@@ -12031,10 +12759,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.5,
+      "agent_active_minutes": 0.2,
       "outcome": "no-output",
       "start_date": "2026-04-15T20:31:34.749Z",
-      "end_date": "2026-04-15T20:38:04.505Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T20:38:04.505Z"
     },
     "aa312964-0f81-47fc-b4ac-941e9641054b": {
       "sessionId": "aa312964-0f81-47fc-b4ac-941e9641054b",
@@ -12075,10 +12803,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 7.7,
+      "agent_active_minutes": 0.2,
       "outcome": "no-output",
       "start_date": "2026-04-15T14:24:46.107Z",
-      "end_date": "2026-04-15T14:32:25.819Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-15T14:32:25.819Z"
     },
     "aa9df846-dcb9-4fec-b41a-aa706e6b2ee0": {
       "sessionId": "aa9df846-dcb9-4fec-b41a-aa706e6b2ee0",
@@ -12119,10 +12847,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:46:15.509Z",
-      "end_date": "2026-04-19T21:53:11.985Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:53:11.985Z"
     },
     "aa9ea9a7-6b55-4617-89f3-7a571556b136": {
       "sessionId": "aa9ea9a7-6b55-4617-89f3-7a571556b136",
@@ -12163,10 +12891,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:12:44.766Z",
-      "end_date": "2026-04-21T21:16:44.998Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:16:44.998Z"
     },
     "ac184dc0-70d8-4c27-9b05-48b36396287e": {
       "sessionId": "ac184dc0-70d8-4c27-9b05-48b36396287e",
@@ -12207,10 +12935,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 13.2,
+      "agent_active_minutes": 0.3,
       "outcome": "aborted",
       "start_date": "2026-04-18T15:32:58.498Z",
-      "end_date": "2026-04-18T15:46:07.941Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-18T15:46:07.941Z"
     },
     "ae361915-7347-44e3-ae78-51b8509c91f1": {
       "sessionId": "ae361915-7347-44e3-ae78-51b8509c91f1",
@@ -12251,10 +12979,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T19:08:59.220Z",
-      "end_date": "2026-04-18T19:11:53.000Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:11:53.000Z"
     },
     "b2b0389a-14c0-422a-96c3-4a7849b863f1": {
       "sessionId": "b2b0389a-14c0-422a-96c3-4a7849b863f1",
@@ -12295,10 +13023,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 13.2,
+      "agent_active_minutes": 0.9,
       "outcome": "pushed",
       "start_date": "2026-04-18T17:36:01.177Z",
-      "end_date": "2026-04-18T17:49:13.008Z",
-      "agent_active_minutes": 0.9
+      "end_date": "2026-04-18T17:49:13.008Z"
     },
     "b374893b-4ff1-423f-a8b3-dec7ce88fa3a": {
       "sessionId": "b374893b-4ff1-423f-a8b3-dec7ce88fa3a",
@@ -12339,10 +13067,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:36:47.177Z",
-      "end_date": "2026-04-21T21:41:10.982Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:41:10.982Z"
     },
     "b3c470db-5e49-4d9b-9d3f-20cab8897428": {
       "sessionId": "b3c470db-5e49-4d9b-9d3f-20cab8897428",
@@ -12383,10 +13111,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.3,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-16T19:43:35.660Z",
-      "end_date": "2026-04-16T19:44:56.603Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T19:44:56.603Z"
     },
     "b3e127f2-2ccd-45cd-8a4b-b1da870cd198": {
       "sessionId": "b3e127f2-2ccd-45cd-8a4b-b1da870cd198",
@@ -12427,10 +13155,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:10:52.790Z",
-      "end_date": "2026-04-21T22:13:58.203Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:13:58.203Z"
     },
     "b4705806-1e0b-4e2a-9611-ecd4ea3238ac": {
       "sessionId": "b4705806-1e0b-4e2a-9611-ecd4ea3238ac",
@@ -12471,10 +13199,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 31.9,
+      "agent_active_minutes": 0.2,
       "outcome": "aborted",
       "start_date": "2026-04-18T12:23:12.356Z",
-      "end_date": "2026-04-18T12:55:07.300Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-18T12:55:07.300Z"
     },
     "b78b5b38-3709-4027-90b0-e280a1c3d792": {
       "sessionId": "b78b5b38-3709-4027-90b0-e280a1c3d792",
@@ -12515,10 +13243,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 16.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:15:42.926Z",
-      "end_date": "2026-04-21T22:32:12.189Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:32:12.189Z"
     },
     "b7d55a7b-a107-4e15-bc8f-cb6493be831a": {
       "sessionId": "b7d55a7b-a107-4e15-bc8f-cb6493be831a",
@@ -12559,10 +13287,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.4,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-16T20:10:01.293Z",
-      "end_date": "2026-04-16T20:14:25.829Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T20:14:25.829Z"
     },
     "bbedb466-b26b-4631-abe6-6ef91cd27fae": {
       "sessionId": "bbedb466-b26b-4631-abe6-6ef91cd27fae",
@@ -12603,10 +13331,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T17:31:58.653Z",
-      "end_date": "2026-04-16T17:36:45.757Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T17:36:45.757Z"
     },
     "bc534dec-b679-4bc8-a1fb-193628cb253a": {
       "sessionId": "bc534dec-b679-4bc8-a1fb-193628cb253a",
@@ -12647,10 +13375,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T15:27:35.075Z",
-      "end_date": "2026-04-21T15:34:18.629Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T15:34:18.629Z"
     },
     "be1ca3b4-beba-4cdf-a0e0-84e98829e65d": {
       "sessionId": "be1ca3b4-beba-4cdf-a0e0-84e98829e65d",
@@ -12691,10 +13419,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.6,
+      "agent_active_minutes": 1.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T18:42:35.120Z",
-      "end_date": "2026-04-15T18:45:12.434Z",
-      "agent_active_minutes": 1.1
+      "end_date": "2026-04-15T18:45:12.434Z"
     },
     "be3d1358-aac6-4d17-81ed-53ad6f665466": {
       "sessionId": "be3d1358-aac6-4d17-81ed-53ad6f665466",
@@ -12735,10 +13463,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.6,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:15:42.885Z",
-      "end_date": "2026-04-21T22:22:17.504Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:22:17.504Z"
     },
     "be8a0f69-32d9-4602-8b89-13dccfb4ab18": {
       "sessionId": "be8a0f69-32d9-4602-8b89-13dccfb4ab18",
@@ -12779,10 +13507,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.7,
+      "agent_active_minutes": 0.3,
       "outcome": "no-output",
       "start_date": "2026-04-15T19:18:01.962Z",
-      "end_date": "2026-04-15T19:22:43.411Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-15T19:22:43.411Z"
     },
     "bf669b8c-8240-4959-bf11-7296f56f3e53": {
       "sessionId": "bf669b8c-8240-4959-bf11-7296f56f3e53",
@@ -12823,10 +13551,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 11.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T17:31:33.148Z",
-      "end_date": "2026-04-18T17:43:19.816Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T17:43:19.816Z"
     },
     "c05b642f-8ed0-45b2-be42-d7499e214e99": {
       "sessionId": "c05b642f-8ed0-45b2-be42-d7499e214e99",
@@ -12867,10 +13595,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 15.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:47:21.497Z",
-      "end_date": "2026-04-18T16:02:29.877Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T16:02:29.877Z"
     },
     "c107fed5-2a37-4908-830f-e26be6937e81": {
       "sessionId": "c107fed5-2a37-4908-830f-e26be6937e81",
@@ -12911,10 +13639,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T12:22:37.925Z",
-      "end_date": "2026-04-22T12:29:23.679Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T12:29:23.679Z"
     },
     "c1e3d97f-08bd-416f-8e5f-94a75bec9a85": {
       "sessionId": "c1e3d97f-08bd-416f-8e5f-94a75bec9a85",
@@ -12955,10 +13683,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T18:03:15.850Z",
-      "end_date": "2026-04-18T18:05:34.430Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T18:05:34.430Z"
     },
     "c1e6645f-f118-4551-9b28-eb583423f468": {
       "sessionId": "c1e6645f-f118-4551-9b28-eb583423f468",
@@ -12999,10 +13727,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:12:44.766Z",
-      "end_date": "2026-04-21T21:16:01.936Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:16:01.936Z"
+    },
+    "c2bcfd96-ea17-484a-b0ff-253d84c95eda": {
+      "sessionId": "c2bcfd96-ea17-484a-b0ff-253d84c95eda",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T21:39:22.303Z",
+      "endedAt": "2026-04-22T22:04:05.816Z",
+      "usage": {
+        "requests": 3,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "c2bcfd96-ea17-484a-b0ff-253d84c95eda",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 3,
+      "premium_multiplier": 1,
+      "premium_cost_units": 3,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-dev-story",
+      "turns": 3,
+      "human_turns": 1,
+      "agent_turns": 151,
+      "git_commits": 2,
+      "git_pushes": 2,
+      "aborted": true,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 24.7,
+      "agent_active_minutes": 0.1,
+      "outcome": "aborted",
+      "start_date": "2026-04-22T21:39:22.303Z",
+      "end_date": "2026-04-22T22:04:05.816Z"
     },
     "c56ebb5f-094c-447e-afbe-5aa3a538fe14": {
       "sessionId": "c56ebb5f-094c-447e-afbe-5aa3a538fe14",
@@ -13043,10 +13815,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 73.9,
+      "agent_active_minutes": 1.1,
       "outcome": "aborted",
       "start_date": "2026-04-15T12:06:36.016Z",
-      "end_date": "2026-04-15T13:20:27.336Z",
-      "agent_active_minutes": 1.1
+      "end_date": "2026-04-15T13:20:27.336Z"
     },
     "c78b0e78-4b42-477a-b156-7da762b0b802": {
       "sessionId": "c78b0e78-4b42-477a-b156-7da762b0b802",
@@ -13087,10 +13859,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T15:36:57.886Z",
-      "end_date": "2026-04-16T15:42:16.955Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T15:42:16.955Z"
     },
     "c8e7cbaf-6ea8-43d7-8cc2-9db4cc240dd1": {
       "sessionId": "c8e7cbaf-6ea8-43d7-8cc2-9db4cc240dd1",
@@ -13131,10 +13903,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 18.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:15:42.817Z",
-      "end_date": "2026-04-21T22:33:49.786Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:33:49.786Z"
     },
     "c8ed60d3-442f-409e-9df2-af8fdf5b793c": {
       "sessionId": "c8ed60d3-442f-409e-9df2-af8fdf5b793c",
@@ -13175,10 +13947,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 16.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T13:23:48.410Z",
-      "end_date": "2026-04-21T13:40:09.628Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T13:40:09.628Z"
     },
     "c97c72ce-867c-4976-8c74-671fd5ff916b": {
       "sessionId": "c97c72ce-867c-4976-8c74-671fd5ff916b",
@@ -13219,10 +13991,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 12.7,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-22T14:48:51.686Z",
-      "end_date": "2026-04-22T15:01:34.082Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T15:01:34.082Z"
     },
     "ca41aa91-3b2a-4df3-bd0f-56263bdbb09b": {
       "sessionId": "ca41aa91-3b2a-4df3-bd0f-56263bdbb09b",
@@ -13263,10 +14035,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T16:53:03.826Z",
-      "end_date": "2026-04-16T16:56:21.612Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T16:56:21.612Z"
     },
     "ca6c2349-dea4-44af-9ec9-1c8f1f0e5db0": {
       "sessionId": "ca6c2349-dea4-44af-9ec9-1c8f1f0e5db0",
@@ -13307,10 +14079,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.8,
+      "agent_active_minutes": 0.1,
       "outcome": "committed",
       "start_date": "2026-04-18T12:22:07.853Z",
-      "end_date": "2026-04-18T12:26:58.785Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-18T12:26:58.785Z"
     },
     "caaecdb7-935e-401d-aec8-f5ae8caf86cd": {
       "sessionId": "caaecdb7-935e-401d-aec8-f5ae8caf86cd",
@@ -13351,10 +14123,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T10:29:12.070Z",
-      "end_date": "2026-04-16T10:32:12.827Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T10:32:12.827Z"
     },
     "cda15668-ceb2-4892-8bd4-70354a2217fd": {
       "sessionId": "cda15668-ceb2-4892-8bd4-70354a2217fd",
@@ -13395,10 +14167,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 671.5,
+      "agent_active_minutes": 1.2,
       "outcome": "aborted",
       "start_date": "2026-04-19T09:22:27.988Z",
-      "end_date": "2026-04-19T20:33:58.186Z",
-      "agent_active_minutes": 1.2
+      "end_date": "2026-04-19T20:33:58.186Z"
     },
     "d1ee2dfe-b4e0-4627-803c-450ad1b31508": {
       "sessionId": "d1ee2dfe-b4e0-4627-803c-450ad1b31508",
@@ -13439,10 +14211,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.6,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-18T12:41:29.596Z",
-      "end_date": "2026-04-18T12:42:04.580Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-18T12:42:04.580Z"
     },
     "d2702738-ceb7-453c-bcb3-0c8b3608a59a": {
       "sessionId": "d2702738-ceb7-453c-bcb3-0c8b3608a59a",
@@ -13483,10 +14255,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 18.3,
+      "agent_active_minutes": 0,
       "outcome": "no-output",
       "start_date": "2026-04-22T08:11:09.609Z",
-      "end_date": "2026-04-22T08:29:26.595Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T08:29:26.595Z"
     },
     "d3cf1a17-186c-4da1-894c-a919553e558a": {
       "sessionId": "d3cf1a17-186c-4da1-894c-a919553e558a",
@@ -13527,10 +14299,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.4,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T19:11:55.344Z",
-      "end_date": "2026-04-18T19:14:22.095Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:14:22.095Z"
     },
     "d5d3bc6c-face-4977-8819-55a3ed71a699": {
       "sessionId": "d5d3bc6c-face-4977-8819-55a3ed71a699",
@@ -13571,10 +14343,54 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.6,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-16T17:10:21.439Z",
-      "end_date": "2026-04-16T17:12:54.699Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T17:12:54.699Z"
+    },
+    "d6f8700c-9284-4515-9774-2d1317db0edf": {
+      "sessionId": "d6f8700c-9284-4515-9774-2d1317db0edf",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-retrospective",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-22T21:37:56.866Z",
+      "endedAt": "2026-04-22T22:48:24.942Z",
+      "usage": {
+        "requests": 4,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "session_id": "d6f8700c-9284-4515-9774-2d1317db0edf",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 4,
+      "premium_multiplier": 1,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-retrospective",
+      "turns": 4,
+      "human_turns": 2,
+      "agent_turns": 67,
+      "git_commits": 3,
+      "git_pushes": 3,
+      "aborted": false,
+      "context_compactions": 1,
+      "subagent_count": 1,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 70.5,
+      "agent_active_minutes": 0.6,
+      "outcome": "pushed",
+      "start_date": "2026-04-22T21:37:56.866Z",
+      "end_date": "2026-04-22T22:48:24.942Z"
     },
     "d9882de6-bf5e-4e83-9f48-9d2ccae34f4a": {
       "sessionId": "d9882de6-bf5e-4e83-9f48-9d2ccae34f4a",
@@ -13615,10 +14431,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.9,
+      "agent_active_minutes": 1.4,
       "outcome": "no-output",
       "start_date": "2026-04-15T18:41:08.607Z",
-      "end_date": "2026-04-15T18:44:02.779Z",
-      "agent_active_minutes": 1.4
+      "end_date": "2026-04-15T18:44:02.779Z"
     },
     "da4117c7-be14-4d4b-8173-176c1a19278e": {
       "sessionId": "da4117c7-be14-4d4b-8173-176c1a19278e",
@@ -13659,10 +14475,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.6,
+      "agent_active_minutes": 0.2,
       "outcome": "pushed",
       "start_date": "2026-04-16T20:21:06.046Z",
-      "end_date": "2026-04-16T20:22:40.171Z",
-      "agent_active_minutes": 0.2
+      "end_date": "2026-04-16T20:22:40.171Z"
     },
     "dcc56b75-db35-4618-873c-daffeb3f37a1": {
       "sessionId": "dcc56b75-db35-4618-873c-daffeb3f37a1",
@@ -13703,10 +14519,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.2,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-22T12:22:38.225Z",
-      "end_date": "2026-04-22T12:27:48.628Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-22T12:27:48.628Z"
     },
     "dce06d87-25d5-4614-a214-1d8c33adcc34": {
       "sessionId": "dce06d87-25d5-4614-a214-1d8c33adcc34",
@@ -13747,10 +14563,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:24:58.371Z",
-      "end_date": "2026-04-18T15:29:06.068Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T15:29:06.068Z"
     },
     "dd39f52d-b34f-40b3-acdc-f9dd3eb276b8": {
       "sessionId": "dd39f52d-b34f-40b3-acdc-f9dd3eb276b8",
@@ -13791,10 +14607,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 11.6,
+      "agent_active_minutes": 0,
       "outcome": "aborted",
       "start_date": "2026-04-19T09:10:35.829Z",
-      "end_date": "2026-04-19T09:22:12.226Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T09:22:12.226Z"
     },
     "de680c67-7198-48b6-8f69-56ef4192ad05": {
       "sessionId": "de680c67-7198-48b6-8f69-56ef4192ad05",
@@ -13835,10 +14651,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-16T21:13:29.429Z",
-      "end_date": "2026-04-16T21:15:31.045Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T21:15:31.045Z"
     },
     "dfbfc3b5-f66b-4d6f-9fe8-b1947a41c870": {
       "sessionId": "dfbfc3b5-f66b-4d6f-9fe8-b1947a41c870",
@@ -13879,10 +14695,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T22:10:07.686Z",
-      "end_date": "2026-04-21T22:13:13.182Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T22:13:13.182Z"
     },
     "dff105a5-d102-4c56-84db-2f353d062768": {
       "sessionId": "dff105a5-d102-4c56-84db-2f353d062768",
@@ -13923,10 +14739,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 16.7,
+      "agent_active_minutes": 1.7,
       "outcome": "aborted",
       "start_date": "2026-04-19T21:24:00.952Z",
-      "end_date": "2026-04-19T21:40:40.360Z",
-      "agent_active_minutes": 1.7
+      "end_date": "2026-04-19T21:40:40.360Z"
     },
     "dffbc7d9-d986-467d-b72f-fb74aa9001d0": {
       "sessionId": "dffbc7d9-d986-467d-b72f-fb74aa9001d0",
@@ -13967,10 +14783,10 @@
       "subagent_tokens": 0,
       "error_count": 1,
       "duration_minutes": 46,
+      "agent_active_minutes": 4.5,
       "outcome": "error",
       "start_date": "2026-04-15T13:20:52.602Z",
-      "end_date": "2026-04-15T14:06:53.892Z",
-      "agent_active_minutes": 4.5
+      "end_date": "2026-04-15T14:06:53.892Z"
     },
     "e245bf70-c9d0-45c8-90d4-51005826ed0b": {
       "sessionId": "e245bf70-c9d0-45c8-90d4-51005826ed0b",
@@ -14011,10 +14827,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T21:54:37.592Z",
-      "end_date": "2026-04-16T22:00:40.705Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T22:00:40.705Z"
     },
     "e329eb03-2ef9-4f12-864f-6f61bf37f7c9": {
       "sessionId": "e329eb03-2ef9-4f12-864f-6f61bf37f7c9",
@@ -14055,10 +14871,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.9,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T16:52:09.186Z",
-      "end_date": "2026-04-16T16:56:02.532Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T16:56:02.532Z"
     },
     "e50f10d9-d76e-4783-805b-3b562f2d395a": {
       "sessionId": "e50f10d9-d76e-4783-805b-3b562f2d395a",
@@ -14099,10 +14915,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 111.6,
+      "agent_active_minutes": 0.7,
       "outcome": "committed",
       "start_date": "2026-04-15T19:33:18.991Z",
-      "end_date": "2026-04-15T21:24:55.867Z",
-      "agent_active_minutes": 0.7
+      "end_date": "2026-04-15T21:24:55.867Z"
     },
     "e9ce3ead-2d4a-4131-95e1-ba8f0dc2f4e2": {
       "sessionId": "e9ce3ead-2d4a-4131-95e1-ba8f0dc2f4e2",
@@ -14143,10 +14959,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.6,
+      "agent_active_minutes": 0,
       "outcome": "committed",
       "start_date": "2026-04-15T22:00:06.558Z",
-      "end_date": "2026-04-15T22:02:45.196Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T22:02:45.196Z"
     },
     "eb1cb2cd-2d90-41eb-9b83-378d773ab8da": {
       "sessionId": "eb1cb2cd-2d90-41eb-9b83-378d773ab8da",
@@ -14187,10 +15003,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 10.8,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:44:39.418Z",
-      "end_date": "2026-04-19T21:55:29.498Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:55:29.498Z"
     },
     "ec490405-7a3a-4823-8696-ab632942393f": {
       "sessionId": "ec490405-7a3a-4823-8696-ab632942393f",
@@ -14231,10 +15047,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 11.4,
+      "agent_active_minutes": 0.1,
       "outcome": "aborted",
       "start_date": "2026-04-21T21:56:07.534Z",
-      "end_date": "2026-04-21T22:07:29.302Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-21T22:07:29.302Z"
     },
     "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c": {
       "sessionId": "ed10bce5-b61d-4b30-a3fa-50c618c2ba2c",
@@ -14275,10 +15091,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-19T21:43:53.776Z",
-      "end_date": "2026-04-19T21:46:54.318Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-19T21:46:54.318Z"
     },
     "edea74b8-d48f-425e-a7a3-90551ba590b3": {
       "sessionId": "edea74b8-d48f-425e-a7a3-90551ba590b3",
@@ -14319,10 +15135,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T19:04:29.789Z",
-      "end_date": "2026-04-18T19:07:26.816Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T19:07:26.816Z"
     },
     "f11cb1cf-a71b-42c8-a3d9-aaa5b48afaae": {
       "sessionId": "f11cb1cf-a71b-42c8-a3d9-aaa5b48afaae",
@@ -14363,10 +15179,10 @@
       "subagent_tokens": 399526,
       "error_count": 0,
       "duration_minutes": 14.4,
+      "agent_active_minutes": 0.3,
       "outcome": "delivered",
       "start_date": "2026-04-15T22:30:44.016Z",
-      "end_date": "2026-04-15T22:45:05.712Z",
-      "agent_active_minutes": 0.3
+      "end_date": "2026-04-15T22:45:05.712Z"
     },
     "f12ac43c-6280-4af1-82e9-866b8e5f6548": {
       "sessionId": "f12ac43c-6280-4af1-82e9-866b8e5f6548",
@@ -14407,10 +15223,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.5,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T16:42:42.537Z",
-      "end_date": "2026-04-16T16:45:13.310Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T16:45:13.310Z"
     },
     "f18b4911-11a4-4e6f-a71d-295dc73df240": {
       "sessionId": "f18b4911-11a4-4e6f-a71d-295dc73df240",
@@ -14451,10 +15267,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 1.2,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-16T21:16:06.785Z",
-      "end_date": "2026-04-16T21:17:17.820Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T21:17:17.820Z"
     },
     "f39c7cb2-843c-4893-95d3-d9b89bb51b3d": {
       "sessionId": "f39c7cb2-843c-4893-95d3-d9b89bb51b3d",
@@ -14495,10 +15311,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 8.2,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-21T21:27:04.383Z",
-      "end_date": "2026-04-21T21:35:18.343Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:35:18.343Z"
     },
     "f4404cfa-5283-4d1a-8422-893c9cf33bb4": {
       "sessionId": "f4404cfa-5283-4d1a-8422-893c9cf33bb4",
@@ -14539,10 +15355,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:39:53.688Z",
-      "end_date": "2026-04-21T21:43:09.101Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:43:09.101Z"
     },
     "f882d650-886e-4f73-b688-6282fd2669cc": {
       "sessionId": "f882d650-886e-4f73-b688-6282fd2669cc",
@@ -14583,10 +15399,10 @@
       "subagent_tokens": 385517,
       "error_count": 0,
       "duration_minutes": 7.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-16T15:47:23.129Z",
-      "end_date": "2026-04-16T15:54:31.364Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-16T15:54:31.364Z"
     },
     "fac6c8f7-b622-44a2-bc95-1fdb01ec197d": {
       "sessionId": "fac6c8f7-b622-44a2-bc95-1fdb01ec197d",
@@ -14627,10 +15443,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 0.2,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-16T14:58:47.127Z",
-      "end_date": "2026-04-16T14:59:01.752Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-16T14:59:01.752Z"
     },
     "fb51c717-8f66-4030-8077-b00c2aa8f30b": {
       "sessionId": "fb51c717-8f66-4030-8077-b00c2aa8f30b",
@@ -14671,10 +15487,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 6.8,
+      "agent_active_minutes": 0.1,
       "outcome": "pushed",
       "start_date": "2026-04-18T15:19:38.343Z",
-      "end_date": "2026-04-18T15:26:23.473Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-18T15:26:23.473Z"
     },
     "fb6068bb-27bf-4254-b570-c9f598ab2c1e": {
       "sessionId": "fb6068bb-27bf-4254-b570-c9f598ab2c1e",
@@ -14715,10 +15531,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 2.2,
+      "agent_active_minutes": 0.1,
       "outcome": "no-output",
       "start_date": "2026-04-15T20:34:03.668Z",
-      "end_date": "2026-04-15T20:36:15.045Z",
-      "agent_active_minutes": 0.1
+      "end_date": "2026-04-15T20:36:15.045Z"
     },
     "fc0068c0-56a1-42bc-8cd2-f42670135cb6": {
       "sessionId": "fc0068c0-56a1-42bc-8cd2-f42670135cb6",
@@ -14759,10 +15575,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 19.7,
+      "agent_active_minutes": 0.5,
       "outcome": "pushed",
       "start_date": "2026-04-15T22:13:56.488Z",
-      "end_date": "2026-04-15T22:33:36.404Z",
-      "agent_active_minutes": 0.5
+      "end_date": "2026-04-15T22:33:36.404Z"
     },
     "fcb45d29-4b58-492c-86dd-9dbbb7ec7850": {
       "sessionId": "fcb45d29-4b58-492c-86dd-9dbbb7ec7850",
@@ -14803,10 +15619,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.1,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T12:59:21.544Z",
-      "end_date": "2026-04-18T13:02:25.349Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:02:25.349Z"
     },
     "fdf39860-e541-4d18-9f36-531629f82a6b": {
       "sessionId": "fdf39860-e541-4d18-9f36-531629f82a6b",
@@ -14847,10 +15663,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 5.3,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-21T21:40:55.982Z",
-      "end_date": "2026-04-21T21:46:14.433Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-21T21:46:14.433Z"
     },
     "ff7edad5-069a-48ae-8dc8-889020344e9e": {
       "sessionId": "ff7edad5-069a-48ae-8dc8-889020344e9e",
@@ -14891,10 +15707,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 3.7,
+      "agent_active_minutes": 0,
       "outcome": "pushed",
       "start_date": "2026-04-18T13:13:18.570Z",
-      "end_date": "2026-04-18T13:16:59.149Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-18T13:16:59.149Z"
     },
     "ff91a6b4-4bc8-40fd-91cc-b9589c8ab801": {
       "sessionId": "ff91a6b4-4bc8-40fd-91cc-b9589c8ab801",
@@ -14935,10 +15751,10 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 13.7,
+      "agent_active_minutes": 1.5,
       "outcome": "no-output",
       "start_date": "2026-04-15T17:35:57.113Z",
-      "end_date": "2026-04-15T17:49:39.721Z",
-      "agent_active_minutes": 1.5
+      "end_date": "2026-04-15T17:49:39.721Z"
     },
     "ffec112e-20b5-4209-b1f8-e475719b2a9f": {
       "sessionId": "ffec112e-20b5-4209-b1f8-e475719b2a9f",
@@ -14979,20 +15795,20 @@
       "subagent_tokens": 0,
       "error_count": 0,
       "duration_minutes": 4,
+      "agent_active_minutes": 0,
       "outcome": "delivered",
       "start_date": "2026-04-15T14:32:36.481Z",
-      "end_date": "2026-04-15T14:36:38.980Z",
-      "agent_active_minutes": 0
+      "end_date": "2026-04-15T14:36:38.980Z"
     },
-    "012a1eeb-3017-4dfe-8ed8-103f48fcb3bf": {
-      "sessionId": "012a1eeb-3017-4dfe-8ed8-103f48fcb3bf",
+    "dce2156c-ac1f-40cf-9ad0-618ad1bfc6dd": {
+      "sessionId": "dce2156c-ac1f-40cf-9ad0-618ad1bfc6dd",
       "storyId": null,
       "epicId": null,
       "skill": "general",
-      "model": "claude-sonnet-4.6",
+      "model": "gpt-5.3-codex",
       "status": "failed",
-      "startedAt": "2026-04-22T17:55:55.824Z",
-      "endedAt": "2026-04-22T17:56:01.295Z",
+      "startedAt": "2026-04-23T08:46:07.226Z",
+      "endedAt": "2026-04-23T08:46:14.117Z",
       "usage": {
         "requests": 1,
         "tokensIn": 0,
@@ -15002,333 +15818,11 @@
       },
       "error": "Agent process produced no output (0-byte log)",
       "exitCode": -1,
-      "session_id": "012a1eeb-3017-4dfe-8ed8-103f48fcb3bf",
+      "session_id": "dce2156c-ac1f-40cf-9ad0-618ad1bfc6dd",
       "tool": "copilot-cli",
       "premium": true,
       "premium_requests": 2,
-      "premium_multiplier": 1,
-      "premium_cost_units": 2,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 28,
-      "git_commits": 0,
-      "git_pushes": 0,
-      "aborted": true,
-      "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 6.1,
-      "outcome": "aborted",
-      "start_date": "2026-04-22T17:55:55.824Z",
-      "end_date": "2026-04-22T18:02:02.085Z",
-      "agent_active_minutes": 0
-    },
-    "123c983f-0827-4599-bb9b-b46376d977a0": {
-      "sessionId": "123c983f-0827-4599-bb9b-b46376d977a0",
-      "storyId": null,
-      "epicId": null,
-      "skill": "general",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T17:55:55.831Z",
-      "endedAt": "2026-04-22T17:56:01.298Z",
-      "usage": {
-        "requests": 1,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "123c983f-0827-4599-bb9b-b46376d977a0",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 2,
-      "premium_multiplier": 1,
-      "premium_cost_units": 2,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 21,
-      "git_commits": 0,
-      "git_pushes": 0,
-      "aborted": false,
-      "context_compactions": 0,
-      "subagent_count": 1,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 6.1,
-      "outcome": "no-output",
-      "start_date": "2026-04-22T17:55:55.831Z",
-      "end_date": "2026-04-22T18:02:02.100Z",
-      "agent_active_minutes": 0
-    },
-    "1ab356be-2ccc-42e9-8a7e-ec5e6af90793": {
-      "sessionId": "1ab356be-2ccc-42e9-8a7e-ec5e6af90793",
-      "storyId": null,
-      "epicId": null,
-      "skill": "general",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T17:55:56.004Z",
-      "endedAt": "2026-04-22T17:56:01.312Z",
-      "usage": {
-        "requests": 1,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "1ab356be-2ccc-42e9-8a7e-ec5e6af90793",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 2,
-      "premium_multiplier": 1,
-      "premium_cost_units": 2,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 34,
-      "git_commits": 0,
-      "git_pushes": 0,
-      "aborted": true,
-      "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 6.1,
-      "outcome": "aborted",
-      "start_date": "2026-04-22T17:55:56.004Z",
-      "end_date": "2026-04-22T18:02:02.086Z",
-      "agent_active_minutes": 0
-    },
-    "2b7acbc9-1a65-4a81-b2fb-6a36adb7ab0d": {
-      "sessionId": "2b7acbc9-1a65-4a81-b2fb-6a36adb7ab0d",
-      "storyId": null,
-      "epicId": null,
-      "skill": "general",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T17:55:55.827Z",
-      "endedAt": "2026-04-22T17:56:01.322Z",
-      "usage": {
-        "requests": 1,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "2b7acbc9-1a65-4a81-b2fb-6a36adb7ab0d",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 2,
-      "premium_multiplier": 1,
-      "premium_cost_units": 2,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 13,
-      "git_commits": 0,
-      "git_pushes": 0,
-      "aborted": false,
-      "context_compactions": 0,
-      "subagent_count": 2,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 6.1,
-      "outcome": "no-output",
-      "start_date": "2026-04-22T17:55:55.827Z",
-      "end_date": "2026-04-22T18:02:02.117Z",
-      "agent_active_minutes": 0
-    },
-    "5c56366c-54f7-47db-a426-9eb1dc1c647e": {
-      "sessionId": "5c56366c-54f7-47db-a426-9eb1dc1c647e",
-      "storyId": null,
-      "epicId": null,
-      "skill": "general",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T17:55:55.831Z",
-      "endedAt": "2026-04-22T17:56:01.333Z",
-      "usage": {
-        "requests": 1,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "5c56366c-54f7-47db-a426-9eb1dc1c647e",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 2,
-      "premium_multiplier": 1,
-      "premium_cost_units": 2,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 18,
-      "git_commits": 0,
-      "git_pushes": 0,
-      "aborted": false,
-      "context_compactions": 0,
-      "subagent_count": 1,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 6.1,
-      "outcome": "no-output",
-      "start_date": "2026-04-22T17:55:55.831Z",
-      "end_date": "2026-04-22T18:02:02.090Z",
-      "agent_active_minutes": 0
-    },
-    "8aa410d0-24cd-42b3-b236-9c53f1e46f34": {
-      "sessionId": "8aa410d0-24cd-42b3-b236-9c53f1e46f34",
-      "storyId": null,
-      "epicId": null,
-      "skill": "general",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T17:55:55.814Z",
-      "endedAt": "2026-04-22T17:56:01.342Z",
-      "usage": {
-        "requests": 1,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "8aa410d0-24cd-42b3-b236-9c53f1e46f34",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 2,
-      "premium_multiplier": 1,
-      "premium_cost_units": 2,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 17,
-      "git_commits": 0,
-      "git_pushes": 0,
-      "aborted": false,
-      "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 6.1,
-      "outcome": "no-output",
-      "start_date": "2026-04-22T17:55:55.814Z",
-      "end_date": "2026-04-22T18:02:02.087Z",
-      "agent_active_minutes": 0
-    },
-    "06c1cb11-2a62-475a-8709-c5c81ff6a036": {
-      "sessionId": "06c1cb11-2a62-475a-8709-c5c81ff6a036",
-      "storyId": null,
-      "epicId": null,
-      "skill": "general",
-      "model": "claude-opus-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T18:01:52.782Z",
-      "endedAt": "2026-04-22T18:01:55.413Z",
-      "usage": {
-        "requests": 1,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "06c1cb11-2a62-475a-8709-c5c81ff6a036",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 2,
-      "premium_multiplier": 3,
-      "premium_cost_units": 6,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-create-epics-and-stories",
-      "turns": 2,
-      "human_turns": 1,
-      "agent_turns": 22,
-      "git_commits": 1,
-      "git_pushes": 1,
-      "aborted": false,
-      "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 64.6,
-      "agent_active_minutes": 0,
-      "outcome": "pushed",
-      "start_date": "2026-04-22T18:01:52.782Z",
-      "end_date": "2026-04-22T19:06:27.947Z"
-    },
-    "10051148-70c2-4481-afe9-451df8408d7c": {
-      "sessionId": "10051148-70c2-4481-afe9-451df8408d7c",
-      "storyId": null,
-      "epicId": null,
-      "skill": "bmad-code-review",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T19:11:21.096Z",
-      "endedAt": "2026-04-22T21:06:01.879Z",
-      "usage": {
-        "requests": 3,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "10051148-70c2-4481-afe9-451df8408d7c",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 4,
-      "premium_multiplier": 1,
+      "premium_multiplier": 2,
       "premium_cost_units": 4,
       "tokens": {
         "input": 0,
@@ -15336,53 +15830,55 @@
         "total": 0
       },
       "agent": "bmad-code-review",
-      "turns": 4,
-      "human_turns": 2,
-      "agent_turns": 83,
-      "git_commits": 14,
-      "git_pushes": 5,
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 29,
+      "git_commits": 1,
+      "git_pushes": 0,
       "aborted": false,
       "context_compactions": 0,
-      "subagent_count": 11,
+      "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 135.2,
-      "outcome": "pushed",
-      "start_date": "2026-04-22T19:11:21.096Z",
-      "end_date": "2026-04-22T21:26:35.253Z",
-      "agent_active_minutes": 0.5
+      "duration_minutes": 6.9,
+      "agent_active_minutes": 0,
+      "outcome": "committed",
+      "start_date": "2026-04-23T08:46:07.226Z",
+      "end_date": "2026-04-23T08:53:03.077Z"
     },
-    "059ed632-25a6-4fc3-9a55-cdc3f122b56b": {
-      "sessionId": "059ed632-25a6-4fc3-9a55-cdc3f122b56b",
+    "f26ed9c5-1b46-4d17-8201-90b43245c2eb": {
+      "sessionId": "f26ed9c5-1b46-4d17-8201-90b43245c2eb",
       "storyId": null,
       "epicId": null,
-      "skill": "bmad-create-epics-and-stories",
-      "model": "claude-opus-4.6",
-      "status": "completed",
-      "startedAt": "2026-04-22T19:28:34.015Z",
-      "endedAt": "2026-04-22T19:31:54.042Z",
+      "skill": "general",
+      "model": "gpt-5.3-codex",
+      "status": "failed",
+      "startedAt": "2026-04-23T08:46:07.265Z",
+      "endedAt": "2026-04-23T08:52:31Z",
       "usage": {
-        "requests": 3,
+        "requests": 1,
         "tokensIn": 0,
         "tokensOut": 0,
         "tokensCached": 0,
         "totalTokens": 0
       },
-      "session_id": "059ed632-25a6-4fc3-9a55-cdc3f122b56b",
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
+      "session_id": "f26ed9c5-1b46-4d17-8201-90b43245c2eb",
       "tool": "copilot-cli",
       "premium": true,
-      "premium_requests": 3,
-      "premium_multiplier": 3,
-      "premium_cost_units": 9,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
       "tokens": {
         "input": 0,
         "output": 0,
         "total": 0
       },
-      "agent": "bmad-create-epics-and-stories",
-      "turns": 3,
+      "agent": "bmad-code-review",
+      "turns": 2,
       "human_turns": 1,
-      "agent_turns": 14,
+      "agent_turns": 48,
       "git_commits": 0,
       "git_pushes": 0,
       "aborted": false,
@@ -15390,23 +15886,23 @@
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 3.3,
-      "outcome": "no-output",
-      "start_date": "2026-04-22T19:28:34.015Z",
-      "end_date": "2026-04-22T19:31:54.042Z",
-      "agent_active_minutes": 0.2
+      "duration_minutes": 8.5,
+      "agent_active_minutes": 0,
+      "outcome": "delivered",
+      "start_date": "2026-04-23T08:46:07.265Z",
+      "end_date": "2026-04-23T08:54:39.948Z"
     },
-    "0246b1cb-bd02-4a57-b1c8-e28fc13ee955": {
-      "sessionId": "0246b1cb-bd02-4a57-b1c8-e28fc13ee955",
+    "045720a4-cf3f-4636-a469-aaa22a0e8e71": {
+      "sessionId": "045720a4-cf3f-4636-a469-aaa22a0e8e71",
       "storyId": null,
       "epicId": null,
-      "skill": "bmad-dev-story",
-      "model": "claude-sonnet-4.6",
+      "skill": "general",
+      "model": "gpt-5.3-codex",
       "status": "failed",
-      "startedAt": "2026-04-22T21:39:22.193Z",
-      "endedAt": "2026-04-22T21:57:40.311Z",
+      "startedAt": "2026-04-23T08:46:07.274Z",
+      "endedAt": "2026-04-23T08:46:14.152Z",
       "usage": {
-        "requests": 3,
+        "requests": 1,
         "tokensIn": 0,
         "tokensOut": 0,
         "tokensCached": 0,
@@ -15414,46 +15910,91 @@
       },
       "error": "Agent process produced no output (0-byte log)",
       "exitCode": -1,
-      "session_id": "0246b1cb-bd02-4a57-b1c8-e28fc13ee955",
+      "session_id": "045720a4-cf3f-4636-a469-aaa22a0e8e71",
       "tool": "copilot-cli",
       "premium": true,
-      "premium_requests": 3,
-      "premium_multiplier": 1,
-      "premium_cost_units": 3,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
       "tokens": {
         "input": 0,
         "output": 0,
         "total": 0
       },
-      "agent": "bmad-dev-story",
-      "turns": 3,
+      "agent": "bmad-code-review",
+      "turns": 2,
       "human_turns": 1,
-      "agent_turns": 138,
+      "agent_turns": 29,
+      "git_commits": 0,
+      "git_pushes": 1,
+      "aborted": false,
+      "context_compactions": 0,
+      "subagent_count": 0,
+      "subagent_tokens": 0,
+      "error_count": 0,
+      "duration_minutes": 7.1,
+      "agent_active_minutes": 0,
+      "outcome": "pushed",
+      "start_date": "2026-04-23T08:46:07.274Z",
+      "end_date": "2026-04-23T08:53:13.819Z"
+    },
+    "2235893f-beba-4446-8bbc-c41eb6e29a49": {
+      "sessionId": "2235893f-beba-4446-8bbc-c41eb6e29a49",
+      "storyId": null,
+      "epicId": null,
+      "skill": "general",
+      "model": "gpt-5.3-codex",
+      "status": "failed",
+      "startedAt": "2026-04-23T08:46:07.223Z",
+      "endedAt": "2026-04-23T08:46:14.161Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "tokensCached": 0,
+        "totalTokens": 0
+      },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1,
+      "session_id": "2235893f-beba-4446-8bbc-c41eb6e29a49",
+      "tool": "copilot-cli",
+      "premium": true,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "agent": "bmad-code-review",
+      "turns": 2,
+      "human_turns": 1,
+      "agent_turns": 35,
       "git_commits": 1,
       "git_pushes": 1,
-      "aborted": true,
+      "aborted": false,
       "context_compactions": 0,
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 25.4,
-      "agent_active_minutes": 0.1,
-      "outcome": "aborted",
-      "start_date": "2026-04-22T21:39:22.193Z",
-      "end_date": "2026-04-22T22:04:46.622Z",
-      "notes": "Story 10-3: Quality nav link added. Most impl was already in HEAD."
+      "duration_minutes": 7.5,
+      "agent_active_minutes": 0,
+      "outcome": "pushed",
+      "start_date": "2026-04-23T08:46:07.223Z",
+      "end_date": "2026-04-23T08:53:35.630Z"
     },
-    "37b830d5-320c-4bc3-acab-f859ee084c8e": {
-      "sessionId": "37b830d5-320c-4bc3-acab-f859ee084c8e",
+    "6f15eaf1-811b-4a1d-8d9e-10e1bce4462b": {
+      "sessionId": "6f15eaf1-811b-4a1d-8d9e-10e1bce4462b",
       "storyId": null,
       "epicId": null,
-      "skill": "bmad-dev-story",
-      "model": "claude-sonnet-4.6",
+      "skill": "general",
+      "model": "gpt-5.3-codex",
       "status": "failed",
-      "startedAt": "2026-04-22T21:39:22.193Z",
-      "endedAt": "2026-04-22T21:57:40.315Z",
+      "startedAt": "2026-04-23T08:46:07.219Z",
+      "endedAt": "2026-04-23T08:46:14.173Z",
       "usage": {
-        "requests": 3,
+        "requests": 1,
         "tokensIn": 0,
         "tokensOut": 0,
         "tokensCached": 0,
@@ -15461,91 +16002,141 @@
       },
       "error": "Agent process produced no output (0-byte log)",
       "exitCode": -1,
-      "session_id": "37b830d5-320c-4bc3-acab-f859ee084c8e",
+      "session_id": "6f15eaf1-811b-4a1d-8d9e-10e1bce4462b",
       "tool": "copilot-cli",
       "premium": true,
-      "premium_requests": 3,
-      "premium_multiplier": 1,
-      "premium_cost_units": 3,
+      "premium_requests": 2,
+      "premium_multiplier": 2,
+      "premium_cost_units": 4,
       "tokens": {
         "input": 0,
         "output": 0,
         "total": 0
       },
-      "agent": "bmad-dev-story",
-      "turns": 3,
+      "agent": "bmad-code-review",
+      "turns": 2,
       "human_turns": 1,
-      "agent_turns": 126,
-      "git_commits": 2,
-      "git_pushes": 2,
-      "aborted": true,
-      "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 22.5,
-      "agent_active_minutes": 0.1,
-      "outcome": "aborted",
-      "start_date": "2026-04-22T21:39:22.193Z",
-      "end_date": "2026-04-22T22:01:51.225Z"
-    },
-    "4794edb7-75d7-45e9-843e-6b97b9db1c22": {
-      "sessionId": "4794edb7-75d7-45e9-843e-6b97b9db1c22",
-      "storyId": null,
-      "epicId": null,
-      "skill": "bmad-dev-story",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T21:39:22.225Z",
-      "endedAt": "2026-04-22T21:57:40.348Z",
-      "usage": {
-        "requests": 3,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "4794edb7-75d7-45e9-843e-6b97b9db1c22",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 3,
-      "premium_multiplier": 1,
-      "premium_cost_units": 3,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 3,
-      "human_turns": 1,
-      "agent_turns": 68,
-      "git_commits": 1,
+      "agent_turns": 21,
+      "git_commits": 0,
       "git_pushes": 1,
-      "aborted": true,
+      "aborted": false,
       "context_compactions": 0,
       "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 13.1,
-      "agent_active_minutes": 0.1,
-      "outcome": "aborted",
-      "start_date": "2026-04-22T21:39:22.225Z",
-      "end_date": "2026-04-22T21:52:27.730Z"
+      "duration_minutes": 4.9,
+      "agent_active_minutes": 0,
+      "outcome": "pushed",
+      "start_date": "2026-04-23T08:46:07.219Z",
+      "end_date": "2026-04-23T08:51:00.298Z"
     },
-    "5ea6d604-7e75-4ff9-a859-b0e530c72d84": {
-      "sessionId": "5ea6d604-7e75-4ff9-a859-b0e530c72d84",
+    "workflow-bmad-code-review-1776933961987-3": {
+      "sessionId": "workflow-bmad-code-review-1776933961987-3",
+      "storyId": "10-3-session-quality-dashboard-effectiveness-charts",
+      "epicId": "epic-10",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-23T08:46:02.007Z",
+      "endedAt": "2026-04-23T08:51:00.627Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1100000,
+        "tokensOut": 8400,
+        "tokensCached": 1000000,
+        "totalTokens": 1108400
+      },
+      "logPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-3.log",
+      "promptPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-3.prompt.txt",
+      "command": "copilot --model \"gpt-5.3-codex\" --allow-all-tools --no-ask-user --no-color --plain-diff -p \"$(cat \"/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-3.prompt.txt\")\"",
+      "worktreePath": null,
+      "exitCode": 0,
+      "error": null,
+      "userMessages": []
+    },
+    "workflow-bmad-code-review-1776933961987-1": {
+      "sessionId": "workflow-bmad-code-review-1776933961987-1",
+      "storyId": "10-1-enrich-session-sync-daemon-with-outcome-and-complexity-metrics",
+      "epicId": "epic-10",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-23T08:46:02.002Z",
+      "endedAt": "2026-04-23T08:53:03.388Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 1900000,
+        "tokensOut": 10100,
+        "tokensCached": 1800000,
+        "totalTokens": 1910100
+      },
+      "logPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-1.log",
+      "promptPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-1.prompt.txt",
+      "command": "copilot --model \"gpt-5.3-codex\" --allow-all-tools --no-ask-user --no-color --plain-diff -p \"$(cat \"/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-1.prompt.txt\")\"",
+      "worktreePath": null,
+      "exitCode": 0,
+      "error": null,
+      "userMessages": []
+    },
+    "workflow-bmad-code-review-1776933961987-4": {
+      "sessionId": "workflow-bmad-code-review-1776933961987-4",
+      "storyId": "10-4-skill-model-effectiveness-matrix",
+      "epicId": "epic-10",
+      "skill": "bmad-code-review",
+      "model": "gpt-5.3-codex",
+      "status": "completed",
+      "startedAt": "2026-04-23T08:46:02.009Z",
+      "endedAt": "2026-04-23T08:53:36.379Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 2300000,
+        "tokensOut": 13600,
+        "tokensCached": 2200000,
+        "totalTokens": 2313600
+      },
+      "logPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-4.log",
+      "promptPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-4.prompt.txt",
+      "command": "copilot --model \"gpt-5.3-codex\" --allow-all-tools --no-ask-user --no-color --plain-diff -p \"$(cat \"/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-code-review-1776933961987-4.prompt.txt\")\"",
+      "worktreePath": null,
+      "exitCode": 0,
+      "error": null,
+      "userMessages": []
+    },
+    "workflow-bmad-testarch-nfr-1776980325933-1": {
+      "sessionId": "workflow-bmad-testarch-nfr-1776980325933-1",
       "storyId": null,
       "epicId": null,
-      "skill": "bmad-dev-story",
+      "skill": "bmad-testarch-nfr",
+      "model": "claude-sonnet-4.6",
+      "status": "completed",
+      "startedAt": "2026-04-23T21:38:45.936Z",
+      "endedAt": "2026-04-23T21:40:01.807Z",
+      "usage": {
+        "requests": 1,
+        "tokensIn": 382500,
+        "tokensOut": 3300,
+        "tokensCached": 323100,
+        "totalTokens": 385800
+      },
+      "logPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-testarch-nfr-1776980325933-1.log",
+      "promptPath": "/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-testarch-nfr-1776980325933-1.prompt.txt",
+      "command": "copilot --model \"claude-sonnet-4.6\" --allow-all-tools --no-ask-user --no-color --plain-diff -p \"$(cat \"/Users/lorenzogm/lorenzogm/bmad-ui/_bmad-ui/agents/logs/workflow-bmad-testarch-nfr-1776980325933-1.prompt.txt\")\"",
+      "worktreePath": null,
+      "exitCode": 0,
+      "error": null,
+      "userMessages": []
+    },
+    "edb62a76-4d4c-41ed-b5ac-4712402ccc32": {
+      "sessionId": "edb62a76-4d4c-41ed-b5ac-4712402ccc32",
+      "storyId": null,
+      "epicId": null,
+      "skill": "bmad-testarch-nfr",
       "model": "claude-sonnet-4.6",
       "status": "failed",
-      "startedAt": "2026-04-22T21:39:22.224Z",
-      "endedAt": "2026-04-22T21:57:40.400Z",
+      "startedAt": "2026-04-23T21:38:49.056Z",
+      "endedAt": "2026-04-23T21:38:57.432Z",
       "usage": {
-        "requests": 3,
+        "requests": 2,
         "tokensIn": 0,
         "tokensOut": 0,
         "tokensCached": 0,
@@ -15553,100 +16144,7 @@
       },
       "error": "Agent process produced no output (0-byte log)",
       "exitCode": -1,
-      "session_id": "5ea6d604-7e75-4ff9-a859-b0e530c72d84",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 3,
-      "premium_multiplier": 1,
-      "premium_cost_units": 3,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 3,
-      "human_turns": 1,
-      "agent_turns": 169,
-      "git_commits": 1,
-      "git_pushes": 1,
-      "aborted": true,
-      "context_compactions": 1,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 28,
-      "agent_active_minutes": 0.1,
-      "outcome": "aborted",
-      "start_date": "2026-04-22T21:39:22.224Z",
-      "end_date": "2026-04-22T22:07:24.316Z"
-    },
-    "c2bcfd96-ea17-484a-b0ff-253d84c95eda": {
-      "sessionId": "c2bcfd96-ea17-484a-b0ff-253d84c95eda",
-      "storyId": null,
-      "epicId": null,
-      "skill": "bmad-dev-story",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T21:39:22.303Z",
-      "endedAt": "2026-04-22T21:57:40.425Z",
-      "usage": {
-        "requests": 3,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "c2bcfd96-ea17-484a-b0ff-253d84c95eda",
-      "tool": "copilot-cli",
-      "premium": true,
-      "premium_requests": 3,
-      "premium_multiplier": 1,
-      "premium_cost_units": 3,
-      "tokens": {
-        "input": 0,
-        "output": 0,
-        "total": 0
-      },
-      "agent": "bmad-dev-story",
-      "turns": 3,
-      "human_turns": 1,
-      "agent_turns": 151,
-      "git_commits": 2,
-      "git_pushes": 2,
-      "aborted": true,
-      "context_compactions": 0,
-      "subagent_count": 0,
-      "subagent_tokens": 0,
-      "error_count": 0,
-      "duration_minutes": 24.7,
-      "agent_active_minutes": 0.1,
-      "outcome": "aborted",
-      "start_date": "2026-04-22T21:39:22.303Z",
-      "end_date": "2026-04-22T22:04:05.816Z",
-      "notes": "Story 10.2 — implementation was already in HEAD from story 10.4 dev. Verified all ACs satisfied."
-    },
-    "d6f8700c-9284-4515-9774-2d1317db0edf": {
-      "sessionId": "d6f8700c-9284-4515-9774-2d1317db0edf",
-      "storyId": null,
-      "epicId": null,
-      "skill": "bmad-retrospective",
-      "model": "claude-sonnet-4.6",
-      "status": "failed",
-      "startedAt": "2026-04-22T21:37:56.866Z",
-      "endedAt": "2026-04-22T21:57:40.452Z",
-      "usage": {
-        "requests": 3,
-        "tokensIn": 0,
-        "tokensOut": 0,
-        "tokensCached": 0,
-        "totalTokens": 0
-      },
-      "error": "Agent process produced no output (0-byte log)",
-      "exitCode": -1,
-      "session_id": "d6f8700c-9284-4515-9774-2d1317db0edf",
+      "session_id": "edb62a76-4d4c-41ed-b5ac-4712402ccc32",
       "tool": "copilot-cli",
       "premium": true,
       "premium_requests": 4,
@@ -15657,23 +16155,41 @@
         "output": 0,
         "total": 0
       },
-      "agent": "bmad-retrospective",
+      "agent": "bmad-testarch-nfr",
       "turns": 4,
       "human_turns": 2,
-      "agent_turns": 63,
+      "agent_turns": 50,
       "git_commits": 2,
-      "git_pushes": 2,
+      "git_pushes": 3,
       "aborted": false,
-      "context_compactions": 1,
-      "subagent_count": 1,
+      "context_compactions": 0,
+      "subagent_count": 0,
       "subagent_tokens": 0,
       "error_count": 0,
-      "duration_minutes": 69.3,
-      "agent_active_minutes": 0.6,
+      "duration_minutes": 541.8,
+      "agent_active_minutes": 0.3,
       "outcome": "pushed",
-      "start_date": "2026-04-22T21:37:56.866Z",
-      "end_date": null,
-      "notes": "Epic 12 retrospective completed. Retro doc saved, sprint-status updated. Key findings: 0/3 story files for Epic 12 (same-commit rule), 9-epic carry on Epic 4 CI/CD patches, 12-epic carry on dotenvx caveat."
+      "start_date": "2026-04-23T21:38:49.056Z",
+      "end_date": "2026-04-24T06:40:39.689Z"
+    },
+    "workflow-bmad-test-running-mock": {
+      "sessionId": "workflow-bmad-test-running-mock",
+      "storyId": "13-1-test",
+      "epicId": "epic-13",
+      "skill": "bmad-dev-story",
+      "model": "claude-sonnet-4.6",
+      "status": "failed",
+      "startedAt": "2026-04-23T21:53:03.468Z",
+      "endedAt": "2026-04-23T21:53:04.901Z",
+      "usage": {
+        "requests": 5,
+        "tokensIn": 50000,
+        "tokensOut": 5000,
+        "tokensCached": 0,
+        "totalTokens": 55000
+      },
+      "error": "Agent process produced no output (0-byte log)",
+      "exitCode": -1
     }
   }
 }
