@@ -110,7 +110,7 @@ jobs:
         env:
           NEW_VERSION: ${{ steps.version.outputs.new_version }}
         run: |
-          npm version "$NEW_VERSION" --no-git-tag-version
+          npm version "$NEW_VERSION" --no-git-tag-version --allow-same-version
           echo "package.json updated to $NEW_VERSION"
 
       - name: Commit version bump
